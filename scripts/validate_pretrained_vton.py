@@ -24,16 +24,25 @@ def main():
     parser.add_argument("--guidance", type=float, default=2.5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--checkpoint", choices=["vitonhd", "mix"], default="vitonhd")
+    parser.add_argument("--height", type=int, choices=[512, 1024], default=512)
+    parser.add_argument("--person", type=Path)
+    parser.add_argument("--garment", type=Path)
     parser.add_argument("--output", type=Path, default=ROOT / "experiments/runs/pretrained-vton")
     parser.add_argument(
         "--report", type=Path, default=ROOT / "experiments/pretrained-vton-report.json"
     )
     args = parser.parse_args()
+    if bool(args.person) != bool(args.garment):
+        parser.error("--person and --garment must be provided together")
+    if args.person and args.all:
+        parser.error("Use either a custom pair or --all, not both")
     original_run = ROOT / "data/processed/9658bcca-8a2b-4a88-a134-cea3ff8739dd"
     portrait_run = ROOT / "data/processed/4fd1db83-60cb-460f-9887-985eb1ffb82f"
     person = original_run / "personInput.bin"
     garment = original_run / "garmentInput.bin"
     cases = [("reported-striped-shirt", person, garment, "t-shirt")]
+    if args.person:
+        cases = [("custom-pair", args.person, args.garment, "t-shirt")]
     if args.all:
         cases.extend(
             [
@@ -47,7 +56,7 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     service = PretrainedTryOn(
         settings.vton_root, settings.vton_device, guidance_scale=args.guidance, seed=args.seed,
-        checkpoint=args.checkpoint,
+        checkpoint=args.checkpoint, height=args.height,
     )
     preprocessor = PersonPreprocessor(settings.model_path)
     records = []

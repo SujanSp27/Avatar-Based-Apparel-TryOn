@@ -58,14 +58,14 @@
   },
   "suites": [
     {
-      "title": "2d-fallback.spec.ts",
-      "file": "2d-fallback.spec.ts",
+      "title": "tryon.spec.ts",
+      "file": "tryon.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "2D supports upper garments while 3D retains all categories",
-          "ok": true,
+          "title": "real uploads produce measurements, size and interactive GLB",
+          "ok": false,
           "tags": [],
           "tests": [
             {
@@ -78,27 +78,57 @@
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 7923,
-                  "errors": [],
+                  "status": "failed",
+                  "duration": 342078,
+                  "error": {
+                    "message": "TimeoutError: page.waitForResponse: Timeout 180000ms exceeded while waiting for event \"response\"",
+                    "stack": "TimeoutError: page.waitForResponse: Timeout 180000ms exceeded while waiting for event \"response\"\n    at C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts:24:25",
+                    "location": {
+                      "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts",
+                      "column": 25,
+                      "line": 24
+                    },
+                    "snippet": "  22 |   await page.getByLabel(\"Height in cm\").fill(\"172\");\n  23 |   await page.getByRole(\"button\", { name: \"regular\", exact: true }).click();\n> 24 |   const response = page.waitForResponse(\n     |                         ^\n  25 |     (r) => r.url().endsWith(\"/api/tryon\") && r.request().method() === \"POST\",\n  26 |     { timeout: 180000 },\n  27 |   );"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts",
+                        "column": 25,
+                        "line": 24
+                      },
+                      "message": "TimeoutError: page.waitForResponse: Timeout 180000ms exceeded while waiting for event \"response\"\n\n  22 |   await page.getByLabel(\"Height in cm\").fill(\"172\");\n  23 |   await page.getByRole(\"button\", { name: \"regular\", exact: true }).click();\n> 24 |   const response = page.waitForResponse(\n     |                         ^\n  25 |     (r) => r.url().endsWith(\"/api/tryon\") && r.request().method() === \"POST\",\n  26 |     { timeout: 180000 },\n  27 |   );\n    at C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts:24:25"
+                    }
+                  ],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-10T10:50:09.562Z",
+                  "startTime": "2026-10-11T17:18:28.230Z",
                   "annotations": [],
-                  "attachments": []
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\test-results\\tryon-real-uploads-produce-c83f0-ts-size-and-interactive-GLB\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts",
+                    "column": 25,
+                    "line": 24
+                  }
                 }
               ],
-              "status": "expected"
+              "status": "unexpected"
             }
           ],
-          "id": "64297e36131821b5e87c-9470a9164d33c5c1dd3c",
-          "file": "2d-fallback.spec.ts",
-          "line": 16,
+          "id": "66c05e63e94605070546-ca45c151631ecce7c7f8",
+          "file": "tryon.spec.ts",
+          "line": 4,
           "column": 1
         },
         {
-          "title": "missing pretrained model returns a clear error without an overlay result",
+          "title": "sample button and mobile input layout work",
           "ok": true,
           "tags": [],
           "tests": [
@@ -110,15 +140,15 @@
               "projectName": "",
               "results": [
                 {
-                  "workerIndex": 0,
+                  "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3668,
+                  "duration": 3637,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-10T10:50:17.995Z",
+                  "startTime": "2026-10-11T17:24:30.454Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -126,9 +156,9 @@
               "status": "expected"
             }
           ],
-          "id": "64297e36131821b5e87c-4b6971437fd84b1a9b44",
-          "file": "2d-fallback.spec.ts",
-          "line": 42,
+          "id": "66c05e63e94605070546-ac7711cce960cdc42430",
+          "file": "tryon.spec.ts",
+          "line": 82,
           "column": 1
         }
       ]
@@ -136,11 +166,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-10T10:50:07.330Z",
-    "duration": 15707.140999999996,
-    "expected": 2,
+    "startTime": "2026-10-11T17:18:25.025Z",
+    "duration": 369517.952,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }

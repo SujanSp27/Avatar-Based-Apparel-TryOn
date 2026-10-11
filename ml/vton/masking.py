@@ -30,8 +30,10 @@ def build_replacement_mask(labels_native: np.ndarray) -> np.ndarray:
     Protected semantic classes take priority; the small head guard never
     removes any original shirt pixels from the replacement mask.
     """
-    if not isinstance(labels_native, np.ndarray) or labels_native.shape != NATIVE_SHAPE:
-        raise ValueError("Expected a 512x384 native semantic label map")
+    if not isinstance(labels_native, np.ndarray) or labels_native.shape not in {
+        NATIVE_SHAPE, (1024, 768)
+    }:
+        raise ValueError("Expected a 512x384 or 1024x768 native semantic label map")
     if (
         not np.issubdtype(labels_native.dtype, np.integer)
         or np.any(labels_native < 0)
@@ -44,14 +46,16 @@ def build_replacement_mask(labels_native: np.ndarray) -> np.ndarray:
             "vton_clothing_not_found",
             "No upper-body clothing remains in the prepared model input.",
         )
+    scale = labels_native.shape[0] // NATIVE_SHAPE[0]
+    seam_radius = VAE_STRIDE * scale
     seam_kernel = cv2.getStructuringElement(
-        cv2.MORPH_ELLIPSE, (2 * VAE_STRIDE + 1, 2 * VAE_STRIDE + 1)
+        cv2.MORPH_ELLIPSE, (2 * seam_radius + 1, 2 * seam_radius + 1)
     )
     expanded = cv2.dilate(old_shirt.astype(np.uint8), seam_kernel).astype(bool)
     protected = np.isin(labels_native, PROTECTED_LABELS)
     head = np.isin(labels_native, HEAD_LABELS).astype(np.uint8)
     head_kernel = cv2.getStructuringElement(
-        cv2.MORPH_ELLIPSE, (2 * HEAD_MARGIN + 1, 2 * HEAD_MARGIN + 1)
+        cv2.MORPH_ELLIPSE, (2 * HEAD_MARGIN * scale + 1, 2 * HEAD_MARGIN * scale + 1)
     )
     head_guard = cv2.dilate(head, head_kernel).astype(bool) & ~old_shirt
     expanded &= ~(protected | head_guard)

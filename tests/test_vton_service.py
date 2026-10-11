@@ -31,6 +31,17 @@ def test_model_framing_preserves_aspect_and_mask_coordinates():
     assert np.all(np.array(canvas.crop(bounds)) == [255, 0, 0])
 
 
+def test_full_resolution_framing_retains_identical_photo_and_mask_bounds():
+    photo = Image.new("RGB", (300, 200), "red")
+    mask = Image.new("L", photo.size, 255)
+    canvas, bounds = fit_canvas(photo, "white", canvas_size=(768, 1024))
+    mask_canvas, mask_bounds = fit_canvas(mask, 0, nearest=True, canvas_size=(768, 1024))
+    assert canvas.size == mask_canvas.size == (768, 1024)
+    assert bounds == mask_bounds
+    assert bounds[2] - bounds[0] == 768
+    assert bounds[3] - bounds[1] == 512
+
+
 def test_missing_pretrained_assets_fail_without_creating_result(tmp_path):
     service = PretrainedTryOn(tmp_path, "cpu")
     state = service.availability()

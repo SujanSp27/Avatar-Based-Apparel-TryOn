@@ -65,14 +65,16 @@ def semantic_person():
     return rgb, generated, labels
 
 
-def test_identity_limbs_background_and_lower_body_are_preserved_exactly(semantic_person):
+def test_identity_limbs_and_lower_body_are_preserved_exactly(semantic_person):
     original, generated, labels = semantic_person
     result = compose_preserving_identity(original, generated, labels, labels)
-    for label in (0, 1, 2, 6, 12, 13):
+    for label in (1, 2, 6, 12, 13):
         assert np.any(labels == label)
         np.testing.assert_array_equal(result.image[labels == label], original[labels == label])
     assert result.diagnostics["identityPreservedExactly"] is True
     assert result.diagnostics["changedPixelsOutsideEditMask"] == 0
+    np.testing.assert_array_equal(original[result.preserve_mask], result.image[result.preserve_mask])
+    assert not result.edit_mask[:10].any()
 
 
 def test_old_clothing_is_fully_opaque_even_when_generated_parse_disagrees(semantic_person):
@@ -92,7 +94,8 @@ def test_edit_mask_follows_semantics_not_bounding_rectangle(semantic_person):
     ys, xs = np.where(result.edit_mask)
     rectangle = result.edit_mask[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
     assert not rectangle.all()
-    assert np.array_equal(result.edit_mask, labels == 3)
+    assert result.edit_mask[labels == 3].all()
+    assert not result.edit_mask[labels == 1].any()
 
 
 def test_collar_extension_requires_adjacent_torso_and_generated_clothing(semantic_person):
@@ -104,16 +107,66 @@ def test_collar_extension_requires_adjacent_torso_and_generated_clothing(semanti
     result = compose_preserving_identity(original, generated, labels, target)
     extra = result.edit_mask & (labels != 3)
     assert np.any(extra)
-    assert np.all(labels[extra] == 16)
-    assert np.all((result.alpha[extra] > 0) & (result.alpha[extra] < 1))
+    assert np.all(np.isin(labels[extra], (0, 16)))
+    assert np.any((result.alpha[extra] > 0) & (result.alpha[extra] < 1))
     assert not result.edit_mask[100:104, 20:24].any()
     np.testing.assert_array_equal(result.image[labels == 1], original[labels == 1])
 
 
-def test_bare_torso_remains_intact_when_generated_parse_does_not_cover_it(semantic_person):
+def test_bare_torso_changes_are_limited_to_the_collar_context(semantic_person):
     original, generated, labels = semantic_person
     result = compose_preserving_identity(original, generated, labels, labels)
-    np.testing.assert_array_equal(result.image[labels == 16], original[labels == 16])
+    distance = cv2.distanceTransform((labels != 3).astype(np.uint8), cv2.DIST_L2, 5)
+    limit = (
+        result.diagnostics["sourceContextRadiusPixels"]
+        + result.diagnostics["outerFeatherWidthPixels"]
+    )
+    untouched = (labels == 16) & (distance > limit)
+    assert untouched.any()
+    np.testing.assert_array_equal(result.image[untouched], original[untouched])
+
+
+def test_local_parser_boundary_context_removes_original_shirt_outline():
+    labels = np.zeros((1000, 1000), dtype=np.uint8)
+    labels[300:700, 300:700] = 3
+    labels[270:300, 430:570] = 16
+    original = np.full((*labels.shape, 3), 210, dtype=np.uint8)
+    generated = np.full_like(original, (15, 115, 110))
+    result = compose_preserving_identity(original, generated, labels, labels)
+    # Parser boundaries may miss a few fabric pixels around collar/shoulder.
+    np.testing.assert_array_equal(result.image[297, 450], generated[297, 450])
+    np.testing.assert_array_equal(result.image[400, 297], generated[400, 297])
+    assert 0 < result.alpha[400, 294] < 1
+    np.testing.assert_array_equal(result.image[400, 290], original[400, 290])
+
+
+def test_generated_sleeves_may_cover_adjacent_arms_but_not_hands_or_lower_clothes():
+    labels = np.zeros((1000, 1000), dtype=np.uint8)
+    labels[300:600, 300:700] = 3
+    labels[400:600, 280:300] = 12
+    labels[400:600, 270:280] = 13
+    labels[600:900, 300:700] = 6
+    labels[280:300, 400:450] = 1
+    labels[280:300, 450:500] = 2
+    generated_labels = labels.copy()
+    generated_labels[275:610, 260:720] = 3
+    original = np.zeros((*labels.shape, 3), dtype=np.uint8)
+    generated = np.full_like(original, 230)
+    result = compose_preserving_identity(original, generated, labels, generated_labels)
+    assert result.alpha[450, 295] == 1
+    assert result.alpha[450, 280] == 0
+    assert result.alpha[450, 710] == 1
+    for label in (1, 2, 6, 13):
+        np.testing.assert_array_equal(result.image[labels == label], original[labels == label])
+    # Unrelated hallucinated clothing cannot replace a distant body region.
+    assert not result.edit_mask[250].any()
+
+
+def test_generated_clothing_is_required_to_extend_onto_arms(semantic_person):
+    original, generated, labels = semantic_person
+    target = np.zeros_like(labels)
+    result = compose_preserving_identity(original, generated, labels, target)
+    assert not result.edit_mask[labels == 12].any()
 
 
 def test_composite_is_deterministic_and_does_not_mutate_inputs(semantic_person):

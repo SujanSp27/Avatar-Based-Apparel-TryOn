@@ -48,15 +48,15 @@ def person_window(labels: np.ndarray) -> tuple[int, int, int, int]:
 
 
 def fit_canvas(
-    image: Image.Image, fill, *, nearest=False
+    image: Image.Image, fill, *, nearest=False, canvas_size=NATIVE_SIZE
 ) -> tuple[Image.Image, tuple[int, int, int, int]]:
     """Aspect-preserving model input, with reversible padding coordinates."""
-    width, height = NATIVE_SIZE
+    width, height = canvas_size
     scale = min(width / image.width, height / image.height)
     size = (max(1, round(image.width * scale)), max(1, round(image.height * scale)))
     resized = image.resize(size, Image.Resampling.NEAREST if nearest else Image.Resampling.LANCZOS)
     left, top = (width - size[0]) // 2, (height - size[1]) // 2
-    canvas = Image.new(image.mode, NATIVE_SIZE, fill)
+    canvas = Image.new(image.mode, canvas_size, fill)
     canvas.paste(resized, (left, top))
     return canvas, (left, top, left + size[0], top + size[1])
 
@@ -64,13 +64,16 @@ def fit_canvas(
 class PretrainedTryOn:
     def __init__(
         self, root: Path, device: str = "cuda", *, guidance_scale: float = 2.5,
-        seed: int = 42, checkpoint: str = "vitonhd",
+        seed: int = 42, checkpoint: str = "vitonhd", height: int = 512,
     ):
+        if height not in {512, 1024}:
+            raise ValueError("CatVTON height must be 512 or 1024")
         self.root = Path(root)
         self.device = device
         self.guidance_scale = guidance_scale
         self.seed = seed
         self.checkpoint = checkpoint
+        self.native_size = (height * 3 // 4, height)
         self.version = VERSION if checkpoint == "vitonhd" else "catvton-mix-48k-1024"
         self._model = None
         self._parser = None
@@ -117,7 +120,7 @@ class PretrainedTryOn:
             "code": code,
             "supportedCategories": list(SUPPORTED),
             "device": self.device,
-            "nativeResolution": list(NATIVE_SIZE),
+            "nativeResolution": list(self.native_size),
             "qualityValidated": False,
         }
 
@@ -132,6 +135,7 @@ class PretrainedTryOn:
             self._model = CatVTONModel(
                 self.root / "catvton", device=self.device,
                 guidance_scale=self.guidance_scale, seed=self.seed, checkpoint=self.checkpoint,
+                height=self.native_size[1],
             )
             self._parser = FashnHumanParser(self.root / "parser")
 
@@ -179,9 +183,12 @@ class PretrainedTryOn:
         window = person_window(parsed.labels)
         x0, y0, x1, y1 = window
         person_native, content_box = fit_canvas(
-            Image.fromarray(original[y0:y1, x0:x1]), (255, 255, 255)
+            Image.fromarray(original[y0:y1, x0:x1]), (255, 255, 255), canvas_size=self.native_size
         )
-        labels_native, _ = fit_canvas(Image.fromarray(parsed.labels[y0:y1, x0:x1]), 0, nearest=True)
+        labels_native, _ = fit_canvas(
+            Image.fromarray(parsed.labels[y0:y1, x0:x1]), 0, nearest=True,
+            canvas_size=self.native_size,
+        )
         replacement_native = Image.fromarray(build_replacement_mask(np.asarray(labels_native)))
 
         rgba = decode_image(garment_data, min_dimension=128)
@@ -207,8 +214,8 @@ class PretrainedTryOn:
         gx0, gy0, gx1, gy1 = bounds
         garment_crop = Image.fromarray(crop[:, :, :3])
         edge_crop = Image.fromarray(mask[gy0:gy1, gx0:gx1])
-        garment_native, _ = fit_canvas(garment_crop, (255, 255, 255))
-        edge_native, _ = fit_canvas(edge_crop, 0, nearest=True)
+        garment_native, _ = fit_canvas(garment_crop, (255, 255, 255), canvas_size=self.native_size)
+        edge_native, _ = fit_canvas(edge_crop, 0, nearest=True, canvas_size=self.native_size)
         Image.fromarray(mask).save(folder / "garmentMask.png")
         Image.fromarray(crop).save(folder / "garmentCrop.png")
         person_native.save(folder / "vton-person-input.png")
@@ -217,7 +224,7 @@ class PretrainedTryOn:
 
         # The diffusion model receives a segmented product image and a white-edit
         # semantic inpainting mask. It synthesizes clothing, not pasted RGB.
-        garment_condition = Image.new("RGB", NATIVE_SIZE, (255, 255, 255))
+        garment_condition = Image.new("RGB", self.native_size, (255, 255, 255))
         garment_condition.paste(garment_native, mask=edge_native)
         garment_condition.save(folder / "vton-garment-input.png")
         generated = self._model.predict(person_native, garment_condition, replacement_native)
@@ -249,7 +256,7 @@ class PretrainedTryOn:
             "method": "pretrained-garment-conditioned-diffusion-inpainting",
             "modelVersion": self.version,
             "model": self._model.provenance,
-            "nativeResolution": list(NATIVE_SIZE),
+            "nativeResolution": list(self.native_size),
             "personWindow": list(window),
             "garmentSegmentation": garment_source,
             "parsing": parsed.diagnostics,

@@ -93,6 +93,16 @@ def test_output_is_repeatable_and_does_not_mutate_labels(native_labels):
     np.testing.assert_array_equal(before, native_labels)
 
 
+def test_full_resolution_mask_preserves_all_clothing_and_protected_regions(native_labels):
+    labels = cv2.resize(native_labels, (768, 1024), interpolation=cv2.INTER_NEAREST)
+    mask = build_replacement_mask(labels)
+    assert mask.shape == (1024, 768)
+    assert np.all(mask[labels == 3] == 255)
+    assert np.all(mask[np.isin(labels, PROTECTED_LABELS)] == 0)
+    distance = cv2.distanceTransform((labels != 3).astype(np.uint8), cv2.DIST_L2, 5)
+    assert distance[(mask > 0) & (labels != 3)].max() < 17
+
+
 def test_missing_shirt_fails_before_inference():
     with pytest.raises(PipelineError) as caught:
         build_replacement_mask(np.zeros(NATIVE_SHAPE, dtype=np.uint8))

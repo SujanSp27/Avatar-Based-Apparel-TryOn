@@ -1,0 +1,289 @@
+{
+  "health": {
+    "status": "ok",
+    "database": "postgresql",
+    "humanBackend": "mediapipe_template",
+    "poseModelAvailable": true,
+    "hmr2Available": false,
+    "tryonModes": [
+      "auto",
+      "3d",
+      "2d"
+    ],
+    "vton2d": {
+      "backend": "catvton-vitonhd-16k-512",
+      "available": true,
+      "reason": null,
+      "code": null,
+      "supportedCategories": [
+        "t-shirt",
+        "shirt"
+      ],
+      "device": "cuda",
+      "nativeResolution": [
+        384,
+        512
+      ],
+      "qualityValidated": false
+    },
+    "scope": "approximate 3D template and pretrained 2D virtual try-on research prototype"
+  },
+  "independentSizing": [
+    {
+      "recommendedSize": "S",
+      "fit": "regular",
+      "score": 0.0,
+      "explanation": {
+        "chest": "Good",
+        "waist": "Good",
+        "hip": "Good",
+        "shoulderWidth": "Good"
+      },
+      "candidates": [
+        {
+          "sizeLabel": "S",
+          "score": 0.0,
+          "explanation": {
+            "chest": "Good",
+            "waist": "Good",
+            "hip": "Good",
+            "shoulderWidth": "Good"
+          },
+          "measurementErrors": {
+            "chest": 0.0,
+            "waist": 0.0,
+            "hip": 0.0,
+            "shoulderWidth": 0.0
+          },
+          "order": 1,
+          "midpointDistance": 0.2
+        },
+        {
+          "sizeLabel": "XS",
+          "score": 0.4333,
+          "explanation": {
+            "chest": "Slightly tight",
+            "waist": "Too tight",
+            "hip": "Slightly tight",
+            "shoulderWidth": "Slightly tight"
+          },
+          "measurementErrors": {
+            "chest": 0.3333,
+            "waist": 0.6667,
+            "hip": 0.3333,
+            "shoulderWidth": 0.5
+          },
+          "order": 0,
+          "midpointDistance": 0.9333333333333333
+        },
+        {
+          "sizeLabel": "M",
+          "score": 0.5167,
+          "explanation": {
+            "chest": "Too loose",
+            "waist": "Slightly loose",
+            "hip": "Too loose",
+            "shoulderWidth": "Good"
+          },
+          "measurementErrors": {
+            "chest": 0.6667,
+            "waist": 0.3333,
+            "hip": 0.6667,
+            "shoulderWidth": 0.0
+          },
+          "order": 2,
+          "midpointDistance": 0.9666666666666668
+        },
+        {
+          "sizeLabel": "L",
+          "score": 1.4167,
+          "explanation": {
+            "chest": "Too loose",
+            "waist": "Too loose",
+            "hip": "Too loose",
+            "shoulderWidth": "Good"
+          },
+          "measurementErrors": {
+            "chest": 1.6667,
+            "waist": 1.3333,
+            "hip": 1.6667,
+            "shoulderWidth": 0.0
+          },
+          "order": 3,
+          "midpointDistance": 1.9166666666666667
+        },
+        {
+          "sizeLabel": "XL",
+          "score": 2.3667,
+          "explanation": {
+            "chest": "Too loose",
+            "waist": "Too loose",
+            "hip": "Too loose",
+            "shoulderWidth": "Slightly loose"
+          },
+          "measurementErrors": {
+            "chest": 2.6667,
+            "waist": 2.3333,
+            "hip": 2.6667,
+            "shoulderWidth": 0.5
+          },
+          "order": 4,
+          "midpointDistance": 2.8666666666666667
+        },
+        {
+          "sizeLabel": "XXL",
+          "score": 3.3167,
+          "explanation": {
+            "chest": "Too loose",
+            "waist": "Too loose",
+            "hip": "Too loose",
+            "shoulderWidth": "Too loose"
+          },
+          "measurementErrors": {
+            "chest": 3.6667,
+            "waist": 3.3333,
+            "hip": 3.6667,
+            "shoulderWidth": 1.0
+          },
+          "order": 5,
+          "midpointDistance": 3.816666666666667
+        }
+      ],
+      "outOfRange": false,
+      "targetEaseCm": 0.0,
+      "scoreMeaning": "weighted normalized interval distance; not a probability",
+      "chartVersion": 1,
+      "chartSource": "Synthetic demonstration charts, not retailer sizing. Body measurement ranges in cm."
+    },
+    {
+      "recommendedSize": "XXL",
+      "fit": "regular",
+      "score": 0.0,
+      "explanation": {
+        "chest": "Good",
+        "waist": "Good",
+        "hip": "Good",
+        "shoulderWidth": "Good"
+      },
+      "candidates": [
+        {
+          "sizeLabel": "XXL",
+          "score": 0.0,
+          "explanation": {
+            "chest": "Good",
+            "waist": "Good",
+            "hip": "Good",
+            "shoulderWidth": "Good"
+          },
+          "measurementErrors": {
+            "chest": 0.0,
+            "waist": 0.0,
+            "hip": 0.0,
+            "shoulderWidth": 0.0
+          },
+          "order": 5,
+          "midpointDistance": 0.4083333333333333
+        },
+        {
+          "sizeLabel": "XL",
+          "score": 0.225,
+          "explanation": {
+            "chest": "Good",
+            "waist": "Too tight",
+            "hip": "Slightly tight",
+            "shoulderWidth": "Slightly tight"
+          },
+          "measurementErrors": {
+            "chest": 0.0,
+            "waist": 0.6667,
+            "hip": 0.1667,
+            "shoulderWidth": 0.5
+          },
+          "order": 4,
+          "midpointDistance": 0.725
+        },
+        {
+          "sizeLabel": "L",
+          "score": 1.175,
+          "explanation": {
+            "chest": "Too tight",
+            "waist": "Too tight",
+            "hip": "Too tight",
+            "shoulderWidth": "Too tight"
+          },
+          "measurementErrors": {
+            "chest": 1.0,
+            "waist": 1.6667,
+            "hip": 1.1667,
+            "shoulderWidth": 1.0
+          },
+          "order": 3,
+          "midpointDistance": 1.6749999999999998
+        },
+        {
+          "sizeLabel": "M",
+          "score": 2.125,
+          "explanation": {
+            "chest": "Too tight",
+            "waist": "Too tight",
+            "hip": "Too tight",
+            "shoulderWidth": "Too tight"
+          },
+          "measurementErrors": {
+            "chest": 2.0,
+            "waist": 2.6667,
+            "hip": 2.1667,
+            "shoulderWidth": 1.5
+          },
+          "order": 2,
+          "midpointDistance": 2.625
+        },
+        {
+          "sizeLabel": "S",
+          "score": 3.075,
+          "explanation": {
+            "chest": "Too tight",
+            "waist": "Too tight",
+            "hip": "Too tight",
+            "shoulderWidth": "Too tight"
+          },
+          "measurementErrors": {
+            "chest": 3.0,
+            "waist": 3.6667,
+            "hip": 3.1667,
+            "shoulderWidth": 2.0
+          },
+          "order": 1,
+          "midpointDistance": 3.575
+        },
+        {
+          "sizeLabel": "XS",
+          "score": 4.025,
+          "explanation": {
+            "chest": "Too tight",
+            "waist": "Too tight",
+            "hip": "Too tight",
+            "shoulderWidth": "Too tight"
+          },
+          "measurementErrors": {
+            "chest": 4.0,
+            "waist": 4.6667,
+            "hip": 4.1667,
+            "shoulderWidth": 2.5
+          },
+          "order": 0,
+          "midpointDistance": 4.5249999999999995
+        }
+      ],
+      "outOfRange": false,
+      "targetEaseCm": 0.0,
+      "scoreMeaning": "weighted normalized interval distance; not a probability",
+      "chartVersion": 1,
+      "chartSource": "Synthetic demonstration charts, not retailer sizing. Body measurement ranges in cm."
+    }
+  ],
+  "expectedSizes": [
+    "S",
+    "XXL"
+  ]
+}

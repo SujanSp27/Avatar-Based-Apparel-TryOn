@@ -258,12 +258,13 @@ def compose_preserving_identity(
     generated_parse: HumanParse | np.ndarray,
     category: str = "t-shirt",
 ) -> CompositeResult:
-    """Composite neural RGB output, never original shirt pixels, into semantic clothing.
+    """Restore source identity while admitting the model's local garment boundary.
 
-    The full original clothing mask has alpha one, including its boundary. Feathering
-    is restricted to newly covered bare torso near that mask, so old beige fabric
-    cannot leak through a blended core. Predicted face/hair/arms/hands/background and
-    unrelated lower clothing retain their exact original RGB pixels.
+    Original clothing is replaced at full opacity. For upper-body garments, a
+    narrow background/torso context repairs parser uncertainty at the shoulder
+    and collar. Further extensions require generated clothing semantics and stay
+    near the original garment. Only the outer edge is feathered: source face,
+    hair, hands and unrelated clothing are never blended or regenerated here.
     """
     original, generated = _rgb(original), _rgb(generated)
     source_labels, target_labels = _labels(original_parse), _labels(generated_parse)
@@ -279,15 +280,34 @@ def compose_preserving_identity(
             "clothing_not_visible",
             "The pretrained parser could not identify enough existing clothing to replace.",
         )
-    protected = preservation_mask(source_labels, category)
     generated_clothing = clothing_mask(target_labels, category)
-    radius = max(1, round(min(old.shape) * 0.018))
     distance = cv2.distanceTransform((~old).astype(np.uint8), cv2.DIST_L2, 5)
-    extension = (source_labels == 16) & generated_clothing & (distance <= radius)
-    # Feather only outside the old clothing boundary. Original clothing pixels
-    # are replaced at full opacity regardless of generated parser disagreements.
+    upper_body = category in {"t-shirt", "shirt"}
+    context_radius = max(1, round(min(old.shape) * 0.004)) if upper_body else 0
+    feather_width = max(2, round(min(old.shape) * 0.002))
+    radius = max(context_radius + feather_width, round(min(old.shape) * 0.018))
+    # A parser's hard boundary can lie several pixels inside the actual fabric.
+    # Keeping that boundary exact would restore a white/beige outline from the
+    # source photo. The model supplies this small context, not a garment overlay.
+    context = (
+        upper_body
+        & np.isin(source_labels, (0, 16))
+        & np.isin(target_labels, (0, 3, 12, 16))
+        & (distance <= context_radius + feather_width)
+    )
+    extension = (
+        upper_body
+        & np.isin(source_labels, (0, 12, 16))
+        & generated_clothing
+        & (distance <= radius)
+    )
+    protected = ~(old | (upper_body & np.isin(source_labels, (0, 12, 16))))
+    support = old | context | extension
+    interior_distance = cv2.distanceTransform(support.astype(np.uint8), cv2.DIST_L2, 5)
     alpha = np.zeros(old.shape, dtype=np.float32)
-    alpha[extension] = np.clip(1.0 - distance[extension] / (radius + 1), 0.0, 1.0)
+    alpha[support] = np.minimum(interior_distance[support] / feather_width, 1.0)
+    # Never mix old clothing back into the generated garment, including where
+    # the generated parser disagrees about a sleeve or neckline.
     alpha[old] = 1.0
     alpha[protected] = 0.0
     edit = alpha > 0
@@ -312,9 +332,13 @@ def compose_preserving_identity(
                 np.count_nonzero(np.any(image != original, axis=2) & preserve)
             ),
             "identityPreservedExactly": bool(np.array_equal(image[protected], original[protected])),
-            "collarTransition": "Generated clothing on adjacent predicted bare torso only; not a predicted neck label",
+            "collarTransition": "Narrow generated context on adjacent background/bare torso; further changes require generated clothing semantics.",
             "collarTransitionRadiusPixels": radius,
-            "silhouettePolicy": "Conservative source garment extent; generated sleeve or hem extensions onto arms, unrelated clothes or background are not admitted.",
+            "sourceContextRadiusPixels": context_radius,
+            "outerFeatherWidthPixels": feather_width,
+            "semanticContextPixels": int(np.count_nonzero(context)),
+            "generatedClothingExtensionPixels": int(np.count_nonzero(extension)),
+            "silhouettePolicy": "Bounded generated clothing may cover nearby background, bare torso or upper arms. Face, hair, hands and unrelated clothing stay exact; distant background and limbs stay exact.",
             "limitations": "Preservation is conditional on semantic parsing; it does not guarantee perceptual realism or accurate fit.",
         },
     )

@@ -1,0 +1,6 @@
+{
+  "status": "interrupted",
+  "reason": "Restart with verified fused memory-efficient CUDA attention; query slicing required42 seconds per step.",
+  "completedInference": false,
+  "timestamp": 1791738855.5777786
+}

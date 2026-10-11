@@ -1,0 +1,11 @@
+{
+  "shape": [
+    1,
+    8,
+    24576,
+    40
+  ],
+  "finite": true,
+  "seconds": 2.357276200000001,
+  "peakAllocatedMB": 70.5
+}

@@ -78,8 +78,11 @@ class CatVTONModel:
 
     def __init__(
         self, weights_dir: Path, device: str = "cuda", *, guidance_scale: float = 2.5,
-        seed: int = 42, checkpoint: str = "vitonhd",
+        seed: int = 42, checkpoint: str = "vitonhd", height: int = 512,
     ):
+        if height not in {512, 1024}:
+            raise ValueError("CatVTON height must be 512 or 1024")
+        self.native_size = (height * 3 // 4, height)
         if checkpoint not in {"vitonhd", "mix"}:
             raise ValueError("CatVTON checkpoint must be vitonhd or mix")
         self.checkpoint = checkpoint
@@ -263,6 +266,14 @@ class CatVTONModel:
                 str(base), subfolder="unet", variant="fp16", torch_dtype=self.dtype, **safe_load
             )
             init_adapter(unet, cross_attn_cls=SkipAttnProcessor)
+            if height == 1024:
+                from ml.vton.attention import QuerySlicedAttnProcessor2_0
+
+                unet.set_attn_processor({
+                    name: QuerySlicedAttnProcessor2_0(query_chunk_size=256)
+                    if name.endswith("attn1.processor") else processor
+                    for name, processor in unet.attn_processors.items()
+                })
             attention = get_trainable_module(unet, "attention")
             state = load_file(
                 str(self.weights_dir / attention_path),
@@ -284,6 +295,8 @@ class CatVTONModel:
                 .to(self.device)
             )
             pipeline.vae.enable_slicing()
+            if height == 1024:
+                pipeline.vae.enable_tiling()
             if self.promote_convolutions:
                 promoted_layers += promote_conv2d_math_to_float32(pipeline.vae)
             pipeline.vae = CheckedVAE(pipeline.vae)
@@ -323,7 +336,7 @@ class CatVTONModel:
                 **CHECKPOINTS, **({MIX_CHECKPOINT: MIX_SHA256} if checkpoint == "mix" else {})
             },
             "loadVerified": True,
-            "nativeResolution": [384, 512],
+            "nativeResolution": list(self.native_size),
             "trainedResolution": [768, 1024] if checkpoint == "mix" else [384, 512],
             "device": str(self.device),
             "dtype": str(self.dtype),
@@ -333,7 +346,10 @@ class CatVTONModel:
             "inferenceSteps": 50,
             "guidanceScale": self.guidance_scale,
             "seed": self.seed,
-            "attention": "official PyTorch SDPA self attention; cross attention skipped by official CatVTON adapter",
+            "attention": (
+                "Full self attention with exact 256-query chunks; official cross attention skip"
+                if height == 1024 else "Official SDPA self attention; official cross attention skip"
+            ),
             "memoryPolicy": "Sequential classifier-free guidance; CPU safety checker; VAE slicing",
             "safetyChecker": "Official Stable Diffusion checker runs on every generated image, on CPU",
             "maskSource": "Caller-supplied semantic binary replacement mask; not upstream SCHP/DensePose automasking",
@@ -345,8 +361,9 @@ class CatVTONModel:
     ) -> Image.Image:
         import torch
 
-        if any(image.size != (384, 512) for image in (person, garment, replacement_mask)):
-            raise ValueError("CatVTON requires explicitly prepared 384x512 inputs")
+        native_size = getattr(self, "native_size", (384, 512))
+        if any(image.size != native_size for image in (person, garment, replacement_mask)):
+            raise ValueError(f"CatVTON requires explicitly prepared {native_size} inputs")
         mask = np.asarray(replacement_mask.convert("L"))
         if not np.any(mask > 127) or np.all(mask > 127):
             raise PipelineError(
@@ -368,8 +385,8 @@ class CatVTONModel:
                     image=person.convert("RGB"),
                     condition_image=garment.convert("RGB"),
                     mask=replacement_mask.convert("L"),
-                    height=512,
-                    width=384,
+                    height=native_size[1],
+                    width=native_size[0],
                     num_inference_steps=50,
                     guidance_scale=getattr(self, "guidance_scale", 2.5),
                     generator=generator,

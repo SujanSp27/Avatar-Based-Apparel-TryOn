@@ -133,5 +133,8 @@ def test_solid_reference_abstains_without_preventing_a_normal_result(tmp_path, m
     assert diagnostics["qualityValidated"] is False
     with Image.open(tmp_path / "tryon-2d.png") as final:
         pixels = np.asarray(final)
-        np.testing.assert_array_equal(pixels[labels != 3], person.image[labels != 3])
+        with Image.open(tmp_path / "semantic-preserve-mask.png") as saved:
+            preserved = np.asarray(saved) > 127
+        np.testing.assert_array_equal(pixels[preserved], person.image[preserved])
+        np.testing.assert_array_equal(pixels[labels == 1], person.image[labels == 1])
         assert np.all(pixels[labels == 3] == [70, 105, 102])

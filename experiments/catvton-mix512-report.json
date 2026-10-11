@@ -129,9 +129,13 @@
         "qualityValidated": false
       },
       "output": "experiments\\runs\\catvton-mix512\\reported-striped-shirt\\tryon-2d.png",
-      "visualAcceptance": "pending human inspection",
+      "visualAcceptance": "rejected",
       "seconds": 326.298,
-      "rssMB": 167.0
+      "rssMB": 167.0,
+      "visualFindings": [
+        "Mixed checkpoint at reduced512resolution invents unrelated colorful centralprint instead of uploadedstripes.",
+        "Native1024resolution notyettested; reducedresolution experiment is not accepted."
+      ]
     }
   ],
   "scope": "Actual inference and software diagnostics; visual acceptance is recorded separately after image inspection."
