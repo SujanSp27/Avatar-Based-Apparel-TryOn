@@ -1,0 +1,16 @@
+{
+  "originalRun": "7eaaa6d9-de51-4741-a40a-eb84720edc62",
+  "httpStatus": 422,
+  "response": {
+    "error": {
+      "code": "partial_body",
+      "message": "This photo appears cropped or too tightly framed. Upload a head-to-toe photo with both hands and feet visible, and space above your head and below your feet. Portraits and waist-up photos are not supported. (Run fb9278d9-d791-4505-9227-2545967971ee)"
+    }
+  },
+  "preprocessingTestsPassed": 7,
+  "frontendBuild": "passed (381 modules; existing large-bundle warning only)",
+  "typescript": "passed",
+  "ruff": "passed",
+  "mobileBrowserTest": "passed (sample button and mobile input layout)",
+  "validationThresholdsChanged": false
+}

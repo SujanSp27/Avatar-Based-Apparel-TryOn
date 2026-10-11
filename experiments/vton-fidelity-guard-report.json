@@ -1,0 +1,89 @@
+{
+  "limitations": "A narrow catastrophic stripe-loss heuristic, not a general quality or fitting validator.",
+  "runs": [
+    {
+      "folder": "experiments\\runs\\catvton-initial\\reported-striped-shirt",
+      "status": "rejected",
+      "reason": "pronounced_stripes_disappeared",
+      "reference": {
+        "crop": [
+          125,
+          140,
+          259,
+          390
+        ],
+        "maskCoverage": 1.0,
+        "usable": true,
+        "localLuminanceContrast": 132.8781,
+        "rowLuminanceContrast": 132.4773,
+        "horizontalCoherence": 1.0,
+        "horizontalStripeGradientRatio": 1027.6429,
+        "periodicSpectralShare": 0.9579,
+        "dominantCycles": 7,
+        "pronouncedHorizontalStripes": true
+      },
+      "generated": {
+        "crop": [
+          440,
+          429,
+          549,
+          713
+        ],
+        "maskCoverage": 1.0,
+        "usable": true,
+        "localLuminanceContrast": 6.6683,
+        "rowLuminanceContrast": 1.3654,
+        "horizontalCoherence": 0.2489,
+        "horizontalStripeGradientRatio": 0.9179,
+        "periodicSpectralShare": 0.3122,
+        "dominantCycles": 4,
+        "pronouncedHorizontalStripes": false,
+        "referenceContrastRatio": 0.05018,
+        "possibleRetainedStripeStructure": false
+      },
+      "version": "pronounced-horizontal-stripe-loss-v1"
+    },
+    {
+      "folder": "experiments\\runs\\catvton-guidance5\\reported-striped-shirt",
+      "status": "rejected",
+      "reason": "pronounced_stripes_disappeared",
+      "reference": {
+        "crop": [
+          125,
+          140,
+          259,
+          390
+        ],
+        "maskCoverage": 1.0,
+        "usable": true,
+        "localLuminanceContrast": 132.8781,
+        "rowLuminanceContrast": 132.4773,
+        "horizontalCoherence": 1.0,
+        "horizontalStripeGradientRatio": 1027.6429,
+        "periodicSpectralShare": 0.9579,
+        "dominantCycles": 7,
+        "pronouncedHorizontalStripes": true
+      },
+      "generated": {
+        "crop": [
+          437,
+          434,
+          552,
+          714
+        ],
+        "maskCoverage": 1.0,
+        "usable": true,
+        "localLuminanceContrast": 12.365,
+        "rowLuminanceContrast": 1.3017,
+        "horizontalCoherence": 0.1029,
+        "horizontalStripeGradientRatio": 0.6192,
+        "periodicSpectralShare": 0.082,
+        "dominantCycles": 7,
+        "pronouncedHorizontalStripes": false,
+        "referenceContrastRatio": 0.09306,
+        "possibleRetainedStripeStructure": false
+      },
+      "version": "pronounced-horizontal-stripe-loss-v1"
+    }
+  ]
+}

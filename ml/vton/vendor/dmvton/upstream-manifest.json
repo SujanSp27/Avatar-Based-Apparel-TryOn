@@ -1,0 +1,42 @@
+{
+  "repo": "https://github.com/KiseKloset/DM-VTON",
+  "commit": "5dcd04ee3f5b1fb392df1184c887c1a7e910c72e",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "9e502ba75fd0fd30cea5497b438a4bc12f07f02bc932a7a6041fd6a18b8f46a0"
+    },
+    {
+      "path": "models/base_model.py",
+      "sha256": "defbdca0cabdfc713deed83fe3f0ead2f5ce2715c523282d430c571df30c7fe2"
+    },
+    {
+      "path": "models/generators/mobile_unet.py",
+      "sha256": "c1daf1e7fcfe057673f9edd9b2a41bc4ae6c0783c1a4e0e13feecafe379a7661"
+    },
+    {
+      "path": "models/extractors/mobile_fpn.py",
+      "sha256": "5efdb96888637a3358d629bdb825c8ce424977aa6ee88fbf854d1c3ca56a6352"
+    },
+    {
+      "path": "models/warp_modules/mobile_afwm.py",
+      "sha256": "f090027c2533fb9bec6a6ede082e9ece77f3f3143940480995b05cd878721d6e"
+    },
+    {
+      "path": "models/common/correlation.py",
+      "sha256": "852ba499493a3d924db9414a4b02457a27fec734be4ff2faf0f7d4cf84c1aa36"
+    },
+    {
+      "path": "pipelines/dmvton_pipeline.py",
+      "sha256": "15d4d8b61237d0e2510de31b6784c2345576e171db39027a387708d2553d4da2"
+    },
+    {
+      "path": "utils/torch_utils.py",
+      "sha256": "8fe0a7a5c9330bab1d73e28468ea42e5596d652dd2b67bbead26c53e9c54372d"
+    },
+    {
+      "path": "dataloader/viton_dataset.py",
+      "sha256": "dbba3111c8818c23ab7b4599618de6d85705cb9f45447a2cd43c5c9e6e8dbbae"
+    }
+  ]
+}

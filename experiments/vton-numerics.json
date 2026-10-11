@@ -1,0 +1,29 @@
+{
+  "cudnnEnabled": true,
+  "failures": [
+    {
+      "layer": "down_blocks.0.resnets.0.conv1",
+      "type": "Conv2d",
+      "outputShape": [
+        1,
+        320,
+        128,
+        48
+      ],
+      "inputs": [
+        {
+          "shape": [
+            1,
+            320,
+            128,
+            48
+          ],
+          "finite": true,
+          "maxAbs": 2.619140625
+        }
+      ]
+    }
+  ],
+  "status": "failed",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\scripts\\diagnose_vton.py\", line 45, in main\n    result = model.predict(\n             ^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\ml\\vton\\catvton.py\", line 319, in predict\n    generated = self.pipeline(\n                ^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\utils\\_contextlib.py\", line 116, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\ml\\vton\\vendor\\catvton\\model\\pipeline.py\", line 173, in __call__\n    noise_pred= self.unet(\n                ^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\ml\\vton\\catvton.py\", line 167, in forward\n    output = self.model(part, timestep, **kwargs)[0]\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\diffusers\\models\\unets\\unet_2d_condition.py\", line 1209, in forward\n    sample, res_samples = downsample_block(\n                          ^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\diffusers\\models\\unets\\unet_2d_blocks.py\", line 1287, in forward\n    hidden_states = resnet(hidden_states, temb)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\diffusers\\models\\resnet.py\", line 341, in forward\n    hidden_states = self.conv1(hidden_states)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1844, in _call_impl\n    return inner()\n           ^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1803, in inner\n    hook_result = hook(self, args, result)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\scripts\\diagnose_vton.py\", line 36, in check\n    raise RuntimeError(f\"First nonfinite layer: {row}\")\nRuntimeError: First nonfinite layer: {'layer': 'down_blocks.0.resnets.0.conv1', 'type': 'Conv2d', 'outputShape': [1, 320, 128, 48], 'inputs': [{'shape': [1, 320, 128, 48], 'finite': True, 'maxAbs': 2.619140625}]}\n"
+}

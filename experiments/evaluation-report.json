@@ -1,0 +1,14 @@
+{
+  "runs": 11,
+  "successRate": 0.9090909090909091,
+  "failureRate": 0.09090909090909091,
+  "meanLatencySeconds": 39.80018181818181,
+  "maxRecordedRssMB": 319.2,
+  "meanSampledPenetrationRate": 0.0006028625066454013,
+  "gpuUsage": "See experiments/hardware.json; baseline inference runs on CPU",
+  "measurementAccuracy": null,
+  "sizeAccuracy": null,
+  "poseAccuracy": null,
+  "qualityReview": "Unscored until human review labels are recorded. See data/regression/review-template.json.",
+  "limitation": "Mixed development runs and controlled samples; not generalization evidence."
+}

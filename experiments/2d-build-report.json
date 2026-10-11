@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-09T13:21:47.952335+00:00",
+  "command": "npm.cmd run build",
+  "exitCode": 0,
+  "typescript": "passed",
+  "viteBuildSeconds": 539,
+  "transformedModules": 382,
+  "warning": "Main JavaScript chunk exceeds 500 kB; build succeeded.",
+  "artifacts": [
+    {
+      "path": "frontend/dist/assets/index-D1r2N9j0.css",
+      "bytes": 16676,
+      "sha256": "7ee1251ae483b2413f9ff35a9b342c11b7727cddaf64222632e0a3edf2a6dd7a"
+    },
+    {
+      "path": "frontend/dist/assets/index-D3g-yxlS.js",
+      "bytes": 1178058,
+      "sha256": "cfe731ca46ccbb20d936758136443ce8c2658970a7f9594d0e6ddb19e532d26c"
+    },
+    {
+      "path": "frontend/dist/index.html",
+      "bytes": 519,
+      "sha256": "bd0390827fbad36cdc6a5e5af42a7b3f871f7b68313d11fdf6665cd6d32ee039"
+    }
+  ]
+}

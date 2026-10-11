@@ -1,0 +1,62 @@
+[
+  {
+    "path": "assets/bodyModels/pose_landmarker_full.task",
+    "source": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
+    "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1"
+  },
+  {
+    "path": "data/raw/standing.jpg",
+    "source": "https://raw.githubusercontent.com/shubham-goel/4D-Humans/main/example_data/images/pexels-anete-lusina-4793258.jpg",
+    "sha256": "f4751c85f66310a888f423e2444050ca4f82933a2098241ff46ac8d4ccc37091"
+  },
+  {
+    "path": "data/raw/skates.png",
+    "source": "https://raw.githubusercontent.com/shubham-goel/4D-Humans/main/example_data/images/skates.png",
+    "sha256": "d85707384456966ba45186f8316cddec271d32350c659563a0635a49b03992e5"
+  },
+  {
+    "path": "data/raw/yoga.jpg",
+    "source": "https://storage.googleapis.com/mediapipe-assets/pose.jpg",
+    "sha256": "c8a830ed683c0276d713dd5aeda28f415f10cd6291972084a40d0d8b934ed62b"
+  },
+  {
+    "path": "data/raw/studio-person.jpg",
+    "source": "https://images.unsplash.com/photo-1666358085605-b3b717d5a210?w=1000&q=90",
+    "sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f"
+  },
+  {
+    "path": "data/raw/fashion.jpg",
+    "source": "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=900&q=85",
+    "sha256": "627d3075735bf86bb9c74e69721c38b35e3918833f4e815c7648f6e4678976ec"
+  },
+  {
+    "path": "data/raw/coco-192.jpg",
+    "source": "https://raw.githubusercontent.com/CMU-Perceptual-Computing-Lab/openpose/master/examples/media/COCO_val2014_000000000192.jpg",
+    "sha256": "146520b06866c3b199697a6525a3d3d86cd6a5a99d175d7fc887319fafd7b62c"
+  },
+  {
+    "path": "data/raw/coco-241.jpg",
+    "source": "https://raw.githubusercontent.com/CMU-Perceptual-Computing-Lab/openpose/master/examples/media/COCO_val2014_000000000241.jpg",
+    "sha256": "39df957040ee07907626207f3f80ae92e599b7b871034b1c4d677eda06a8bf1a"
+  },
+  {
+    "path": "data/raw/coco-257.jpg",
+    "source": "https://raw.githubusercontent.com/CMU-Perceptual-Computing-Lab/openpose/master/examples/media/COCO_val2014_000000000257.jpg",
+    "sha256": "bb57fedcdbb1b4fa25302ba03bf9eb4a68464ea0be5234f3f78367f512892e6d"
+  },
+  {
+    "path": "data/raw/coco-294.jpg",
+    "source": "https://raw.githubusercontent.com/CMU-Perceptual-Computing-Lab/openpose/master/examples/media/COCO_val2014_000000000294.jpg",
+    "sha256": "b92e3be3906b865498c8fdbcc139d3c04e90c6d889197434e4ed79c70b0eb17f"
+  },
+  {
+    "path": "data/raw/coco-328.jpg",
+    "source": "https://raw.githubusercontent.com/CMU-Perceptual-Computing-Lab/openpose/master/examples/media/COCO_val2014_000000000328.jpg",
+    "sha256": "fae67f47646606b5223f29db83ad5ccc4374e4015c8152defa7476c7f33ee74b"
+  },
+  {
+    "path": "data/raw/coco-338.jpg",
+    "source": "https://raw.githubusercontent.com/CMU-Perceptual-Computing-Lab/openpose/master/examples/media/COCO_val2014_000000000338.jpg",
+    "sha256": "e1ab2ec78f9f84c5971ac6021213a9ec6a9360b6fb1d3216f09850c8d053144f"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "method": "pose-guided-garment-overlay",
+  "modelVersion": "opencv-overlay-1.0",
+  "visibleRegion": "upper_body",
+  "outputFile": "tryon-2d.png",
+  "originalFile": "original-person.png",
+  "warnings": [
+    "Garment edges are estimated from the studio background; a product-only image gives a cleaner overlay than clothing worn by a person.",
+    "This small garment photo is accepted for a 2D preview; its texture may look blurry.",
+    "This is a 2D garment overlay, not a photorealistic simulation. Fabric drape, sleeve pose and crossed-arm depth may be inaccurate.",
+    "Only the visible part of your body is shown; the garment is clipped to the photo."
+  ],
+  "diagnostics": {
+    "imagePixels": {
+      "width": 336,
+      "height": 326
+    },
+    "projectiveTransform": [
+      [
+        1.8121055509478308,
+        -0.11033205656696661,
+        24.62845176006006
+      ],
+      [
+        0.03591733776078723,
+        1.2206470200589141,
+        159.01475761709833
+      ],
+      [
+        8.227090319931938e-05,
+        -0.0006356003472267445,
+        1.0
+      ]
+    ],
+    "protectedAbovePixelY": 162.64341036751273,
+    "overlaidPixels": 32393,
+    "croppedBody": true,
+    "backgroundPreserved": true,
+    "physicalSizingAvailable": false
+  }
+}

@@ -1,0 +1,21 @@
+// Import only the icons used by this app; avoid parsing the complete icon catalog.
+export { default as ArrowDownToLine } from "lucide-react/dist/esm/icons/arrow-down-to-line.js";
+export { default as ArrowRight } from "lucide-react/dist/esm/icons/arrow-right.js";
+export { default as Check } from "lucide-react/dist/esm/icons/check.js";
+export { default as ChevronDown } from "lucide-react/dist/esm/icons/chevron-down.js";
+export { default as CircleHelp } from "lucide-react/dist/esm/icons/circle-help.js";
+export { default as FlaskConical } from "lucide-react/dist/esm/icons/flask-conical.js";
+export { default as Layers3 } from "lucide-react/dist/esm/icons/layers.js";
+export { default as LoaderCircle } from "lucide-react/dist/esm/icons/loader-circle.js";
+export { default as Plus } from "lucide-react/dist/esm/icons/plus.js";
+export { default as Ruler } from "lucide-react/dist/esm/icons/ruler.js";
+export { default as Shirt } from "lucide-react/dist/esm/icons/shirt.js";
+export { default as Sparkles } from "lucide-react/dist/esm/icons/sparkles.js";
+export { default as Upload } from "lucide-react/dist/esm/icons/upload.js";
+export { default as UserRound } from "lucide-react/dist/esm/icons/user-round.js";
+export { default as X } from "lucide-react/dist/esm/icons/x.js";
+export { default as Expand } from "lucide-react/dist/esm/icons/expand.js";
+export { default as RotateCw } from "lucide-react/dist/esm/icons/rotate-cw.js";
+export { default as Download } from "lucide-react/dist/esm/icons/download.js";
+export { default as Move } from "lucide-react/dist/esm/icons/move.js";
+export { default as ZoomIn } from "lucide-react/dist/esm/icons/zoom-in.js";

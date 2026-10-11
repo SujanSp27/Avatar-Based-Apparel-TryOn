@@ -1,0 +1,16 @@
+{
+  "runs": 29,
+  "successRate": 0.7241379310344828,
+  "failureRate": 0.27586206896551724,
+  "successful3dRuns": 18,
+  "successful2dRuns": 3,
+  "meanLatencySeconds": 49.721931034482765,
+  "maxRecordedRssMB": 319.2,
+  "meanSampledPenetrationRate": 0.00033492361480300076,
+  "gpuUsage": "See experiments/hardware.json; baseline inference runs on CPU",
+  "measurementAccuracy": null,
+  "sizeAccuracy": null,
+  "poseAccuracy": null,
+  "qualityReview": "Unscored until human review labels are recorded. See data/regression/review-template.json.",
+  "limitation": "Mixed development runs and controlled samples; not generalization evidence."
+}

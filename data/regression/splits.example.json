@@ -1,0 +1,4 @@
+{
+  "instructions": "Replace placeholders with consented, labelled data. Repeated photos/augmentations of the same person must share personId and split. Do not score this empty template.",
+  "records": [], "sizeOrder": ["XS", "S", "M", "L", "XL", "XXL"]
+}

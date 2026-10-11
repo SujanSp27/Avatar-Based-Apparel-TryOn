@@ -1,0 +1,110 @@
+{
+  "recordedAt": "2026-10-08T14:42:41.729262+00:00",
+  "scope": "Controlled approximate template prototype; no learned SMPL reconstruction or empirical accuracy claim",
+  "frontend": {
+    "url": "http://127.0.0.1:5173",
+    "httpStatus": 200,
+    "build": {
+      "recordedAt": "2026-10-08T11:29:39.374486+00:00",
+      "command": "npm run build",
+      "exitCode": 0,
+      "typescript": "passed",
+      "transformedModules": 381,
+      "viteReportedDuration": "59m 55s",
+      "warnings": [
+        "JavaScript chunk exceeds 500 kB; generated bundle is about 328 kB gzipped."
+      ],
+      "artifacts": [
+        {
+          "path": "frontend\\dist\\assets\\index-BMhtsPcZ.js",
+          "bytes": 1172856,
+          "sha256": "435c6bb2a778ab684ac70bfe9139ae67833ecad587db02a59834237073c40992"
+        },
+        {
+          "path": "frontend\\dist\\assets\\index-CEzE1CPK.css",
+          "bytes": 14729,
+          "sha256": "ab5b5e4595d924cd79817201c2a053b9020f173d8306befb2c5f0cbf21611077"
+        }
+      ]
+    },
+    "browser": {
+      "startTime": "2026-10-08T11:28:46.399Z",
+      "duration": 92043.35,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "backend": {
+    "url": "http://127.0.0.1:8000/docs",
+    "health": {
+      "status": "ok",
+      "database": "postgresql",
+      "humanBackend": "mediapipe_template",
+      "poseModelAvailable": true,
+      "hmr2Available": false,
+      "scope": "controlled approximate template prototype"
+    }
+  },
+  "pytest": {
+    "tests": 24,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "ruff": "passed",
+  "pythonDependencyCheck": "passed",
+  "typescript": "passed",
+  "open3d": {
+    "mesh": "experiments\\runs\\reconstruction\\studio-person\\body.ply",
+    "open3dVersion": "0.19.0",
+    "smplxPackageVersion": "0.1.28",
+    "smplxInferenceAvailable": false,
+    "vertices": 18306,
+    "triangles": 36608,
+    "edgeManifold": true,
+    "vertexManifold": true,
+    "orientable": true,
+    "selfIntersecting": false,
+    "watertight": true
+  },
+  "migration": {
+    "freshDatabase": "migration-test-3c1014d6-769a-4980-9a4d-f54a548e5c2f.sqlite",
+    "upgrade": true,
+    "downgrade": true,
+    "reupgrade": true
+  },
+  "reconstruction": {
+    "imagesTested": 11,
+    "validTemplateMeshes": 1,
+    "unsupportedImagesRejected": 10,
+    "source": "experiments/reconstruction-report.json"
+  },
+  "garments": {
+    "categories": [
+      "t-shirt",
+      "shirt",
+      "dress",
+      "trouser"
+    ],
+    "allLiveApiUploadsSucceeded": true,
+    "allFinalFixtureSampledPenetrations": 0,
+    "source": "experiments/api-smoke-report.json"
+  },
+  "limitations": [
+    "Learned HMR2 inference unavailable: licensed neutral SMPL asset absent and upstream integration unvalidated",
+    "Measurements and clothing fit are uncalibrated estimates; no labelled ground truth",
+    "Demo size charts are fictional",
+    "CPU inference; prior CUDA installation failed with disk exhaustion",
+    "Collision checks sample vertices and face centres; no cloth self-collision or calibrated physics"
+  ],
+  "evidence": [
+    "experiments/pytest-report.xml",
+    "experiments/browser-test-report.json",
+    "experiments/browser-complete.png",
+    "experiments/garment-report.json",
+    "experiments/build-report.json",
+    "docs/implementation-status.md"
+  ]
+}

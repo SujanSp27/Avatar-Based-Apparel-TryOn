@@ -1,0 +1,122 @@
+{
+  "recordedAt": "2026-10-10T03:29:33.707091+00:00",
+  "cases": [
+    {
+      "case": "reported-striped-shirt",
+      "category": "t-shirt",
+      "inputSha256": {
+        "person": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+        "garment": "28b6ff594200c1264146b10fab679b4343ae0ee520083e5b3389816963e67535"
+      },
+      "status": "generated",
+      "diagnostics": {
+        "method": "pretrained-learned-flow-and-neural-rendering",
+        "modelVersion": "dm-vton-pretrained-v1",
+        "model": {
+          "backend": "DM-VTON",
+          "source": "https://github.com/KiseKloset/DM-VTON",
+          "sourceCommit": "5dcd04ee3f5b1fb392df1184c887c1a7e910c72e",
+          "checkpointSha256": {
+            "gen.pth": "3147a3731e5fc18c473f563a4d896a5ddf620f0a7f293b8fbda3069a76e8e6f7",
+            "warp.pth": "0e2fb5220f0e6829a17de8894c56b09463e08f279aa4ac410bf808bc6287b74e"
+          },
+          "loadVerified": true,
+          "nativeResolution": [
+            192,
+            256
+          ],
+          "device": "cpu",
+          "operator": "native PyTorch equivalent of stride-one 7x7 CuPy cost volume",
+          "license": "CC-BY-NC-SA-4.0; academic/non-commercial research"
+        },
+        "nativeResolution": [
+          192,
+          256
+        ],
+        "personWindow": [
+          230,
+          142,
+          756,
+          842
+        ],
+        "garmentSegmentation": "flat-lay-background-segmentation",
+        "parsing": {
+          "modelVersion": "fashn-human-parser@1f80c34dbab321c5730dda5c3fea279fd3e97498",
+          "sourceCommit": "f2771f2fb8655349e87e2869bbde7ace0bd06f2c",
+          "checkpointSha256": "e43c8c8a9b04f28798f0a4630cf18caa2cdb27a0d454fae43a5716e6f7078244",
+          "device": "cpu",
+          "inputSize": {
+            "width": 1000,
+            "height": 1500
+          },
+          "modelInputSize": {
+            "width": 384,
+            "height": 576
+          },
+          "preprocessing": "Official cv2.INTER_AREA resize and ImageNet normalization",
+          "labels": {
+            "0": "background",
+            "1": "face",
+            "2": "hair",
+            "3": "top",
+            "4": "dress",
+            "5": "skirt",
+            "6": "pants",
+            "7": "belt",
+            "8": "bag",
+            "9": "hat",
+            "10": "scarf",
+            "11": "glasses",
+            "12": "arms",
+            "13": "hands",
+            "14": "legs",
+            "15": "feet",
+            "16": "torso",
+            "17": "jewelry"
+          },
+          "labelPixels": {
+            "background": 1279243,
+            "face": 9558,
+            "hair": 3403,
+            "top": 96606,
+            "pants": 68901,
+            "arms": 19481,
+            "hands": 9311,
+            "feet": 9887,
+            "torso": 3610
+          },
+          "timingSeconds": 12.162,
+          "limitations": "Semantic estimates; neck and left/right limbs are not separate model classes."
+        },
+        "compositing": {
+          "method": "pretrained-semantic-bounded-neural-composite",
+          "category": "t-shirt",
+          "oldClothingPixels": 96606,
+          "oldClothingMinimumAlpha": 1.0,
+          "editedPixels": 96607,
+          "preservedPixels": 1403393,
+          "changedPixelsOutsideEditMask": 0,
+          "identityPreservedExactly": true,
+          "collarTransition": "Generated clothing on adjacent predicted bare torso only; not a predicted neck label",
+          "collarTransitionRadiusPixels": 18,
+          "silhouettePolicy": "Conservative source garment extent; generated sleeve or hem extensions onto arms, unrelated clothes or background are not admitted.",
+          "limitations": "Preservation is conditional on semantic parsing; it does not guarantee perceptual realism or accurate fit."
+        },
+        "device": "cpu",
+        "qualityValidated": false
+      },
+      "output": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\experiments\\runs\\pretrained-vton\\reported-striped-shirt\\tryon-2d.png",
+      "visualAcceptance": "rejected",
+      "seconds": 24.901,
+      "rssMB": 1005.7,
+      "visualReview": {
+        "oldShirtRemoved": "not reliable",
+        "neckline": "pink collar artifact",
+        "sleeves": "skin-like cutouts and unnatural shape",
+        "garmentDetail": "blurred stripes",
+        "acceptedAsFinal": false
+      }
+    }
+  ],
+  "scope": "Actual inference and software diagnostics; visual acceptance is recorded separately after image inspection."
+}

@@ -1,0 +1,29 @@
+{
+  "torch": "2.5.1+cu121",
+  "gpu": "NVIDIA GeForce GTX 1650",
+  "layer": "down_blocks.0.resnets.0.conv1",
+  "results": [
+    {
+      "mode": "cudnn-half",
+      "secondsPerLayer": 0.09291258000000653,
+      "finite": false
+    },
+    {
+      "mode": "cudnn-half-deterministic",
+      "secondsPerLayer": 0.021194400000013047,
+      "finite": false
+    },
+    {
+      "mode": "cudnn-float",
+      "secondsPerLayer": 0.015369840000016666,
+      "finite": true,
+      "relativeRMSE": 0.0
+    },
+    {
+      "mode": "native-half",
+      "secondsPerLayer": 0.05762689999999111,
+      "finite": true,
+      "relativeRMSE": 0.00020719242456834763
+    }
+  ]
+}

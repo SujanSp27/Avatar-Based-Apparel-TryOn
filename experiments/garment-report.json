@@ -1,0 +1,62 @@
+[
+  {
+    "category": "t-shirt",
+    "size": "M",
+    "faces": 3820,
+    "seconds": 12.87,
+    "method": "anatomical loft alignment + constrained relaxation + surface projection",
+    "initialPenetratingVertices": 0,
+    "projectionOperations": 2,
+    "remainingPenetrationSamples": 0,
+    "sampledPenetrationRate": 0.0,
+    "clearanceM": 0.004,
+    "relaxationIterations": 5,
+    "selfCollisionChecked": false,
+    "collisionSampling": "vertices and face centres; not continuous collision detection"
+  },
+  {
+    "category": "shirt",
+    "size": "M",
+    "faces": 6004,
+    "seconds": 34.16,
+    "method": "anatomical loft alignment + constrained relaxation + surface projection",
+    "initialPenetratingVertices": 2,
+    "projectionOperations": 10,
+    "remainingPenetrationSamples": 0,
+    "sampledPenetrationRate": 0.0,
+    "clearanceM": 0.004,
+    "relaxationIterations": 5,
+    "selfCollisionChecked": false,
+    "collisionSampling": "vertices and face centres; not continuous collision detection"
+  },
+  {
+    "category": "dress",
+    "size": "M",
+    "faces": 3440,
+    "seconds": 12.81,
+    "method": "anatomical loft alignment + constrained relaxation + surface projection",
+    "initialPenetratingVertices": 46,
+    "projectionOperations": 48,
+    "remainingPenetrationSamples": 0,
+    "sampledPenetrationRate": 0.0,
+    "clearanceM": 0.004,
+    "relaxationIterations": 5,
+    "selfCollisionChecked": false,
+    "collisionSampling": "vertices and face centres; not continuous collision detection"
+  },
+  {
+    "category": "trouser",
+    "size": "L",
+    "faces": 5132,
+    "seconds": 15.55,
+    "method": "anatomical loft alignment + constrained relaxation + surface projection",
+    "initialPenetratingVertices": 82,
+    "projectionOperations": 100,
+    "remainingPenetrationSamples": 0,
+    "sampledPenetrationRate": 0.0,
+    "clearanceM": 0.004,
+    "relaxationIterations": 5,
+    "selfCollisionChecked": false,
+    "collisionSampling": "vertices and face centres; not continuous collision detection"
+  }
+]

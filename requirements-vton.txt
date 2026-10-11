@@ -1,0 +1,11 @@
+# Optional local pretrained 2D pipeline. Keep the existing torch 2.5.1 profile.
+# OpenCV is supplied by requirements.txt's opencv-contrib-python package.
+transformers==4.49.0
+huggingface-hub==0.29.3
+safetensors==0.5.3
+tokenizers==0.21.4
+PyYAML==6.0.3
+regex==2026.9.29
+tqdm==4.70.1
+diffusers==0.29.2
+accelerate==0.31.0

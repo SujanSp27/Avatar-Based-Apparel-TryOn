@@ -1,0 +1,124 @@
+{
+  "recordedAt": "2026-10-09T13:24:44.591833+00:00",
+  "status": "passed",
+  "python": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "48",
+    "time": "15.017",
+    "timestamp": "2026-10-09T18:44:56.478541+05:30",
+    "hostname": "LAPTOP-I20CL1R0"
+  },
+  "browser": {
+    "startTime": "2026-10-09T13:20:53.330Z",
+    "duration": 170244.40600000002,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "liveApi": {
+    "recordedAt": "2026-10-09T13:19:43.644094+00:00",
+    "inputRun": "4fd1db83-60cb-460f-9887-985eb1ffb82f",
+    "cases": [
+      {
+        "requestedMode": "auto",
+        "category": "t-shirt",
+        "httpStatus": 200,
+        "mode": "2d",
+        "runId": "3ef6f7a1-3dca-4609-ad88-6b77d63d3ba3",
+        "previewUrl": "/assets/3ef6f7a1-3dca-4609-ad88-6b77d63d3ba3/tryon-2d.png",
+        "seconds": 1.422
+      },
+      {
+        "requestedMode": "2d",
+        "category": "t-shirt",
+        "httpStatus": 200,
+        "mode": "2d",
+        "runId": "f64d257f-603c-4ee4-b237-8a98677609fb",
+        "previewUrl": "/assets/f64d257f-603c-4ee4-b237-8a98677609fb/tryon-2d.png",
+        "seconds": 1.257
+      },
+      {
+        "requestedMode": "3d",
+        "category": "t-shirt",
+        "httpStatus": 422,
+        "code": "partial_body"
+      },
+      {
+        "requestedMode": "2d",
+        "category": "trouser",
+        "httpStatus": 422,
+        "code": "lower_body_not_visible"
+      }
+    ]
+  },
+  "buildEvidence": "experiments/2d-build-report.json",
+  "lint": {
+    "command": ".venv/Scripts/python.exe -m ruff check backend ml scripts tests",
+    "exitCode": 0
+  },
+  "frontend": {
+    "url": "http://127.0.0.1:5173",
+    "httpStatus": 200
+  },
+  "backend": {
+    "status": "ok",
+    "database": "postgresql",
+    "humanBackend": "mediapipe_template",
+    "poseModelAvailable": true,
+    "hmr2Available": false,
+    "tryonModes": [
+      "auto",
+      "3d",
+      "2d"
+    ],
+    "scope": "controlled approximate 3D template and 2D photo overlay prototype"
+  },
+  "threeDimensionalRegression": {
+    "runId": "4e991b80-7de4-4022-8f7d-d90ac1424844",
+    "mode": "3d",
+    "recommendedSize": "M",
+    "measurements": {
+      "height": 172.0,
+      "chest": 91.0,
+      "waist": 83.9,
+      "hip": 106.2,
+      "thigh": 48.3,
+      "shoulderWidth": 43.5,
+      "armLength": 58.1,
+      "inseam": 80.0,
+      "units": "cm",
+      "method": "mesh_sections_and_anatomical_landmarks",
+      "confidence": null,
+      "uncertaintyCm": {
+        "height": 3.4,
+        "chest": 13.7,
+        "waist": 12.6,
+        "hip": 15.9,
+        "thigh": 7.2,
+        "shoulderWidth": 6.5,
+        "armLength": 8.7,
+        "inseam": 12.0
+      },
+      "uncertaintyMethod": "uncalibrated heuristic \u00b115%; height \u00b12%; does not cover all image/depth errors"
+    },
+    "fitting": {
+      "method": "anatomical loft alignment + constrained relaxation + surface projection",
+      "initialPenetratingVertices": 0,
+      "projectionOperations": 2,
+      "remainingPenetrationSamples": 0,
+      "sampledPenetrationRate": 0.0,
+      "clearanceM": 0.004,
+      "relaxationIterations": 5,
+      "selfCollisionChecked": false,
+      "collisionSampling": "vertices and face centres; not continuous collision detection"
+    },
+    "avatarUrl": "/assets/4e991b80-7de4-4022-8f7d-d90ac1424844/dressed.glb",
+    "browserLoadedAndControlsPassed": true
+  },
+  "scope": "Deterministic 2D garment overlay with no physical sizing; existing approximate 3D template remains available.",
+  "remainingResearchBlocker": "Learned HMR2/SMPL reconstruction lacks the licensed neutral SMPL asset and a validated upstream inference environment."
+}

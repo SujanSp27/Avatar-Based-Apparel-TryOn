@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:17.11
+    environment:
+      POSTGRES_USER: tryon
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tryon_local_only}
+      POSTGRES_DB: tryon
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - tryon_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tryon -d tryon"]
+      interval: 5s
+      retries: 10
+volumes:
+  tryon_pg:

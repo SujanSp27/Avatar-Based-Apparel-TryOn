@@ -1,0 +1,166 @@
+[
+  {
+    "category": "t-shirt",
+    "runId": "1eec2adc-8324-474e-b746-425e3246a67d",
+    "size": "M",
+    "measurements": {
+      "height": 172.0,
+      "chest": 91.0,
+      "waist": 83.9,
+      "hip": 106.2,
+      "thigh": 48.3,
+      "shoulderWidth": 43.5,
+      "armLength": 58.1,
+      "inseam": 80.0,
+      "units": "cm",
+      "method": "mesh_sections_and_anatomical_landmarks",
+      "confidence": null,
+      "uncertaintyCm": {
+        "height": 3.4,
+        "chest": 13.7,
+        "waist": 12.6,
+        "hip": 15.9,
+        "thigh": 7.2,
+        "shoulderWidth": 6.5,
+        "armLength": 8.7,
+        "inseam": 12.0
+      },
+      "uncertaintyMethod": "uncalibrated heuristic \u00b115%; height \u00b12%; does not cover all image/depth errors"
+    },
+    "fitting": {
+      "method": "anatomical loft alignment + constrained relaxation + surface projection",
+      "initialPenetratingVertices": 0,
+      "projectionOperations": 2,
+      "remainingPenetrationSamples": 0,
+      "sampledPenetrationRate": 0.0,
+      "clearanceM": 0.004,
+      "relaxationIterations": 5,
+      "selfCollisionChecked": false,
+      "collisionSampling": "vertices and face centres; not continuous collision detection"
+    },
+    "seconds": 20.21
+  },
+  {
+    "category": "shirt",
+    "runId": "b83df884-0491-4147-952d-a72486a74588",
+    "size": "M",
+    "measurements": {
+      "height": 172.0,
+      "chest": 91.0,
+      "waist": 83.9,
+      "hip": 106.2,
+      "thigh": 48.3,
+      "shoulderWidth": 43.5,
+      "armLength": 58.1,
+      "inseam": 80.0,
+      "units": "cm",
+      "method": "mesh_sections_and_anatomical_landmarks",
+      "confidence": null,
+      "uncertaintyCm": {
+        "height": 3.4,
+        "chest": 13.7,
+        "waist": 12.6,
+        "hip": 15.9,
+        "thigh": 7.2,
+        "shoulderWidth": 6.5,
+        "armLength": 8.7,
+        "inseam": 12.0
+      },
+      "uncertaintyMethod": "uncalibrated heuristic \u00b115%; height \u00b12%; does not cover all image/depth errors"
+    },
+    "fitting": {
+      "method": "anatomical loft alignment + constrained relaxation + surface projection",
+      "initialPenetratingVertices": 2,
+      "projectionOperations": 10,
+      "remainingPenetrationSamples": 0,
+      "sampledPenetrationRate": 0.0,
+      "clearanceM": 0.004,
+      "relaxationIterations": 5,
+      "selfCollisionChecked": false,
+      "collisionSampling": "vertices and face centres; not continuous collision detection"
+    },
+    "seconds": 41.25
+  },
+  {
+    "category": "dress",
+    "runId": "98b76bbd-a12a-469c-a6bd-13e005b807ca",
+    "size": "M",
+    "measurements": {
+      "height": 172.0,
+      "chest": 91.0,
+      "waist": 83.9,
+      "hip": 106.2,
+      "thigh": 48.3,
+      "shoulderWidth": 43.5,
+      "armLength": 58.1,
+      "inseam": 80.0,
+      "units": "cm",
+      "method": "mesh_sections_and_anatomical_landmarks",
+      "confidence": null,
+      "uncertaintyCm": {
+        "height": 3.4,
+        "chest": 13.7,
+        "waist": 12.6,
+        "hip": 15.9,
+        "thigh": 7.2,
+        "shoulderWidth": 6.5,
+        "armLength": 8.7,
+        "inseam": 12.0
+      },
+      "uncertaintyMethod": "uncalibrated heuristic \u00b115%; height \u00b12%; does not cover all image/depth errors"
+    },
+    "fitting": {
+      "method": "anatomical loft alignment + constrained relaxation + surface projection",
+      "initialPenetratingVertices": 46,
+      "projectionOperations": 48,
+      "remainingPenetrationSamples": 0,
+      "sampledPenetrationRate": 0.0,
+      "clearanceM": 0.004,
+      "relaxationIterations": 5,
+      "selfCollisionChecked": false,
+      "collisionSampling": "vertices and face centres; not continuous collision detection"
+    },
+    "seconds": 20.98
+  },
+  {
+    "category": "trouser",
+    "runId": "699c62ce-0206-473d-a84d-407e8aa650c1",
+    "size": "L",
+    "measurements": {
+      "height": 172.0,
+      "chest": 91.0,
+      "waist": 83.9,
+      "hip": 106.2,
+      "thigh": 48.3,
+      "shoulderWidth": 43.5,
+      "armLength": 58.1,
+      "inseam": 80.0,
+      "units": "cm",
+      "method": "mesh_sections_and_anatomical_landmarks",
+      "confidence": null,
+      "uncertaintyCm": {
+        "height": 3.4,
+        "chest": 13.7,
+        "waist": 12.6,
+        "hip": 15.9,
+        "thigh": 7.2,
+        "shoulderWidth": 6.5,
+        "armLength": 8.7,
+        "inseam": 12.0
+      },
+      "uncertaintyMethod": "uncalibrated heuristic \u00b115%; height \u00b12%; does not cover all image/depth errors"
+    },
+    "fitting": {
+      "method": "anatomical loft alignment + constrained relaxation + surface projection",
+      "initialPenetratingVertices": 82,
+      "projectionOperations": 100,
+      "remainingPenetrationSamples": 0,
+      "sampledPenetrationRate": 0.0,
+      "clearanceM": 0.004,
+      "relaxationIterations": 5,
+      "selfCollisionChecked": false,
+      "collisionSampling": "vertices and face centres; not continuous collision detection"
+    },
+    "seconds": 25.11
+  }
+]

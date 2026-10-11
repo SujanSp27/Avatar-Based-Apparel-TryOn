@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-09T13:19:43.644094+00:00",
+  "inputRun": "4fd1db83-60cb-460f-9887-985eb1ffb82f",
+  "cases": [
+    {
+      "requestedMode": "auto",
+      "category": "t-shirt",
+      "httpStatus": 200,
+      "mode": "2d",
+      "runId": "3ef6f7a1-3dca-4609-ad88-6b77d63d3ba3",
+      "previewUrl": "/assets/3ef6f7a1-3dca-4609-ad88-6b77d63d3ba3/tryon-2d.png",
+      "seconds": 1.422
+    },
+    {
+      "requestedMode": "2d",
+      "category": "t-shirt",
+      "httpStatus": 200,
+      "mode": "2d",
+      "runId": "f64d257f-603c-4ee4-b237-8a98677609fb",
+      "previewUrl": "/assets/f64d257f-603c-4ee4-b237-8a98677609fb/tryon-2d.png",
+      "seconds": 1.257
+    },
+    {
+      "requestedMode": "3d",
+      "category": "t-shirt",
+      "httpStatus": 422,
+      "code": "partial_body"
+    },
+    {
+      "requestedMode": "2d",
+      "category": "trouser",
+      "httpStatus": 422,
+      "code": "lower_body_not_visible"
+    }
+  ]
+}

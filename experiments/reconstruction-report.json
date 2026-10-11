@@ -1,0 +1,90 @@
+[
+  {
+    "input": "coco-192.jpg",
+    "status": "rejected",
+    "code": "person_count",
+    "reason": "Expected one visible person; detected 0.",
+    "seconds": 2.556
+  },
+  {
+    "input": "coco-241.jpg",
+    "status": "rejected",
+    "code": "person_count",
+    "reason": "Expected one visible person; detected 3.",
+    "seconds": 1.543
+  },
+  {
+    "input": "coco-257.jpg",
+    "status": "rejected",
+    "code": "person_count",
+    "reason": "Expected one visible person; detected 0.",
+    "seconds": 0.087
+  },
+  {
+    "input": "coco-294.jpg",
+    "status": "rejected",
+    "code": "occluded_body",
+    "reason": "Head, arms, hips, knees and feet must be visible without severe occlusion.",
+    "seconds": 17.773
+  },
+  {
+    "input": "coco-328.jpg",
+    "status": "rejected",
+    "code": "extreme_pose",
+    "reason": "Seated poses and bent knees are unsupported. Stand with both legs straight.",
+    "seconds": 7.424
+  },
+  {
+    "input": "coco-338.jpg",
+    "status": "rejected",
+    "code": "occluded_body",
+    "reason": "Head, arms, hips, knees and feet must be visible without severe occlusion.",
+    "seconds": 4.511
+  },
+  {
+    "input": "fashion.jpg",
+    "status": "rejected",
+    "code": "extreme_pose",
+    "reason": "Seated poses and bent knees are unsupported. Stand with both legs straight.",
+    "seconds": 7.694
+  },
+  {
+    "input": "standing.jpg",
+    "status": "rejected",
+    "code": "image_dimensions",
+    "reason": "Image exceeds 20 megapixels.",
+    "seconds": 0.236
+  },
+  {
+    "input": "studio-person.jpg",
+    "status": "valid_template_mesh",
+    "quality": {
+      "watertight": true,
+      "windingConsistent": true,
+      "vertices": 18306,
+      "faces": 36608,
+      "volumeM3": 0.07693380450057351
+    },
+    "provenance": {
+      "backend": "mediapipe-template-1.1",
+      "pretrainedComponent": "MediaPipe Pose Landmarker Full float16 v1",
+      "shapeRecovery": "deterministic approximate template",
+      "validatedAnthropometry": false
+    },
+    "seconds": 77.854
+  },
+  {
+    "input": "yoga.jpg",
+    "status": "rejected",
+    "code": "extreme_pose",
+    "reason": "Lower your arms and keep both feet on the ground.",
+    "seconds": 0.637
+  },
+  {
+    "input": "skates.png",
+    "status": "rejected",
+    "code": "person_count",
+    "reason": "Expected one visible person; detected 0.",
+    "seconds": 0.173
+  }
+]

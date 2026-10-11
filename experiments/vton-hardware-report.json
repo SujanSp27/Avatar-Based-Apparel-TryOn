@@ -1,0 +1,9 @@
+{
+  "torch": "2.5.1+cu121",
+  "torchvision": "0.20.1+cu121",
+  "cuda": "12.1",
+  "device": "NVIDIA GeForce GTX 1650",
+  "vramBytes": 4294639616,
+  "tensorCheckPassed": true,
+  "systemRAMBytes": 8323588096
+}

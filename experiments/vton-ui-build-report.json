@@ -1,0 +1,89 @@
+{
+  "recordedAt": "2026-10-10T15:53:35.725317+00:00",
+  "command": "npm.cmd run build",
+  "cwd": "frontend",
+  "exitCode": 0,
+  "typescript": "passed",
+  "viteVersion": "6.3.5",
+  "viteBuildSeconds": 302,
+  "transformedModules": 382,
+  "warning": "Main JavaScript chunk exceeds 500 kB after minification; build succeeded.",
+  "executionNote": "Initial sandbox attempt reached Vite after TypeScript passed, then esbuild spawn EPERM. Same command completed with approved child-process execution.",
+  "bundleAssertions": {
+    "catVTONCopy": true,
+    "modelAvailabilityGuard": true,
+    "pretrainedResultGuard": true
+  },
+  "artifacts": [
+    {
+      "path": "frontend/dist/assets/index-BLGir_Z4.css",
+      "bytes": 16964,
+      "sha256": "60109d867d00b0e500afb558f56dc8ad6cda7fd7685e74bf94edbe07cce9130a"
+    },
+    {
+      "path": "frontend/dist/assets/index-BxqID2Ln.js",
+      "bytes": 1180330,
+      "sha256": "300cf683230b042d2144e2a56a501c3a076baeff1e3f44a5f773412a5baa308d"
+    },
+    {
+      "path": "frontend/dist/index.html",
+      "bytes": 519,
+      "sha256": "1e3d03d69aad9412cf958ae6e82e61867864df855980a990accb9e4140d2f133"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "frontend/src/App.tsx",
+      "sha256": "5eb21993a2f4c081ddcef0354c2fe2a7884858673f46bc5794bfe9bd24be95c2"
+    },
+    {
+      "path": "frontend/src/types.ts",
+      "sha256": "d96946063f14432b6f4301b9375770124bac858a24127cf90b0f75e213ec6012"
+    },
+    {
+      "path": "frontend/src/PhotoViewer.tsx",
+      "sha256": "1cde552e1943de4a4784ffe56a0962a539626209c93f28d5b7c126923ad27481"
+    },
+    {
+      "path": "frontend/e2e/2d-fallback.spec.ts",
+      "sha256": "9d35ea1dbf7e225d8f4da2001ea09d89e93bd7ba24669c99c0b1b3eb45ae725c"
+    }
+  ],
+  "previousBrowserEvidence": {
+    "path": "experiments/browser-test-report.json",
+    "sha256": "fa00580d6028c540c7c013966cfa8b013c99f1d3804ea8ea834c3f6c379f77dd",
+    "stats": {
+      "startTime": "2026-10-10T10:50:07.330Z",
+      "duration": 15707.140999999996,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "2D supports upper garments while 3D retains all categories",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 7923,
+            "startTime": "2026-10-10T10:50:09.562Z"
+          }
+        ]
+      },
+      {
+        "title": "missing pretrained model returns a clear error without an overlay result",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 3668,
+            "startTime": "2026-10-10T10:50:17.995Z"
+          }
+        ]
+      }
+    ],
+    "scope": "Two non-inference category/error-handling browser tests passed before this final build. This report does not claim visual fitting quality or a newly executed browser inference test."
+  }
+}

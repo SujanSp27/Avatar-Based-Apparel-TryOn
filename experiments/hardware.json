@@ -1,0 +1,11 @@
+{
+  "platform": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.0",
+  "ramGB": 7.75,
+  "freeDiskGB": 2.47,
+  "torchVersion": "2.5.1+cpu",
+  "torchCudaAvailable": false,
+  "nvidiaSmi": "NVIDIA GeForce GTX 1650, 4096 MiB, 0 MiB, 0 %, 592.82",
+  "inferenceDevice": "cpu",
+  "reason": "MediaPipe Tasks runs CPU in this Windows baseline. CUDA torch install exhausted disk; CPU torch installed instead."
+}

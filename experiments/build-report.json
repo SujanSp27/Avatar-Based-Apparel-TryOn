@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-08T11:29:39.374486+00:00",
+  "command": "npm run build",
+  "exitCode": 0,
+  "typescript": "passed",
+  "transformedModules": 381,
+  "viteReportedDuration": "59m 55s",
+  "warnings": [
+    "JavaScript chunk exceeds 500 kB; generated bundle is about 328 kB gzipped."
+  ],
+  "artifacts": [
+    {
+      "path": "frontend\\dist\\assets\\index-BMhtsPcZ.js",
+      "bytes": 1172856,
+      "sha256": "435c6bb2a778ab684ac70bfe9139ae67833ecad587db02a59834237073c40992"
+    },
+    {
+      "path": "frontend\\dist\\assets\\index-CEzE1CPK.css",
+      "bytes": 14729,
+      "sha256": "ab5b5e4595d924cd79817201c2a053b9020f173d8306befb2c5f0cbf21611077"
+    }
+  ]
+}

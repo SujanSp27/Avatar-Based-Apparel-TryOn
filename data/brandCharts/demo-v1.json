@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "source": "Synthetic demonstration charts, not retailer sizing. Body measurement ranges in cm.",
+  "brands": [
+    {
+      "name": "Atelier Demo",
+      "slug": "atelier-demo",
+      "sizes": [
+        {
+          "sizeLabel": "XS",
+          "sortOrder": 0,
+          "chestMin": 80,
+          "chestMax": 86,
+          "waistMin": 64,
+          "waistMax": 70,
+          "hipMin": 84,
+          "hipMax": 90,
+          "shoulderMin": 35,
+          "shoulderMax": 39
+        },
+        {
+          "sizeLabel": "S",
+          "sortOrder": 1,
+          "chestMin": 86,
+          "chestMax": 92,
+          "waistMin": 70,
+          "waistMax": 76,
+          "hipMin": 90,
+          "hipMax": 96,
+          "shoulderMin": 37,
+          "shoulderMax": 41
+        },
+        {
+          "sizeLabel": "M",
+          "sortOrder": 2,
+          "chestMin": 92,
+          "chestMax": 98,
+          "waistMin": 76,
+          "waistMax": 82,
+          "hipMin": 96,
+          "hipMax": 102,
+          "shoulderMin": 39,
+          "shoulderMax": 43
+        },
+        {
+          "sizeLabel": "L",
+          "sortOrder": 3,
+          "chestMin": 98,
+          "chestMax": 104,
+          "waistMin": 82,
+          "waistMax": 88,
+          "hipMin": 102,
+          "hipMax": 108,
+          "shoulderMin": 41,
+          "shoulderMax": 45
+        },
+        {
+          "sizeLabel": "XL",
+          "sortOrder": 4,
+          "chestMin": 104,
+          "chestMax": 110,
+          "waistMin": 88,
+          "waistMax": 94,
+          "hipMin": 108,
+          "hipMax": 114,
+          "shoulderMin": 43,
+          "shoulderMax": 47
+        },
+        {
+          "sizeLabel": "XXL",
+          "sortOrder": 5,
+          "chestMin": 110,
+          "chestMax": 116,
+          "waistMin": 94,
+          "waistMax": 100,
+          "hipMin": 114,
+          "hipMax": 120,
+          "shoulderMin": 45,
+          "shoulderMax": 49
+        }
+      ]
+    },
+    {
+      "name": "Everyday Demo",
+      "slug": "everyday-demo",
+      "sizes": [
+        {
+          "sizeLabel": "XS",
+          "sortOrder": 0,
+          "chestMin": 84,
+          "chestMax": 90,
+          "waistMin": 68,
+          "waistMax": 74,
+          "hipMin": 88,
+          "hipMax": 94,
+          "shoulderMin": 35,
+          "shoulderMax": 39
+        },
+        {
+          "sizeLabel": "S",
+          "sortOrder": 1,
+          "chestMin": 90,
+          "chestMax": 96,
+          "waistMin": 74,
+          "waistMax": 80,
+          "hipMin": 94,
+          "hipMax": 100,
+          "shoulderMin": 37,
+          "shoulderMax": 41
+        },
+        {
+          "sizeLabel": "M",
+          "sortOrder": 2,
+          "chestMin": 96,
+          "chestMax": 102,
+          "waistMin": 80,
+          "waistMax": 86,
+          "hipMin": 100,
+          "hipMax": 106,
+          "shoulderMin": 39,
+          "shoulderMax": 43
+        },
+        {
+          "sizeLabel": "L",
+          "sortOrder": 3,
+          "chestMin": 102,
+          "chestMax": 108,
+          "waistMin": 86,
+          "waistMax": 92,
+          "hipMin": 106,
+          "hipMax": 112,
+          "shoulderMin": 41,
+          "shoulderMax": 45
+        },
+        {
+          "sizeLabel": "XL",
+          "sortOrder": 4,
+          "chestMin": 108,
+          "chestMax": 114,
+          "waistMin": 92,
+          "waistMax": 98,
+          "hipMin": 112,
+          "hipMax": 118,
+          "shoulderMin": 43,
+          "shoulderMax": 47
+        },
+        {
+          "sizeLabel": "XXL",
+          "sortOrder": 5,
+          "chestMin": 114,
+          "chestMax": 120,
+          "waistMin": 98,
+          "waistMax": 104,
+          "hipMin": 118,
+          "hipMax": 124,
+          "shoulderMin": 45,
+          "shoulderMax": 49
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "recordedAt": "2026-10-11T11:40:20.922243+00:00",
+  "cases": [
+    {
+      "case": "reported-striped-shirt",
+      "category": "t-shirt",
+      "inputSha256": {
+        "person": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+        "garment": "28b6ff594200c1264146b10fab679b4343ae0ee520083e5b3389816963e67535"
+      },
+      "status": "generated",
+      "diagnostics": {
+        "method": "pretrained-garment-conditioned-diffusion-inpainting",
+        "modelVersion": "catvton-vitonhd-16k-512",
+        "model": {
+          "backend": "CatVTON",
+          "source": "https://github.com/Zheng-Chong/CatVTON",
+          "sourceCommit": "999bdbe81e6008a3f5749af7c1e0b0fa3d21b48e",
+          "baseModel": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+          "baseRevision": "8a4288a76071f7280aedbdb3253bdb9e9d5d84bb",
+          "attentionCheckpoint": "zhengchong/CatVTON/vitonhd-16k-512",
+          "attentionRevision": "2969fcf85fe62f2036605716f0b56f0b81d01d79",
+          "vaeModel": "stabilityai/sd-vae-ft-mse",
+          "vaeRevision": "31f26fdeee1355a5c34592e401dd41e45d25a493",
+          "checkpointSha256": {
+            "base/unet/diffusion_pytorch_model.fp16.safetensors": "24b788b4a777748377cc20364eea4ae113c8c42f4468c16bc8c02fdae5492af9",
+            "attention/vitonhd-16k-512/attention/model.safetensors": "915df7bf19a33bee36a28d5f9ceaef1e2267c47526f98ca9e4c49e90ae5f0fd0",
+            "vae/diffusion_pytorch_model.safetensors": "a1d993488569e928462932c8c38a0760b874d166399b14414135bd9c42df5815",
+            "base/safety_checker/model.fp16.safetensors": "08902f19b1cfebd7c989f152fc0507bef6898c706a91d666509383122324b511"
+          },
+          "loadVerified": true,
+          "nativeResolution": [
+            384,
+            512
+          ],
+          "device": "cuda",
+          "dtype": "torch.float16",
+          "cudnnEnabled": true,
+          "convolutionMath": "float32",
+          "promotedConvolutionLayers": 162,
+          "inferenceSteps": 50,
+          "guidanceScale": 5.0,
+          "seed": 42,
+          "attention": "official PyTorch SDPA self attention; cross attention skipped by official CatVTON adapter",
+          "memoryPolicy": "Sequential classifier-free guidance; CPU safety checker; VAE slicing",
+          "safetyChecker": "Official Stable Diffusion checker runs on every generated image, on CPU",
+          "maskSource": "Caller-supplied semantic binary replacement mask; not upstream SCHP/DensePose automasking",
+          "license": "CC-BY-NC-SA-4.0; research/non-commercial use"
+        },
+        "nativeResolution": [
+          384,
+          512
+        ],
+        "personWindow": [
+          230,
+          142,
+          756,
+          842
+        ],
+        "garmentSegmentation": "flat-lay-background-segmentation",
+        "parsing": {
+          "modelVersion": "fashn-human-parser@1f80c34dbab321c5730dda5c3fea279fd3e97498",
+          "sourceCommit": "f2771f2fb8655349e87e2869bbde7ace0bd06f2c",
+          "checkpointSha256": "e43c8c8a9b04f28798f0a4630cf18caa2cdb27a0d454fae43a5716e6f7078244",
+          "device": "cpu",
+          "inputSize": {
+            "width": 1000,
+            "height": 1500
+          },
+          "modelInputSize": {
+            "width": 384,
+            "height": 576
+          },
+          "preprocessing": "Official cv2.INTER_AREA resize and ImageNet normalization",
+          "labels": {
+            "0": "background",
+            "1": "face",
+            "2": "hair",
+            "3": "top",
+            "4": "dress",
+            "5": "skirt",
+            "6": "pants",
+            "7": "belt",
+            "8": "bag",
+            "9": "hat",
+            "10": "scarf",
+            "11": "glasses",
+            "12": "arms",
+            "13": "hands",
+            "14": "legs",
+            "15": "feet",
+            "16": "torso",
+            "17": "jewelry"
+          },
+          "labelPixels": {
+            "background": 1279243,
+            "face": 9558,
+            "hair": 3403,
+            "top": 96606,
+            "pants": 68901,
+            "arms": 19481,
+            "hands": 9311,
+            "feet": 9887,
+            "torso": 3610
+          },
+          "timingSeconds": 4.282,
+          "limitations": "Semantic estimates; neck and left/right limbs are not separate model classes."
+        },
+        "compositing": {
+          "method": "pretrained-semantic-bounded-neural-composite",
+          "category": "t-shirt",
+          "oldClothingPixels": 96606,
+          "oldClothingMinimumAlpha": 1.0,
+          "editedPixels": 96611,
+          "preservedPixels": 1403389,
+          "changedPixelsOutsideEditMask": 0,
+          "identityPreservedExactly": true,
+          "collarTransition": "Generated clothing on adjacent predicted bare torso only; not a predicted neck label",
+          "collarTransitionRadiusPixels": 18,
+          "silhouettePolicy": "Conservative source garment extent; generated sleeve or hem extensions onto arms, unrelated clothes or background are not admitted.",
+          "limitations": "Preservation is conditional on semantic parsing; it does not guarantee perceptual realism or accurate fit."
+        },
+        "device": "cuda",
+        "qualityValidated": false
+      },
+      "output": "experiments\\runs\\catvton-guidance5\\reported-striped-shirt\\tryon-2d.png",
+      "visualAcceptance": "rejected",
+      "seconds": 315.413,
+      "rssMB": 113.5,
+      "visualFindings": [
+        "Uploaded cream stripes are entirely absent, despite stronger teal color and more natural folds.",
+        "Final composite has pale shoulder outlines and a visible collar seam; user acceptance criterion not met."
+      ]
+    }
+  ],
+  "scope": "Actual inference and software diagnostics; visual acceptance is recorded separately after image inspection."
+}

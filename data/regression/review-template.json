@@ -1,0 +1,7 @@
+{
+  "instructions": "Copy per evaluated run. Null means not assessed. Scores must come from human review.",
+  "runId": null, "personId": null, "garmentId": null, "split": "test",
+  "conditions": {"bodyShape": null, "lighting": null, "background": null, "pose": null, "category": null},
+  "ratings1To5": {"garmentAlignment": null, "bodyIdentityPreservation": null, "texturePreservation": null, "occlusionQuality": null},
+  "hasArtifact": null, "tapeMeasurementsCm": null, "actualPreferredSize": null, "notes": ""
+}
