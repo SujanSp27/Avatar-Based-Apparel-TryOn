@@ -1,9 +1,9 @@
 # Pretrained 2D try-on: implementation and verification
 
-Updated 11 October 2026. The application now routes 2D requests to CatVTON, conditioned on
+Updated 12 October 2026. The application now routes 2D requests to CatVTON, conditioned on
 the uploaded person, uploaded garment and a semantic clothing replacement mask. The previous
 geometric overlay is disconnected from the application API. **Real CatVTON inference completed,
-but both reviewed results were rejected because they lost all uploaded cream stripes.**
+but all three reviewed configurations failed to preserve the uploaded cream stripes.**
 The natural-fitting and garment-fidelity acceptance criterion remains unmet. Further model
 and preprocessing experiments are pending review; successful generation alone is insufficient.
 
@@ -47,6 +47,14 @@ Visual inspection again rejected both native and final outputs: the shirt was da
 but still lacked every cream stripe, with white shoulder outlines and a collar compositing
 seam. `experiments/catvton-guidance5-report.json` records this result. These implementation
 changes improve execution but have not solved garment fidelity or all boundary artifacts.
+
+The mixed checkpoint at reduced 384 by 512 resolution completed in **326.298 seconds**
+but invented a multicoloured print instead of the cream stripes. It was also rejected
+(`experiments/catvton-mix512-report.json`). The subsequent native 768 by 1024 local run
+was interrupted before producing an image. It fitted in GPU memory, but denoising took
+approximately 34–36 seconds per step. There is no completed native-resolution result to
+assess. The next evaluation uses Colab and the same pinned model at its intended resolution;
+see [the Colab setup](colab.md). Additional GPU memory does not itself establish visual quality.
 
 ## Selected model and pinned provenance
 
@@ -104,13 +112,21 @@ option here, not the selected application checkpoint or evidence of accepted out
    to `t-shirt` and `shirt`; dress and trouser requests are rejected on this path.
 6. Restore the neural result into the original coordinates. Semantic compositing sets full
    opacity on every predicted old-clothing pixel, avoiding blended remnants of beige fabric.
-   Preserve original face, hair, exposed limbs, background and unrelated clothing pixels.
-   A narrow adjacent bare-torso region can admit a generated collar transition.
-7. Save the original/result PNGs, native inputs/output, parsing maps, replacement mask,
-   preservation mask, alpha and provenance. Return their real local URLs only after export.
+   Preserve original face, hair, hands, unrelated clothing and pixels outside the bounded
+   garment edit region. A narrow semantic context band admits neckline and shoulder
+   transitions on adjacent torso, arms or background; it does not use a rectangular paste.
+7. Check for catastrophic loss of pronounced horizontal stripes. This narrow fidelity
+   guard rejects the two plain-shirt regressions with `vton_garment_fidelity_failed` and
+   retains diagnostics without publishing a final PNG. It abstains on other textures and
+   cannot certify general garment fidelity or realism.
+8. Save the original/result PNGs, native inputs/output, parsing maps, replacement mask,
+   preservation mask, alpha, fidelity diagnostics and provenance. Return real local URLs
+   only after the quality gate and export.
 
-The current conservative preservation policy limits sleeve or hem extensions onto exposed
-arms, background or lower clothing. It preserves identity but can constrain a different
+The refined compositor removed the reviewed white shoulder and collar seams on the saved
+guidance-5 output (`experiments/runs/composite-refinement/refined-seams-review.png`). This
+fix does not restore missing stripes. The current preservation policy limits sleeve or hem
+extensions to a bounded region near original clothing. It preserves identity but can constrain a different
 garment silhouette. Parser errors at collars, thin hair or occluded sleeves can still cause
 artifacts. Exact preservation of *predicted* protected pixels is a software invariant, not
 proof that every anatomically protected pixel was classified correctly. Native 384 by 512
@@ -179,14 +195,15 @@ actual timings, memory, input hashes, model provenance and failures. A `generate
 requires separate visual review of neckline, shoulders, both sleeves, hem, old-shirt removal,
 garment pattern, identity and background. A `pending human inspection` entry is not a pass.
 
-Current verification checkpoint: the historical DM-VTON output and both reviewed CatVTON
+Current verification checkpoint: the historical DM-VTON output and all three reviewed CatVTON
 outputs were visually rejected. CatVTON CUDA generation is demonstrated; accepted garment
 fidelity, multi-case evaluation and live neural API/browser generation remain pending.
 Earlier 9 October overlay results must not be counted as validation of this replacement.
 
-The prior full Python suite passed **89 tests in 38.33 seconds**, with three upstream warnings;
-the record is `experiments/vton-pytest-report.xml`. After the latest implementation changes,
-**33 focused adapter/precision tests passed**. The expanded full suite remains pending.
+The 11 October full Python suite passed **200 tests in 40.54 seconds**, with three upstream
+warnings; the record is `experiments/vton-pytest-report.xml`. On 12 October, **83 focused
+attention, experimental-conditioning and service-failure tests passed in 31.29 seconds**.
+The optional conditioning experiment is not enabled or validated by actual inference.
 Ruff and dependency consistency checks passed. The frontend production build and TypeScript
 passed on 10 October: 382 transformed modules, 302-second Vite build, with a large-chunk
 warning (`experiments/vton-ui-build-report.json`). Its source has not changed since that build.

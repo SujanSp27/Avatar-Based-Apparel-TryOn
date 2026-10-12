@@ -1,0 +1,15 @@
+﻿{
+  "checkedAt": "2026-10-12T15:32:29.332866+00:00",
+  "gpuCommandStatus": 0,
+  "gpu": "/opt/bin/nvidia-smi\nTesla T4, 15360 MiB, 580.82.07",
+  "error": "",
+  "devices": [
+    "/dev/nvidia-caps",
+    "/dev/nvidiactl",
+    "/dev/nvidia0",
+    "/dev/nvidia-uvm-tools",
+    "/dev/nvidia-uvm"
+  ],
+  "colabGpuFlag": "1"
+}
+

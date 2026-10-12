@@ -347,10 +347,12 @@ class CatVTONModel:
             "guidanceScale": self.guidance_scale,
             "seed": self.seed,
             "attention": (
-                "Full self attention with exact 256-query chunks; official cross attention skip"
+                "Full memory-efficient CUDA self attention when supported, otherwise exact "
+                "256-query chunks; official cross attention skip"
                 if height == 1024 else "Official SDPA self attention; official cross attention skip"
             ),
             "memoryPolicy": "Sequential classifier-free guidance; CPU safety checker; VAE slicing",
+            "vaeTiling": height == 1024,
             "safetyChecker": "Official Stable Diffusion checker runs on every generated image, on CPU",
             "maskSource": "Caller-supplied semantic binary replacement mask; not upstream SCHP/DensePose automasking",
             "license": "CC-BY-NC-SA-4.0; research/non-commercial use",

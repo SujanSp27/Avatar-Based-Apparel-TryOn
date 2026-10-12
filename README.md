@@ -13,11 +13,17 @@ it is no longer called by the application. The UI defaults to 2D for T-shirts an
 The API's `auto` mode first tries 3D, then calls the same neural 2D service for supported
 3D failures. A missing checkpoint or failed inference returns an error, never a pasted
 garment. The viewer compares the original and generated PNG and supports download.
-**CatVTON now completes real CUDA inference, but both reviewed outputs failed visual acceptance:**
-they generated plain shirts and lost the uploaded cream stripes. The requested
+**CatVTON completes real CUDA inference, but all three reviewed configurations failed visual acceptance:**
+they lost the uploaded cream stripes or invented a different print. The requested
 garment fidelity is not yet achieved. Further model/preprocessing experiments remain under
 review; an HTTP success is not proof of natural fitting. See the
 [model audit and verification state](docs/vton-model.md).
+
+The native-resolution GPU evaluation is moving to Google Colab. The self-contained
+[notebook](notebooks/Virtual_TryOn_GPU.ipynb) packages the inference code and explicitly
+listed regression fixtures; [Colab documentation](docs/colab.md) explains its isolated
+environment, actual result reports and browser connection. Preparing this notebook is not
+evidence of successful cloud inference or accepted fitting.
 
 2D image generation is independent of the existing size engine. It does not infer physical
 measurements or invent a size; the separate sizing API accepts actual measurements, and
@@ -52,7 +58,9 @@ integration now runs torch **2.5.1+cu121** and torchvision **0.20.1+cu121** on t
 GTX 1650 (4 GB VRAM). CUDA tensor checks and a complete 50-step CatVTON run passed; the run
 took 493.331 seconds including loading and parsing. A second run with improved masks,
 guidance 5 and the precision workaround completed in 315.413 seconds; both failed the
-garment-pattern review, and the second also showed shoulder outlines and a collar seam.
+garment-pattern review. A later compositor correction removed the reviewed shoulder/collar
+seams on saved output; missing garment details remain unresolved. The mixed checkpoint at
+reduced resolution also failed, and its native-resolution local run was interrupted.
 MediaPipe and human parsing run on CPU. The current GTX 16 workaround uses float32 Conv2d
 arithmetic with resident FP16 weights because this runtime's cuDNN FP16 convolution produced
 NaNs; its focused tests and an actual complete inference run pass. Visual fitting still fails.
@@ -99,9 +107,9 @@ semantic pixel preservation, independent sizing and unsupported categories.
 Earlier `experiments/2d-*` reports concern the superseded geometric preview and do not
 validate CatVTON or photorealistic fitting.
 
-Verification as of 11 October: the prior full suite passed **89 tests in 38.33 seconds**
-(`experiments/vton-pytest-report.xml`), with three upstream warnings. After the latest changes,
-**33 focused adapter/precision tests passed**; the expanded full suite is pending. Ruff and
+Verification: the 11 October full suite passed **200 tests in 40.54 seconds**
+(`experiments/vton-pytest-report.xml`), with three upstream warnings. On 12 October,
+**83 focused attention/conditioning/service-failure tests passed**. Ruff and
 `pip check` passed. Real inference and its rejected visual review are recorded separately in
 `experiments/catvton-initial-report.json` and `experiments/catvton-guidance5-report.json`.
 The current frontend production build and TypeScript

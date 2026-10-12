@@ -1,6 +1,6 @@
 # Implementation status
 
-Specification read in full before implementation and reread on 11 October 2026 while
+Specification read in full before implementation and reread on 12 October 2026 while
 replacing the 2D pipeline. The original specification is unchanged. Status refers to exercised code,
 not intended future work. The functioning end-to-end path is a **controlled approximate
 template prototype**, with pretrained pose/segmentation; it does not complete learned
@@ -9,7 +9,7 @@ SMPL/SMPL-X reconstruction or validate single-photo anthropometry.
 The user subsequently authorized **2D when 3D is unavailable**, then rejected the visible
 artifacts of the geometric overlay and requested a proper pretrained model. The application
 now routes 2D through CatVTON plus FASHN parsing; the old overlay is debug-only. Real CUDA
-inference now completes, but both reviewed CatVTON outputs lost the uploaded stripes and
+inference now completes, but all three reviewed CatVTON configurations lost or changed the uploaded stripes and
 were rejected. Visual acceptance remains unmet. This work does not
 complete learned 3D reconstruction or measurement validation. The original 3D and 9 October
 overlay verification records below are historical evidence, followed by a separate current
@@ -144,7 +144,7 @@ Main changes: `ml/tryon2d/service.py`, `ml/preprocessing/images.py`,
 frontend mode/result handling, evaluation and regression scripts/tests. No new model was
 trained and no external inference service was introduced.
 
-## Current pretrained 2D correction (11 October 2026)
+## Current pretrained 2D correction (12 October 2026)
 
 | Phase | Requirement | Status | Evidence |
 |------|------|------|------|
@@ -154,22 +154,24 @@ trained and no external inference service was introduced.
 | 2 | Preserve light garment details and give diffusion mask boundary context | IMPLEMENTED | Background-noise-aware threshold retains cream stripes; regression verifies all 33,007 cream pixels. `ml/vton/masking.py` adds constrained eight-pixel semantic dilation before latent downsampling; model receives and saves the exact segmented garment condition |
 | 2 | Separate neck and left/right limbs; universally accurate occlusion boundaries | PARTIALLY IMPLEMENTED | Parser has 18 classes with arms/hands but no separate neck/left/right labels; neck transition uses torso adjacency. Occlusion and boundary quality remain conditional on parsing |
 | 7 / 8 / 9 | Neural garment conditioning and synthesis replacing flat paste | PARTIALLY IMPLEMENTED | Real uploaded inputs passed through pretrained CatVTON in 493.331 seconds, then 315.413 seconds with guidance 5/new masks/float32 convolution arithmetic. Both generated plain shirts and lost all uploaded stripes; generation is real but fidelity fails |
-| 8 / 9 | Proper neckline, both sleeves and hem with no beige-shirt remnants | PARTIALLY IMPLEMENTED | Alpha 1 replaces all predicted original clothing. CatVTON yields more natural sleeves/folds, but guidance-5 review identified white shoulder outlines and a collar compositing seam. Historical DM-VTON was also rejected; no reviewed output meets the full criterion |
+| 8 / 9 | Proper neckline, both sleeves and hem with no beige-shirt remnants | PARTIALLY IMPLEMENTED | Alpha 1 replaces all predicted original clothing. Bounded semantic context removed the reviewed white shoulder/collar seams on saved output (`experiments/runs/composite-refinement/refined-seams-review.png`). Missing garment details remain unresolved; no reviewed output meets the full criterion |
 | 8 / 11 | Preserve original identity, limbs, lower clothing and background | PARTIALLY IMPLEMENTED | Actual initial CatVTON diagnostics report 1,403,378 preserved pixels, zero changes outside the edit mask and exact predicted identity preservation. Semantic errors and boundary seams remain limitations |
 | 6 | Keep brand size recommendation independent and avoid fabricated 2D sizing | IMPLEMENTED | Existing engine/API retained; real supplied dimensions produce S and XXL with chart provenance in `experiments/vton-independent-size-report.json`; 2D physical measurements and recommended size remain null |
 | 11 / 12 | Neural result contract, supported categories and honest failures | PARTIALLY IMPLEMENTED | `renderingMethod=pretrained-vton`, checkpoint provenance/masks, 2D T-shirt/shirt scope, typed model/category errors and health readiness are implemented; live CatVTON API/browser verification pending |
-| 13 / 14 | Actual input replay, output inspection, multiple people/garments | PARTIALLY IMPLEMENTED | Exact reported inputs replayed through parser, DM-VTON and two CatVTON configurations; reviewed outputs rejected. Reports retain hashes/provenance/timing/review. Multiple-person/garment CatVTON validation remains pending |
+| 13 / 14 | Actual input replay, output inspection, multiple people/garments | PARTIALLY IMPLEMENTED | Exact reported inputs replayed through parser, DM-VTON and three CatVTON configurations; reviewed outputs rejected. Reports retain hashes/provenance/timing/review. Multiple-person/garment CatVTON validation remains pending |
+| 12 / 13 | Reject catastrophic stripe loss without publishing a fake success | IMPLEMENTED | `ml/vton/quality.py`, `tests/test_vton_fidelity_failure.py`, `experiments/vton-fidelity-guard-report.json`: narrow horizontal-stripe check rejects both plain-shirt regressions; retains native diagnostics and returns 422 without final PNG. It is not a general visual-quality certificate |
 | 15 | Memory-aware pretrained inference on available GPU | IMPLEMENTED | Two complete actual runs on GTX 1650 4 GB/8 GB RAM with sequential CFG, VAE slicing and CPU safety checker. Verified GTX 16 FP16 cuDNN NaNs are handled by model-scoped float32 Conv2d arithmetic retaining FP16 weights; 50-step denoising reduced from approximately 397 to 227 seconds in these runs |
-| 16 | User's natural-looking uploaded-shirt acceptance criterion | PARTIALLY IMPLEMENTED | Actual generated outputs were inspected and rejected for complete stripe loss; latest also has shoulder/collar artifacts. No production-quality or accepted-fitting claim |
-| Experimental | Official mixed attention checkpoint | PARTIALLY IMPLEMENTED | `scripts/download_vton_mix.py` downloaded and verified 198,303,368-byte `mix-48k-1024` checkpoint, separate manifest. It is an experimental option, not selected or visually accepted; current mixed-checkpoint inference/review pending |
+| 16 | User's natural-looking uploaded-shirt acceptance criterion | PARTIALLY IMPLEMENTED | Actual generated outputs were inspected and rejected for missing or invented patterns. No production-quality or accepted-fitting claim |
+| Experimental | Official mixed attention checkpoint | PARTIALLY IMPLEMENTED | Verified `mix-48k-1024` weights; reduced-resolution run completed in 326.298 seconds and was rejected (`experiments/catvton-mix512-report.json`). Native-resolution local run was interrupted; no final image. Efficient attention supports its larger tensor without changing checkpoint weights |
 | Follow-up | Train or fine-tune if feasible | BLOCKED | No paired person/garment/target corpus or labelled disjoint validation set. Local 4 GB GPU/8 GB RAM has no established feasible training configuration. Pretrained inference is the active path; no new weights were trained |
 
 Current model details, exact source revisions, license terms, setup and limitations are in
-[`docs/vton-model.md`](vton-model.md). Verification recorded through 11 October:
+[`docs/vton-model.md`](vton-model.md). Verification recorded through 12 October:
 
-- Prior full suite: **89 Python tests passed in 38.33 seconds**, with three upstream warnings;
-  `experiments/vton-pytest-report.xml`. After subsequent changes, **33 focused adapter/precision
-  tests passed**. The expanded final full suite remains pending; these counts are not combined.
+- 11 October full suite: **200 Python tests passed in 40.54 seconds**, with three upstream
+  warnings; `experiments/vton-pytest-report.xml`. On 12 October, **83 focused attention,
+  conditioning and service-failure tests passed in 31.29 seconds**; counts are not combined.
+  The experimental conditioning module is not enabled or inference-validated.
 - Ruff and `pip check` passed. Pinned diffusers 0.29.2 and accelerate 0.31.0 are installed.
 - Actual CUDA inference: `experiments/catvton-initial-report.json` records 493.331 seconds,
   while `experiments/catvton-guidance5-report.json` records 315.413 seconds. Both generated
