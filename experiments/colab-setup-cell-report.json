@@ -1,0 +1,18 @@
+﻿{
+    "limitation":  "This response proves the setup subprocess returned successfully. The later scratch notebook had no retained cells or GPU; no cloud-generated image exists.",
+    "inferenceCompleted":  false,
+    "notebookOutputs":  [
+                            {
+                                "output_type":  "stream",
+                                "name":  "stdout",
+                                "text":  [
+                                             "Notebook Python: 3.13.15\n",
+                                             "Inference environment: /content/avatar-vton-435001900a52/.venv-colab/bin/python\n"
+                                         ]
+                            }
+                        ],
+    "modelLoaded":  false,
+    "startedAt":  "2026-10-12T15:32:41.629721+00:00",
+    "finishedAt":  "2026-10-12T15:36:56.378045+00:00",
+    "status":  "setup_cell_completed"
+}

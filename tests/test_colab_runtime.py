@@ -55,11 +55,13 @@ def test_setup_uses_isolated_interpreter_and_includes_mixed_checkpoint(tmp_path)
 def test_environment_ignores_notebook_pythonpath(monkeypatch):
     monkeypatch.setenv("PYTHONPATH", "unrelated-notebook-packages")
     monkeypatch.setenv("PYTHONHOME", "unrelated-interpreter")
+    monkeypatch.setenv("MPLBACKEND", "module://matplotlib_inline.backend_inline")
     env = runner.isolated_environment()
     assert "PYTHONPATH" not in env
     assert "PYTHONHOME" not in env
     assert os.environ["PYTHONPATH"] == "unrelated-notebook-packages"
     assert env["PYTHONNOUSERSITE"] == "1"
+    assert env["MPLBACKEND"] == "Agg"
 
 
 def test_refuses_current_interpreter_environment():
@@ -75,7 +77,10 @@ def test_refuses_unrelated_existing_directory(tmp_path):
 
 
 def test_runtime_failure_retains_report_without_success_image(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("MPLBACKEND", "module://matplotlib_inline.backend_inline")
+
     def unavailable():
+        assert os.environ["MPLBACKEND"] == "Agg"
         raise RuntimeError("No CUDA GPU is available")
 
     monkeypatch.setattr(runner, "runtime_probe", unavailable)

@@ -49,7 +49,6 @@ SOURCE_FILES = (
     "ml/vton/vendor/fashn_human_parser/parser.py",
     "scripts/download_vton.py",
     "scripts/download_vton_mix.py",
-    "scripts/download_vton_mix.py",
     "scripts/download_parser.py",
     "scripts/colab_runtime.py",
     "requirements-colab.txt",

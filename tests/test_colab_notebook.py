@@ -33,6 +33,7 @@ def archive_with(entries: dict[str, bytes], *, symlink: str | None = None) -> by
 
 
 def test_real_archive_is_reproducible_and_explicit():
+    assert len(builder.SOURCE_FILES) == len(set(builder.SOURCE_FILES))
     first, first_manifest = builder.source_archive()
     second, second_manifest = builder.source_archive()
     assert first == second
@@ -140,3 +141,19 @@ def test_saved_notebook_contains_current_source():
     payload, _ = builder.source_archive()
     assert notebook["metadata"]["avatarVton"]["sourceArchiveSha256"] == builder.sha256(payload)
     builder.validate_notebook(notebook)
+
+
+def test_combined_execution_guards_gpu_before_setup_and_omits_drive(monkeypatch):
+    monkeypatch.syspath_prepend(str(builder.ROOT / "scripts"))
+    from colab_notebook_control import execution_source
+
+    payload, _ = builder.source_archive()
+    source = execution_source(builder.make_notebook(payload))
+    assert "drive.mount" not in source
+    assert "show_image(" not in source
+    assert source.index("/dev/nvidia") < source.index("extract_verified_source(")
+    assert source.index('"setup",') < source.index("CASE_RECORDS = []")
+    assert source.index("CASE_RECORDS = []") < source.index("files.download(")
+    monkeypatch.setattr("glob.glob", lambda pattern: [])
+    with pytest.raises(RuntimeError, match="Select a Colab GPU"):
+        exec(compile(source, "<colab-test>", "exec"), {})

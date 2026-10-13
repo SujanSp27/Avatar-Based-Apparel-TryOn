@@ -61,6 +61,7 @@ def isolated_environment() -> dict[str, str]:
         "UV_PYTHON_INSTALL_BIN": "0",
         "UV_LINK_MODE": "copy",
         "MPLCONFIGDIR": str(ROOT / ".runtime/matplotlib"),
+        "MPLBACKEND": "Agg",
     })
     # A notebook's injected PYTHONPATH must not defeat venv isolation.
     env.pop("PYTHONPATH", None)
@@ -204,6 +205,10 @@ def run(args: argparse.Namespace) -> int:
     if args.dry_run:
         print(json.dumps({"status": "dry-run", **plan}, indent=2))
         return 0
+    # Colab exports its inline notebook backend to child processes. The
+    # isolated inference environment deliberately has no notebook UI packages;
+    # MediaPipe imports pyplot even though this pipeline never displays plots.
+    os.environ["MPLBACKEND"] = "Agg"
     output = args.output.resolve()
     if args.check_only:
         state = runtime_probe()

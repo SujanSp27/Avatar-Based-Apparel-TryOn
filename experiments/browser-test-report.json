@@ -65,7 +65,7 @@
       "specs": [
         {
           "title": "real uploads produce measurements, size and interactive GLB",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -78,48 +78,18 @@
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 342078,
-                  "error": {
-                    "message": "TimeoutError: page.waitForResponse: Timeout 180000ms exceeded while waiting for event \"response\"",
-                    "stack": "TimeoutError: page.waitForResponse: Timeout 180000ms exceeded while waiting for event \"response\"\n    at C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts:24:25",
-                    "location": {
-                      "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts",
-                      "column": 25,
-                      "line": 24
-                    },
-                    "snippet": "  22 |   await page.getByLabel(\"Height in cm\").fill(\"172\");\n  23 |   await page.getByRole(\"button\", { name: \"regular\", exact: true }).click();\n> 24 |   const response = page.waitForResponse(\n     |                         ^\n  25 |     (r) => r.url().endsWith(\"/api/tryon\") && r.request().method() === \"POST\",\n  26 |     { timeout: 180000 },\n  27 |   );"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts",
-                        "column": 25,
-                        "line": 24
-                      },
-                      "message": "TimeoutError: page.waitForResponse: Timeout 180000ms exceeded while waiting for event \"response\"\n\n  22 |   await page.getByLabel(\"Height in cm\").fill(\"172\");\n  23 |   await page.getByRole(\"button\", { name: \"regular\", exact: true }).click();\n> 24 |   const response = page.waitForResponse(\n     |                         ^\n  25 |     (r) => r.url().endsWith(\"/api/tryon\") && r.request().method() === \"POST\",\n  26 |     { timeout: 180000 },\n  27 |   );\n    at C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts:24:25"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 171243,
+                  "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-11T17:18:28.230Z",
+                  "startTime": "2026-10-12T15:33:56.841Z",
                   "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\test-results\\tryon-real-uploads-produce-c83f0-ts-size-and-interactive-GLB\\trace.zip"
-                    }
-                  ],
-                  "errorLocation": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\tryon.spec.ts",
-                    "column": 25,
-                    "line": 24
-                  }
+                  "attachments": []
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "66c05e63e94605070546-ca45c151631ecce7c7f8",
@@ -140,15 +110,15 @@
               "projectName": "",
               "results": [
                 {
-                  "workerIndex": 1,
+                  "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3637,
+                  "duration": 1590,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-11T17:24:30.454Z",
+                  "startTime": "2026-10-12T15:36:48.543Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -166,11 +136,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-11T17:18:25.025Z",
-    "duration": 369517.952,
-    "expected": 1,
+    "startTime": "2026-10-12T15:33:55.581Z",
+    "duration": 176029.611,
+    "expected": 2,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

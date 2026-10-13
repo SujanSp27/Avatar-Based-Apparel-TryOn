@@ -8,11 +8,26 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 from colab_control import ROOT, STATE, status, submit, wait_for
 
 MAPPING = STATE / "project-cells.json"
+
+
+def execution_source(notebook: dict) -> str:
+    from build_colab_notebook import validate_notebook
+
+    validate_notebook(notebook)
+    # The official bridge has a bounded WebSocket message size. Keep rich image
+    # display in the separate inspection cell; sending all PNGs in one tool
+    # response can disconnect an otherwise successful notebook run.
+    selected = {"verified-source", "isolated-setup", "run-regressions", "download-results"}
+    source = "import glob\nif not glob.glob('/dev/nvidia[0-9]*'):\n    raise RuntimeError('Select a Colab GPU runtime before starting this evaluation.')\n\n"
+    source += "\n\n".join("".join(cell["source"]) for cell in notebook["cells"] if cell["id"] in selected)
+    compile(source, "<colab:complete-evaluation>", "exec")
+    return source
 
 
 def result(request_id: str) -> dict:
@@ -28,12 +43,15 @@ def result(request_id: str) -> dict:
     raise RuntimeError(f"No structured result from {request_id}")
 
 
-def stage(notebook_path: Path) -> None:
+def stage(notebook_path: Path, *, new_session: bool = False) -> None:
     from build_colab_notebook import validate_notebook
 
     notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
     validate_notebook(notebook)
     fingerprint = notebook["metadata"]["avatarVton"]["sourceArchiveSha256"]
+    if new_session and MAPPING.exists():
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        MAPPING.replace(MAPPING.with_name(f"project-cells-{timestamp}.json"))
     mapping = json.loads(MAPPING.read_text()) if MAPPING.exists() else {
         "sourceArchiveSha256": fingerprint, "cells": {},
     }
@@ -70,13 +88,37 @@ def main() -> None:
     sub = parser.add_subparsers(dest="action", required=True)
     staging = sub.add_parser("stage")
     staging.add_argument("--notebook", type=Path, default=ROOT / "notebooks/Virtual_TryOn_GPU.ipynb")
+    staging.add_argument("--new-session", action="store_true")
+    sub.add_parser("run-all", help="Execute setup, evaluation and result export in one notebook cell")
     run = sub.add_parser("run")
     run.add_argument("cell")
     args = parser.parse_args()
     if not status()["processAlive"]:
         raise RuntimeError("Colab bridge is stopped.")
     if args.action == "stage":
-        stage(args.notebook)
+        stage(args.notebook, new_session=args.new_session)
+    elif args.action == "run-all":
+        notebook = json.loads((ROOT / "notebooks/Virtual_TryOn_GPU.ipynb").read_text(encoding="utf-8"))
+        source = execution_source(notebook)
+        # Existing bootstrap cells contain a large embedded archive. Reading
+        # their source back would exceed the official bridge's default limit.
+        # Insert after the first cell without fetching unrelated notebook code.
+        request = submit({"method": "call_tool", "name": "get_cells", "arguments": {
+            "cellIndexStart": 0, "cellIndexEnd": 0,
+        }})
+        if wait_for(request, 30)["status"] != "completed":
+            raise RuntimeError(f"Notebook read pending: {request}")
+        count = len(result(request)["cells"])
+        request = submit({"method": "call_tool", "name": "add_code_cell", "arguments": {
+            "cellIndex": count, "language": "python", "code": source,
+        }})
+        if wait_for(request, 30)["status"] != "completed":
+            raise RuntimeError(f"Evaluation cell insertion pending: {request}")
+        cell_id = result(request)["newCellId"]
+        request = submit({"method": "call_tool", "name": "run_code_cell", "arguments": {"cellId": cell_id}})
+        record = {"cellId": cell_id, "request": request, "status": "submitted"}
+        (STATE / "complete-evaluation.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+        print(json.dumps(record))
     else:
         mapping = json.loads(MAPPING.read_text())
         request = submit({"method": "call_tool", "name": "run_code_cell",

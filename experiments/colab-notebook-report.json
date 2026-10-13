@@ -3,10 +3,10 @@
   "cloudExecution": "not performed by notebook builder",
   "visualAcceptance": "not evaluated by notebook builder",
   "notebook": "notebooks\\Virtual_TryOn_GPU.ipynb",
-  "notebookSha256": "2b16e86b256fab7f4c84efa550766511829bab1a390c4f8ab9854b7b1e101629",
-  "notebookBytes": 1680455,
-  "sourceArchiveSha256": "435001900a522dd2bbb942dc60484b20dba22781dd709aa39a80e8c550d7a7af",
-  "sourceArchiveBytes": 1249265,
+  "notebookSha256": "29b494f4d2ad3031e3862ac2d91270ad16d52b518356aff54e88aafe414f8061",
+  "notebookBytes": 1680639,
+  "sourceArchiveSha256": "9055dfc8a594730642f05b80fe0be62995d536cca989af01edf88ddd37d66779",
+  "sourceArchiveBytes": 1249402,
   "checks": {
     "nbformat": "4.5",
     "codeCellsCompile": 6,
@@ -165,8 +165,8 @@
         "bytes": 627
       },
       "scripts/colab_runtime.py": {
-        "sha256": "8467b604b3861c19ee50735b0e2f119b0b24c0c14f844bec08bb5db88a1bb6ca",
-        "bytes": 13421
+        "sha256": "5ad8840369c9691a2c3b308393e8a7029718f426a2c033c1d479cf039647f7c3",
+        "bytes": 13717
       },
       "scripts/download_parser.py": {
         "sha256": "0684caec6d43ecb27bba3147ddac29cc5740a94249a56b4ba1abaa76949a360f",

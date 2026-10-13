@@ -107,14 +107,15 @@ semantic pixel preservation, independent sizing and unsupported categories.
 Earlier `experiments/2d-*` reports concern the superseded geometric preview and do not
 validate CatVTON or photorealistic fitting.
 
-Verification: the 11 October full suite passed **200 tests in 40.54 seconds**
-(`experiments/vton-pytest-report.xml`), with three upstream warnings. On 12 October,
-**83 focused attention/conditioning/service-failure tests passed**. Ruff and
+Verification: the 12 October full suite passed **273 tests in 50.94 seconds**
+(`experiments/colab-pytest-report.xml`), with three upstream warnings. On 13 October,
+**39 focused cloud-runner/notebook/result-archive tests passed**. Ruff and
 `pip check` passed. Real inference and its rejected visual review are recorded separately in
 `experiments/catvton-initial-report.json` and `experiments/catvton-guidance5-report.json`.
 The current frontend production build and TypeScript
-checks passed on 10 October (`experiments/vton-ui-build-report.json`); two non-inference
-category/error browser tests passed. Live neural API/browser generation remains pending.
+checks passed on 10 October (`experiments/vton-ui-build-report.json`); both existing
+3D browser tests passed on 12 October, including size, measurements and GLB controls.
+Live neural API/browser generation remains pending.
 
 From `frontend/`: `npm run build`; with the app running, `npm run test:e2e`. Playwright Chromium
 is required (`npx playwright install chromium` during setup for browser tests). Run API and

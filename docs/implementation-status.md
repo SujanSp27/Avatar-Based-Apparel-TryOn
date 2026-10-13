@@ -1,6 +1,6 @@
 # Implementation status
 
-Specification read in full before implementation and reread on 12 October 2026 while
+Specification read in full before implementation and reread on 13 October 2026 while
 replacing the 2D pipeline. The original specification is unchanged. Status refers to exercised code,
 not intended future work. The functioning end-to-end path is a **controlled approximate
 template prototype**, with pretrained pose/segmentation; it does not complete learned
@@ -196,3 +196,41 @@ Current model details, exact source revisions, license terms, setup and limitati
 The 48 Python tests and three browser tests in the earlier section belong to the superseded
 9 October implementation. Historical passes and current unit/API results are separate from
 the required visual acceptance. No training or fine-tuning has been performed.
+
+## Colab continuation (13 October 2026)
+
+| Phase | Requirement | Status | Evidence |
+|------|------|------|------|
+| 1 / 15 | Move native-resolution inference off the local 4 GB GPU | PARTIALLY IMPLEMENTED | `scripts/colab_runtime.py`, `requirements-colab.txt`, isolated Python setup, verified model downloads; Colab Tesla T4 with 15,360 MiB verified on 12 October in `experiments/colab-hardware-report.json`. The isolated setup cell completed, but no cloud model-load/inference result was obtained. A later reconnection opened a different empty scratch notebook whose probe had no GPU; the earlier report is not current-runtime evidence |
+| 1 / 14 | Reproducible notebook with explicit source/data scope | IMPLEMENTED | `notebooks/Virtual_TryOn_GPU.ipynb`, `scripts/build_colab_notebook.py`, `experiments/colab-notebook-report.json`; 38 files, five explicit fixtures, checksums, no credential/database/upload-directory bundle; actual source extraction ran in Colab |
+| 1 / 12 | Browser connection and notebook automation | IMPLEMENTED | Isolated pinned official Google Colab MCP server; `scripts/colab_bridge.py`, `scripts/colab_control.py`, `scripts/colab_notebook_control.py`; actual cells inserted/executed. Google account consent and GPU-runtime selection remain browser actions |
+| 1 / 12 | Continue setup and evaluation without another chat turn between stages | IMPLEMENTED | `scripts/colab_notebook_control.py run-all` executed setup, four sequential case attempts and ZIP export. The first attempts failed before model inference; their actual reports were downloaded and collected. Image inspection is now separate to respect the bridge message limit. Optional Drive authorization is excluded; `--new-session` preserves prior cell mappings |
+| 13 | Local regression verification after cloud integration | IMPLEMENTED | 273 Python tests passed in 50.94 seconds, three upstream warnings (`experiments/colab-pytest-report.xml`); Ruff passed. Both existing real-browser 3D tests passed in 176 seconds (`experiments/browser-test-report.json`), including size, measurements and GLB controls |
+| 16 | Cloud result satisfies the uploaded-shirt acceptance criterion | PARTIALLY IMPLEMENTED | Earlier runtime provisioning is verified; the current runtime must be probed again. No cloud image inference or visual review has completed. All three reviewed local CatVTON configurations remain rejected for missing or invented stripes, and the native-resolution local run produced no final image before interruption. No accepted-output or training claim |
+
+The 12 October setup completion covered isolated environment installation and model
+downloads; it is not evidence of loading those weights or running inference on the T4.
+Reconnecting on 13 October must establish the active notebook and GPU before work can
+continue. Once connected, the agent handles source transfer, installation, inference and
+artifact retrieval. No normal development setup is delegated to the user. Google account
+consent and the Colab runtime selector remain browser actions when required.
+
+Fine-tuning has not started. The bundled examples are unpaired regression inputs, and
+there is no licensed paired training corpus or disjoint labelled validation set. The next
+technical milestone remains an actual native-resolution pretrained result and visual
+inspection of garment fidelity, neckline, sleeves, hem and identity preservation.
+
+The first complete Colab runner attempt on 13 October used Python 3.12.14,
+torch 2.5.1+cu121 and a Tesla T4 (14.56 GiB reported by PyTorch). All four cases
+stopped at MediaPipe import because Colab's inherited `MPLBACKEND` pointed to
+`matplotlib_inline`, which is absent from the isolated environment. The runner
+now explicitly uses the headless `Agg` backend. The downloaded failure archive is
+`experiments/colab-tryon-results-20261013.zip`; extracted reports are under
+`experiments/runs/colab-initial-environment-failure`. These failures are not model
+quality results. The corrected rerun is pending completion.
+
+The updated cloud setup, combined-cell guard and result-archive tests passed:
+**39 tests in 2.91 seconds**, with two upstream warnings
+(`experiments/colab-correction-pytest-report.xml`); Ruff passed. The collector
+verifies paths and available artifact checksums before extracting results and
+does not mark generated candidates visually accepted.
