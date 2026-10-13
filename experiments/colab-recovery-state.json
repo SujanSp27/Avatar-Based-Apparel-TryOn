@@ -1,0 +1,23 @@
+{
+  "recoveredOn": "2026-10-13",
+  "previousCellId": "Em_0D8PY0j5r",
+  "previousRequestId": "27a77575-8908-4770-b629-3351a2105b11",
+  "bridgeProcessAlive": false,
+  "bridgeLastRecordedStatus": "processing (stale; local process exited)",
+  "recoveredExecutionStatus": "completed; four case reports and exported images recovered",
+  "liveColabRuntimeStatus": "unknown; no fresh connection needed for completed artifact recovery",
+  "restartPerformed": false,
+  "newCloudNotebookCreated": false,
+  "newInferencePerformed": false,
+  "cloudRunId": "20261013T103702748573Z",
+  "executedSourceArchiveSha256": "9055dfc8a594730642f05b80fe0be62995d536cca989af01edf88ddd37d66779",
+  "downloadedArchive": "experiments/colab-corrected-results-20261013.zip",
+  "downloadedArchiveSha256": "37038cec9aac4d011e8878d822d8ab2933de42215eb718747832cb131b6bbea5",
+  "downloadedArchiveBytes": 16107471,
+  "collectedFiles": 98,
+  "collection": "experiments/runs/colab-corrected-20261013",
+  "visualReview": "experiments/colab-review-20261013/report.json",
+  "imageGallery": "experiments/colab-review-20261013/index.html",
+  "nextStep": "New pose sleeve support has offline regression coverage but has not been passed through the neural model. Do not rerun this completed job or reopen a scratch notebook as recovery. The user explicitly prohibited new inference runs in this continuation.",
+  "qualityValidated": false
+}

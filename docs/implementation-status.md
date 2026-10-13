@@ -9,8 +9,10 @@ SMPL/SMPL-X reconstruction or validate single-photo anthropometry.
 The user subsequently authorized **2D when 3D is unavailable**, then rejected the visible
 artifacts of the geometric overlay and requested a proper pretrained model. The application
 now routes 2D through CatVTON plus FASHN parsing; the old overlay is debug-only. Real CUDA
-inference now completes, but all three reviewed CatVTON configurations lost or changed the uploaded stripes and
-were rejected. Visual acceptance remains unmet. This work does not
+inference now completes. The existing native-resolution T4 job was recovered and all four
+cases inspected: a black photographed shirt gives a promising candidate, while stripes,
+jersey digits and vest-to-sleeve conversion fail. The reported striped-input acceptance
+remains unmet. This work does not
 complete learned 3D reconstruction or measurement validation. The original 3D and 9 October
 overlay verification records below are historical evidence, followed by a separate current
 neural-pipeline table. Historical counts are not rerun results for the new model.
@@ -144,7 +146,7 @@ Main changes: `ml/tryon2d/service.py`, `ml/preprocessing/images.py`,
 frontend mode/result handling, evaluation and regression scripts/tests. No new model was
 trained and no external inference service was introduced.
 
-## Current pretrained 2D correction (12 October 2026)
+## Pretrained 2D correction through 12 October 2026 (historical; recovery below)
 
 | Phase | Requirement | Status | Evidence |
 |------|------|------|------|
@@ -201,24 +203,31 @@ the required visual acceptance. No training or fine-tuning has been performed.
 
 | Phase | Requirement | Status | Evidence |
 |------|------|------|------|
-| 1 / 15 | Move native-resolution inference off the local 4 GB GPU | PARTIALLY IMPLEMENTED | `scripts/colab_runtime.py`, `requirements-colab.txt`, isolated Python setup, verified model downloads; Colab Tesla T4 with 15,360 MiB verified on 12 October in `experiments/colab-hardware-report.json`. The isolated setup cell completed, but no cloud model-load/inference result was obtained. A later reconnection opened a different empty scratch notebook whose probe had no GPU; the earlier report is not current-runtime evidence |
+| 1 / 15 | Move native-resolution inference off the local 4 GB GPU | IMPLEMENTED | Recovered run `20261013T103702748573Z` loaded verified CatVTON mix-48k-1024 weights and ran four actual 768x1024 cases on Tesla T4, Python 3.12.14, torch 2.5.1+cu121; 144.331–148.972 seconds each. `experiments/colab-review-20261013/report.json` |
 | 1 / 14 | Reproducible notebook with explicit source/data scope | IMPLEMENTED | `notebooks/Virtual_TryOn_GPU.ipynb`, `scripts/build_colab_notebook.py`, `experiments/colab-notebook-report.json`; 38 files, five explicit fixtures, checksums, no credential/database/upload-directory bundle; actual source extraction ran in Colab |
 | 1 / 12 | Browser connection and notebook automation | IMPLEMENTED | Isolated pinned official Google Colab MCP server; `scripts/colab_bridge.py`, `scripts/colab_control.py`, `scripts/colab_notebook_control.py`; actual cells inserted/executed. Google account consent and GPU-runtime selection remain browser actions |
-| 1 / 12 | Continue setup and evaluation without another chat turn between stages | IMPLEMENTED | `scripts/colab_notebook_control.py run-all` executed setup, four sequential case attempts and ZIP export. The first attempts failed before model inference; their actual reports were downloaded and collected. Image inspection is now separate to respect the bridge message limit. Optional Drive authorization is excluded; `--new-session` preserves prior cell mappings |
+| 1 / 12 | Continue setup and evaluation without another chat turn between stages | IMPLEMENTED | Existing combined cell completed all four model runs and ZIP export. Original browser download recovered after bridge process exited; 98 files and available hashes verified. No cloud restart/new notebook/new inference during recovery. `experiments/colab-recovery-state.json` records original cell, request and source hash |
 | 13 | Local regression verification after cloud integration | IMPLEMENTED | 273 Python tests passed in 50.94 seconds, three upstream warnings (`experiments/colab-pytest-report.xml`); Ruff passed. Both existing real-browser 3D tests passed in 176 seconds (`experiments/browser-test-report.json`), including size, measurements and GLB controls |
-| 16 | Cloud result satisfies the uploaded-shirt acceptance criterion | PARTIALLY IMPLEMENTED | Earlier runtime provisioning is verified; the current runtime must be probed again. No cloud image inference or visual review has completed. All three reviewed local CatVTON configurations remain rejected for missing or invented stripes, and the native-resolution local run produced no final image before interruption. No accepted-output or training claim |
+| 13 / 14 | Inspect all four recovered cases, preserve inputs and immutable outputs | IMPLEMENTED | `experiments/colab-visual-observations.json`, `scripts/review_colab_results.py`, `experiments/colab-review-20261013/index.html`; native/final outputs compared against actual conditioning and source photos. Gallery includes rejected diagnostics with explicit labels |
+| 11 / 13 | Make recovered outputs locally inspectable | IMPLEMENTED | Headless Chromium loaded all four gallery sections and all 23 images with no page errors; `experiments/colab-gallery-browser-report.json`. This checks the local gallery, not new model inference or live application generation |
+| 8 / 11 | Preserve identity in actual final cloud candidates | PARTIALLY IMPLEMENTED | Offline pixel comparison finds zero changes in parsed face/hair/hands/lower-clothing regions and outside saved edit masks for all three finals. Parser accuracy and natural boundaries remain limitations |
+| 2 / 8 | Correct vest-to-short-sleeve mask restriction | PARTIALLY IMPLEMENTED | `ml/vton/masking.py`, `parsing.py`, `service.py`: pose-guided upper-arm support shared with semantic compositor. Saved failure mask admits 34,875 additional upper-arm pixels, zero protected pixels; 57 focused tests passed. No neural inference with revised masks has run |
+| 13 | Verify revised local source without launching another inference | IMPLEMENTED | 278 non-integration tests passed, 16 integration tests deliberately deselected, 44.07 seconds, three upstream warnings (`experiments/colab-recovery-pytest-report.xml`). Ruff and pip check pass. Existing local notebook rebuilt; original executed source manifest preserved separately |
+| 16 | Cloud result satisfies the uploaded-shirt acceptance criterion | PARTIALLY IMPLEMENTED | Stripe case rejected automatically; jersey visually rejected for distorted digits; second person rejected for missing sleeves/shoulder remnants. Black-shirt studio case is promising with print/edge limitations. Exact striped-input criterion remains unmet; no production-quality claim |
 
-The 12 October setup completion covered isolated environment installation and model
-downloads; it is not evidence of loading those weights or running inference on the T4.
-Reconnecting on 13 October must establish the active notebook and GPU before work can
-continue. Once connected, the agent handles source transfer, installation, inference and
-artifact retrieval. No normal development setup is delegated to the user. Google account
-consent and the Colab runtime selector remain browser actions when required.
+The completed job was exported to `experiments/colab-corrected-results-20261013.zip`,
+16,107,471 bytes, SHA-256 `37038cec9aac4d011e8878d822d8ab2933de42215eb718747832cb131b6bbea5`.
+The 98 collected files under `experiments/runs/colab-corrected-20261013` are unchanged;
+local visual observations and revised-mask previews live separately. The bridge process is
+stopped, so its old `processing` record is stale. Live Colab runtime status is unknown;
+completed artifacts were recovered without any manual intervention or new connection.
 
 Fine-tuning has not started. The bundled examples are unpaired regression inputs, and
 there is no licensed paired training corpus or disjoint labelled validation set. The next
-technical milestone remains an actual native-resolution pretrained result and visual
-inspection of garment fidelity, neckline, sleeves, hem and identity preservation.
+technical milestone is a newly authorized neural evaluation of the corrected sleeve masks
+and a solution to uploaded-pattern loss. No new run was started because the user's recovery
+instruction explicitly prohibited it. Existing neural pixels cannot supply sleeves that
+the old mask prevented the model from generating. No garment overlay was substituted.
 
 The first complete Colab runner attempt on 13 October used Python 3.12.14,
 torch 2.5.1+cu121 and a Tesla T4 (14.56 GiB reported by PyTorch). All four cases
@@ -227,7 +236,8 @@ stopped at MediaPipe import because Colab's inherited `MPLBACKEND` pointed to
 now explicitly uses the headless `Agg` backend. The downloaded failure archive is
 `experiments/colab-tryon-results-20261013.zip`; extracted reports are under
 `experiments/runs/colab-initial-environment-failure`. These failures are not model
-quality results. The corrected rerun is pending completion.
+quality results. The corrected run completed and its actual generated artifacts were recovered;
+it verifies that the headless-backend correction works.
 
 The updated cloud setup, combined-cell guard and result-archive tests passed:
 **39 tests in 2.91 seconds**, with two upstream warnings

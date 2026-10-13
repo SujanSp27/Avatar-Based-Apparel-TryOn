@@ -21,7 +21,10 @@ mask covering the existing upper clothing. FASHN parsing identifies face, hair, 
 hands, clothing, lower body and background. It has no separate neck or left/right arm
 classes. Postprocessing preserves original pixels outside the semantic edit area; source
 clothing pixels are fully replaced rather than blended back. This preservation depends on
-segmentation accuracy and currently constrains substantial sleeve/hem silhouette changes.
+segmentation accuracy. The revised mask reserves pose-guided space on the proximal upper arms
+for short sleeves, and composition admits only model-generated clothing there. The correction
+has offline coverage but has not undergone new neural inference. Long-sleeve changes and large
+hem changes remain unvalidated; prefer short-sleeved product photographs.
 Natural neckline, sleeve alignment, pattern retention and lack of old-shirt fragments
 require visual inspection; neither mask tests nor successful inference prove realism.
 

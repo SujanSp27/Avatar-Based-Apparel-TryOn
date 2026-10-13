@@ -173,7 +173,7 @@ class PretrainedTryOn:
                 ) from exc
 
     def _render(self, person, garment_data, category, folder):
-        from ml.vton.masking import build_replacement_mask
+        from ml.vton.masking import build_replacement_mask, short_sleeve_support
         from ml.vton.parsing import compose_preserving_identity
         from ml.vton.quality import assess_garment_fidelity
 
@@ -189,7 +189,17 @@ class PretrainedTryOn:
             Image.fromarray(parsed.labels[y0:y1, x0:x1]), 0, nearest=True,
             canvas_size=self.native_size,
         )
-        replacement_native = Image.fromarray(build_replacement_mask(np.asarray(labels_native)))
+        sleeve_support = short_sleeve_support(parsed.labels, person.landmarks)
+        support_native, _ = fit_canvas(
+            Image.fromarray(sleeve_support[y0:y1, x0:x1].astype(np.uint8) * 255),
+            0, nearest=True, canvas_size=self.native_size,
+        )
+        replacement_native = Image.fromarray(build_replacement_mask(
+            np.asarray(labels_native), sleeve_support=np.asarray(support_native) > 127,
+        ))
+        Image.fromarray(sleeve_support.astype(np.uint8) * 255).save(
+            folder / "vton-sleeve-support.png"
+        )
 
         rgba = decode_image(garment_data, min_dimension=128)
         garment_rgb = np.ascontiguousarray(rgba[:, :, :3])
@@ -241,7 +251,8 @@ class PretrainedTryOn:
         generated_parse = self._parser.predict(generated_full)
         Image.fromarray(generated_parse.labels).save(folder / "generatedParsing.png")
         composite = compose_preserving_identity(
-            original, generated_full, parsed, generated_parse, category
+            original, generated_full, parsed, generated_parse, category,
+            sleeve_support=sleeve_support,
         )
         composite.save_diagnostics(folder)
         Image.fromarray(original).save(folder / "original-person.png")
@@ -258,6 +269,8 @@ class PretrainedTryOn:
             "model": self._model.provenance,
             "nativeResolution": list(self.native_size),
             "personWindow": list(window),
+            "replacementMaskVersion": "semantic-pose-short-sleeve-v2",
+            "maskLimitations": "Pose permits proximal upper-arm synthesis; long-sleeve changes are not validated.",
             "garmentSegmentation": garment_source,
             "parsing": parsed.diagnostics,
             "compositing": composite.diagnostics,

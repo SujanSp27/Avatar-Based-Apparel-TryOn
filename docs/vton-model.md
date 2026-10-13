@@ -1,11 +1,13 @@
 # Pretrained 2D try-on: implementation and verification
 
-Updated 12 October 2026. The application now routes 2D requests to CatVTON, conditioned on
+Updated 13 October 2026. The application now routes 2D requests to CatVTON, conditioned on
 the uploaded person, uploaded garment and a semantic clothing replacement mask. The previous
-geometric overlay is disconnected from the application API. **Real CatVTON inference completed,
-but all three reviewed configurations failed to preserve the uploaded cream stripes.**
-The natural-fitting and garment-fidelity acceptance criterion remains unmet. Further model
-and preprocessing experiments are pending review; successful generation alone is insufficient.
+geometric overlay is disconnected from the application API. **The existing four-case T4 job
+completed and its 98 exported files were recovered without another inference run.** The studio
+person wearing the black photographed shirt is a promising prototype candidate. The striped
+drawing, distorted jersey digits and missing sleeves on the second person fail acceptance.
+See the [image gallery](../experiments/colab-review-20261013/index.html) and
+[review with pixel checks](../experiments/colab-review-20261013/report.json).
 
 ## Audit of the reported result
 
@@ -53,8 +55,11 @@ but invented a multicoloured print instead of the cream stripes. It was also rej
 (`experiments/catvton-mix512-report.json`). The subsequent native 768 by 1024 local run
 was interrupted before producing an image. It fitted in GPU memory, but denoising took
 approximately 34–36 seconds per step. There is no completed native-resolution result to
-assess. The next evaluation uses Colab and the same pinned model at its intended resolution;
-see [the Colab setup](colab.md). Additional GPU memory does not itself establish visual quality.
+assess from that interrupted local run. The subsequent Colab run used the same pinned model
+at its intended resolution and completed all four cases in 144.331–148.972 seconds per case.
+See [the recovered Colab evaluation](colab.md). Additional GPU memory did not solve the
+striped regression: its actual striped conditioning input survived preprocessing, but the
+neural output invented a beige speckled garment.
 
 ## Selected model and pinned provenance
 
@@ -101,6 +106,13 @@ option here, not the selected application checkpoint or evidence of accepted out
    context dilation. Protected head/hair/hands/lower-body classes constrain that dilation.
    The context reduces old-clothing leakage when the mask is downsampled into VAE latents;
    the inference window is never used as a rectangular replacement mask.
+   After inspecting the recovered sleeveless failure, a local correction adds two bounded
+   corridors along confident MediaPipe shoulder-to-elbow landmarks. They cover the proximal
+   upper arms, stop before the elbows and exclude protected semantic regions. The same
+   source-coordinate support is used by the compositor, which requires generated clothing
+   semantics before covering skin. `vton-sleeve-support.png` and mask version diagnostics
+   record the policy. Missing/unreliable joints do not expand the mask. This revision has
+   offline tests and saved-mask previews only; no new neural run was started.
 4. Segment the actual garment using transparency/plain-background segmentation or semantic
    parsing for worn garments. Plain-background thresholding now adapts to measured background
    noise, retaining cream stripes previously discarded near sleeve edges. Crop and
@@ -125,9 +137,12 @@ option here, not the selected application checkpoint or evidence of accepted out
 
 The refined compositor removed the reviewed white shoulder and collar seams on the saved
 guidance-5 output (`experiments/runs/composite-refinement/refined-seams-review.png`). This
-fix does not restore missing stripes. The current preservation policy limits sleeve or hem
-extensions to a bounded region near original clothing. It preserves identity but can constrain a different
-garment silhouette. Parser errors at collars, thin hair or occluded sleeves can still cause
+fix does not restore missing stripes. The recovered vest case proved that the previous
+narrow dilation constrained sleeves in both the neural mask and the compositor. The revised
+pose support opens 34,875 additional upper-arm pixels in that saved 768 by 1024 mask, while
+opening zero protected pixels and retaining all parsed old clothing. This establishes mask
+coverage only; it cannot repair the old raw output, which contains no sleeves. Hem extensions
+remain bounded near original clothing. Parser errors at collars, thin hair or occluded sleeves can still cause
 artifacts. Exact preservation of *predicted* protected pixels is a software invariant, not
 proof that every anatomically protected pixel was classified correctly. Native 384 by 512
 generation can lose stripe, logo and fabric detail when enlarged. No unconditional guarantee
@@ -195,10 +210,17 @@ actual timings, memory, input hashes, model provenance and failures. A `generate
 requires separate visual review of neckline, shoulders, both sleeves, hem, old-shirt removal,
 garment pattern, identity and background. A `pending human inspection` entry is not a pass.
 
-Current verification checkpoint: the historical DM-VTON output and all three reviewed CatVTON
-outputs were visually rejected. CatVTON CUDA generation is demonstrated; accepted garment
-fidelity, multi-case evaluation and live neural API/browser generation remain pending.
+Current verification checkpoint: the historical DM-VTON output and three local CatVTON
+configurations were rejected. The recovered four-case Colab evaluation is now inspected:
+the studio black-shirt candidate is promising, while stripes, jersey digits and the
+vest-to-shirt case fail. Live neural API/browser generation and the exact striped-input
+acceptance remain pending. The revised pose mask has not been used for neural inference.
 Earlier 9 October overlay results must not be counted as validation of this replacement.
+
+The recovery continuation passed **278 non-integration tests in 44.07 seconds**, with
+16 integration cases excluded to avoid launching new inference. Ruff and `pip check` pass.
+The local mask audit and visual findings are in `experiments/colab-review-20261013/report.json`;
+the original Colab archive, reports and generated pixels remain unchanged.
 
 The 11 October full Python suite passed **200 tests in 40.54 seconds**, with three upstream
 warnings; the record is `experiments/vton-pytest-report.xml`. On 12 October, **83 focused

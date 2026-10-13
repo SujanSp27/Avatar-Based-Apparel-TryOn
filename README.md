@@ -13,17 +13,21 @@ it is no longer called by the application. The UI defaults to 2D for T-shirts an
 The API's `auto` mode first tries 3D, then calls the same neural 2D service for supported
 3D failures. A missing checkpoint or failed inference returns an error, never a pasted
 garment. The viewer compares the original and generated PNG and supports download.
-**CatVTON completes real CUDA inference, but all three reviewed configurations failed visual acceptance:**
-they lost the uploaded cream stripes or invented a different print. The requested
-garment fidelity is not yet achieved. Further model/preprocessing experiments remain under
-review; an HTTP success is not proof of natural fitting. See the
+**The completed Colab T4 job and all four cases have been recovered and visually reviewed.**
+The black graphic shirt on the studio person is a promising prototype candidate; the striped
+drawing loses its pattern, the jersey's digits distort, and the vest-to-shirt case lacks
+sleeves. The requested striped-shirt acceptance remains unmet. An HTTP success is not proof
+of natural fitting. See the [actual image gallery](experiments/colab-review-20261013/index.html) and
 [model audit and verification state](docs/vton-model.md).
 
-The native-resolution GPU evaluation is moving to Google Colab. The self-contained
+The native-resolution GPU evaluation completed in Google Colab. The self-contained
 [notebook](notebooks/Virtual_TryOn_GPU.ipynb) packages the inference code and explicitly
 listed regression fixtures; [Colab documentation](docs/colab.md) explains its isolated
-environment, actual result reports and browser connection. Preparing this notebook is not
-evidence of successful cloud inference or accepted fitting.
+environment, actual result reports and browser connection. The original four-case job was
+recovered from its existing download without restarting Colab or rerunning inference.
+The local pose-guided sleeve-mask correction has offline tests; neural inference with that
+correction has not run. The existing local notebook package is rebuilt from the revised source,
+while the recovered run keeps its original source hash and immutable outputs.
 
 2D image generation is independent of the existing size engine. It does not infer physical
 measurements or invent a size; the separate sizing API accepts actual measurements, and
@@ -116,6 +120,12 @@ The current frontend production build and TypeScript
 checks passed on 10 October (`experiments/vton-ui-build-report.json`); both existing
 3D browser tests passed on 12 October, including size, measurements and GLB controls.
 Live neural API/browser generation remains pending.
+
+After recovering the existing T4 job on 13 October, **278 non-integration tests passed
+in 44.07 seconds**, with 16 integration tests excluded to avoid launching inference.
+Ruff and `pip check` passed. `experiments/colab-recovery-pytest-report.xml` and
+`experiments/colab-recovery-state.json` record this continuation. Visual results and
+revised-mask previews are separate from test pass counts.
 
 From `frontend/`: `npm run build`; with the app running, `npm run test:e2e`. Playwright Chromium
 is required (`npx playwright install chromium` during setup for browser tests). Run API and

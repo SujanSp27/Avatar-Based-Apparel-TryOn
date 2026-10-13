@@ -1,0 +1,42 @@
+{
+  "archiveSha256": "37038cec9aac4d011e8878d822d8ab2933de42215eb718747832cb131b6bbea5",
+  "reviewMethod": "Assistant inspected original person, actual garment, model conditioning, raw generated images and saved final candidates on 13 October 2026. This is a qualitative review, not a calibrated metric.",
+  "cases": {
+    "reported-striped-shirt": {
+      "verdict": "rejected",
+      "observations": [
+        "The actual conditioning image retains the uploaded teal and cream stripes.",
+        "The raw model output is a beige/grey speckled garment with an invented asymmetric neckline; uploaded colors and stripes are absent.",
+        "The existing stripe-loss guard correctly rejected it and no final candidate was published.",
+        "This is a native neural garment-fidelity failure, not a compositing failure; acceptance for the reported input remains unmet."
+      ]
+    },
+    "different-garment": {
+      "verdict": "rejected for graphic distortion",
+      "observations": [
+        "The brown jersey, contrast sleeves and V neckline transfer to the original studio person with plausible shoulder, sleeve and hem placement.",
+        "The source beige top is no longer visibly exposed in the inspected image.",
+        "The large 95 graphic acquires duplicated enclosed loops and severely distorted digit shapes, already present in the raw output; lettering is also degraded.",
+        "Small speckled artifacts remain around the side/underarm edges. Garment fidelity is insufficient for acceptance despite improved fitting."
+      ]
+    },
+    "different-person": {
+      "verdict": "rejected for missing sleeves",
+      "observations": [
+        "The black Rhude graphic transfers, but the uploaded short-sleeved T-shirt becomes a sleeveless top matching the source vest silhouette.",
+        "Both raw and final images lack sleeves; the original replacement mask does not open enough upper-arm space.",
+        "White source-clothing slivers remain at the shoulders and there are rough neckline/armhole boundaries in the final composite.",
+        "The saved raw output cannot be repaired into a sleeved shirt solely by compositing because the model did not synthesize sleeves."
+      ]
+    },
+    "shirt-category": {
+      "verdict": "promising prototype candidate; limitations remain",
+      "observations": [
+        "The studio person appears in the uploaded black graphic T-shirt with plausible round neckline, shoulders, both sleeves and hem.",
+        "The main color and large graphic are recognizable; no large beige-shirt fragments are visible in the inspected final image.",
+        "Face, hair, hands, jeans and background appear preserved; the separate pixel audit tests preservation against saved semantic masks.",
+        "Small text and print details are degraded, with residual roughness at underarm/side boundaries. This single candidate does not validate production-quality fitting or arbitrary shirts."
+      ]
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "sections": 4,
+  "imageCount": 23,
+  "images": [
+    {
+      "caption": "Original person",
+      "loaded": true,
+      "width": 1000,
+      "height": 1500
+    },
+    {
+      "caption": "Actual model garment input",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Raw model output (diagnostic)",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Recovered final candidate",
+      "loaded": true,
+      "width": 1000,
+      "height": 1500
+    },
+    {
+      "caption": "Mask used by completed job",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Revised mask only; no new inference",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Original person",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Actual model garment input",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Raw model output (diagnostic)",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Recovered final candidate",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Mask used by completed job",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Revised mask only; no new inference",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Original person",
+      "loaded": true,
+      "width": 1000,
+      "height": 1500
+    },
+    {
+      "caption": "Actual model garment input",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Raw model output (diagnostic)",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Mask used by completed job",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Revised mask only; no new inference",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Original person",
+      "loaded": true,
+      "width": 1000,
+      "height": 1500
+    },
+    {
+      "caption": "Actual model garment input",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Raw model output (diagnostic)",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Recovered final candidate",
+      "loaded": true,
+      "width": 1000,
+      "height": 1500
+    },
+    {
+      "caption": "Mask used by completed job",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "caption": "Revised mask only; no new inference",
+      "loaded": true,
+      "width": 768,
+      "height": 1024
+    }
+  ],
+  "errors": [],
+  "newInferencePerformed": false,
+  "status": "passed"
+}

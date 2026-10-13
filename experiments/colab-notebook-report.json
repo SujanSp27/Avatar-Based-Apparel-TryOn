@@ -3,10 +3,10 @@
   "cloudExecution": "not performed by notebook builder",
   "visualAcceptance": "not evaluated by notebook builder",
   "notebook": "notebooks\\Virtual_TryOn_GPU.ipynb",
-  "notebookSha256": "29b494f4d2ad3031e3862ac2d91270ad16d52b518356aff54e88aafe414f8061",
-  "notebookBytes": 1680639,
-  "sourceArchiveSha256": "9055dfc8a594730642f05b80fe0be62995d536cca989af01edf88ddd37d66779",
-  "sourceArchiveBytes": 1249402,
+  "notebookSha256": "4765577a45925a7d7986e2ab10bf5f73e2ea1adee94cdf3afb94191e9ad9fba2",
+  "notebookBytes": 1682507,
+  "sourceArchiveSha256": "633845cff63feac2a114b45e975d9326c7e2cefb7e0ead830863d68fd1b8905f",
+  "sourceArchiveBytes": 1250804,
   "checks": {
     "nbformat": "4.5",
     "codeCellsCompile": 6,
@@ -85,12 +85,12 @@
         "bytes": 7915
       },
       "ml/vton/masking.py": {
-        "sha256": "bccb8655fd6cb5121c571bcad0cf37b6e787afcc8c785d85e4d438575fdb0999",
-        "bytes": 2883
+        "sha256": "b83f447781a3a2f9936cadabbeeb62349ec4df20d6f109619360a0f16d4b1d31",
+        "bytes": 6052
       },
       "ml/vton/parsing.py": {
-        "sha256": "00c28d58addd8b2499f384383e4ff44955d63d238aa98434c35bd1f34ec5aea3",
-        "bytes": 13912
+        "sha256": "ce4cd856002164c790a019c478b315d2f6cb20dff6a6631e4917a449857b2c12",
+        "bytes": 14281
       },
       "ml/vton/precision.py": {
         "sha256": "7e1174e47c1e4f104994ca7f26ce805cf47cbc85308a597409f02762d1066f89",
@@ -105,8 +105,8 @@
         "bytes": 401
       },
       "ml/vton/service.py": {
-        "sha256": "6f63a26f1eba575d2878e2faf996e7053eca1ff72a46dd1fa9260d5261a66503",
-        "bytes": 13206
+        "sha256": "f96d9c9e876183308379bcc971b7a1dd2264308996579a5fdf4bf607c776b890",
+        "bytes": 13927
       },
       "ml/vton/vendor/catvton/LICENSE": {
         "sha256": "095791f7f830b929a5c4c5bd8fb9e62a1694336fc6b915f771e25a44015c403c",

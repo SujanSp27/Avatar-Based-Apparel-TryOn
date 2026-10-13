@@ -257,6 +257,8 @@ def compose_preserving_identity(
     original_parse: HumanParse | np.ndarray,
     generated_parse: HumanParse | np.ndarray,
     category: str = "t-shirt",
+    *,
+    sleeve_support: np.ndarray | None = None,
 ) -> CompositeResult:
     """Restore source identity while admitting the model's local garment boundary.
 
@@ -286,6 +288,11 @@ def compose_preserving_identity(
     context_radius = max(1, round(min(old.shape) * 0.004)) if upper_body else 0
     feather_width = max(2, round(min(old.shape) * 0.002))
     radius = max(context_radius + feather_width, round(min(old.shape) * 0.018))
+    permitted_sleeves = np.zeros(old.shape, dtype=bool)
+    if sleeve_support is not None:
+        from ml.vton.masking import binary_support
+
+        permitted_sleeves = binary_support(sleeve_support, old.shape)
     # A parser's hard boundary can lie several pixels inside the actual fabric.
     # Keeping that boundary exact would restore a white/beige outline from the
     # source photo. The model supplies this small context, not a garment overlay.
@@ -299,7 +306,7 @@ def compose_preserving_identity(
         upper_body
         & np.isin(source_labels, (0, 12, 16))
         & generated_clothing
-        & (distance <= radius)
+        & ((distance <= radius) | permitted_sleeves)
     )
     protected = ~(old | (upper_body & np.isin(source_labels, (0, 12, 16))))
     support = old | context | extension
@@ -338,6 +345,7 @@ def compose_preserving_identity(
             "outerFeatherWidthPixels": feather_width,
             "semanticContextPixels": int(np.count_nonzero(context)),
             "generatedClothingExtensionPixels": int(np.count_nonzero(extension)),
+            "poseSleeveSupportPixels": int(np.count_nonzero(permitted_sleeves)),
             "silhouettePolicy": "Bounded generated clothing may cover nearby background, bare torso or upper arms. Face, hair, hands and unrelated clothing stay exact; distant background and limbs stay exact.",
             "limitations": "Preservation is conditional on semantic parsing; it does not guarantee perceptual realism or accurate fit.",
         },

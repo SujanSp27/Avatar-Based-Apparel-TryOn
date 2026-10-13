@@ -1,0 +1,609 @@
+{
+  "archiveSha256": "37038cec9aac4d011e8878d822d8ab2933de42215eb718747832cb131b6bbea5",
+  "cloudRunCompleted": true,
+  "recoveryMethod": "Existing browser download; original archive and collected reports preserved",
+  "model": "CatVTON mix-48k-1024",
+  "gpu": "Tesla T4",
+  "nativeResolution": [
+    768,
+    1024
+  ],
+  "newInferencePerformed": false,
+  "trainingPerformed": false,
+  "qualityValidated": false,
+  "cases": [
+    {
+      "case": "different-garment",
+      "executionStatus": "generated",
+      "seconds": 146.09,
+      "visualReview": {
+        "verdict": "rejected for graphic distortion",
+        "observations": [
+          "The brown jersey, contrast sleeves and V neckline transfer to the original studio person with plausible shoulder, sleeve and hem placement.",
+          "The source beige top is no longer visibly exposed in the inspected image.",
+          "The large 95 graphic acquires duplicated enclosed loops and severely distorted digit shapes, already present in the raw output; lettering is also degraded.",
+          "Small speckled artifacts remain around the side/underarm edges. Garment fidelity is insufficient for acceptance despite improved fitting."
+        ]
+      },
+      "qualityValidated": false,
+      "maskRevision": {
+        "newInferencePerformed": false,
+        "newlyEditableUpperArmPixels": 392,
+        "protectedPixelsOpened": 0,
+        "oldClothingPixelsOmitted": 0,
+        "limitation": "Mask geometry only; sleeve generation with this revision has not been evaluated."
+      },
+      "inputSha256": {
+        "person": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+        "garment": "332036128caffe010e377f7ecb1852791804c53ebc4865d377339b9762c6689f"
+      },
+      "inferenceArtifactSha256": {
+        "garment-fidelity.json": {
+          "bytes": 689,
+          "sha256": "a73c76ad8333dfef0ae949f199299cfa29729173373e29c0ebd9c3f4cf598dc7"
+        },
+        "garmentCrop.png": {
+          "bytes": 753336,
+          "sha256": "5181c8fb4a0d659b05b0dea208206400c4aa5d47c800d66951660200d096f425"
+        },
+        "garmentInput.bin": {
+          "bytes": 93984,
+          "sha256": "332036128caffe010e377f7ecb1852791804c53ebc4865d377339b9762c6689f"
+        },
+        "garmentMask.png": {
+          "bytes": 6031,
+          "sha256": "1be2b43352f1e5678ce3b976d2b2671bd24f101f2e400b52494354504bf017f9"
+        },
+        "garmentParsing.png": {
+          "bytes": 6218,
+          "sha256": "41d22528c861b116fe640c6f8409f3978d9950b5a061c77b070c5861b369078d"
+        },
+        "generatedParsing.png": {
+          "bytes": 8038,
+          "sha256": "406d19386c3b39b7a36bd3888e04494c60e3aaaab0c7edb012f0cec04fd81ce4"
+        },
+        "old-clothing-mask.png": {
+          "bytes": 3458,
+          "sha256": "03f73212d1a09ac21d9f0f71aa8c4673c47ee7dc49d8ce46215fadd1247079a1"
+        },
+        "original-person.png": {
+          "bytes": 480780,
+          "sha256": "3f59e571ebb128037941004758e6a914c1e5ccf9ae8e08d3be9c757e4f0d9f33"
+        },
+        "personCrop.png": {
+          "bytes": 333435,
+          "sha256": "fad2771773d54bf5389ae050546fbdf90f4f235295cb1dda4aa37c6db202258c"
+        },
+        "personInput.bin": {
+          "bytes": 89704,
+          "sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f"
+        },
+        "personMask.png": {
+          "bytes": 6539,
+          "sha256": "6cd83dfa34f00cd42b60fa348df79762ae37c974c131b14bd29bf2dc24184969"
+        },
+        "personNormalized.png": {
+          "bytes": 176656,
+          "sha256": "8737193aad36d2d47d93fa0aa435f2ba32e6b5e03fc49b308fcdc0fca74d256c"
+        },
+        "personParsing.png": {
+          "bytes": 7996,
+          "sha256": "d018a02cf35e4a57371c322ae9078eec53ecc3117759c8eb8e02a25e2f54b12a"
+        },
+        "poseKeypoints.json": {
+          "bytes": 7194,
+          "sha256": "5f86dae178834e71b89bbc1270ca54760ae79979ebd5d7017c1ac16c298d235e"
+        },
+        "semantic-alpha.png": {
+          "bytes": 4207,
+          "sha256": "bf410917d53ffe56a7a4ea70b64265eb6e3705734785f565063fade56e9385c8"
+        },
+        "semantic-composite.json": {
+          "bytes": 928,
+          "sha256": "b344bace571d4d5c4323899d4b7cd99d82b42140f39b113c16a7dd8debed0f46"
+        },
+        "semantic-edit-mask.png": {
+          "bytes": 3536,
+          "sha256": "1ec4630d7eb3b9e6a9e979c96d89d31225ab6977850f21062673cb24a5b85fbd"
+        },
+        "semantic-preserve-mask.png": {
+          "bytes": 5552,
+          "sha256": "bf49bdf92967b7c6fb5b6fb8aa0ee69b2a57c1775f83942a1874e036e56b770e"
+        },
+        "tryon-2d.png": {
+          "bytes": 538906,
+          "sha256": "7c278e6064449e03609b37aff81590218052ddedd605d65e43fc1c551fa7d966"
+        },
+        "vton-diagnostics.json": {
+          "bytes": 5399,
+          "sha256": "d58d47a7b9e2023196da7543c0099c270294b9d2e06dcd5fc25c699133d3e266"
+        },
+        "vton-garment-input.png": {
+          "bytes": 469811,
+          "sha256": "3de207967ec16b109bb563547a51142f10cb83eb6455335cb9168c2ef44f9045"
+        },
+        "vton-garment-mask.png": {
+          "bytes": 4473,
+          "sha256": "db7f8857652f8b0316e9a040afc34b82fcfb1b47eaa8949e62a25767412a63fa"
+        },
+        "vton-model-output.png": {
+          "bytes": 594359,
+          "sha256": "e8ab849152195a50b9b319af24e47399ff70862491732c2b98c4be378355fe74"
+        },
+        "vton-person-input.png": {
+          "bytes": 377486,
+          "sha256": "44e2030ae824a6b8e57e9f7d9eb03bd9c2a960c9800c2e41b96c45832a2e85dc"
+        },
+        "vton-replacement-mask.png": {
+          "bytes": 3891,
+          "sha256": "5ff46899508189afaec4a3aa574babfc1465e534be645afa8cb9bedc67dd817f"
+        }
+      },
+      "preservation": {
+        "changedPixelsOutsideEditMask": 0,
+        "protectedRegions": {
+          "face": {
+            "pixels": 9558,
+            "changedPixels": 0
+          },
+          "hair": {
+            "pixels": 3403,
+            "changedPixels": 0
+          },
+          "hands": {
+            "pixels": 9311,
+            "changedPixels": 0
+          },
+          "lowerClothing": {
+            "pixels": 68901,
+            "changedPixels": 0
+          },
+          "feet": {
+            "pixels": 9887,
+            "changedPixels": 0
+          }
+        },
+        "oldClothingPixelsNotFullyReplaced": 0,
+        "limitation": "Pixel preservation is conditional on saved parser labels; it cannot certify fit or texture fidelity."
+      }
+    },
+    {
+      "case": "different-person",
+      "executionStatus": "generated",
+      "seconds": 148.972,
+      "visualReview": {
+        "verdict": "rejected for missing sleeves",
+        "observations": [
+          "The black Rhude graphic transfers, but the uploaded short-sleeved T-shirt becomes a sleeveless top matching the source vest silhouette.",
+          "Both raw and final images lack sleeves; the original replacement mask does not open enough upper-arm space.",
+          "White source-clothing slivers remain at the shoulders and there are rough neckline/armhole boundaries in the final composite.",
+          "The saved raw output cannot be repaired into a sleeved shirt solely by compositing because the model did not synthesize sleeves."
+        ]
+      },
+      "qualityValidated": false,
+      "maskRevision": {
+        "newInferencePerformed": false,
+        "newlyEditableUpperArmPixels": 34875,
+        "protectedPixelsOpened": 0,
+        "oldClothingPixelsOmitted": 0,
+        "limitation": "Mask geometry only; sleeve generation with this revision has not been evaluated."
+      },
+      "inputSha256": {
+        "person": "5faaea84635da215bd0819cf5ce65512ca1b742c39ee8fd67176b19e084ed872",
+        "garment": "3929f83104c547bcf4a74985999438c05f887d97445c700029414466680eeee3"
+      },
+      "inferenceArtifactSha256": {
+        "garment-fidelity.json": {
+          "bytes": 915,
+          "sha256": "d4025e11d6305cbf5b73402f370b6cf9944ee5cd64435559caeaf3ba32b8eb79"
+        },
+        "garmentCrop.png": {
+          "bytes": 1399185,
+          "sha256": "04c221527baeb33fd2368e1246ecd1efe3e9b24944a6f6cb3d3b014ede61f6cb"
+        },
+        "garmentInput.bin": {
+          "bytes": 383472,
+          "sha256": "3929f83104c547bcf4a74985999438c05f887d97445c700029414466680eeee3"
+        },
+        "garmentMask.png": {
+          "bytes": 7801,
+          "sha256": "942a86624473322d59204797687274fbb8d25a5e4491a023ce428890763429da"
+        },
+        "garmentParsing.png": {
+          "bytes": 7896,
+          "sha256": "373507ea1e48b161d711da4d94f11308549f1f19641dbad49e7a9d1b612f918f"
+        },
+        "generatedParsing.png": {
+          "bytes": 7506,
+          "sha256": "b51950bcc17d2ee61b99bbba125e1a75a536932f3630d458a3b5ca8f95b9ab22"
+        },
+        "old-clothing-mask.png": {
+          "bytes": 2615,
+          "sha256": "6db8e9681d003b4f9bd7b52f3336f66655420873c6bef504ffa95ad2102bb497"
+        },
+        "original-person.png": {
+          "bytes": 638147,
+          "sha256": "5faaea84635da215bd0819cf5ce65512ca1b742c39ee8fd67176b19e084ed872"
+        },
+        "personCrop.png": {
+          "bytes": 600204,
+          "sha256": "dd77a0da9ef93a6356bfd9230d202751ca61e077ea4480bd5ba8172c97e318ff"
+        },
+        "personInput.bin": {
+          "bytes": 638147,
+          "sha256": "5faaea84635da215bd0819cf5ce65512ca1b742c39ee8fd67176b19e084ed872"
+        },
+        "personMask.png": {
+          "bytes": 6071,
+          "sha256": "e1d14c9d3c3b02875a69cbcc84de76314c7863c832afa409ff6e3ff4e5780552"
+        },
+        "personNormalized.png": {
+          "bytes": 323908,
+          "sha256": "dc35e1dd1ab372c72b50b4efcd686b80ab6bf3f232d02baf10cdb3169cda0602"
+        },
+        "personParsing.png": {
+          "bytes": 7610,
+          "sha256": "0a46c246025d142a0fe30e3304aab917788e7caf15e83aef49a7c378cddfd84d"
+        },
+        "poseKeypoints.json": {
+          "bytes": 7140,
+          "sha256": "1c0bf4bc54517a8bcbf032fa1f46737253e64657c8537857f954078dc9d51911"
+        },
+        "semantic-alpha.png": {
+          "bytes": 3311,
+          "sha256": "81c673775e8d8d657453cc070dfb55534af1b33e3435f733f537e539a138057d"
+        },
+        "semantic-composite.json": {
+          "bytes": 926,
+          "sha256": "852c7f78524a83e3c3ab8215c58c9e6d5fb54234eb15eda2571d85d2cf3f0a45"
+        },
+        "semantic-edit-mask.png": {
+          "bytes": 2670,
+          "sha256": "ed0879a6419975ce740d5ed8cbd7cf4e95e59a7b2d8946101cec28227268999a"
+        },
+        "semantic-preserve-mask.png": {
+          "bytes": 3797,
+          "sha256": "1d65dc3e30fd6773f54b775395d3faae3abcf2c17bf4be2f706be9cd91455533"
+        },
+        "tryon-2d.png": {
+          "bytes": 657853,
+          "sha256": "3e219efeb4dcff52cdc44c7abe0e2d6af951240697a917280ffd1b8d7d038a04"
+        },
+        "vton-diagnostics.json": {
+          "bytes": 5614,
+          "sha256": "d163030e2c6a43192a282a120d0a154d52ca448b1b20b991a4e88d76e3d45813"
+        },
+        "vton-garment-input.png": {
+          "bytes": 576715,
+          "sha256": "a2067e54ab20778ecefef8d74cfed34c5277eaaed4dcc71ed174215260f76a3e"
+        },
+        "vton-garment-mask.png": {
+          "bytes": 4444,
+          "sha256": "1af1c70140134f94b53d13f12fd415ffd8fb9c60d950a925c8b60b3f83e51210"
+        },
+        "vton-model-output.png": {
+          "bytes": 722514,
+          "sha256": "109d084a4a633b5c127a907cd3faa36293d68fbeaee0489539bc08f7cade396f"
+        },
+        "vton-person-input.png": {
+          "bytes": 585762,
+          "sha256": "ecf7f0ce97a93e9558d0b118a8b522d3d09988528fe4d33ffd71c4590d6da979"
+        },
+        "vton-replacement-mask.png": {
+          "bytes": 3770,
+          "sha256": "9121fffed4d0191845019c6615183c84890ce576af8c484898315aa4bc19523f"
+        }
+      },
+      "preservation": {
+        "changedPixelsOutsideEditMask": 0,
+        "protectedRegions": {
+          "face": {
+            "pixels": 13565,
+            "changedPixels": 0
+          },
+          "hair": {
+            "pixels": 11492,
+            "changedPixels": 0
+          },
+          "hands": {
+            "pixels": 12151,
+            "changedPixels": 0
+          },
+          "lowerClothing": {
+            "pixels": 102912,
+            "changedPixels": 0
+          },
+          "feet": {
+            "pixels": 0,
+            "changedPixels": 0
+          }
+        },
+        "oldClothingPixelsNotFullyReplaced": 0,
+        "limitation": "Pixel preservation is conditional on saved parser labels; it cannot certify fit or texture fidelity."
+      }
+    },
+    {
+      "case": "reported-striped-shirt",
+      "executionStatus": "failed",
+      "seconds": 144.331,
+      "visualReview": {
+        "verdict": "rejected",
+        "observations": [
+          "The actual conditioning image retains the uploaded teal and cream stripes.",
+          "The raw model output is a beige/grey speckled garment with an invented asymmetric neckline; uploaded colors and stripes are absent.",
+          "The existing stripe-loss guard correctly rejected it and no final candidate was published.",
+          "This is a native neural garment-fidelity failure, not a compositing failure; acceptance for the reported input remains unmet."
+        ]
+      },
+      "qualityValidated": false,
+      "maskRevision": {
+        "newInferencePerformed": false,
+        "newlyEditableUpperArmPixels": 392,
+        "protectedPixelsOpened": 0,
+        "oldClothingPixelsOmitted": 0,
+        "limitation": "Mask geometry only; sleeve generation with this revision has not been evaluated."
+      },
+      "inputSha256": {
+        "person": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+        "garment": "28b6ff594200c1264146b10fab679b4343ae0ee520083e5b3389816963e67535"
+      },
+      "inferenceArtifactSha256": {
+        "garment-fidelity.json": {
+          "bytes": 991,
+          "sha256": "a07d53229b7a2d7c6fcbf709c31008afe7a9f5e1e955ea4bc116f1fdc2c6a556"
+        },
+        "garmentCrop.png": {
+          "bytes": 4485,
+          "sha256": "436c80a6bbcba78be3ddc3122e819353498a7e28a92915b7d05916c8acd8a107"
+        },
+        "garmentInput.bin": {
+          "bytes": 4771,
+          "sha256": "28b6ff594200c1264146b10fab679b4343ae0ee520083e5b3389816963e67535"
+        },
+        "garmentMask.png": {
+          "bytes": 2811,
+          "sha256": "e928c55b8a04683075d5e30b84fa27f2b23a028a13b4d1bcacffba0c5257bdff"
+        },
+        "garmentParsing.png": {
+          "bytes": 3092,
+          "sha256": "f6308e6f50a940438c833d291635cce21071b542c60a9a5364d8218217c83843"
+        },
+        "generatedParsing.png": {
+          "bytes": 8042,
+          "sha256": "1d06882a6a00374fc8799f61a0ddf8e6a6ee384765eb64721f6389459ec8a214"
+        },
+        "old-clothing-mask.png": {
+          "bytes": 3458,
+          "sha256": "03f73212d1a09ac21d9f0f71aa8c4673c47ee7dc49d8ce46215fadd1247079a1"
+        },
+        "original-person.png": {
+          "bytes": 480780,
+          "sha256": "3f59e571ebb128037941004758e6a914c1e5ccf9ae8e08d3be9c757e4f0d9f33"
+        },
+        "personCrop.png": {
+          "bytes": 333435,
+          "sha256": "fad2771773d54bf5389ae050546fbdf90f4f235295cb1dda4aa37c6db202258c"
+        },
+        "personInput.bin": {
+          "bytes": 89704,
+          "sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f"
+        },
+        "personMask.png": {
+          "bytes": 6539,
+          "sha256": "6cd83dfa34f00cd42b60fa348df79762ae37c974c131b14bd29bf2dc24184969"
+        },
+        "personNormalized.png": {
+          "bytes": 176656,
+          "sha256": "8737193aad36d2d47d93fa0aa435f2ba32e6b5e03fc49b308fcdc0fca74d256c"
+        },
+        "personParsing.png": {
+          "bytes": 7996,
+          "sha256": "d018a02cf35e4a57371c322ae9078eec53ecc3117759c8eb8e02a25e2f54b12a"
+        },
+        "poseKeypoints.json": {
+          "bytes": 7194,
+          "sha256": "5f86dae178834e71b89bbc1270ca54760ae79979ebd5d7017c1ac16c298d235e"
+        },
+        "semantic-alpha.png": {
+          "bytes": 4255,
+          "sha256": "230013232b57708a56feac492d1bfcc2fdf4157327f0bed249b7ef440c884a5f"
+        },
+        "semantic-composite.json": {
+          "bytes": 928,
+          "sha256": "5a6273fdff5339149351c0386987f77825ceb14510f57990e7a75c7466f27e4d"
+        },
+        "semantic-edit-mask.png": {
+          "bytes": 3553,
+          "sha256": "decb0a1e9280e345b725509b732187324055427319d44b43a0017a8dc9d929e5"
+        },
+        "semantic-preserve-mask.png": {
+          "bytes": 5580,
+          "sha256": "fd7a35d7077e162401478510ce577f1929141c20098d20dcacbfe67778951892"
+        },
+        "traceback.txt": {
+          "bytes": 785,
+          "sha256": "de5ddad24165ea93f63920283070ecd5e2bb5b00b4761c1790e6b9ee4b8f2e39"
+        },
+        "vton-diagnostics.json": {
+          "bytes": 5717,
+          "sha256": "575347f9f171e4a76a905b24d8966571bd2df466b90037f7e83db82959ae330a"
+        },
+        "vton-garment-input.png": {
+          "bytes": 26898,
+          "sha256": "f61a6347d6f77ea75b8a66c50eb32922bae8d7f8a03ac756a533802c871b5786"
+        },
+        "vton-garment-mask.png": {
+          "bytes": 3972,
+          "sha256": "9b6ebe04c730aed8392e0b891cd8c09ab104709497070005e138d0035af6c1c8"
+        },
+        "vton-model-output.png": {
+          "bytes": 806751,
+          "sha256": "12afb14920c54854143e2d94697e9f0ef7ec258f90c82871688fabbdadaf70b3"
+        },
+        "vton-person-input.png": {
+          "bytes": 377486,
+          "sha256": "44e2030ae824a6b8e57e9f7d9eb03bd9c2a960c9800c2e41b96c45832a2e85dc"
+        },
+        "vton-replacement-mask.png": {
+          "bytes": 3891,
+          "sha256": "5ff46899508189afaec4a3aa574babfc1465e534be645afa8cb9bedc67dd817f"
+        }
+      }
+    },
+    {
+      "case": "shirt-category",
+      "executionStatus": "generated",
+      "seconds": 148.112,
+      "visualReview": {
+        "verdict": "promising prototype candidate; limitations remain",
+        "observations": [
+          "The studio person appears in the uploaded black graphic T-shirt with plausible round neckline, shoulders, both sleeves and hem.",
+          "The main color and large graphic are recognizable; no large beige-shirt fragments are visible in the inspected final image.",
+          "Face, hair, hands, jeans and background appear preserved; the separate pixel audit tests preservation against saved semantic masks.",
+          "Small text and print details are degraded, with residual roughness at underarm/side boundaries. This single candidate does not validate production-quality fitting or arbitrary shirts."
+        ]
+      },
+      "qualityValidated": false,
+      "maskRevision": {
+        "newInferencePerformed": false,
+        "newlyEditableUpperArmPixels": 392,
+        "protectedPixelsOpened": 0,
+        "oldClothingPixelsOmitted": 0,
+        "limitation": "Mask geometry only; sleeve generation with this revision has not been evaluated."
+      },
+      "inputSha256": {
+        "person": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+        "garment": "3929f83104c547bcf4a74985999438c05f887d97445c700029414466680eeee3"
+      },
+      "inferenceArtifactSha256": {
+        "garment-fidelity.json": {
+          "bytes": 915,
+          "sha256": "ade599775c738fb9cacff367a5761aa4a169997ca6eb75601b6502a0260288b9"
+        },
+        "garmentCrop.png": {
+          "bytes": 1399185,
+          "sha256": "04c221527baeb33fd2368e1246ecd1efe3e9b24944a6f6cb3d3b014ede61f6cb"
+        },
+        "garmentInput.bin": {
+          "bytes": 383472,
+          "sha256": "3929f83104c547bcf4a74985999438c05f887d97445c700029414466680eeee3"
+        },
+        "garmentMask.png": {
+          "bytes": 7801,
+          "sha256": "942a86624473322d59204797687274fbb8d25a5e4491a023ce428890763429da"
+        },
+        "garmentParsing.png": {
+          "bytes": 7896,
+          "sha256": "373507ea1e48b161d711da4d94f11308549f1f19641dbad49e7a9d1b612f918f"
+        },
+        "generatedParsing.png": {
+          "bytes": 8030,
+          "sha256": "5e2e6ae339aa8cedee2f510f971120eb6a1e2be13d9af3ff38b501c7ee0d1622"
+        },
+        "old-clothing-mask.png": {
+          "bytes": 3458,
+          "sha256": "03f73212d1a09ac21d9f0f71aa8c4673c47ee7dc49d8ce46215fadd1247079a1"
+        },
+        "original-person.png": {
+          "bytes": 480780,
+          "sha256": "3f59e571ebb128037941004758e6a914c1e5ccf9ae8e08d3be9c757e4f0d9f33"
+        },
+        "personCrop.png": {
+          "bytes": 333435,
+          "sha256": "fad2771773d54bf5389ae050546fbdf90f4f235295cb1dda4aa37c6db202258c"
+        },
+        "personInput.bin": {
+          "bytes": 89704,
+          "sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f"
+        },
+        "personMask.png": {
+          "bytes": 6539,
+          "sha256": "6cd83dfa34f00cd42b60fa348df79762ae37c974c131b14bd29bf2dc24184969"
+        },
+        "personNormalized.png": {
+          "bytes": 176656,
+          "sha256": "8737193aad36d2d47d93fa0aa435f2ba32e6b5e03fc49b308fcdc0fca74d256c"
+        },
+        "personParsing.png": {
+          "bytes": 7996,
+          "sha256": "d018a02cf35e4a57371c322ae9078eec53ecc3117759c8eb8e02a25e2f54b12a"
+        },
+        "poseKeypoints.json": {
+          "bytes": 7194,
+          "sha256": "5f86dae178834e71b89bbc1270ca54760ae79979ebd5d7017c1ac16c298d235e"
+        },
+        "semantic-alpha.png": {
+          "bytes": 4268,
+          "sha256": "f2fe3bb3ee7154e577634b4710b25152f7bce1c04cca47c5c35d7fcd392bf9c9"
+        },
+        "semantic-composite.json": {
+          "bytes": 926,
+          "sha256": "394be2599766a0b4ef6139a4b022bbd00f1e40069732cb54f14614a0f8119981"
+        },
+        "semantic-edit-mask.png": {
+          "bytes": 3570,
+          "sha256": "98fc44a6476bfff5b1c4eed2b304b295719d0c168e6359f07159c39b01b4cbd4"
+        },
+        "semantic-preserve-mask.png": {
+          "bytes": 5589,
+          "sha256": "c3e639d0117ef1bf22fbb8317da3d69ede669cf2b2b194255b184cc4c739224b"
+        },
+        "tryon-2d.png": {
+          "bytes": 538099,
+          "sha256": "04ed502f9112c08c7b5a1e48803fa742c77e66559a443db38c6839adad17074a"
+        },
+        "vton-diagnostics.json": {
+          "bytes": 5635,
+          "sha256": "03657e4348e4e3d6ea781e24c0174baad09de93de6a32194d3396791a897d339"
+        },
+        "vton-garment-input.png": {
+          "bytes": 576715,
+          "sha256": "a2067e54ab20778ecefef8d74cfed34c5277eaaed4dcc71ed174215260f76a3e"
+        },
+        "vton-garment-mask.png": {
+          "bytes": 4444,
+          "sha256": "1af1c70140134f94b53d13f12fd415ffd8fb9c60d950a925c8b60b3f83e51210"
+        },
+        "vton-model-output.png": {
+          "bytes": 586511,
+          "sha256": "26c952755c3f71f02133905decc2696339f848d2a5165db857431fe28114c4f1"
+        },
+        "vton-person-input.png": {
+          "bytes": 377486,
+          "sha256": "44e2030ae824a6b8e57e9f7d9eb03bd9c2a960c9800c2e41b96c45832a2e85dc"
+        },
+        "vton-replacement-mask.png": {
+          "bytes": 3891,
+          "sha256": "5ff46899508189afaec4a3aa574babfc1465e534be645afa8cb9bedc67dd817f"
+        }
+      },
+      "preservation": {
+        "changedPixelsOutsideEditMask": 0,
+        "protectedRegions": {
+          "face": {
+            "pixels": 9558,
+            "changedPixels": 0
+          },
+          "hair": {
+            "pixels": 3403,
+            "changedPixels": 0
+          },
+          "hands": {
+            "pixels": 9311,
+            "changedPixels": 0
+          },
+          "lowerClothing": {
+            "pixels": 68901,
+            "changedPixels": 0
+          },
+          "feet": {
+            "pixels": 9887,
+            "changedPixels": 0
+          }
+        },
+        "oldClothingPixelsNotFullyReplaced": 0,
+        "limitation": "Pixel preservation is conditional on saved parser labels; it cannot certify fit or texture fidelity."
+      }
+    }
+  ]
+}

@@ -17,33 +17,43 @@ and checksums. Runtime and package reports record the actual cloud environment.
 
 ## Verified progress through 13 October 2026
 
-On 12 October, the connected notebook reported a Tesla T4 with 15,360 MiB of
-VRAM (`experiments/colab-hardware-report.json`). Source extraction and the
-isolated dependency/download setup completed. That verifies setup, not a loaded
-cloud model or completed cloud inference: no generated Colab image has yet been
-retrieved or visually accepted.
+The existing four-case job **completed**. Its browser download was already present
+when the local bridge connection expired. The archive was copied into
+`experiments/colab-corrected-results-20261013.zip` (16,107,471 bytes; SHA-256
+`37038cec9aac4d011e8878d822d8ab2933de42215eb718747832cb131b6bbea5`).
+All 98 files were recovered under `experiments/runs/colab-corrected-20261013` and
+available artifact hashes were verified. No Colab restart, new cloud notebook,
+or new inference was performed during recovery.
 
-On 13 October, the combined runner exported four real failure reports from a
-T4 runtime with Python 3.12.14 and torch 2.5.1+cu121. They identified an inherited
-Colab plotting-backend setting that prevented MediaPipe import before model
-inference. `scripts/colab_runtime.py` now sets `MPLBACKEND=Agg` inside the
-inference process; the corrected rerun is pending. The archive and extracted
-reports are retained under `experiments/colab-tryon-results-20261013.zip` and
-`experiments/runs/colab-initial-environment-failure`.
+Run `20261013T103702748573Z` used Python 3.12.14, torch 2.5.1+cu121 and Tesla T4
+(14.56 GiB reported by PyTorch). Model provenance confirms actual mixed-checkpoint
+loading and 768 by 1024 inference, 50 steps, guidance 2.5, seed 42.
 
-A later browser reconnection opened a different, empty scratch notebook. Its
-probe found no NVIDIA device. The earlier T4 report describes the earlier
-runtime; it does not establish the hardware of the currently connected notebook.
-The agent is reconnecting and checking the active runtime again. Google sign-in,
-connection consent, and selecting **Runtime > Change runtime type > T4 GPU**
-remain browser account actions when prompted. Dependency installation, source
-transfer and inference are handled by the agent after the runtime is available.
+| Case | Seconds | Inspection |
+|---|---:|---|
+| Reported striped shirt | 144.331 | Rejected: native output invents beige fabric and loses the stripes; quality guard withheld the final PNG |
+| Different garment (95 jersey) | 146.090 | Generated, then rejected visually: severely distorted digits and side-edge artifacts |
+| Different person (vest to T-shirt) | 148.972 | Generated, then rejected visually: missing sleeves in raw and final output; shoulder remnants |
+| Shirt category (black graphic shirt) | 148.112 | Promising prototype candidate with plausible fit; small print and underarm-edge defects remain |
 
-The three completed local CatVTON configurations remain visually rejected:
-the first two lost the cream stripes, and the reduced-resolution mixed checkpoint
-invented a different pattern. The local native-resolution run was interrupted
-before producing a final image. Moving the run to Colab makes a larger GPU
-available; acceptable fitting still requires actual inference and image review.
+The [local image gallery](../experiments/colab-review-20261013/index.html) includes
+the real inputs, raw images and final candidates. The
+[review report](../experiments/colab-review-20261013/report.json) records visual
+findings and zero changed pixels in parsed face/hair/hands/lower-clothing regions
+for all three final candidates. These pixel checks do not prove perfect parsing
+or natural fit. The exact striped-input acceptance remains unmet.
+
+The revised local sleeve mask uses existing shoulder/elbow landmarks to admit
+short-sleeve generation. Offline tests and previews confirm additional upper-arm
+coverage without opening protected classes. No neural inference with this mask
+revision has run, per the user's instruction. The existing local notebook source
+package was updated; the cloud notebook and archived run were left untouched.
+
+Earlier environment-only failures are preserved separately under
+`experiments/runs/colab-initial-environment-failure`. They exposed Colab's inherited
+`MPLBACKEND=matplotlib_inline` setting; the completed job verifies the `Agg` fix.
+They are not model-quality results and must not be confused with the recovered
+16 MB archive. Earlier local low-resolution outputs also remain separate evidence.
 
 ## What is transferred
 
@@ -111,8 +121,20 @@ environment, executes the four regression cases sequentially and exports the
 result ZIP. Image inspection remains a separate notebook cell so the combined
 tool response does not exceed the official bridge's message limit. It excludes the optional Drive
 authorization cell. Once started, these stages do not wait for another chat
-turn between cells. This combined cell has been compiled locally; its complete
-cloud execution is still pending.
+turn between cells. Its complete cloud execution and exported artifacts have now
+been recovered. **Do not execute `run-all` again to recover this completed job.**
+
+`experiments/colab-recovery-state.json` identifies the original cell
+`Em_0D8PY0j5r`, request `27a77575-8908-4770-b629-3351a2105b11`, archive and review.
+The local bridge's last `processing` status is stale: its process has exited.
+The current live runtime status is unknown, but the job's completion is proven
+by its four reports and exported outputs. Opening the official bridge's default
+scratch notebook does not recover this old execution. No manual intervention
+was needed to retrieve the already-downloaded results.
+
+The local gallery was opened in headless Chromium: all four case sections and
+all 23 saved images loaded with no page errors (`experiments/colab-gallery-browser-report.json`).
+This browser check does not run inference or change any recovered image.
 
 The agent checks the connected notebook's cell IDs and execution state before
 resuming work. Existing mappings are preserved when explicitly staging a new
@@ -142,7 +164,14 @@ The 12 October local regression run passed **273 Python tests**
 3D workflow, size recommendation and GLB controls; they do not validate neural
 2D fitting or prove a Colab inference result.
 
-If the connected Colab browser is unavailable, the fallback is to open the
-generated notebook in Colab, authorize a GPU runtime, then execute its cells in
-order. This is a fallback operation, not a requirement to repeat local project
-setup. Result downloads work without Google Drive authorization.
+The 13 October recovery continuation passed **278 non-integration tests in 44.07 seconds**,
+with 16 integration cases excluded to honor the instruction against new inference.
+Ruff and `pip check` passed. The revised notebook package is a local artifact only;
+`experiments/colab-executed-notebook-report.json` retains the source manifest used by the
+completed cloud run. Recovery never stages or executes the updated package in Colab.
+
+For an explicitly authorized future evaluation, the agent can use the packaged
+notebook after checking the existing runtime. That is a new evaluation, not
+recovery. This continuation's instruction prohibits new runs and new notebooks;
+the updated mask therefore remains untested by neural inference. Result downloads
+work without Google Drive authorization.
