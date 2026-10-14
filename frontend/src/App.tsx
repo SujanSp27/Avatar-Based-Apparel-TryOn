@@ -18,6 +18,7 @@ import {
 } from "./icons";
 import Viewer from "./Viewer";
 import PhotoViewer from "./PhotoViewer";
+import { useTryOnJob } from "./useTryOnJob";
 import {
   apiError,
   type Brand,
@@ -171,7 +172,6 @@ export default function App() {
   const [height, setHeight] = useState("172");
   const [tryonMode, setTryonMode] = useState<TryonMode>("2d");
   const [result, setResult] = useState<Result>();
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [asset, setAsset] = useState("dressed");
@@ -181,6 +181,11 @@ export default function App() {
   const [vton, setVton] = useState<VtonAvailability>();
   const [checkingVton, setCheckingVton] = useState(false);
   const [vtonCheckError, setVtonCheckError] = useState("");
+  const { busy, message: jobMessage, submit } = useTryOnJob((generated) => {
+    setResult(generated);
+    setAsset("dressed");
+    setLoaded(false);
+  }, setError);
   const loadedCallback = useCallback(() => setLoaded(true), []);
   const checkVton = useCallback(async () => {
     setCheckingVton(true);
@@ -252,7 +257,6 @@ export default function App() {
       (tryonMode === "2d" && vton?.available === false)
     )
       return;
-    setBusy(true);
     setError("");
     setResult(undefined);
     setLoaded(false);
@@ -264,28 +268,7 @@ export default function App() {
     form.append("fitPreference", fit);
     form.append("tryonMode", tryonMode);
     if (height && tryonMode !== "2d") form.append("heightCm", height);
-    try {
-      const response = await fetch("/api/tryon", {
-        method: "POST",
-        body: form,
-      });
-      if (!response.ok) throw new Error(await apiError(response));
-      const generated = (await response.json()) as Result;
-      if (
-        generated.mode === "2d" &&
-        generated.renderingMethod !== "pretrained-vton"
-      ) {
-        throw new Error(
-          "The service did not return a pretrained virtual try-on result. Check the configured 2D model.",
-        );
-      }
-      setResult(generated);
-      setAsset("dressed");
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
+    await submit(form);
   }
   const avatar =
     result && result.mode !== "2d"
@@ -537,6 +520,7 @@ export default function App() {
                 {busy ? "Generating try-on…" : "Generate try-on"}
                 {!busy && <ArrowRight size={17} />}
               </button>
+              {busy && <p role="status" data-testid="job-progress">{jobMessage}. You can refresh this page and return to the same job.</p>}
               <p className="local-note">
                 <span className={`status-dot ${connected ? "on" : ""}`} />
                 Photos are processed on this computer
@@ -577,6 +561,7 @@ export default function App() {
                   result?.mode === "2d" ? result.originalUrl : undefined
                 }
                 busy={busy}
+                progressMessage={jobMessage}
               />
             ) : (
               <Viewer

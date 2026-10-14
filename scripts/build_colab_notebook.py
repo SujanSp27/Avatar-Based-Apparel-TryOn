@@ -22,6 +22,7 @@ ARCHIVE_LIMIT = 12 * 1024 * 1024
 SOURCE_FILES = (
     "ml/__init__.py",
     "ml/errors.py",
+    "ml/progress.py",
     "ml/preprocessing/__init__.py",
     "ml/preprocessing/images.py",
     "ml/vton/__init__.py",

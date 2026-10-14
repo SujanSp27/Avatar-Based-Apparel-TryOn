@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from backend.app.charts import chart_dict, create_chart, latest_chart, seed_database
 from backend.app.config import ROOT, settings
 from backend.app.db import SessionLocal, engine, get_db
+from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
 from backend.app.photo_tryon import get_vton
 from backend.app.pipeline import TryOnPipeline
@@ -27,13 +28,16 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 store = AssetStore(settings.asset_root)
 pipeline = TryOnPipeline(store)
 capacity = BoundedSemaphore(1)
+jobs = TryOnJobs(ROOT / ".runtime/tryon-jobs", capacity)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    jobs.recover_interrupted()
     with SessionLocal() as db:
         seed_database(db)
     yield
+    jobs.close()
 
 
 app = FastAPI(title="Form / Fit research API", version="0.1.0", lifespan=lifespan)
@@ -41,7 +45,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Content-Type", "X-Admin-Token"],
+    allow_headers=["Content-Type", "X-Admin-Token", "Prefer", "Idempotency-Key"],
 )
 app.mount("/assets", StaticFiles(directory=str(store.root)), name="assets")
 
@@ -195,8 +199,30 @@ def tryon(
     garmentLengthCm: float | None = Form(default=None, ge=20, le=180),
     garmentWidthCm: float | None = Form(default=None, ge=20, le=100),
     tryonMode: TryOnMode = Form(TryOnMode.auto),
+    prefer: str = Header(default=""),
+    idempotency_key: str | None = Header(default=None),
     db: Session = Depends(get_db),
 ):
+    dimensions = {
+        k: v for k, v in {"lengthCm": garmentLengthCm, "widthCm": garmentWidthCm}.items()
+        if v is not None
+    }
+    if prefer == "respond-async":
+        # Check chart/category before occupying the only inference slot.
+        latest_chart(db, brandId, garmentCategory.value)
+        person_data, garment_data = upload_bytes(personImage), upload_bytes(garmentImage)
+        parameters = {
+            "brand_id": brandId, "category": garmentCategory.value, "fit": fitPreference.value,
+            "height_cm": heightCm, "dimensions": dimensions, "mode": tryonMode.value,
+        }
+
+        def work():
+            # A request-scoped database session cannot cross into the worker thread.
+            with SessionLocal() as worker_db:
+                return pipeline.run(worker_db, person_data, garment_data, **parameters)
+
+        state = jobs.submit(person_data, garment_data, parameters, work, idempotency_key)
+        return JSONResponse(status_code=202, content=state, headers={"Location": state["statusUrl"]})
     if not capacity.acquire(blocking=False):
         raise PipelineError("busy", "Another try-on is running. Retry after it finishes.", 429)
     try:
@@ -218,6 +244,11 @@ def tryon(
         )
     finally:
         capacity.release()
+
+
+@app.get("/api/tryon/jobs/{job_id}")
+def job_status(job_id: UUID):
+    return jobs.get(job_id)
 
 
 @app.get("/api/runs/{run_id}")

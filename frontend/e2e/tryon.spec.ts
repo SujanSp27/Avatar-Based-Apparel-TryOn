@@ -26,8 +26,8 @@ test("real uploads produce measurements, size and interactive GLB", async ({
     { timeout: 180000 },
   );
   await page.getByRole("button", { name: "Generate try-on" }).click();
-  expect((await response).status()).toBe(200);
-  await expect(page.getByTestId("recommended-size")).toBeVisible();
+  expect((await response).status()).toBe(202);
+  await expect(page.getByTestId("recommended-size")).toBeVisible({ timeout: 180000 });
   await expect(page.getByTestId("viewer")).toHaveAttribute(
     "data-loaded",
     "true",

@@ -13,7 +13,7 @@ from scripts import colab_runtime as runner
 def run_args(tmp_path, **updates):
     values = dict(person=tmp_path / "person.png", garment=tmp_path / "garment.png",
                   category="t-shirt", output=tmp_path / "output", guidance=2.5,
-                  seed=42, dry_run=False, check_only=False)
+                  seed=42, checkpoint="mix", height=1024, dry_run=False, check_only=False)
     values.update(updates)
     return argparse.Namespace(**values)
 
@@ -42,6 +42,16 @@ def test_setup_dry_run_does_not_create_environment(tmp_path, monkeypatch, capsys
     assert runner.setup(args) == 0
     assert json.loads(capsys.readouterr().out)["status"] == "dry-run"
     assert not args.venv.exists()
+
+
+def test_comparison_records_the_actual_checkpoint_and_resolution(tmp_path, capsys):
+    runner.main(["run", "--person", "person.png", "--garment", "shirt.png",
+                 "--output", str(tmp_path / "unused"), "--checkpoint", "vitonhd",
+                 "--height", "512", "--dry-run"])
+    report = json.loads(capsys.readouterr().out)
+    assert report["checkpoint"] == "vitonhd-16k-512"
+    assert report["nativeResolution"] == [384, 512]
+    assert not (tmp_path / "unused").exists()
 
 
 def test_setup_uses_isolated_interpreter_and_includes_mixed_checkpoint(tmp_path):

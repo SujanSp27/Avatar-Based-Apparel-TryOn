@@ -153,8 +153,15 @@ test("striped-garment regression produces a pretrained 2D result", async ({
   );
   await page.getByRole("button", { name: "Generate try-on" }).click();
   const response = await pending;
-  expect(response.status()).toBe(200);
-  const result = await response.json();
+  expect(response.status()).toBe(202);
+  const acknowledgment = await response.json();
+  let state = acknowledgment;
+  await expect.poll(async () => {
+    state = await (await request.get(acknowledgment.statusUrl)).json();
+    return state.status;
+  }, { timeout: 550000, intervals: [2000] }).toMatch(/success|failed/);
+  expect(state.status, JSON.stringify(state.error)).toBe("success");
+  const result = state.result;
   expect(result.mode).toBe("2d");
   expect(result.renderingMethod).toBe("pretrained-vton");
   expect(result.provenance.backend).not.toMatch(/overlay|template|warp/i);

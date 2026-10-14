@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "exitCode": 0,
+  "verifiedAt": "2026-10-14T15:18:03.815879+00:00",
+  "command": "npm run build",
+  "log": "experiments/frontend-build-20261014.log",
+  "warnings": [
+    "Bundle exceeds 500 kB; build completed."
+  ],
+  "artifacts": {
+    "frontend/dist/index.html": {
+      "bytes": 519,
+      "sha256": "98b517de42b32f48546b8eda9f11133c7ef53086527cf04147d3a28607f38e97"
+    },
+    "frontend/dist/assets/index-BLGir_Z4.css": {
+      "bytes": 16964,
+      "sha256": "60109d867d00b0e500afb558f56dc8ad6cda7fd7685e74bf94edbe07cce9130a"
+    },
+    "frontend/dist/assets/index-DXYU-e-_.js": {
+      "bytes": 1182725,
+      "sha256": "f72ebdbf7b0b35c5d4de3440a7f05eeb4b964a958740fe75995420c9fa5d223c"
+    }
+  }
+}

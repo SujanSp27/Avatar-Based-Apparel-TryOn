@@ -1,0 +1,37 @@
+{
+  "archiveSha256": "030a79942c9488ed5fe1c6caf59c6ad991374604b5ec20f127067a7346ba59bc",
+  "reviewMethod": "Actual saved model inputs, raw predictions and final images visually inspected on 14 October 2026. Qualitative assessment, not a calibrated perceptual score.",
+  "cases": {
+    "reported-striped-shirt": {
+      "verdict": "rejected: uploaded pattern and color lost",
+      "observations": [
+        "The actual garment conditioning retains the teal/cream stripes.",
+        "The raw model output instead has beige speckled fabric and an invented diagonal neckline. The fidelity guard correctly rejected it; no final image was published."
+      ]
+    },
+    "different-garment": {
+      "verdict": "promising geometry; garment details remain incorrect",
+      "observations": [
+        "Brown color, contrast shoulder/sleeve panels, V neckline and the large 95 graphic transfer recognizably.",
+        "Both sleeves and hem are plausible; no large beige-shirt fragments are visible. Face, hands, jeans and background appear preserved.",
+        "The sleeve's red maple-leaf print is missing. Small lettering and digit proportions differ; side and underarm boundaries remain rough. Exact garment fidelity is not accepted."
+      ]
+    },
+    "different-person": {
+      "verdict": "rejected: missing sleeves and invented red fabric",
+      "observations": [
+        "Despite the expanded upper-arm mask, the raw and final images remain sleeveless.",
+        "The model invents large red fabric regions outside the uploaded shirt's circular print. Skin seams at shoulder and armhole are rough.",
+        "The executed mask leaves part of the shoulder cap outside its flat upper boundary. The next rounded-cap revision is a hypothesis to test, not an established quality fix."
+      ]
+    },
+    "shirt-category": {
+      "verdict": "promising prototype candidate with print and edge limitations",
+      "observations": [
+        "The actual person wears a recognizable black graphic T-shirt with round neckline, shoulders, sleeves and a plausible hem.",
+        "No large beige-shirt fragments are visible. Face, hands, jeans, shoes and background appear unchanged.",
+        "Small print details and text are degraded, with residual underarm/side edge roughness. This does not establish production-quality fitting or arbitrary shirt support."
+      ]
+    }
+  }
+}

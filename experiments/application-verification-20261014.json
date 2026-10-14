@@ -1,0 +1,30 @@
+{
+  "verifiedAt": "2026-10-14T15:19:30.621421+00:00",
+  "frontendHttpStatus": 200,
+  "backendHttpStatus": 200,
+  "database": "postgresql",
+  "localModel": {
+    "backend": "catvton-vitonhd-16k-512",
+    "available": true,
+    "reason": null,
+    "code": null,
+    "supportedCategories": [
+      "t-shirt",
+      "shirt"
+    ],
+    "device": "cuda",
+    "nativeResolution": [
+      384,
+      512
+    ],
+    "qualityValidated": false
+  },
+  "tests": {
+    "python": "experiments/final-continuation-pytest-report.xml",
+    "live3DBrowser": "experiments/async-live-browser-report.json",
+    "jobRecoveryAndReal2DViewer": "experiments/job-recovery-browser-report.json",
+    "cloudGallery": "experiments/colab-gallery-browser-report-20261014.json"
+  },
+  "build": "experiments/frontend-build-report-20261014.json",
+  "visualAcceptance": "pending comparison; four-case findings in experiments/colab-review-20261014/report.json"
+}

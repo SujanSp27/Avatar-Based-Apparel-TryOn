@@ -20,6 +20,7 @@ import json
 import msvcrt
 import os
 import re
+import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -106,8 +107,11 @@ async def serve() -> None:
         "PYTHONUNBUFFERED": "1",
         "FASTMCP_SHOW_CLI_BANNER": "false",
     })
+    existing_notebook = (STATE / "connection.json").is_file()
     params = StdioServerParameters(
-        command=str(SERVER), args=["--log", str(STATE / "logs")], env=env,
+        command=sys.executable if existing_notebook else str(SERVER),
+        args=([str(ROOT / "scripts/colab_server.py")] if existing_notebook else [])
+        + ["--log", str(STATE / "logs")], env=env,
         cwd=str(ROOT),
     )
     with (STATE / "logs" / "server-stderr.log").open("a", encoding="utf-8") as errlog:

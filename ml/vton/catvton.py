@@ -14,6 +14,7 @@ import numpy as np
 from PIL import Image
 
 from ml.errors import PipelineError
+from ml.progress import report_progress
 
 SOURCE_COMMIT = "999bdbe81e6008a3f5749af7c1e0b0fa3d21b48e"
 BASE_REVISION = "8a4288a76071f7280aedbdb3253bdb9e9d5d84bb"
@@ -383,16 +384,29 @@ class CatVTONModel:
                 seed = getattr(self, "seed", 42)
                 torch.manual_seed(seed)
                 generator = torch.Generator(device=self.device).manual_seed(seed)
-                generated = self.pipeline(
-                    image=person.convert("RGB"),
-                    condition_image=garment.convert("RGB"),
-                    mask=replacement_mask.convert("L"),
-                    height=native_size[1],
-                    width=native_size[0],
-                    num_inference_steps=50,
-                    guidance_scale=getattr(self, "guidance_scale", 2.5),
-                    generator=generator,
-                )[0]
+                completed = 0
+
+                def denoising_step(*_):
+                    nonlocal completed
+                    completed += 1
+                    report_progress("generating", completed, 50)
+
+                report_progress("encoding_images")
+                hook = self.pipeline.unet.register_forward_hook(denoising_step)
+                try:
+                    generated = self.pipeline(
+                        image=person.convert("RGB"),
+                        condition_image=garment.convert("RGB"),
+                        mask=replacement_mask.convert("L"),
+                        height=native_size[1],
+                        width=native_size[0],
+                        num_inference_steps=50,
+                        guidance_scale=getattr(self, "guidance_scale", 2.5),
+                        generator=generator,
+                    )[0]
+                finally:
+                    hook.remove()
+                report_progress("checking_output")
                 features = self.feature_extractor(images=[generated], return_tensors="pt")
                 pixels = np.asarray(generated, dtype=np.float32)[None] / 255.0
                 _, unsafe = self.safety_checker(

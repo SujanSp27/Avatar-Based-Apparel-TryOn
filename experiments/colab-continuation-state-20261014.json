@@ -1,0 +1,30 @@
+{
+  "notebookUrl": "https://colab.research.google.com/drive/1fbPlq8X1RzLc9w6sVQxMVaTIi_VoqY6r",
+  "completedEvaluation": {
+    "cellId": "V3iNa7O92K-q",
+    "request": "497dc51f-1194-4525-89d4-293276ec38eb",
+    "sourceArchiveSha256": "e1370ca73948bf04546bebdec75ab505b01a0e358fd283c2a0196de0a07ace37",
+    "cloudRun": "20261014T100208097891Z",
+    "archive": "experiments/colab-sleeve-results-20261014.zip",
+    "archiveSha256": "030a79942c9488ed5fe1c6caf59c6ad991374604b5ec20f127067a7346ba59bc",
+    "collectedFiles": 102,
+    "collection": "experiments/runs/colab-sleeve-20261014",
+    "review": "experiments/colab-review-20261014/index.html",
+    "status": "completed_and_reviewed",
+    "qualityValidated": false
+  },
+  "comparison": {
+    "cellId": "n-4YNzbo-7cG",
+    "request": "2a0b8daa-c1c9-45d8-8cdf-e199b01b5eb0",
+    "sourceArchiveSha256": "1c2df277fa3e392fd076f9bb463e721eeb93cbf2cf64a72bfee66b3d96cdb1b3",
+    "script": "experiments/colab-comparison-20261014.py",
+    "checkpoint": "vitonhd-16k-512",
+    "nativeResolution": [384, 512],
+    "maskVersion": "semantic-pose-short-sleeve-v3-rounded-cap",
+    "status": "submitted",
+    "continuationRule": "Inspect this request and browser downloads first. Do not duplicate its execution.",
+    "runtimeRecovery": "Existing notebook reconnected; T4 available but previous runtime files gone. Completed evidence already recovered locally before environment restoration.",
+    "qualityValidated": false
+  },
+  "trainingPerformed": false
+}

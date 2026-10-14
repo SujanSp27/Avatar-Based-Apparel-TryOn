@@ -244,3 +244,61 @@ The updated cloud setup, combined-cell guard and result-archive tests passed:
 (`experiments/colab-correction-pytest-report.xml`); Ruff passed. The collector
 verifies paths and available artifact checksums before extracting results and
 does not mark generated candidates visually accepted.
+
+## Active continuation (14 October 2026)
+
+This section supersedes the live-state statements in the dated sections above.
+
+| Phase | Requirement | Status | Evidence |
+|------|------|------|------|
+| 11 / 12 | Long-running try-on progress and refresh recovery | IMPLEMENTED | `backend/app/jobs.py`, `ml/progress.py`, `frontend/src/useTryOnJob.ts`: real pipeline stages/denoising steps, persisted status, UUID idempotency, shared single-job capacity and no automatic replay after restart |
+| 13 | Verify job lifecycle, existing pipeline and browser error paths | IMPLEMENTED | 287 non-integration tests passed in 46.39 seconds, 16 deselected; `experiments/async-jobs-pytest-report.xml`. Two controlled browser tests passed in 19.5 seconds; `experiments/job-recovery-browser-report.json`. These browser tests do not establish model quality |
+| 1 / 12 | Reconnect to the user's existing notebook | IMPLEMENTED | `scripts/colab_server.py`, `scripts/colab_bridge.py`; actual existing-notebook T4 probe succeeded. No new notebook or runtime restart; previous results retained |
+| 8 / 13 | Evaluate revised sleeve masks on T4 | PARTIALLY IMPLEMENTED | Existing cell `V3iNa7O92K-q`, request `497dc51f-1194-4525-89d4-293276ec38eb`; revised source hash and continuation instructions in `docs/colab.md`. Result retrieval and visual acceptance pending |
+
+The four-case T4 evaluation completed at 10:12 UTC on 14 October. All **102 files**
+were recovered and checksum-verified in `experiments/runs/colab-sleeve-20261014`.
+Archive `experiments/colab-sleeve-results-20261014.zip` has SHA-256
+`030a79942c9488ed5fe1c6caf59c6ad991374604b5ec20f127067a7346ba59bc`.
+`experiments/colab-review-20261014/index.html` and its report record visual review
+of all four cases and exact preservation metrics. All three final candidates have
+zero changed pixels in parsed face/hair/hands/lower clothing and outside their edit
+masks. The striped case still fails pattern fidelity; the vest case still lacks
+sleeves and invents red fabric. The two studio/product-photo cases have plausible
+clothing geometry with missing/degraded print details. Acceptance remains partial.
+
+An additional rounded shoulder-cap correction is in `ml/vton/masking.py`. The two-case
+comparison script `experiments/colab-comparison-20261014.py` uses the already-downloaded
+vitonhd checkpoint at 384x512. It has not yet executed; reconnecting after the local
+bridge stopped revealed the saved notebook lacks the previous temporary probe cell.
+All completed evidence is local. The comparison must preserve existing artifacts and
+must not silently reinstall or restart a missing runtime.
+
+Latest validation: **289 non-integration tests passed in 74.28 seconds**, 16 excluded,
+three upstream warnings (`experiments/final-continuation-pytest-report.xml`). The live
+browser upload flow passed both tests in 2.8 minutes, including actual measurements,
+size recommendation, GLB loading and front/side/back/rotation/asset controls
+(`experiments/async-live-browser-report.json`). Two separate transport tests verified
+refresh recovery without another POST and rejection of an overlay response.
+
+The production frontend build passed with TypeScript and 383 modules in 9m37s;
+`experiments/frontend-build-report-20261014.json` records output hashes and exit code 0.
+The remaining large-bundle warning is not a compilation error. Three browser checks
+now pass in `experiments/job-recovery-browser-report.json`, including actual PNG loading
+and original/try-on switching using a retained CatVTON inference result. The recovered
+cloud gallery also passed: four case sections, all 23 images loaded, no page errors
+(`experiments/colab-gallery-browser-report-20261014.json`). Ruff and `pip check` pass.
+
+Evening runtime recovery found T4 available but no previous project files. The separate
+two-case comparison is submitted as `n-4YNzbo-7cG`, request
+`2a0b8daa-c1c9-45d8-8cdf-e199b01b5eb0`; the environment is restored from pinned packages.
+Completed four-case evidence was recovered before this action. See
+`experiments/colab-continuation-state-20261014.json` before any continuation to avoid
+duplicate inference.
+
+The local run `04360792-ad1f-4ec2-8ab7-1255eb8cecc0` did execute the revised mask
+with CatVTON vitonhd at 384x512. Its final image contains faint cream stripes on teal
+fabric, plausible short sleeves and a preserved person, but weak pattern contrast,
+an irregular collar and underarm artifacts. It is not accepted as production-quality
+fitting. This supersedes the earlier statement that no neural execution of the mask
+revision existed. The exact striped-shirt acceptance criterion remains open.

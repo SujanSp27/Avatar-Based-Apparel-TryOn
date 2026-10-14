@@ -69,7 +69,11 @@ def short_sleeve_support(labels: np.ndarray, landmarks: np.ndarray | None) -> np
         across = np.abs(dx * vector[1] - dy * vector[0]) / length
         # Stop before the elbow; do not open the whole arm or a torso rectangle.
         radius = min(shoulder_width * 0.18, length * 0.28)
-        corridor = (along >= -0.12) & (along <= 0.72) & (across <= radius)
+        # A flat cutoff above the joint leaves a visible skin cap on a vest.
+        # Include the round shoulder cap so the model can start a sleeve at the
+        # shoulder silhouette. Keep the distal cutoff before the elbow.
+        shoulder_cap = dx**2 + dy**2 <= radius**2
+        corridor = ((along >= 0) & (along <= 0.72) & (across <= radius)) | shoulder_cap
         # Reject detached/implausible corridors caused by a bad pose or parser.
         if np.count_nonzero(corridor & (labels == 3)) < 16:
             continue

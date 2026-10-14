@@ -175,3 +175,48 @@ notebook after checking the existing runtime. That is a new evaluation, not
 recovery. This continuation's instruction prohibits new runs and new notebooks;
 the updated mask therefore remains untested by neural inference. Result downloads
 work without Google Drive authorization.
+
+## Active continuation (14 October 2026)
+
+The notes above describe the completed 13 October recovery. The user subsequently
+requested a new Colab evaluation and supplied the existing saved notebook URL.
+`scripts/colab_server.py` reconnects the pinned official bridge to that exact Drive
+notebook; it validates the host/path and rejects scratch notebooks and URL fragments.
+The runtime probe found a Tesla T4 with 15,360 MiB and no previous project files.
+The earlier downloaded archive remains intact locally. The runtime was not restarted.
+
+The revised source archive is
+`e1370ca73948bf04546bebdec75ab505b01a0e358fd283c2a0196de0a07ace37`
+(39 allowlisted files). Existing notebook cell `V3iNa7O92K-q`, bridge request
+`497dc51f-1194-4525-89d4-293276ec38eb`, was submitted at 09:57 UTC. This is a new
+four-case evaluation of the corrected sleeve masks, not a replay of the recovered
+job. Do not submit it again while its execution is unresolved. A bridge timeout
+does not establish that the notebook cell stopped; inspect existing downloads and
+execution state first. No training or fine-tuning is involved.
+
+The local web app now uses persisted asynchronous jobs with refresh recovery and
+real step progress. Those jobs use local hardware. The Colab notebook remains a
+separate interactive GPU evaluation; no tunnel or Colab-hosted HTTP worker is used.
+
+The four-case run above **completed** at 10:12 UTC. The 16,141,392-byte archive is
+`experiments/colab-sleeve-results-20261014.zip`, with 102 verified files collected into
+`experiments/runs/colab-sleeve-20261014`. The local review is
+`experiments/colab-review-20261014/index.html`. Three images were generated, but the
+stripe regression was rejected and the vest case still lacks sleeves. Completed
+inference is not visual acceptance.
+
+The subsequent two-case comparison uses the existing vitonhd checkpoint, native
+384x512 resolution, and a rounded shoulder-cap mask. Its source archive hash is
+`1c2df277fa3e392fd076f9bb463e721eeb93cbf2cf64a72bfee66b3d96cdb1b3`.
+`experiments/colab-comparison-20261014.py` refuses to overwrite an earlier comparison
+and requires the completed four-case archive plus its existing virtual environment.
+It does not reinstall dependencies. The insertion request is preserved under
+`.runtime/colab-bridge/awaiting-connection`, pending a successful runtime probe.
+
+Evening update: the runtime probe returned a T4 but **no previous project files**.
+The original insertion was never sent and remains archived. After local recovery of
+all completed artifacts, the pinned environment is being restored in the same saved
+notebook. Comparison cell `n-4YNzbo-7cG`, request
+`2a0b8daa-c1c9-45d8-8cdf-e199b01b5eb0`, runs only the two new cases. The comparison
+script was adjusted to use this restored environment. The four-case job is not replayed.
+`experiments/colab-continuation-state-20261014.json` records both evaluations separately.

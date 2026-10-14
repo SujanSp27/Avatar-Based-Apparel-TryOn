@@ -100,6 +100,7 @@ def review(collection: Path, observations: Path, output: Path) -> dict:
         )
         revised = build_replacement_mask(np.asarray(native_labels), sleeve_support=np.asarray(native_support) > 127)
         previous = read_image(folder / "vton-replacement-mask.png")
+        same_mask = np.array_equal(previous, revised)
         Image.fromarray(revised).save(target / "revised-mask-preview.png")
         Image.fromarray(support.astype(np.uint8) * 255).save(target / "source-sleeve-support.png")
         native_array = np.asarray(native_labels)
@@ -108,10 +109,14 @@ def review(collection: Path, observations: Path, output: Path) -> dict:
             "visualReview": judgments["cases"][name], "qualityValidated": False,
             "maskRevision": {
                 "newInferencePerformed": False,
+                "matchesExecutedMask": bool(same_mask),
                 "newlyEditableUpperArmPixels": int(np.count_nonzero((previous == 0) & (revised > 0) & (native_array == 12))),
                 "protectedPixelsOpened": int(np.count_nonzero((revised > 0) & np.isin(native_array, PROTECTED_LABELS))),
                 "oldClothingPixelsOmitted": int(np.count_nonzero((revised == 0) & (native_array == 3))),
-                "limitation": "Mask geometry only; sleeve generation with this revision has not been evaluated.",
+                "limitation": (
+                    "Preview matches the mask used for the saved inference; inspect its actual generated sleeves."
+                    if same_mask else "Mask geometry only; the saved inference used a different mask."
+                ),
             },
             "inputSha256": run["inputSha256"],
             "inferenceArtifactSha256": run["artifacts"],
@@ -131,7 +136,7 @@ def review(collection: Path, observations: Path, output: Path) -> dict:
             (folder / "vton-model-output.png", "Raw model output (diagnostic)"),
             (final, "Recovered final candidate"),
             (folder / "vton-replacement-mask.png", "Mask used by completed job"),
-            (target / "revised-mask-preview.png", "Revised mask only; no new inference"),
+            (target / "revised-mask-preview.png", "Current mask (matches executed mask)" if same_mask else "Revised mask only; no new inference"),
         ):
             if image_path.is_file():
                 url = quote(Path(os.path.relpath(image_path, output)).as_posix(), safe="/.")
@@ -142,7 +147,8 @@ def review(collection: Path, observations: Path, output: Path) -> dict:
     report = {
         "archiveSha256": collected["archiveSha256"], "cloudRunCompleted": True,
         "recoveryMethod": "Existing browser download; original archive and collected reports preserved",
-        "model": "CatVTON mix-48k-1024", "gpu": "Tesla T4", "nativeResolution": [768, 1024],
+        "model": f"{run['model']} {run['checkpoint']}",
+        "gpu": run["runtime"]["gpu"]["name"], "nativeResolution": run["nativeResolution"],
         "newInferencePerformed": False, "trainingPerformed": False,
         "qualityValidated": False, "cases": records,
     }

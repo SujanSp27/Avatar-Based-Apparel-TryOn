@@ -11,6 +11,7 @@ from PIL import Image
 
 from ml.errors import PipelineError
 from ml.preprocessing.images import ImageFeatures, crop_foreground, decode_image, preprocess_garment
+from ml.progress import report_progress
 
 logger = logging.getLogger(__name__)
 SUPPORTED = ("t-shirt", "shirt")
@@ -149,6 +150,7 @@ class PretrainedTryOn:
             )
         with self._lock:
             try:
+                report_progress("loading_model")
                 self._load()
                 return self._render(person, garment_data, category, folder)
             except PipelineError:
@@ -178,6 +180,7 @@ class PretrainedTryOn:
         from ml.vton.quality import assess_garment_fidelity
 
         original = np.ascontiguousarray(person.image[:, :, :3])
+        report_progress("parsing_person")
         parsed = self._parser.predict(original)
         Image.fromarray(parsed.labels).save(folder / "personParsing.png")
         window = person_window(parsed.labels)
@@ -202,6 +205,7 @@ class PretrainedTryOn:
         )
 
         rgba = decode_image(garment_data, min_dimension=128)
+        report_progress("preparing_garment")
         garment_rgb = np.ascontiguousarray(rgba[:, :, :3])
         garment_parse = self._parser.predict(garment_rgb)
         Image.fromarray(garment_parse.labels).save(folder / "garmentParsing.png")
@@ -238,6 +242,7 @@ class PretrainedTryOn:
         garment_condition.paste(garment_native, mask=edge_native)
         garment_condition.save(folder / "vton-garment-input.png")
         generated = self._model.predict(person_native, garment_condition, replacement_native)
+        report_progress("refining_boundaries")
         generated.save(folder / "vton-model-output.png")
         restored = generated.crop(content_box).resize((x1 - x0, y1 - y0), Image.Resampling.LANCZOS)
         generated_full = original.copy()
@@ -269,7 +274,7 @@ class PretrainedTryOn:
             "model": self._model.provenance,
             "nativeResolution": list(self.native_size),
             "personWindow": list(window),
-            "replacementMaskVersion": "semantic-pose-short-sleeve-v2",
+            "replacementMaskVersion": "semantic-pose-short-sleeve-v3-rounded-cap",
             "maskLimitations": "Pose permits proximal upper-arm synthesis; long-sleeve changes are not validated.",
             "garmentSegmentation": garment_source,
             "parsing": parsed.diagnostics,
@@ -288,5 +293,6 @@ class PretrainedTryOn:
                 "was rejected. Try a clear product photograph; no pasted overlay was substituted.",
                 422,
             )
+        report_progress("saving_result")
         Image.fromarray(composite.image).save(folder / "tryon-2d.png")
         return diagnostics

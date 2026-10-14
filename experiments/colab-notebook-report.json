@@ -3,10 +3,10 @@
   "cloudExecution": "not performed by notebook builder",
   "visualAcceptance": "not evaluated by notebook builder",
   "notebook": "notebooks\\Virtual_TryOn_GPU.ipynb",
-  "notebookSha256": "4765577a45925a7d7986e2ab10bf5f73e2ea1adee94cdf3afb94191e9ad9fba2",
-  "notebookBytes": 1682507,
-  "sourceArchiveSha256": "633845cff63feac2a114b45e975d9326c7e2cefb7e0ead830863d68fd1b8905f",
-  "sourceArchiveBytes": 1250804,
+  "notebookSha256": "82d811c730a19950470f4ab45ae47cef55b255a28a83a499abb6a4f44d280267",
+  "notebookBytes": 1683663,
+  "sourceArchiveSha256": "1c2df277fa3e392fd076f9bb463e721eeb93cbf2cf64a72bfee66b3d96cdb1b3",
+  "sourceArchiveBytes": 1251670,
   "checks": {
     "nbformat": "4.5",
     "codeCellsCompile": 6,
@@ -68,6 +68,10 @@
         "sha256": "dbbe829b4153ac9750be6bc359262ead4a9c6aaaac7445fb909ca7b80a1a5f53",
         "bytes": 12404
       },
+      "ml/progress.py": {
+        "sha256": "f9f79f9984d458570fcfcea442f98cf372a2d8531387a80550206e6f09662f9b",
+        "bytes": 593
+      },
       "ml/vton/__init__.py": {
         "sha256": "3c4230b93ba18f817fee03083f61b67930964f74ca2a19b9ece177cdfb9e0ceb",
         "bytes": 82
@@ -77,16 +81,16 @@
         "bytes": 6841
       },
       "ml/vton/catvton.py": {
-        "sha256": "691cc67c82f15aa11790eced3518bf373bc796b4df9785f10a72dd3195ee2271",
-        "bytes": 19303
+        "sha256": "7810976681031a4f6a502892e28962bbeb74a2cb6507d5cd31a38281a4591f49",
+        "bytes": 19856
       },
       "ml/vton/conditioning.py": {
         "sha256": "2abdea1c4fd5bc87291bdc4ccd68abe78345bf4907b0c95fe06d9fb1bccf9cdd",
         "bytes": 7915
       },
       "ml/vton/masking.py": {
-        "sha256": "b83f447781a3a2f9936cadabbeeb62349ec4df20d6f109619360a0f16d4b1d31",
-        "bytes": 6052
+        "sha256": "5158dc103fb28d82029a7f515becc5543c125ce57cf3c5729007e0f9d475ea64",
+        "bytes": 6344
       },
       "ml/vton/parsing.py": {
         "sha256": "ce4cd856002164c790a019c478b315d2f6cb20dff6a6631e4917a449857b2c12",
@@ -105,8 +109,8 @@
         "bytes": 401
       },
       "ml/vton/service.py": {
-        "sha256": "f96d9c9e876183308379bcc971b7a1dd2264308996579a5fdf4bf607c776b890",
-        "bytes": 13927
+        "sha256": "99d1a8cf90722db4db6f0bf0f1a9c4d757a02a1229ae5dba16d62d1f5493a7e2",
+        "bytes": 14203
       },
       "ml/vton/vendor/catvton/LICENSE": {
         "sha256": "095791f7f830b929a5c4c5bd8fb9e62a1694336fc6b915f771e25a44015c403c",
@@ -165,8 +169,8 @@
         "bytes": 627
       },
       "scripts/colab_runtime.py": {
-        "sha256": "5ad8840369c9691a2c3b308393e8a7029718f426a2c033c1d479cf039647f7c3",
-        "bytes": 13717
+        "sha256": "f84355256ccea1045803232222feb52ebfcd49b884406502287f813164956cd6",
+        "bytes": 14068
       },
       "scripts/download_parser.py": {
         "sha256": "0684caec6d43ecb27bba3147ddac29cc5740a94249a56b4ba1abaa76949a360f",

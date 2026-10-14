@@ -5,10 +5,12 @@ export default function PhotoViewer({
   previewUrl,
   originalUrl,
   busy,
+  progressMessage,
 }: {
   previewUrl?: string;
   originalUrl?: string;
   busy: boolean;
+  progressMessage?: string;
 }) {
   const [view, setView] = useState<"tryon" | "original">("tryon");
   const [loadedUrl, setLoadedUrl] = useState("");
@@ -78,7 +80,7 @@ export default function PhotoViewer({
         <div className="busy-view" role="status">
           <div className="spinner" />
           <strong>Generating your try-on</strong>
-          <p>Running the pretrained garment replacement model…</p>
+          <p>{progressMessage || "Running the pretrained garment replacement model…"}</p>
         </div>
       )}
       <div className="viewer-bottom">

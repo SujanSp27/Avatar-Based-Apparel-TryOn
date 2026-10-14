@@ -50,6 +50,17 @@ def test_pose_support_is_deterministic_and_scales_with_source_resolution(vest):
     np.testing.assert_array_equal(points, original_points)
 
 
+def test_sleeve_can_cover_the_skin_cap_above_the_shoulder_joint(vest):
+    labels, points = vest
+    # The pose joint is inside the shoulder, below its visible upper boundary.
+    labels[127:150, 110:130] = 12
+    labels[127:150, 250:270] = 12
+    support = short_sleeve_support(labels, points)
+    assert support[130, 120] and support[130, 260]
+    assert not support[110, 120]  # bounded cap, not a whole-shoulder rectangle
+    assert not support[270:].any()  # elbow/forearm preservation is unchanged
+
+
 @pytest.mark.parametrize("bad", ["missing", "low_visibility", "outside", "nan", "detached"])
 def test_unreliable_pose_cannot_expand_onto_an_unrelated_region(vest, bad):
     labels, points = vest

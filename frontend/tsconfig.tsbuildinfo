@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/photoviewer.tsx","./src/viewer.tsx","./src/icons.ts","./src/lucide-icons.d.ts","./src/main.tsx","./src/types.ts","./vite.config.ts"],"version":"5.8.3"}
+{"root":["./src/app.tsx","./src/photoviewer.tsx","./src/viewer.tsx","./src/icons.ts","./src/lucide-icons.d.ts","./src/main.tsx","./src/types.ts","./src/usetryonjob.ts","./vite.config.ts"],"version":"5.8.3"}

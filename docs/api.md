@@ -16,6 +16,7 @@ parallel submissions receive 429. Heavy inference executes in a FastAPI worker t
 | `POST` or `PUT /api/brands/{id}/charts` | JSON `{garmentCategory, version, source, sizes:[...]}`; newer versions only |
 | `POST /api/sizing/recommend` | JSON `{brandId, garmentCategory, fitPreference, measurements}`; no images required |
 | `POST /api/tryon` | Multipart fields below; full pipeline result with real relative asset URLs |
+| `GET /api/tryon/jobs/{uuid}` | Persisted asynchronous job state, actual generation progress, final result or typed failure |
 | `GET /api/runs/{uuid}` | Persisted run status and metadata |
 | `DELETE /api/runs/{uuid}` | Removes that run's inputs/outputs and SQL record; refuses running jobs |
 | `GET /api/samples/person` | Downloaded, credited public full-body example |
@@ -27,6 +28,23 @@ optional `heightCm` (120–220; default explicitly assumed
 170), optional `garmentLengthCm` and `garmentWidthCm`. Dimension overrides are experimental;
 templates use body/size priors when no physical garment dimensions are known. A photo's
 pixel dimensions are never described as known physical dimensions.
+
+The browser sends `Prefer: respond-async` and a UUID `Idempotency-Key` with the upload.
+The API acknowledges admission with HTTP 202 and a `Location`/`statusUrl`; clients poll
+that URL for `queued`, `processing`, `success` or `failed`. `success` contains the real
+pipeline `result`; `failed` contains `error: {code, message}`. Progress is emitted by
+the pipeline, including completed diffusion steps, rather than estimated percentages.
+Without `Prefer`, the existing synchronous API remains available. The capacity limit
+is shared by both paths. Reusing a key with identical bytes and parameters returns the
+same job; different inputs with that key return 409. Busy admission returns 429.
+
+Job metadata is saved in `.runtime/tryon-jobs`. The UI retains the last job UUID in
+local storage and resumes polling after refresh without resubmitting the images.
+Completed results can be reloaded; failed/missing jobs are cleared from browser storage.
+The worker is single-process and does not survive a server restart: interrupted jobs
+are marked failed with their artifacts retained, never automatically replayed. Run
+one Uvicorn worker. This local queue is not a distributed or authenticated service.
+Colab notebook evaluation is separate; these HTTP jobs still run on the local machine.
 
 In `auto`, allowlisted full-body validation/reconstruction failures can invoke pretrained
 2D generation when the input and model support it. Explicit `3d` preserves strict validation;
