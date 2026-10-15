@@ -1,0 +1,174 @@
+{
+  "formatVersion": 1,
+  "scope": "Explicit inference source and five research regression images only.",
+  "excluded": [
+    ".env",
+    "credentials",
+    "data/processed",
+    "private uploads",
+    "backend",
+    "database",
+    "checkpoints",
+    ".venv",
+    "node_modules"
+  ],
+  "fixturePurpose": "Unpaired visual regression; not training data or ground truth.",
+  "files": {
+    "data/raw/garment-demo.png": {
+      "sha256": "28b6ff594200c1264146b10fab679b4343ae0ee520083e5b3389816963e67535",
+      "bytes": 4771
+    },
+    "data/raw/studio-person.jpg": {
+      "sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+      "bytes": 89704
+    },
+    "data/raw/vton-official/garment-number-95.jpg": {
+      "sha256": "332036128caffe010e377f7ecb1852791804c53ebc4865d377339b9762c6689f",
+      "bytes": 93984
+    },
+    "data/raw/vton-official/garment-rhude.jpg": {
+      "sha256": "3929f83104c547bcf4a74985999438c05f887d97445c700029414466680eeee3",
+      "bytes": 383472
+    },
+    "data/raw/vton-official/manifest.json": {
+      "sha256": "e5e1f37b3cfb809b12951ff49299023a6e03bbfe48adc3490256feba14c4d127",
+      "bytes": 2876
+    },
+    "data/raw/vton-official/person-model-5.png": {
+      "sha256": "5faaea84635da215bd0819cf5ce65512ca1b742c39ee8fd67176b19e084ed872",
+      "bytes": 638147
+    },
+    "ml/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ml/errors.py": {
+      "sha256": "ce18a094fe11c0aecb5bdd2db34c7deade1c3c0ccd2bda66e16a48d13e8843e7",
+      "bytes": 263
+    },
+    "ml/preprocessing/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ml/preprocessing/images.py": {
+      "sha256": "dbbe829b4153ac9750be6bc359262ead4a9c6aaaac7445fb909ca7b80a1a5f53",
+      "bytes": 12404
+    },
+    "ml/progress.py": {
+      "sha256": "f9f79f9984d458570fcfcea442f98cf372a2d8531387a80550206e6f09662f9b",
+      "bytes": 593
+    },
+    "ml/vton/__init__.py": {
+      "sha256": "3c4230b93ba18f817fee03083f61b67930964f74ca2a19b9ece177cdfb9e0ceb",
+      "bytes": 82
+    },
+    "ml/vton/attention.py": {
+      "sha256": "0e2e353b63089ef886ccebf082284aff212c992600f8d423c3469e0ac77a1b03",
+      "bytes": 6841
+    },
+    "ml/vton/catvton.py": {
+      "sha256": "7810976681031a4f6a502892e28962bbeb74a2cb6507d5cd31a38281a4591f49",
+      "bytes": 19856
+    },
+    "ml/vton/conditioning.py": {
+      "sha256": "2abdea1c4fd5bc87291bdc4ccd68abe78345bf4907b0c95fe06d9fb1bccf9cdd",
+      "bytes": 7915
+    },
+    "ml/vton/masking.py": {
+      "sha256": "5158dc103fb28d82029a7f515becc5543c125ce57cf3c5729007e0f9d475ea64",
+      "bytes": 6344
+    },
+    "ml/vton/parsing.py": {
+      "sha256": "ce4cd856002164c790a019c478b315d2f6cb20dff6a6631e4917a449857b2c12",
+      "bytes": 14281
+    },
+    "ml/vton/precision.py": {
+      "sha256": "7e1174e47c1e4f104994ca7f26ce805cf47cbc85308a597409f02762d1066f89",
+      "bytes": 2581
+    },
+    "ml/vton/quality.py": {
+      "sha256": "20cb132299f2680e779b7f229ba48bf44dc885e0a24f4d7c79dee02105ca5676",
+      "bytes": 6895
+    },
+    "ml/vton/runtime.py": {
+      "sha256": "cd71c7fcdaa6311b16b3b5419791acc8716ba2a0544d650b2acce0d3dc19df6f",
+      "bytes": 401
+    },
+    "ml/vton/service.py": {
+      "sha256": "99d1a8cf90722db4db6f0bf0f1a9c4d757a02a1229ae5dba16d62d1f5493a7e2",
+      "bytes": 14203
+    },
+    "ml/vton/vendor/catvton/LICENSE": {
+      "sha256": "095791f7f830b929a5c4c5bd8fb9e62a1694336fc6b915f771e25a44015c403c",
+      "bytes": 18600
+    },
+    "ml/vton/vendor/catvton/UPSTREAM.md": {
+      "sha256": "c8e0d654fff70277644609a49f7ec4dbe6c7c7851196b63906a56396ac7d54d1",
+      "bytes": 656
+    },
+    "ml/vton/vendor/catvton/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ml/vton/vendor/catvton/model/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ml/vton/vendor/catvton/model/attn_processor.py": {
+      "sha256": "51f793caeb7c828b0d479120142db5b735f8fe7c3efcf56ad8c130388d7a6244",
+      "bytes": 3682
+    },
+    "ml/vton/vendor/catvton/model/pipeline.py": {
+      "sha256": "d1a216010bd3ba523e9a093b14128c665c114f90e59fae4c82b62868142961a1",
+      "bytes": 10282
+    },
+    "ml/vton/vendor/catvton/model/utils.py": {
+      "sha256": "f5f26237e00d1b091ea73cbe9145be9f025b9c2f73e2cb169df30556c2899d28",
+      "bytes": 3750
+    },
+    "ml/vton/vendor/catvton/utils.py": {
+      "sha256": "3d31693279cf9d217fc6efa9f7499d9a9bd58fb71e9b679dcad12a58cc2ab710",
+      "bytes": 20200
+    },
+    "ml/vton/vendor/fashn_human_parser/LICENSE": {
+      "sha256": "873ccdc8a7d59a7919ad953a7d4fea8ad1948f67ff5d5ae1cc2418d51a281e86",
+      "bytes": 458
+    },
+    "ml/vton/vendor/fashn_human_parser/UPSTREAM.md": {
+      "sha256": "88c1d9acd6351d1a6235e581195fb99bf573319cbc0801f567c5e9168f5e9d1c",
+      "bytes": 1128
+    },
+    "ml/vton/vendor/fashn_human_parser/__init__.py": {
+      "sha256": "0f951dbb0e0426fb6c88aa2aaac6c3b9d6bf446a66216a16fc87da001c37dc84",
+      "bytes": 450
+    },
+    "ml/vton/vendor/fashn_human_parser/labels.py": {
+      "sha256": "b7247afa1618dfc0115e0b75d2ed23829a1b6653578ad7045c0d342f0cb6318d",
+      "bytes": 1006
+    },
+    "ml/vton/vendor/fashn_human_parser/parser.py": {
+      "sha256": "880bb36f980bc1d65d140cad2ceb5f1a7d227e72a0f483db9f6dedd3b1da3af6",
+      "bytes": 7529
+    },
+    "requirements-colab.txt": {
+      "sha256": "ab47b861b4ac1032cf15e3ceae917cd99d49b2371c8c40a1872bbca72bcf5536",
+      "bytes": 627
+    },
+    "scripts/colab_runtime.py": {
+      "sha256": "f84355256ccea1045803232222feb52ebfcd49b884406502287f813164956cd6",
+      "bytes": 14068
+    },
+    "scripts/download_parser.py": {
+      "sha256": "0684caec6d43ecb27bba3147ddac29cc5740a94249a56b4ba1abaa76949a360f",
+      "bytes": 4446
+    },
+    "scripts/download_vton.py": {
+      "sha256": "f69d31572a765cab89396d3fede8d98fd59b1e11d041bfc957c39ce16f95f8b4",
+      "bytes": 7910
+    },
+    "scripts/download_vton_mix.py": {
+      "sha256": "8c8ce18bd0b167758ded828ee55e033564dbff4bf79701b7b06177d3e5275a12",
+      "bytes": 2519
+    }
+  }
+}

@@ -260,3 +260,25 @@ FASHN identifies its model as inheriting the [NVIDIA SegFormer license](https://
 whose use limitation covers research/evaluation purposes. The Stable Diffusion base and VAE
 retain their respective upstream model terms. Vendored notices are retained. This selection
 is a local research integration, not a commercially cleared deployment.
+
+## Conditioning experiment (15 October 2026)
+
+The already recovered raw outputs show that a correctly prepared striped garment
+can lose its pattern during diffusion. An explicit `reference-anchor` mode now
+connects the previously isolated conditioning helper to the complete UNet input
+before sequential guidance splits the batch. A fresh controller is created for
+each prediction and both hooks are removed even on failure. The API continues to
+use official conditioning by default.
+
+This tests two inference mechanisms discussed in
+[Rethinking Garment Conditioning in Diffusion-based Virtual Try-On](https://arxiv.org/html/2511.18775v1):
+anchoring the garment noise to the uploaded reference and removing garment context
+from the unconditional branch. The paper also fine-tunes the UNet with a different
+loss. This experiment uses the existing verified CatVTON weights, performs no
+training, and must not be described as the paper's trained Re-CatVTON model.
+
+The current three-case Colab experiment fixes resolution at 384x512, checkpoint
+at vitonhd-16k-512, seed at 42 and guidance at 2.5. Its execution and visual review
+state are recorded separately from prior runs in
+`experiments/colab-conditioning-state-20261015.json`. Unit-test success is not
+evidence that this experimental mode improves fitting.

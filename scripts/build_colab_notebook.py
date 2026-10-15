@@ -360,6 +360,46 @@ def make_notebook(payload: bytes) -> dict:
                         archive.write(path, path.relative_to(PROJECT))
                 archive.write(PROJECT / "SOURCE_MANIFEST.json", "SOURCE_MANIFEST.json")
             print("Actual run artifacts:", RESULTS_ZIP, RESULTS_ZIP.stat().st_size, "bytes")
+            # Browser downloads can be missed if a tab disconnects before the
+            # cell finishes. Retain bounded previews in saved notebook outputs.
+            # These are explicitly previews, never replacements for full PNGs.
+            import base64
+            import hashlib
+            import io
+            from IPython.display import display
+            from PIL import Image
+
+            for report_path in sorted(RUNS.glob("*/report.json"))[:4]:
+                saved_report = json.loads(report_path.read_text(encoding="utf-8"))
+                accepted_by_pipeline = saved_report["status"] == "generated"
+                image_path = report_path.parent / (
+                    "tryon-2d.png" if accepted_by_pipeline else "vton-model-output.png"
+                )
+                recovery_record = {
+                    "type": "avatar-vton-recovery-preview",
+                    "case": report_path.parent.name,
+                    "previewOnly": True,
+                    "qualityValidated": False,
+                    "imageKind": "unreviewed candidate" if accepted_by_pipeline else "rejected diagnostic",
+                    **{key: saved_report.get(key) for key in (
+                        "status", "error", "code", "checkpoint", "nativeResolution",
+                        "inputSha256", "seconds",
+                    )},
+                }
+                if image_path.is_file():
+                    recovery_record["fullImageSha256"] = hashlib.sha256(image_path.read_bytes()).hexdigest()
+                display({"application/json": recovery_record}, raw=True)
+                if image_path.is_file():
+                    with Image.open(image_path) as original:
+                        preview = original.convert("RGB")
+                    preview.thumbnail((640, 640))
+                    while True:
+                        jpeg = io.BytesIO()
+                        preview.save(jpeg, format="JPEG", quality=80)
+                        if jpeg.tell() <= 128 * 1024:
+                            break
+                        preview.thumbnail((max(1, preview.width // 2), max(1, preview.height // 2)))
+                    display({"image/jpeg": base64.b64encode(jpeg.getvalue()).decode("ascii")}, raw=True)
             files.download(str(RESULTS_ZIP))
         """),
         cell("markdown", "optional-drive-note", """

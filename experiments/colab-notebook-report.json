@@ -3,10 +3,10 @@
   "cloudExecution": "not performed by notebook builder",
   "visualAcceptance": "not evaluated by notebook builder",
   "notebook": "notebooks\\Virtual_TryOn_GPU.ipynb",
-  "notebookSha256": "82d811c730a19950470f4ab45ae47cef55b255a28a83a499abb6a4f44d280267",
-  "notebookBytes": 1683663,
-  "sourceArchiveSha256": "1c2df277fa3e392fd076f9bb463e721eeb93cbf2cf64a72bfee66b3d96cdb1b3",
-  "sourceArchiveBytes": 1251670,
+  "notebookSha256": "9a304222d7d6491dcdd32e20fdd9bd9e827bc0a6f372c043c1285170030a9c12",
+  "notebookBytes": 1687563,
+  "sourceArchiveSha256": "b792ecc27c6a0ae3fc3890f96a9495e4181b0c6ccc1166da2740f08bedf1de16",
+  "sourceArchiveBytes": 1252925,
   "checks": {
     "nbformat": "4.5",
     "codeCellsCompile": 6,
@@ -81,8 +81,8 @@
         "bytes": 6841
       },
       "ml/vton/catvton.py": {
-        "sha256": "7810976681031a4f6a502892e28962bbeb74a2cb6507d5cd31a38281a4591f49",
-        "bytes": 19856
+        "sha256": "9f27520f53fa34aa58bb27ee5be954e19cec1c4d6dbdc7f9c6013f5b7df4dbec",
+        "bytes": 21793
       },
       "ml/vton/conditioning.py": {
         "sha256": "2abdea1c4fd5bc87291bdc4ccd68abe78345bf4907b0c95fe06d9fb1bccf9cdd",
@@ -93,8 +93,8 @@
         "bytes": 6344
       },
       "ml/vton/parsing.py": {
-        "sha256": "ce4cd856002164c790a019c478b315d2f6cb20dff6a6631e4917a449857b2c12",
-        "bytes": 14281
+        "sha256": "4d8a81e0531062241e9e9ae748dbdd6a2c485b0407fdf48fc9187fa32c6f154b",
+        "bytes": 16386
       },
       "ml/vton/precision.py": {
         "sha256": "7e1174e47c1e4f104994ca7f26ce805cf47cbc85308a597409f02762d1066f89",
@@ -109,8 +109,8 @@
         "bytes": 401
       },
       "ml/vton/service.py": {
-        "sha256": "99d1a8cf90722db4db6f0bf0f1a9c4d757a02a1229ae5dba16d62d1f5493a7e2",
-        "bytes": 14203
+        "sha256": "50bbf5b5d5198a88c849d07722cbca62417fc31e005c542fb600d16656619a26",
+        "bytes": 14895
       },
       "ml/vton/vendor/catvton/LICENSE": {
         "sha256": "095791f7f830b929a5c4c5bd8fb9e62a1694336fc6b915f771e25a44015c403c",
@@ -169,8 +169,8 @@
         "bytes": 627
       },
       "scripts/colab_runtime.py": {
-        "sha256": "f84355256ccea1045803232222feb52ebfcd49b884406502287f813164956cd6",
-        "bytes": 14068
+        "sha256": "80faaef42c95bf664989123c4e2c752bdd50d6e6ae0ea5ee1e3ba8831b3f31af",
+        "bytes": 14440
       },
       "scripts/download_parser.py": {
         "sha256": "0684caec6d43ecb27bba3147ddac29cc5740a94249a56b4ba1abaa76949a360f",

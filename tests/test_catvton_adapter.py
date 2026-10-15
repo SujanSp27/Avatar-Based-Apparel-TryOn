@@ -237,3 +237,59 @@ def test_attention_checkpoint_rejects_unexpected_weights(shared_attention):
 
     with pytest.raises(ValueError, match="Unexpected CatVTON attention checkpoint keys"):
         catvton.load_shared_attention_weights(module, checkpoint)
+
+
+@pytest.mark.parametrize("conditioning", ["official", "reference-anchor"])
+@pytest.mark.parametrize("fail", [False, True])
+def test_conditioning_is_opt_in_scoped_and_reset_per_prediction(conditioning, fail):
+    import torch
+    from diffusers import DDIMScheduler
+
+    model, person, mask = bare_adapter()
+    model.conditioning = conditioning
+    seen = []
+
+    class RecordingUNet(torch.nn.Module):
+        def forward(self, sample, timestep, **kwargs):
+            seen.append(sample.clone())
+            if fail:
+                raise RuntimeError("diagnostic failure")
+            return (sample[:, :4],)
+
+    class TinyPipeline:
+        unet = RecordingUNet()
+        noise_scheduler = DDIMScheduler(num_train_timesteps=10)
+
+        def __init__(self):
+            self.noise = 0.3
+
+        def __call__(self, **kwargs):
+            sample = torch.zeros(2, 9, 8, 4)
+            sample[:, :4] = self.noise
+            sample[1, 5:9, 4:] = 1
+            self.unet(sample, torch.tensor(9), encoder_hidden_states=None, return_dict=False)
+            # The hook must not change the official pipeline's tensor in place.
+            assert torch.all(sample[:, :4] == self.noise)
+            return [person]
+
+    model.pipeline = TinyPipeline()
+    model.feature_extractor = Mock(return_value=SimpleNamespace(pixel_values=torch.zeros(1, 3, 2, 2)))
+    model.safety_checker = Mock(return_value=(None, [False]))
+    for noise in (0.3, 0.7):
+        model.pipeline.noise = noise
+        if fail:
+            with pytest.raises(RuntimeError, match="diagnostic failure"):
+                model.predict(person, person, mask)
+        else:
+            assert model.predict(person, person, mask) is person
+        assert not model.pipeline.unet._forward_pre_hooks
+        assert not model.pipeline.unet._forward_hooks
+        sample = seen[-1]
+        assert torch.all(sample[:, :4, :4] == noise)
+        if conditioning == "official":
+            assert torch.all(sample[:, :4, 4:] == noise)
+        else:
+            alpha = model.pipeline.noise_scheduler.alphas_cumprod[9]
+            expected = alpha.sqrt() + (1 - alpha).sqrt() * noise
+            assert torch.count_nonzero(sample[0, :, 4:]) == 0
+            torch.testing.assert_close(sample[1, :4, 4:], torch.full((4, 4, 4), expected))

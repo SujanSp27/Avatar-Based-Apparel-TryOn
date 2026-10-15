@@ -19,12 +19,19 @@
     "sourceArchiveSha256": "1c2df277fa3e392fd076f9bb463e721eeb93cbf2cf64a72bfee66b3d96cdb1b3",
     "script": "experiments/colab-comparison-20261014.py",
     "checkpoint": "vitonhd-16k-512",
-    "nativeResolution": [384, 512],
+    "nativeResolution": [
+      384,
+      512
+    ],
     "maskVersion": "semantic-pose-short-sleeve-v3-rounded-cap",
-    "status": "submitted",
+    "status": "completed_archive_unavailable",
     "continuationRule": "Inspect this request and browser downloads first. Do not duplicate its execution.",
     "runtimeRecovery": "Existing notebook reconnected; T4 available but previous runtime files gone. Completed evidence already recovered locally before environment restoration.",
-    "qualityValidated": false
+    "qualityValidated": false,
+    "archiveBytes": 5622834,
+    "visualAcceptance": "striped case rejected; second-person image not yet retrieved",
+    "recovery": "User confirmed on 15 October that the exact 5,622,834-byte archive is no longer available. The supplied Downloads folder was verified as the earlier four-case run. Saved completion logs remain; the second-person candidate cannot be visually reviewed.",
+    "imageReview": "BLOCKED: original runtime artifact unavailable"
   },
   "trainingPerformed": false
 }

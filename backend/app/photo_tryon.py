@@ -10,7 +10,9 @@ from ml.vton.service import PretrainedTryOn
 
 @lru_cache(maxsize=1)
 def get_vton() -> PretrainedTryOn:
-    return PretrainedTryOn(settings.vton_root, settings.vton_device)
+    return PretrainedTryOn(
+        settings.vton_root, settings.vton_device, conditioning=settings.vton_conditioning,
+    )
 
 
 def photo_result(
@@ -43,6 +45,7 @@ def photo_result(
         "garment-fidelity.json",
         "vton-model-output.png",
         "vton-replacement-mask.png",
+        "vton-inference-support.png",
         "vton-person-input.png",
         "vton-garment-input.png",
         "vton-garment-mask.png",

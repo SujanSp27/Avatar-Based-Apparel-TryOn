@@ -1,0 +1,27 @@
+{
+  "suppliedFolder": "C:\\Users\\Sujan\\Downloads\\colab-tryon-results (2)",
+  "archiveBytes": 16141392,
+  "archiveSha256": "030a79942c9488ed5fe1c6caf59c6ad991374604b5ec20f127067a7346ba59bc",
+  "matchesRecoveredSourceManifest": true,
+  "reports": [
+    {
+      "report": "experiments/colab-runs/20261014T100208097891Z/different-garment/report.json",
+      "matchesRecoveredReport": true
+    },
+    {
+      "report": "experiments/colab-runs/20261014T100208097891Z/different-person/report.json",
+      "matchesRecoveredReport": true
+    },
+    {
+      "report": "experiments/colab-runs/20261014T100208097891Z/reported-striped-shirt/report.json",
+      "matchesRecoveredReport": true
+    },
+    {
+      "report": "experiments/colab-runs/20261014T100208097891Z/shirt-category/report.json",
+      "matchesRecoveredReport": true
+    }
+  ],
+  "newComparisonRecovered": false,
+  "newComparisonArchiveBytes": 5622834,
+  "userConfirmedComparisonArchiveUnavailable": true
+}

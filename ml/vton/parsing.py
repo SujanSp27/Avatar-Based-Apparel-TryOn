@@ -259,6 +259,7 @@ def compose_preserving_identity(
     category: str = "t-shirt",
     *,
     sleeve_support: np.ndarray | None = None,
+    inference_support: np.ndarray | None = None,
 ) -> CompositeResult:
     """Restore source identity while admitting the model's local garment boundary.
 
@@ -293,6 +294,27 @@ def compose_preserving_identity(
         from ml.vton.masking import binary_support
 
         permitted_sleeves = binary_support(sleeve_support, old.shape)
+    permitted_inference = np.zeros(old.shape, dtype=bool)
+    if inference_support is not None:
+        from ml.vton.masking import binary_support
+
+        permitted_inference = binary_support(inference_support, old.shape)
+        # A model may narrow an exposed shoulder and put background where skin
+        # should be. Keeping that skin produces detached shoulder fragments;
+        # erasing it changes body proportions. Reject substantial loss instead.
+        arm_interior = cv2.distanceTransform(
+            (source_labels == 12).astype(np.uint8), cv2.DIST_L2, 5,
+        ) > max(2, round(min(old.shape) * 0.004))
+        editable_arms = permitted_inference & (source_labels == 12)
+        missing_arms = editable_arms & arm_interior & (target_labels == 0)
+        missing_count = int(np.count_nonzero(missing_arms))
+        if missing_count > max(64, np.count_nonzero(editable_arms) * 0.03):
+            raise PipelineError(
+                "vton_body_shape_changed",
+                "The model narrowed an exposed shoulder or arm. This result was rejected "
+                "to preserve your body shape. Try a front-facing photo wearing a short-sleeved top.",
+                422,
+            )
     # A parser's hard boundary can lie several pixels inside the actual fabric.
     # Keeping that boundary exact would restore a white/beige outline from the
     # source photo. The model supplies this small context, not a garment overlay.
@@ -306,10 +328,23 @@ def compose_preserving_identity(
         upper_body
         & np.isin(source_labels, (0, 12, 16))
         & generated_clothing
-        & ((distance <= radius) | permitted_sleeves)
+        & ((distance <= radius) | permitted_sleeves | permitted_inference)
+    )
+    # The inference mask includes seam context beyond the pose corridor. Using
+    # only the smaller corridor here pastes old vest/skin wedges over generated
+    # shoulder caps. Admit generated clothing within the exact inpainted region,
+    # with a narrow parser-edge allowance; never admit unrelated skin or clothes.
+    generated_edge = cv2.dilate(
+        generated_clothing.astype(np.uint8),
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * feather_width + 1,) * 2),
+    ).astype(bool)
+    seam = (
+        upper_body & permitted_inference & generated_edge
+        & np.isin(source_labels, (0, 12, 16))
+        & np.isin(target_labels, (0, 3, 12, 16))
     )
     protected = ~(old | (upper_body & np.isin(source_labels, (0, 12, 16))))
-    support = old | context | extension
+    support = old | context | extension | seam
     interior_distance = cv2.distanceTransform(support.astype(np.uint8), cv2.DIST_L2, 5)
     alpha = np.zeros(old.shape, dtype=np.float32)
     alpha[support] = np.minimum(interior_distance[support] / feather_width, 1.0)
@@ -346,6 +381,8 @@ def compose_preserving_identity(
             "semanticContextPixels": int(np.count_nonzero(context)),
             "generatedClothingExtensionPixels": int(np.count_nonzero(extension)),
             "poseSleeveSupportPixels": int(np.count_nonzero(permitted_sleeves)),
+            "inferenceSupportPixels": int(np.count_nonzero(permitted_inference)),
+            "inferenceSeamPixels": int(np.count_nonzero(seam)),
             "silhouettePolicy": "Bounded generated clothing may cover nearby background, bare torso or upper arms. Face, hair, hands and unrelated clothing stay exact; distant background and limbs stay exact.",
             "limitations": "Preservation is conditional on semantic parsing; it does not guarantee perceptual realism or accurate fit.",
         },

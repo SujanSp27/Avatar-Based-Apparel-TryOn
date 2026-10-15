@@ -220,3 +220,60 @@ notebook. Comparison cell `n-4YNzbo-7cG`, request
 `2a0b8daa-c1c9-45d8-8cdf-e199b01b5eb0`, runs only the two new cases. The comparison
 script was adjusted to use this restored environment. The four-case job is not replayed.
 `experiments/colab-continuation-state-20261014.json` records both evaluations separately.
+
+## Recovery safeguards (15 October 2026)
+
+The saved comparison cell proves both cases completed and a 5,622,834-byte ZIP was
+created. Its striped case was rejected; its second-person case generated an image.
+However, no new ZIP was found locally, and the current runtime reports no project
+files. Its second image therefore has **not** been visually reviewed. A successful
+notebook log is not enough to claim acceptable fitting.
+
+The local bridge now permits bounded 8 MiB WebSocket messages so an embedded source
+cell can be read without the upstream 1 MiB limit disconnecting it. Origin and token
+checks remain intact. The notebook exporter now includes at most four JPEG recovery
+previews of at most 128 KiB each, labelled as unreviewed candidates or rejected
+diagnostics, with input and full-image hashes. Full PNGs/reports stay in the ZIP.
+This improves future recovery; it cannot recreate an unretrieved comparison image or
+guarantee that Google saves notebook outputs. The prepared notebook has not been
+executed again as part of this recovery.
+
+The user subsequently confirmed that the **original tab still has the project folder**.
+An empty runtime in the connector is therefore not proof that every runtime's files
+are gone. The requested manual action is only to download the existing ZIP from that
+original tab, which the notebook connector cannot select. The saved execution output
+is preserved in `experiments/colab-comparison-execution-20261015.json`; no comparison
+inference was replayed during recovery. Forty-four focused recovery/notebook/job tests
+passed in 4.62 seconds and Ruff passed (`experiments/recovery-tests-20261015.xml`).
+
+The supplied Downloads folder `colab-tryon-results (2)` was subsequently checked:
+its ZIP hash, source manifest and all four reports match the already recovered
+14 October morning run. `experiments/download-identity-20261015.json` records this.
+The user confirmed the later 5,622,834-byte ZIP is no longer available. Recovery of
+that comparison image is blocked; retain its completion log without a visual verdict.
+
+After the user's continuation, the existing notebook's runtime probe returned a
+T4 with no project files. A new, explicitly separate three-case conditioning
+ablation was submitted in cell `3R0B-DHoStfR`, request
+`c34abe96-2bc0-4dd0-a7ce-9e431c684177`, using verified source archive
+`38a9b75373f46da755c0bdaac32a5e811e1f6b7ce8156849ee232e2d3bff07cc`.
+The original notebook and runtime were not restarted. The isolated environment
+must be restored because its previous files are absent. Check
+`experiments/colab-conditioning-state-20261015.json` before taking any action;
+do not replay an unresolved cell.
+
+This compares official and experimental reference-anchored conditioning on the
+same striped input, then checks the second person with the experimental mode.
+Checkpoint, rounded sleeve mask, seed, guidance and native resolution stay fixed.
+It is an inference ablation, not training or the trained Re-CatVTON method.
+`--conditioning reference-anchor` is explicit; the application's default stays
+official until actual results justify a change. Adapter/runner tests passed
+86 cases, and packaging/service tests passed 34 cases.
+
+`scripts/retrieve_colab_archive.py` reads an existing result ZIP through one
+dedicated notebook export cell in bounded 512 KiB chunks. It retains request IDs,
+checks every chunk and the full ZIP, and resumes pending reads without submitting
+them again. It never executes inference. Use `python -m scripts.retrieve_colab_archive`.
+The importer accepts `--expected-manifest` to reject an archive from a different
+source revision before writing any results. A generated report without its final
+PNG is also rejected. These recovery checks do not assess garment realism.

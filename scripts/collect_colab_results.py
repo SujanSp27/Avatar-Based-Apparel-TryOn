@@ -13,7 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 LIMIT = 200 * 1024 * 1024
 
 
-def collect(archive_path: Path, destination: Path) -> dict:
+def collect(
+    archive_path: Path, destination: Path, *, expected_manifest: dict | None = None,
+) -> dict:
     destination = destination.resolve()
     if destination.exists() and any(destination.iterdir()):
         raise ValueError("Use an empty result directory; existing evidence will not be overwritten")
@@ -38,12 +40,20 @@ def collect(archive_path: Path, destination: Path) -> dict:
             if target.is_symlink() or not target.resolve().is_relative_to(destination):
                 raise ValueError("Result path escapes the destination")
         payloads = {entry.orig_filename: archive.read(entry) for entry in entries}
+    manifest = json.loads(payloads["SOURCE_MANIFEST.json"]) if "SOURCE_MANIFEST.json" in payloads else None
+    if expected_manifest is not None:
+        if not isinstance(expected_manifest.get("files"), dict) or not expected_manifest["files"]:
+            raise ValueError("Expected source manifest must contain file hashes")
+        if manifest is None or manifest.get("files") != expected_manifest["files"]:
+            raise ValueError("Source manifest mismatch: this archive is from a different source revision")
     cases = []
     for name, data in payloads.items():
         if not name.endswith("/report.json"):
             continue
         report = json.loads(data)
         directory = str(PurePosixPath(name).parent)
+        if report["status"] == "generated" and f"{directory}/tryon-2d.png" not in payloads:
+            raise ValueError(f"Generated case is missing its final image: {directory}")
         for artifact, expected in report.get("artifacts", {}).items():
             key = f"{directory}/{artifact}"
             if key in payloads:
@@ -55,6 +65,8 @@ def collect(archive_path: Path, destination: Path) -> dict:
             "report": name, "status": report["status"],
             "error": report.get("error"), "code": report.get("code"),
             "seconds": report.get("seconds"), "runtime": report.get("runtime"),
+            "checkpoint": report.get("checkpoint"),
+            "run": PurePosixPath(name).parent.parent.name,
             "inputSha256": report.get("inputSha256"),
             "nativeImage": f"{directory}/vton-model-output.png" if f"{directory}/vton-model-output.png" in payloads else None,
             "finalImage": f"{directory}/tryon-2d.png" if f"{directory}/tryon-2d.png" in payloads else None,
@@ -69,6 +81,10 @@ def collect(archive_path: Path, destination: Path) -> dict:
         path.write_bytes(data)
     result = {
         "archiveSha256": hashlib.sha256(archive_path.read_bytes()).hexdigest(),
+        "sourceManifestSha256": (
+            hashlib.sha256(payloads["SOURCE_MANIFEST.json"]).hexdigest() if manifest else None
+        ),
+        "sourceRevisionMatched": expected_manifest is not None,
         "files": len(payloads), "cases": cases,
         "qualityValidated": False,
     }
@@ -80,8 +96,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("archive", type=Path)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--expected-manifest", type=Path,
+                        help="Require this SOURCE_MANIFEST.json before importing any files")
     args = parser.parse_args()
-    report = collect(args.archive, args.output)
+    expected = json.loads(args.expected_manifest.read_text(encoding="utf-8")) if args.expected_manifest else None
+    report = collect(args.archive, args.output, expected_manifest=expected)
     print(json.dumps(report, indent=2))
 
 

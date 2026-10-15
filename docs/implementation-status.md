@@ -296,9 +296,46 @@ Completed four-case evidence was recovered before this action. See
 `experiments/colab-continuation-state-20261014.json` before any continuation to avoid
 duplicate inference.
 
+## Recovery continuation (15 October 2026)
+
+The saved comparison cell confirms completion: vitonhd-16k-512 at 384x512 rejected
+the striped case in 45.966 seconds and generated the second-person candidate in
+43.763 seconds. Its ZIP is 5,622,834 bytes. The connector timed out after the browser
+connection closed, so its timeout was not evidence of model failure. The saved log
+was recovered in `experiments/colab-comparison-execution-20261015.json`.
+
+The connected runtime has no project files, but the user confirms the original tab
+still has its project folder. Archive retrieval from that tab is pending; its generated
+image is **not visually reviewed**. The earlier four-case archive and all reviews remain
+available. No inference was restarted on 15 October. The app was started again and is
+available at `http://127.0.0.1:5173`.
+
+`scripts/colab_server.py` now supports bounded 8 MiB messages, allowing recovery of
+large source cells without changing origin/authentication checks. The notebook exporter
+retains bounded, explicitly labelled recovery previews and hashes for future runs.
+Forty-four focused tests passed in 4.62 seconds, plus Ruff; they verify preview bounds,
+honest failure labels, unchanged full-image bytes, packaging and worker recovery.
+These changes do not imply improved garment fitting or recovery of the pending image.
+
 The local run `04360792-ad1f-4ec2-8ab7-1255eb8cecc0` did execute the revised mask
 with CatVTON vitonhd at 384x512. Its final image contains faint cream stripes on teal
 fabric, plausible short sleeves and a preserved person, but weak pattern contrast,
 an irregular collar and underarm artifacts. It is not accepted as production-quality
 fitting. This supersedes the earlier statement that no neural execution of the mask
 revision existed. The exact striped-shirt acceptance criterion remains open.
+
+The user-confirmed Downloads path was verified as the older four-case archive;
+all report bytes and its source manifest match existing evidence. The user then
+confirmed that the exact later comparison ZIP is no longer available. That image
+review is BLOCKED, not pending a further download request.
+
+| Phase | Requirement | Status | Evidence |
+|------|------|------|------|
+| 13 / 14 | Identify downloaded execution and preserve evidence | IMPLEMENTED | `experiments/download-identity-20261015.json`; importer can require the expected source manifest and rejects generated cases without their PNG |
+| 13 | Review the lost two-case comparison image | BLOCKED | User confirmed its exact 5,622,834-byte archive is unavailable; saved notebook completion output retained, no visual acceptance claimed |
+| 8 / 13 | Test garment conditioning without changing production defaults | PARTIALLY IMPLEMENTED | Explicit `reference-anchor` experiment integrated through the complete CFG batch; 86 adapter/runner tests and 34 packaging/service tests passed. New T4 ablation state: `experiments/colab-conditioning-state-20261015.json` |
+
+The experimental inference setting is based on the existing `ReferenceAnchor`
+helper; it does not add learned weights or claim the paper's trained model.
+The application still defaults to official CatVTON conditioning. Face-preservation,
+failure handling and the independent sizing engine remain in the pipeline.

@@ -6,6 +6,7 @@ checks and notebook tools are unchanged; no scratch notebook is substituted.
 
 import json
 import re
+from functools import partial
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -25,8 +26,14 @@ def notebook_path(url: str) -> str:
 if __name__ == "__main__":
     import colab_mcp
     import colab_mcp.session
+    import colab_mcp.websocket_server
 
     config = Path(__file__).resolve().parents[1] / ".runtime/colab-bridge/connection.json"
     target = json.loads(config.read_text(encoding="utf-8"))["notebookUrl"]
     colab_mcp.session.SCRATCH_PATH = notebook_path(target)
+    # A verified-source cell embeds ~1.7 MB of source. The upstream 1 MiB
+    # WebSocket default disconnects on reading it back, preventing recovery.
+    # Keep a bounded limit and retain the upstream origin/authentication checks.
+    websocket = colab_mcp.websocket_server.websockets
+    websocket.serve = partial(websocket.serve, max_size=8 * 1024 * 1024)
     colab_mcp.main()

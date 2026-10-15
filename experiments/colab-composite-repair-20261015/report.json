@@ -1,0 +1,66 @@
+[
+  {
+    "case": "stripe-anchored",
+    "newInference": false,
+    "source": "experiments\\runs\\colab-conditioning-20261015\\experiments\\colab-runs\\20261015T064538959653Z\\stripe-anchored",
+    "metrics": {
+      "changedPixelsOutsideEditMask": 0,
+      "protectedRegions": {
+        "face": {
+          "pixels": 9558,
+          "changedPixels": 0
+        },
+        "hair": {
+          "pixels": 3403,
+          "changedPixels": 0
+        },
+        "hands": {
+          "pixels": 9311,
+          "changedPixels": 0
+        },
+        "lowerClothing": {
+          "pixels": 68901,
+          "changedPixels": 0
+        },
+        "feet": {
+          "pixels": 9887,
+          "changedPixels": 0
+        }
+      },
+      "oldClothingPixelsNotFullyReplaced": 0,
+      "limitation": "Pixel preservation is conditional on saved parser labels; it cannot certify fit or texture fidelity."
+    }
+  },
+  {
+    "case": "different-person-anchored",
+    "newInference": false,
+    "source": "experiments\\runs\\colab-conditioning-20261015\\experiments\\colab-runs\\20261015T064538959653Z\\different-person-anchored",
+    "metrics": {
+      "changedPixelsOutsideEditMask": 0,
+      "protectedRegions": {
+        "face": {
+          "pixels": 13565,
+          "changedPixels": 0
+        },
+        "hair": {
+          "pixels": 11492,
+          "changedPixels": 0
+        },
+        "hands": {
+          "pixels": 12151,
+          "changedPixels": 0
+        },
+        "lowerClothing": {
+          "pixels": 102912,
+          "changedPixels": 0
+        },
+        "feet": {
+          "pixels": 0,
+          "changedPixels": 0
+        }
+      },
+      "oldClothingPixelsNotFullyReplaced": 0,
+      "limitation": "Pixel preservation is conditional on saved parser labels; it cannot certify fit or texture fidelity."
+    }
+  }
+]

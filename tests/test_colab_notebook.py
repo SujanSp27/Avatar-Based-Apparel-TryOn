@@ -4,6 +4,8 @@ import base64
 import io
 import json
 import stat
+import sys
+import types
 import zipfile
 from pathlib import Path
 
@@ -157,3 +159,44 @@ def test_combined_execution_guards_gpu_before_setup_and_omits_drive(monkeypatch)
     monkeypatch.setattr("glob.glob", lambda pattern: [])
     with pytest.raises(RuntimeError, match="Select a Colab GPU"):
         exec(compile(source, "<colab-test>", "exec"), {})
+
+
+def test_export_retains_bounded_honest_previews_without_modifying_full_images(tmp_path, monkeypatch):
+    import numpy as np
+    from PIL import Image
+
+    project = tmp_path / "project"
+    runs = project / "experiments/colab-runs/test"
+    originals = {}
+    rng = np.random.default_rng(13)
+    for name, status, image_name in (
+        ("candidate", "generated", "tryon-2d.png"),
+        ("rejected", "failed", "vton-model-output.png"),
+    ):
+        folder = runs / name
+        folder.mkdir(parents=True)
+        image_path = folder / image_name
+        Image.fromarray(rng.integers(0, 256, (1000, 800, 3), dtype=np.uint8)).save(image_path)
+        originals[image_path] = image_path.read_bytes()
+        (folder / "report.json").write_text(json.dumps({"status": status, "checkpoint": "test"}))
+    (project / "SOURCE_MANIFEST.json").write_text("{}")
+    captured, downloads = [], []
+    fake_colab = types.ModuleType("google.colab")
+    fake_colab.files = types.SimpleNamespace(download=downloads.append)
+    monkeypatch.setitem(sys.modules, "google.colab", fake_colab)
+    fake_display = types.ModuleType("IPython.display")
+    fake_display.display = lambda value, **kwargs: captured.append(value)
+    monkeypatch.setitem(sys.modules, "IPython.display", fake_display)
+    notebook = builder.make_notebook(b"unused")
+    source = "".join(next(c["source"] for c in notebook["cells"] if c["id"] == "download-results"))
+    exec(compile(source, "<export-test>", "exec"), {"PROJECT": project, "RUNS": runs, "json": json})
+    assert downloads == [str(project / "colab-tryon-results.zip")]
+    records = [v["application/json"] for v in captured if "application/json" in v]
+    assert [r["imageKind"] for r in records] == ["unreviewed candidate", "rejected diagnostic"]
+    assert all(r["previewOnly"] and not r["qualityValidated"] for r in records)
+    previews = [base64.b64decode(v["image/jpeg"], validate=True) for v in captured if "image/jpeg" in v]
+    assert len(previews) == 2 and all(len(data) <= 128 * 1024 for data in previews)
+    for image_path, original in originals.items():
+        assert image_path.read_bytes() == original
+        record = next(r for r in records if r["case"] == image_path.parent.name)
+        assert record["fullImageSha256"] == builder.sha256(original)

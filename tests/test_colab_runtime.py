@@ -54,6 +54,16 @@ def test_comparison_records_the_actual_checkpoint_and_resolution(tmp_path, capsy
     assert not (tmp_path / "unused").exists()
 
 
+def test_conditioning_experiment_requires_explicit_selection(tmp_path, capsys):
+    for mode in ("official", "reference-anchor"):
+        runner.main(["run", "--person", "person.png", "--garment", "shirt.png",
+                     "--output", str(tmp_path / mode), "--conditioning", mode, "--dry-run"])
+        report = json.loads(capsys.readouterr().out)
+        assert report["conditioning"] == mode
+        assert report["status"] == "dry-run"
+        assert not (tmp_path / mode).exists()
+
+
 def test_setup_uses_isolated_interpreter_and_includes_mixed_checkpoint(tmp_path):
     venv = tmp_path / "env"
     commands = runner.setup_commands(venv)

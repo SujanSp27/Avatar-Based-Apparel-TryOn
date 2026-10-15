@@ -57,3 +57,37 @@ def test_collect_preserves_existing_evidence(tmp_path):
     with pytest.raises(ValueError, match="empty result directory"):
         collect(make_archive(tmp_path), output)
     assert (output / "keep.txt").read_text() == "keep"
+
+
+@pytest.mark.parametrize("actual", [None, {"files": {"ml/vton/masking.py": {"sha256": "old", "bytes": 1}}}])
+def test_collect_rejects_old_or_unidentified_run_before_writing(tmp_path, actual):
+    archive = make_archive(tmp_path)
+    if actual is not None:
+        with zipfile.ZipFile(archive, "a") as bundle:
+            bundle.writestr("SOURCE_MANIFEST.json", json.dumps(actual))
+    expected = {"files": {"ml/vton/masking.py": {"sha256": "new", "bytes": 1}}}
+    output = tmp_path / "collected"
+    with pytest.raises(ValueError, match="Source manifest mismatch"):
+        collect(archive, output, expected_manifest=expected)
+    assert not output.exists()
+
+
+def test_collect_identifies_matching_run_without_claiming_quality(tmp_path):
+    archive = make_archive(tmp_path)
+    manifest = {"files": {"ml/vton/masking.py": {"sha256": "test", "bytes": 1}}}
+    with zipfile.ZipFile(archive, "a") as bundle:
+        bundle.writestr("SOURCE_MANIFEST.json", json.dumps(manifest))
+    report = collect(archive, tmp_path / "collected", expected_manifest=manifest)
+    assert report["sourceRevisionMatched"] is True
+    assert report["cases"][0]["run"] == "test"
+    assert report["qualityValidated"] is False
+
+
+def test_collect_rejects_generated_status_without_image(tmp_path):
+    archive = tmp_path / "results.zip"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        bundle.writestr("experiments/colab-runs/test/case/report.json", '{"status": "generated"}')
+    output = tmp_path / "collected"
+    with pytest.raises(ValueError, match="missing its final image"):
+        collect(archive, output)
+    assert not output.exists()

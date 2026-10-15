@@ -181,6 +181,44 @@ def test_composite_is_deterministic_and_does_not_mutate_inputs(semantic_person):
         np.testing.assert_array_equal(before, after)
 
 
+def test_inference_seam_context_cannot_restore_old_shoulder_or_edit_face():
+    labels = np.zeros((512, 384), np.uint8)
+    labels[150:350, 160:240] = 3
+    labels[120:220, 110:150] = 12
+    labels[60:110, 160:220] = 1
+    labels[350:490, 140:250] = 6
+    generated_labels = labels.copy()
+    generated_labels[115:220, 105:150] = 3
+    generated_labels[labels == 1] = 3  # Bad generated labels never override identity.
+    inference = np.zeros_like(labels, dtype=bool)
+    inference[50:350, 100:250] = True
+    original = np.full((*labels.shape, 3), 200, np.uint8)
+    generated = np.full_like(original, 40)
+    composite = compose_preserving_identity(
+        original, generated, labels, generated_labels, inference_support=inference,
+    )
+    assert np.all(composite.image[140, 125] == 40)
+    assert np.array_equal(composite.image[labels == 1], original[labels == 1])
+    assert np.array_equal(composite.image[labels == 6], original[labels == 6])
+    assert np.array_equal(composite.image[400], original[400])
+    assert np.all(composite.alpha[labels == 3] == 1)
+
+
+def test_shrunken_generated_shoulders_are_rejected_instead_of_erasing_skin():
+    labels = np.zeros((512, 384), np.uint8)
+    labels[150:350, 160:240] = 3
+    labels[120:250, 100:155] = 12
+    target = labels.copy()
+    target[120:170, 100:155] = 0
+    original = np.full((*labels.shape, 3), 200, np.uint8)
+    generated = np.full_like(original, 40)
+    with pytest.raises(PipelineError) as error:
+        compose_preserving_identity(
+            original, generated, labels, target, inference_support=labels == 12,
+        )
+    assert error.value.code == "vton_body_shape_changed"
+
+
 def test_trousers_only_replace_lower_clothing(semantic_person):
     original, generated, labels = semantic_person
     result = compose_preserving_identity(original, generated, labels, labels, "trouser")

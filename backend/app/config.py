@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     smpl_model_path: str = ""
     vton_root: Path = ROOT / "assets/vton"
     vton_device: str = "cuda"
+    vton_conditioning: Literal["official", "reference-anchor"] = "reference-anchor"
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
     max_upload_mb: int = 12
     admin_token: str = ""

@@ -1,0 +1,13 @@
+[
+  {
+    "case": "stripe-anchored",
+    "status": "candidate",
+    "changedOutsideMask": 0
+  },
+  {
+    "case": "different-person-anchored",
+    "status": "rejected",
+    "code": "vton_body_shape_changed",
+    "message": "The model narrowed an exposed shoulder or arm. This result was rejected to preserve your body shape. Try a front-facing photo wearing a short-sleeved top."
+  }
+]

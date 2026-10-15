@@ -1,0 +1,21 @@
+{
+  "method": "pretrained-semantic-bounded-neural-composite",
+  "category": "t-shirt",
+  "oldClothingPixels": 80563,
+  "oldClothingMinimumAlpha": 1.0,
+  "editedPixels": 107015,
+  "preservedPixels": 679417,
+  "changedPixelsOutsideEditMask": 0,
+  "identityPreservedExactly": true,
+  "collarTransition": "Narrow generated context on adjacent background/bare torso; further changes require generated clothing semantics.",
+  "collarTransitionRadiusPixels": 14,
+  "sourceContextRadiusPixels": 3,
+  "outerFeatherWidthPixels": 2,
+  "semanticContextPixels": 3015,
+  "generatedClothingExtensionPixels": 23845,
+  "poseSleeveSupportPixels": 38478,
+  "inferenceSupportPixels": 114612,
+  "inferenceSeamPixels": 25371,
+  "silhouettePolicy": "Bounded generated clothing may cover nearby background, bare torso or upper arms. Face, hair, hands and unrelated clothing stay exact; distant background and limbs stay exact.",
+  "limitations": "Preservation is conditional on semantic parsing; it does not guarantee perceptual realism or accurate fit."
+}

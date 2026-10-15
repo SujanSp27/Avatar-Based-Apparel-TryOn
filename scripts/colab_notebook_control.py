@@ -11,7 +11,10 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from colab_control import ROOT, STATE, status, submit, wait_for
+if __package__:
+    from .colab_control import ROOT, STATE, status, submit, wait_for
+else:
+    from colab_control import ROOT, STATE, status, submit, wait_for
 
 MAPPING = STATE / "project-cells.json"
 
@@ -20,9 +23,8 @@ def execution_source(notebook: dict) -> str:
     from build_colab_notebook import validate_notebook
 
     validate_notebook(notebook)
-    # The official bridge has a bounded WebSocket message size. Keep rich image
-    # display in the separate inspection cell; sending all PNGs in one tool
-    # response can disconnect an otherwise successful notebook run.
+    # Keep full-resolution inspection separate. Download/export includes at most
+    # four bounded recovery thumbnails; the local wrapper permits 8 MiB messages.
     selected = {"verified-source", "isolated-setup", "run-regressions", "download-results"}
     source = "import glob\nif not glob.glob('/dev/nvidia[0-9]*'):\n    raise RuntimeError('Select a Colab GPU runtime before starting this evaluation.')\n\n"
     source += "\n\n".join("".join(cell["source"]) for cell in notebook["cells"] if cell["id"] in selected)

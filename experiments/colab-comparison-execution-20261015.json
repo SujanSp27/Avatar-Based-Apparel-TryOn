@@ -1,0 +1,38 @@
+{
+  "cellId": "n-4YNzbo-7cG",
+  "retrievedFrom": "saved notebook output",
+  "newInferencePerformedDuringRecovery": false,
+  "outputs": [
+    {
+      "output_type": "stream",
+      "name": "stdout",
+      "text": [
+        "Verified 39 source files in /content/avatar-vton-1c2df277fa3e\n",
+        "Notebook Python: 3.13.15\n",
+        "Inference environment: /content/avatar-vton-1c2df277fa3e/.venv-colab/bin/python\n",
+        "Testing reported-striped-shirt with vitonhd-16k-512 and rounded shoulder caps\n",
+        "{\"status\": \"failed\", \"code\": \"vton_garment_fidelity_failed\", \"error\": \"The model lost the uploaded garment's prominent stripes. This generated image was rejected. Try a clear product photograph; no pasted overlay was substituted.\", \"seconds\": 45.966, \"checkpoint\": \"vitonhd-16k-512\"}\n",
+        "Testing different-person with vitonhd-16k-512 and rounded shoulder caps\n",
+        "{\"status\": \"generated\", \"code\": null, \"error\": null, \"seconds\": 43.763, \"checkpoint\": \"vitonhd-16k-512\"}\n",
+        "Actual run artifacts: /content/avatar-vton-1c2df277fa3e/colab-tryon-results.zip 5622834 bytes\n"
+      ]
+    },
+    {
+      "output_type": "display_data",
+      "data": {
+        "text/plain": [
+          "<IPython.core.display.Javascript object>"
+        ]
+      }
+    },
+    {
+      "output_type": "display_data",
+      "data": {
+        "text/plain": [
+          "<IPython.core.display.Javascript object>"
+        ]
+      }
+    }
+  ],
+  "imageReview": "pending archive retrieval"
+}

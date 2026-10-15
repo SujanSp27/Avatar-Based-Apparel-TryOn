@@ -1,0 +1,15 @@
+{
+  "jobId": "634e7985-502e-4141-af36-edb00770eebf",
+  "response": {
+    "jobId": "634e7985-502e-4141-af36-edb00770eebf",
+    "status": "queued",
+    "createdAt": 1792047709.2087748,
+    "progress": {
+      "stage": "queued"
+    },
+    "statusUrl": "/api/tryon/jobs/634e7985-502e-4141-af36-edb00770eebf",
+    "elapsedSeconds": 0.0
+  },
+  "personSha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+  "garmentSha256": "28b6ff594200c1264146b10fab679b4343ae0ee520083e5b3389816963e67535"
+}

@@ -197,6 +197,7 @@ def run_plan(args: argparse.Namespace) -> dict:
     height = getattr(args, "height", 1024)
     return {"model": "CatVTON", "checkpoint": "mix-48k-1024" if checkpoint == "mix" else "vitonhd-16k-512", "nativeResolution": [height * 3 // 4, height],
             "inferenceSteps": 50, "guidanceScale": args.guidance, "seed": args.seed,
+            "conditioning": getattr(args, "conditioning", "official"),
             "person": str(args.person.resolve()), "garment": str(args.garment.resolve()),
             "category": args.category, "outputDirectory": str(args.output.resolve()),
             "visualAcceptance": "not evaluated"}
@@ -244,7 +245,8 @@ def run(args: argparse.Namespace) -> int:
 
         processor = PersonPreprocessor(ROOT / "assets/bodyModels/pose_landmarker_full.task")
         service = PretrainedTryOn(ROOT / "assets/vton", "cuda", checkpoint=args.checkpoint, height=args.height,
-                                   guidance_scale=args.guidance, seed=args.seed)
+                                   guidance_scale=args.guidance, seed=args.seed,
+                                   conditioning=getattr(args, "conditioning", "official"))
         features = processor.detect(person_data, output)
         diagnostics = service.render(features, garment_data, args.category, output)
         if not (output / "tryon-2d.png").is_file():
@@ -282,6 +284,8 @@ def main(argv: list[str] | None = None) -> int:
     infer.add_argument("--seed", type=int, default=42)
     infer.add_argument("--checkpoint", choices=["mix", "vitonhd"], default="mix")
     infer.add_argument("--height", type=int, choices=[512, 1024], default=1024)
+    infer.add_argument("--conditioning", choices=["official", "reference-anchor"], default="official",
+                       help="Optional research ablation; reference-anchor is not a validated quality fix")
     for command in (install, infer):
         mode = command.add_mutually_exclusive_group()
         mode.add_argument("--dry-run", action="store_true")

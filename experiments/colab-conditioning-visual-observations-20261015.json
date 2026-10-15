@@ -1,0 +1,28 @@
+{
+  "archiveSha256": "c20ccdd55490f7ee77c771ad1cc57a132b25bc46d3ef9894e4f205b9fabe3f90",
+  "reviewMethod": "Visually inspected actual raw and full-resolution composited PNGs; not a calibrated perceptual score.",
+  "cases": {
+    "stripe-control": {
+      "verdict": "rejected: strong stripes largely disappear",
+      "observations": [
+        "Teal color transfers but stripes are extremely faint; the guard correctly rejected the output."
+      ]
+    },
+    "stripe-anchored": {
+      "verdict": "substantial improvement; controlled prototype candidate",
+      "observations": [
+        "Teal and cream horizontal stripes now visibly transfer across torso and both short sleeves. Rounded neckline and hem are coherent, and no large original beige-shirt fragments remain.",
+        "Fine stripe count/spacing and collar shape differ from the synthetic reference. Fabric is smoother than a real product photo; a small armpit seam artifact remains in the original composite.",
+        "Original face, hair, hands, jeans, shoes and surrounding background are preserved."
+      ]
+    },
+    "different-person-anchored": {
+      "verdict": "rejected: shoulder silhouette and compositing mismatch",
+      "observations": [
+        "Raw output has two sleeves and a recognizable black graphic shirt, unlike the prior sleeveless result.",
+        "The generated shoulders narrow relative to the original body. Final compositing preserves exposed skin caps and introduces bright wedges at the shoulders. This is not acceptable.",
+        "The new body-shape guard rejects substantial generated-background intrusion into original upper-arm skin, instead of erasing skin to hide the defect."
+      ]
+    }
+  }
+}

@@ -106,6 +106,7 @@ def review(collection: Path, observations: Path, output: Path) -> dict:
         native_array = np.asarray(native_labels)
         record = {
             "case": name, "executionStatus": case["status"], "seconds": run["seconds"],
+            "conditioning": run.get("conditioning", "official"),
             "visualReview": judgments["cases"][name], "qualityValidated": False,
             "maskRevision": {
                 "newInferencePerformed": False,
@@ -146,7 +147,7 @@ def review(collection: Path, observations: Path, output: Path) -> dict:
         sections.append(f'<section><h2>{html.escape(name)}: {verdict}</h2><p>{notes}</p><div class="images">{"".join(figures)}</div></section>')
     report = {
         "archiveSha256": collected["archiveSha256"], "cloudRunCompleted": True,
-        "recoveryMethod": "Existing browser download; original archive and collected reports preserved",
+        "recoveryMethod": "Verified local result ZIP; original archive and collected reports preserved",
         "model": f"{run['model']} {run['checkpoint']}",
         "gpu": run["runtime"]["gpu"]["name"], "nativeResolution": run["nativeResolution"],
         "newInferencePerformed": False, "trainingPerformed": False,
@@ -155,7 +156,8 @@ def review(collection: Path, observations: Path, output: Path) -> dict:
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     page = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Recovered Colab try-on review</title><style>body{font:16px system-ui;margin:24px;background:#eee;color:#222}section{padding:20px;background:white;margin:24px 0}.images{display:flex;flex-wrap:wrap;gap:12px}figure{margin:0;width:280px}img{max-width:100%;height:380px;object-fit:contain;background:#ddd}figcaption{padding:8px}h1,h2{line-height:1.3}</style>
-<h1>Recovered Colab try-on review</h1><p>Existing T4 job, four cases. Click an image for its full resolution. Raw outputs and failed candidates are diagnostics. Mask previews did not execute inference. This review does not establish production-quality fitting.</p>'''
+<h1>Recovered Colab try-on review</h1><p>Completed job, CASE_COUNT cases. Click an image for its full resolution. Raw outputs and failed candidates are diagnostics. Mask previews did not execute inference. This review does not establish production-quality fitting.</p>'''
+    page = page.replace("CASE_COUNT", str(len(records)))
     (output / "index.html").write_text(page + "".join(sections) + "</html>", encoding="utf-8")
     return report
 

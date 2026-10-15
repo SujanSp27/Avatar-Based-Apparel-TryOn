@@ -66,6 +66,7 @@ class PretrainedTryOn:
     def __init__(
         self, root: Path, device: str = "cuda", *, guidance_scale: float = 2.5,
         seed: int = 42, checkpoint: str = "vitonhd", height: int = 512,
+        conditioning: str = "official",
     ):
         if height not in {512, 1024}:
             raise ValueError("CatVTON height must be 512 or 1024")
@@ -74,6 +75,7 @@ class PretrainedTryOn:
         self.guidance_scale = guidance_scale
         self.seed = seed
         self.checkpoint = checkpoint
+        self.conditioning = conditioning
         self.native_size = (height * 3 // 4, height)
         self.version = VERSION if checkpoint == "vitonhd" else "catvton-mix-48k-1024"
         self._model = None
@@ -123,6 +125,7 @@ class PretrainedTryOn:
             "device": self.device,
             "nativeResolution": list(self.native_size),
             "qualityValidated": False,
+            "conditioning": self.conditioning,
         }
 
     def _load(self):
@@ -137,6 +140,7 @@ class PretrainedTryOn:
                 self.root / "catvton", device=self.device,
                 guidance_scale=self.guidance_scale, seed=self.seed, checkpoint=self.checkpoint,
                 height=self.native_size[1],
+                conditioning=self.conditioning,
             )
             self._parser = FashnHumanParser(self.root / "parser")
 
@@ -255,9 +259,19 @@ class PretrainedTryOn:
             )
         generated_parse = self._parser.predict(generated_full)
         Image.fromarray(generated_parse.labels).save(folder / "generatedParsing.png")
+        inference_support = np.zeros(parsed.labels.shape, dtype=bool)
+        inference_support[y0:y1, x0:x1] = np.asarray(
+            replacement_native.crop(content_box).resize(
+                (x1 - x0, y1 - y0), Image.Resampling.NEAREST,
+            )
+        ) > 127
+        Image.fromarray(inference_support.astype(np.uint8) * 255).save(
+            folder / "vton-inference-support.png"
+        )
         composite = compose_preserving_identity(
             original, generated_full, parsed, generated_parse, category,
             sleeve_support=sleeve_support,
+            inference_support=inference_support,
         )
         composite.save_diagnostics(folder)
         Image.fromarray(original).save(folder / "original-person.png")
@@ -275,6 +289,7 @@ class PretrainedTryOn:
             "nativeResolution": list(self.native_size),
             "personWindow": list(window),
             "replacementMaskVersion": "semantic-pose-short-sleeve-v3-rounded-cap",
+            "compositeVersion": "inference-bounded-seams-v2",
             "maskLimitations": "Pose permits proximal upper-arm synthesis; long-sleeve changes are not validated.",
             "garmentSegmentation": garment_source,
             "parsing": parsed.diagnostics,

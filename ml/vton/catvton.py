@@ -80,7 +80,11 @@ class CatVTONModel:
     def __init__(
         self, weights_dir: Path, device: str = "cuda", *, guidance_scale: float = 2.5,
         seed: int = 42, checkpoint: str = "vitonhd", height: int = 512,
+        conditioning: str = "official",
     ):
+        if conditioning not in {"official", "reference-anchor"}:
+            raise ValueError("Unknown CatVTON conditioning mode")
+        self.conditioning = conditioning
         if height not in {512, 1024}:
             raise ValueError("CatVTON height must be 512 or 1024")
         self.native_size = (height * 3 // 4, height)
@@ -347,6 +351,8 @@ class CatVTONModel:
             "inferenceSteps": 50,
             "guidanceScale": self.guidance_scale,
             "seed": self.seed,
+            "conditioning": self.conditioning,
+            "experimentalConditioning": self.conditioning != "official",
             "attention": (
                 "Full memory-efficient CUDA self attention when supported, otherwise exact "
                 "256-query chunks; official cross attention skip"
@@ -393,7 +399,34 @@ class CatVTONModel:
 
                 report_progress("encoding_images")
                 hook = self.pipeline.unet.register_forward_hook(denoising_step)
+                conditioning_hook = None
                 try:
+                    if getattr(self, "conditioning", "official") == "reference-anchor":
+                        from diffusers import DDIMScheduler
+
+                        from ml.vton.conditioning import ReferenceAnchor
+
+                        scheduler = self.pipeline.noise_scheduler
+                        if type(scheduler) is not DDIMScheduler:
+                            raise ValueError("Reference anchoring supports only the pinned DDIM scheduler")
+                        # A fresh controller per prediction prevents state leaking
+                        # between people. Hook the complete CFG batch before the
+                        # memory-saving wrapper splits it into individual passes.
+                        anchor = ReferenceAnchor(
+                            scheduler.alphas_cumprod,
+                            init_noise_sigma=float(scheduler.init_noise_sigma),
+                        )
+
+                        def condition_input(module, args, kwargs):
+                            sample, timestep = args
+                            prepared = anchor.prepare(
+                                sample, timestep, getattr(self, "guidance_scale", 2.5) > 1,
+                            )
+                            return (prepared, timestep), kwargs
+
+                        conditioning_hook = self.pipeline.unet.register_forward_pre_hook(
+                            condition_input, with_kwargs=True,
+                        )
                     generated = self.pipeline(
                         image=person.convert("RGB"),
                         condition_image=garment.convert("RGB"),
@@ -406,6 +439,8 @@ class CatVTONModel:
                     )[0]
                 finally:
                     hook.remove()
+                    if conditioning_hook is not None:
+                        conditioning_hook.remove()
                 report_progress("checking_output")
                 features = self.feature_extractor(images=[generated], return_tensors="pt")
                 pixels = np.asarray(generated, dtype=np.float32)[None] / 255.0
