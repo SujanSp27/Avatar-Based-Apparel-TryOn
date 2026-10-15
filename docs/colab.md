@@ -277,3 +277,21 @@ them again. It never executes inference. Use `python -m scripts.retrieve_colab_a
 The importer accepts `--expected-manifest` to reject an archive from a different
 source revision before writing any results. A generated report without its final
 PNG is also rejected. These recovery checks do not assess garment realism.
+
+Both 15 October evaluations are now completed, recovered and visually reviewed.
+The conditioning archive has 79 files (SHA-256
+`c20ccdd55490f7ee77c771ad1cc57a132b25bc46d3ef9894e4f205b9fabe3f90`);
+the two additional garment cases have 55 files (SHA-256
+`1f053e520f9e18e32734db4c49b37d50afeb835374f32b1facb630b31f023a26`).
+The latter used source `b792ecc27c6a0ae3fc3890f96a9495e4181b0c6ccc1166da2740f08bedf1de16`,
+cell `_IBlIxGVXfIC`, request `394d896f-d255-4280-a35e-e06fbab49369` and reused the
+existing runtime's verified environment/checkpoints without reinstalling them.
+No cloud job remains pending; do not replay these completed evaluations.
+
+The three photographed studio-person candidates now retain recognizable uploaded
+garments. Text, collar and stripe-placement errors remain. The second-person image
+is rejected because the model narrows its shoulders; the new compositor guard
+detects this instead of erasing original skin. Galleries and individual observations
+are linked from `docs/implementation-status.md`. The application now defaults to the
+evaluated reference-anchor mode, while the low-level model/notebook runner keep
+explicit conditioning selection for reproducible comparisons.

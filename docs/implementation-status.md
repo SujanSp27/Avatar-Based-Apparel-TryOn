@@ -1,6 +1,6 @@
 # Implementation status
 
-Specification read in full before implementation and reread on 13 October 2026 while
+Specification read in full before implementation and reread on 15 October 2026 while
 replacing the 2D pipeline. The original specification is unchanged. Status refers to exercised code,
 not intended future work. The functioning end-to-end path is a **controlled approximate
 template prototype**, with pretrained pose/segmentation; it does not complete learned
@@ -9,10 +9,12 @@ SMPL/SMPL-X reconstruction or validate single-photo anthropometry.
 The user subsequently authorized **2D when 3D is unavailable**, then rejected the visible
 artifacts of the geometric overlay and requested a proper pretrained model. The application
 now routes 2D through CatVTON plus FASHN parsing; the old overlay is debug-only. Real CUDA
-inference now completes. The existing native-resolution T4 job was recovered and all four
-cases inspected: a black photographed shirt gives a promising candidate, while stripes,
-jersey digits and vest-to-sleeve conversion fail. The reported striped-input acceptance
-remains unmet. This work does not
+inference now completes. The latest controlled T4 and local API tests preserve prominent
+stripes using reference-anchored conditioning, with recognizable sleeves, neckline and hem.
+Fine detail, collar and edge limitations remain; a second person's narrowed shoulders are
+explicitly rejected. This is a working controlled research prototype, not validated
+production-quality fitting. See the latest dated verification below; earlier records
+describe superseded revisions. This work does not
 complete learned 3D reconstruction or measurement validation. The original 3D and 9 October
 overlay verification records below are historical evidence, followed by a separate current
 neural-pipeline table. Historical counts are not rerun results for the new model.
@@ -339,3 +341,34 @@ The experimental inference setting is based on the existing `ReferenceAnchor`
 helper; it does not add learned weights or claim the paper's trained model.
 The application still defaults to official CatVTON conditioning. Face-preservation,
 failure handling and the independent sizing engine remain in the pipeline.
+
+## Final verification (15 October 2026)
+
+This section supersedes the earlier pending-run and default-conditioning statements.
+
+| Phase | Requirement | Status | Evidence |
+|------|------|------|------|
+| 2 / 8 | Replace old clothing while preserving identity | IMPLEMENTED | `ml/vton/parsing.py` uses the same projected inference support for seam compositing; original parsed clothing is replaced fully and protected pixels remain exact. Significant generated shoulder/arm shrinkage returns `vton_body_shape_changed` |
+| 8 / 13 | Actual pretrained garment-conditioned inference | IMPLEMENTED | Verified CatVTON vitonhd-16k-512 with explicit reference anchoring. Five new T4 cases recovered in two archives (79 and 55 files); real local API run `fb1d78fa-aead-4313-9d83-2694e24cf7a7` completed with no overlay |
+| 8 / 16 | Natural fit and exact uploaded garment fidelity for all supported images | PARTIALLY IMPLEMENTED | Teal/cream stripes, jersey 95/red sleeve motif and black graphic transfer substantially better. Small text, stripe placement, collar and edge errors remain; vest-to-shirt shoulder case is rejected. No universal fit guarantee |
+| 11 / 12 | Real neural API result and browser original/try-on comparison | IMPLEMENTED | `experiments/anchored-live-api-result-20261015.json`, `experiments/anchored-live-browser-report-20261015.json`; one actual-job browser test passed with no mocked output, no duplicate POST, successful refresh and real PNG loading |
+| 13 / 14 | Recover, identify and visually inspect cloud evidence | IMPLEMENTED | Both new result ZIPs matched their source manifests and artifact checksums. Galleries: `experiments/colab-conditioning-review-20261015/index.html`, `experiments/colab-confirmation-review-20261015/index.html`. Historical lost comparison remains separately blocked |
+| 15 | Practical inference latency | PARTIALLY IMPLEMENTED | T4 cases took 41–45 seconds each after setup; local 4 GB GTX 1650 request took 900.477 seconds under memory pressure. App jobs are asynchronous and resume across refresh; Colab is a separate evaluation notebook, not a hosted API worker |
+
+The application now selects `VTON_CONDITIONING=reference-anchor`; `official` remains an
+explicit alternative. This is a custom inference modification using unchanged pretrained
+weights, not the trained Re-CatVTON method. No training was needed for this improvement.
+The final phase table at the start remains applicable to 3D: HMR2/SMPL inference and
+anthropometric calibration are blocked by missing licensed assets and ground truth.
+
+Final checks: **308 non-integration Python tests passed in 55.98 seconds**, 16
+integration tests excluded; three upstream deprecation warnings. Ruff and `pip check`
+passed. The real neural browser test passed (13m33s wall time while the actual job
+completed), and its PNG was visually inspected separately. The unchanged frontend
+application retains the passing TypeScript/Vite build and two live 3D viewer tests
+from 14 October; no frontend application source changed in this continuation.
+`experiments/final-application-verification-20261015.json` records current server
+health, generated-asset hash verification, completed-job recovery after backend
+restart, protected-pixel checks, and two distinct live size recommendations from
+different supplied measurements. The local striped result has missing upper-chest
+stripes and a small collar notch, so exact garment replication is not claimed.

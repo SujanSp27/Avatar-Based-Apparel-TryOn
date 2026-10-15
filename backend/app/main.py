@@ -17,12 +17,12 @@ from backend.app.config import ROOT, settings
 from backend.app.db import SessionLocal, engine, get_db
 from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
-from backend.app.photo_tryon import get_vton
 from backend.app.pipeline import TryOnPipeline
 from backend.app.schemas import BrandCreate, ChartCreate, SizingRequest, TryOnMode
 from backend.app.storage import AssetStore
 from ml.errors import PipelineError
 from ml.sizing.engine import Category, Fit, recommend
+from ml.vton.categories import GarmentCategory
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 store = AssetStore(settings.asset_root)
@@ -108,12 +108,9 @@ def health(db: Session = Depends(get_db)):
     return {
         "status": "ok",
         "database": engine.dialect.name,
-        "humanBackend": settings.human_backend,
-        "poseModelAvailable": settings.model_path.is_file(),
-        "hmr2Available": False,
-        "tryonModes": ["auto", "3d", "2d"],
-        "vton2d": get_vton().availability(),
-        "scope": "approximate 3D template and pretrained 2D virtual try-on research prototype",
+        "tryonModes": ["2d"],
+        "vton2d": pipeline.worker.availability(),
+        "scope": "Online GPU photo try-on; independent measured-input brand sizing",
     }
 
 
@@ -192,28 +189,23 @@ def upload_bytes(upload: UploadFile) -> bytes:
 def tryon(
     personImage: UploadFile = File(),
     garmentImage: UploadFile = File(),
-    brandId: int = Form(gt=0),
-    garmentCategory: Category = Form(),
+    brandId: int | None = Form(default=None, gt=0),
+    garmentCategory: GarmentCategory = Form(),
     fitPreference: Fit = Form(Fit.regular),
-    heightCm: float | None = Form(default=None, ge=120, le=220),
-    garmentLengthCm: float | None = Form(default=None, ge=20, le=180),
-    garmentWidthCm: float | None = Form(default=None, ge=20, le=100),
-    tryonMode: TryOnMode = Form(TryOnMode.auto),
+    tryonMode: TryOnMode = Form(TryOnMode.two_d),
+    garmentPhotoType: str = Form(default="flat-lay", pattern="^(flat-lay|model)$"),
     prefer: str = Header(default=""),
     idempotency_key: str | None = Header(default=None),
     db: Session = Depends(get_db),
 ):
-    dimensions = {
-        k: v for k, v in {"lengthCm": garmentLengthCm, "widthCm": garmentWidthCm}.items()
-        if v is not None
-    }
+    if brandId is not None and db.get(Brand, brandId) is None:
+        raise PipelineError("brand_missing", "The selected brand does not exist.", 404)
     if prefer == "respond-async":
-        # Check chart/category before occupying the only inference slot.
-        latest_chart(db, brandId, garmentCategory.value)
+        # Image generation is independent of available sizing charts.
         person_data, garment_data = upload_bytes(personImage), upload_bytes(garmentImage)
         parameters = {
             "brand_id": brandId, "category": garmentCategory.value, "fit": fitPreference.value,
-            "height_cm": heightCm, "dimensions": dimensions, "mode": tryonMode.value,
+            "photo_type": garmentPhotoType,
         }
 
         def work():
@@ -226,11 +218,6 @@ def tryon(
     if not capacity.acquire(blocking=False):
         raise PipelineError("busy", "Another try-on is running. Retry after it finishes.", 429)
     try:
-        dimensions = {
-            k: v
-            for k, v in {"lengthCm": garmentLengthCm, "widthCm": garmentWidthCm}.items()
-            if v is not None
-        }
         return pipeline.run(
             db,
             upload_bytes(personImage),
@@ -238,9 +225,7 @@ def tryon(
             brandId,
             garmentCategory.value,
             fitPreference.value,
-            heightCm,
-            dimensions,
-            mode=tryonMode.value,
+            photo_type=garmentPhotoType,
         )
     finally:
         capacity.release()

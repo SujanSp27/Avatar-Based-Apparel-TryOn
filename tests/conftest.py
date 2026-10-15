@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 
-from ml.human.template import MediaPipeTemplateReconstructor
 from ml.preprocessing.images import PersonPreprocessor
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,7 +15,7 @@ def chart_rows():
 
 @pytest.fixture(scope="session")
 def processor():
-    checkpoint = ROOT / "assets/bodyModels/pose_landmarker_full.task"
+    checkpoint = ROOT / "assets/pose/pose_landmarker_full.task"
     if not checkpoint.exists():
         pytest.skip("Run scripts/download_assets.py first")
     return PersonPreprocessor(checkpoint)
@@ -28,8 +27,3 @@ def person_features(processor):
     if not path.exists():
         pytest.skip("Download sample assets first")
     return processor.process(path.read_bytes())
-
-
-@pytest.fixture(scope="session")
-def body(person_features):
-    return MediaPipeTemplateReconstructor().reconstruct(person_features, 172.0)

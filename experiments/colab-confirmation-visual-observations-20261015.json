@@ -1,0 +1,22 @@
+{
+  "archiveSha256": "1f053e520f9e18e32734db4c49b37d50afeb835374f32b1facb630b31f023a26",
+  "reviewMethod": "Visual inspection of actual full-resolution final and conditioning images on 15 October. Qualitative research review, not a calibrated fit score.",
+  "cases": {
+    "different-garment": {
+      "verdict": "working controlled prototype with text/detail limitations",
+      "observations": [
+        "Brown jersey color, contrast shoulder panels, V collar, large 95 and red sleeve motif transfer visibly. Both sleeves and hem are coherent with no large beige-shirt fragments.",
+        "Small chest lettering is distorted and the red motif is repeated on the other sleeve. Garment proportions and digit scale differ from the reference.",
+        "Face, hair, exposed arms, hands, trousers, shoes and background appear preserved."
+      ]
+    },
+    "shirt-category": {
+      "verdict": "working controlled prototype with print limitations",
+      "observations": [
+        "Black shirt has a plausible neckline, both sleeves and hem. The uploaded oval graphic and major text are recognizable, with no obvious beige-shirt remnants.",
+        "Fine graphic/text details are distorted and the garment appears narrower than the flat-lay product. Physical fit is not validated.",
+        "Face, hair, arms, hands, trousers, shoes and background appear preserved."
+      ]
+    }
+  }
+}

@@ -1,0 +1,393 @@
+{
+  "recordedAt": "2026-10-15T12:54:51.603500+00:00",
+  "frontendStatus": 200,
+  "health": {
+    "status": "ok",
+    "database": "postgresql",
+    "humanBackend": "mediapipe_template",
+    "poseModelAvailable": true,
+    "hmr2Available": false,
+    "tryonModes": [
+      "auto",
+      "3d",
+      "2d"
+    ],
+    "vton2d": {
+      "backend": "catvton-vitonhd-16k-512",
+      "available": true,
+      "reason": null,
+      "code": null,
+      "supportedCategories": [
+        "t-shirt",
+        "shirt"
+      ],
+      "device": "cuda",
+      "nativeResolution": [
+        384,
+        512
+      ],
+      "qualityValidated": false,
+      "conditioning": "reference-anchor"
+    },
+    "scope": "approximate 3D template and pretrained 2D virtual try-on research prototype"
+  },
+  "jobId": "634e7985-502e-4141-af36-edb00770eebf",
+  "runId": "fb1d78fa-aead-4313-9d83-2694e24cf7a7",
+  "assetLoaded": true,
+  "jobSurvivesBackendRestart": true,
+  "inferenceSeconds": 900.477,
+  "model": {
+    "backend": "CatVTON",
+    "source": "https://github.com/Zheng-Chong/CatVTON",
+    "sourceCommit": "999bdbe81e6008a3f5749af7c1e0b0fa3d21b48e",
+    "baseModel": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+    "baseRevision": "8a4288a76071f7280aedbdb3253bdb9e9d5d84bb",
+    "attentionCheckpoint": "zhengchong/CatVTON/vitonhd-16k-512",
+    "attentionRevision": "2969fcf85fe62f2036605716f0b56f0b81d01d79",
+    "vaeModel": "stabilityai/sd-vae-ft-mse",
+    "vaeRevision": "31f26fdeee1355a5c34592e401dd41e45d25a493",
+    "checkpointSha256": {
+      "base/unet/diffusion_pytorch_model.fp16.safetensors": "24b788b4a777748377cc20364eea4ae113c8c42f4468c16bc8c02fdae5492af9",
+      "attention/vitonhd-16k-512/attention/model.safetensors": "915df7bf19a33bee36a28d5f9ceaef1e2267c47526f98ca9e4c49e90ae5f0fd0",
+      "vae/diffusion_pytorch_model.safetensors": "a1d993488569e928462932c8c38a0760b874d166399b14414135bd9c42df5815",
+      "base/safety_checker/model.fp16.safetensors": "08902f19b1cfebd7c989f152fc0507bef6898c706a91d666509383122324b511"
+    },
+    "loadVerified": true,
+    "nativeResolution": [
+      384,
+      512
+    ],
+    "trainedResolution": [
+      384,
+      512
+    ],
+    "device": "cuda",
+    "dtype": "torch.float16",
+    "cudnnEnabled": true,
+    "convolutionMath": "float32",
+    "promotedConvolutionLayers": 162,
+    "inferenceSteps": 50,
+    "guidanceScale": 2.5,
+    "seed": 42,
+    "conditioning": "reference-anchor",
+    "experimentalConditioning": true,
+    "attention": "Official SDPA self attention; official cross attention skip",
+    "memoryPolicy": "Sequential classifier-free guidance; CPU safety checker; VAE slicing",
+    "vaeTiling": false,
+    "safetyChecker": "Official Stable Diffusion checker runs on every generated image, on CPU",
+    "maskSource": "Caller-supplied semantic binary replacement mask; not upstream SCHP/DensePose automasking",
+    "license": "CC-BY-NC-SA-4.0; research/non-commercial use"
+  },
+  "preservation": {
+    "changedPixelsOutsideEditMask": 0,
+    "protectedRegions": {
+      "face": {
+        "pixels": 9558,
+        "changedPixels": 0
+      },
+      "hair": {
+        "pixels": 3403,
+        "changedPixels": 0
+      },
+      "hands": {
+        "pixels": 9311,
+        "changedPixels": 0
+      },
+      "lowerClothing": {
+        "pixels": 68901,
+        "changedPixels": 0
+      },
+      "feet": {
+        "pixels": 9887,
+        "changedPixels": 0
+      }
+    },
+    "oldClothingPixelsNotFullyReplaced": 0,
+    "limitation": "Pixel preservation is conditional on saved parser labels; it cannot certify fit or texture fidelity."
+  },
+  "independentSizing": [
+    {
+      "measurements": {
+        "chest": 88,
+        "waist": 72,
+        "hip": 92,
+        "shoulderWidth": 40
+      },
+      "result": {
+        "recommendedSize": "S",
+        "fit": "regular",
+        "score": 0.0,
+        "explanation": {
+          "chest": "Good",
+          "waist": "Good",
+          "hip": "Good",
+          "shoulderWidth": "Good"
+        },
+        "candidates": [
+          {
+            "sizeLabel": "S",
+            "score": 0.0,
+            "explanation": {
+              "chest": "Good",
+              "waist": "Good",
+              "hip": "Good",
+              "shoulderWidth": "Good"
+            },
+            "measurementErrors": {
+              "chest": 0.0,
+              "waist": 0.0,
+              "hip": 0.0,
+              "shoulderWidth": 0.0
+            },
+            "order": 1,
+            "midpointDistance": 0.175
+          },
+          {
+            "sizeLabel": "XS",
+            "score": 0.325,
+            "explanation": {
+              "chest": "Slightly tight",
+              "waist": "Slightly tight",
+              "hip": "Slightly tight",
+              "shoulderWidth": "Slightly tight"
+            },
+            "measurementErrors": {
+              "chest": 0.3333,
+              "waist": 0.3333,
+              "hip": 0.3333,
+              "shoulderWidth": 0.25
+            },
+            "order": 0,
+            "midpointDistance": 0.825
+          },
+          {
+            "sizeLabel": "M",
+            "score": 0.6,
+            "explanation": {
+              "chest": "Too loose",
+              "waist": "Too loose",
+              "hip": "Too loose",
+              "shoulderWidth": "Good"
+            },
+            "measurementErrors": {
+              "chest": 0.6667,
+              "waist": 0.6667,
+              "hip": 0.6667,
+              "shoulderWidth": 0.0
+            },
+            "order": 2,
+            "midpointDistance": 1.075
+          },
+          {
+            "sizeLabel": "L",
+            "score": 1.525,
+            "explanation": {
+              "chest": "Too loose",
+              "waist": "Too loose",
+              "hip": "Too loose",
+              "shoulderWidth": "Slightly loose"
+            },
+            "measurementErrors": {
+              "chest": 1.6667,
+              "waist": 1.6667,
+              "hip": 1.6667,
+              "shoulderWidth": 0.25
+            },
+            "order": 3,
+            "midpointDistance": 2.0250000000000004
+          },
+          {
+            "sizeLabel": "XL",
+            "score": 2.475,
+            "explanation": {
+              "chest": "Too loose",
+              "waist": "Too loose",
+              "hip": "Too loose",
+              "shoulderWidth": "Slightly loose"
+            },
+            "measurementErrors": {
+              "chest": 2.6667,
+              "waist": 2.6667,
+              "hip": 2.6667,
+              "shoulderWidth": 0.75
+            },
+            "order": 4,
+            "midpointDistance": 2.975
+          },
+          {
+            "sizeLabel": "XXL",
+            "score": 3.425,
+            "explanation": {
+              "chest": "Too loose",
+              "waist": "Too loose",
+              "hip": "Too loose",
+              "shoulderWidth": "Too loose"
+            },
+            "measurementErrors": {
+              "chest": 3.6667,
+              "waist": 3.6667,
+              "hip": 3.6667,
+              "shoulderWidth": 1.25
+            },
+            "order": 5,
+            "midpointDistance": 3.9250000000000003
+          }
+        ],
+        "outOfRange": false,
+        "targetEaseCm": 0.0,
+        "scoreMeaning": "weighted normalized interval distance; not a probability",
+        "chartVersion": 1,
+        "chartSource": "Synthetic demonstration charts, not retailer sizing. Body measurement ranges in cm."
+      }
+    },
+    {
+      "measurements": {
+        "chest": 116,
+        "waist": 102,
+        "hip": 120,
+        "shoulderWidth": 50
+      },
+      "result": {
+        "recommendedSize": "XXL",
+        "fit": "regular",
+        "score": 0.1083,
+        "explanation": {
+          "chest": "Good",
+          "waist": "Slightly tight",
+          "hip": "Good",
+          "shoulderWidth": "Slightly tight"
+        },
+        "candidates": [
+          {
+            "sizeLabel": "XXL",
+            "score": 0.1083,
+            "explanation": {
+              "chest": "Good",
+              "waist": "Slightly tight",
+              "hip": "Good",
+              "shoulderWidth": "Slightly tight"
+            },
+            "measurementErrors": {
+              "chest": 0.0,
+              "waist": 0.3333,
+              "hip": 0.0,
+              "shoulderWidth": 0.25
+            },
+            "order": 5,
+            "midpointDistance": 0.6083333333333334
+          },
+          {
+            "sizeLabel": "XL",
+            "score": 1.0583,
+            "explanation": {
+              "chest": "Too tight",
+              "waist": "Too tight",
+              "hip": "Too tight",
+              "shoulderWidth": "Slightly tight"
+            },
+            "measurementErrors": {
+              "chest": 1.0,
+              "waist": 1.3333,
+              "hip": 1.0,
+              "shoulderWidth": 0.75
+            },
+            "order": 4,
+            "midpointDistance": 1.5583333333333331
+          },
+          {
+            "sizeLabel": "L",
+            "score": 2.0083,
+            "explanation": {
+              "chest": "Too tight",
+              "waist": "Too tight",
+              "hip": "Too tight",
+              "shoulderWidth": "Too tight"
+            },
+            "measurementErrors": {
+              "chest": 2.0,
+              "waist": 2.3333,
+              "hip": 2.0,
+              "shoulderWidth": 1.25
+            },
+            "order": 3,
+            "midpointDistance": 2.5083333333333333
+          },
+          {
+            "sizeLabel": "M",
+            "score": 2.9583,
+            "explanation": {
+              "chest": "Too tight",
+              "waist": "Too tight",
+              "hip": "Too tight",
+              "shoulderWidth": "Too tight"
+            },
+            "measurementErrors": {
+              "chest": 3.0,
+              "waist": 3.3333,
+              "hip": 3.0,
+              "shoulderWidth": 1.75
+            },
+            "order": 2,
+            "midpointDistance": 3.4583333333333335
+          },
+          {
+            "sizeLabel": "S",
+            "score": 3.9083,
+            "explanation": {
+              "chest": "Too tight",
+              "waist": "Too tight",
+              "hip": "Too tight",
+              "shoulderWidth": "Too tight"
+            },
+            "measurementErrors": {
+              "chest": 4.0,
+              "waist": 4.3333,
+              "hip": 4.0,
+              "shoulderWidth": 2.25
+            },
+            "order": 1,
+            "midpointDistance": 4.408333333333333
+          },
+          {
+            "sizeLabel": "XS",
+            "score": 4.8583,
+            "explanation": {
+              "chest": "Too tight",
+              "waist": "Too tight",
+              "hip": "Too tight",
+              "shoulderWidth": "Too tight"
+            },
+            "measurementErrors": {
+              "chest": 5.0,
+              "waist": 5.3333,
+              "hip": 5.0,
+              "shoulderWidth": 2.75
+            },
+            "order": 0,
+            "midpointDistance": 5.358333333333334
+          }
+        ],
+        "outOfRange": true,
+        "targetEaseCm": 0.0,
+        "scoreMeaning": "weighted normalized interval distance; not a probability",
+        "chartVersion": 1,
+        "chartSource": "Synthetic demonstration charts, not retailer sizing. Body measurement ranges in cm."
+      }
+    }
+  ],
+  "visualReview": {
+    "status": "controlled research candidate",
+    "observations": [
+      "Actual local model output visibly retains teal and cream stripes, short sleeves and hem. No large beige-shirt fragments are visible.",
+      "Stripes on the upper chest are missing compared with the uploaded reference; collar has a small notch and fine boundaries remain imperfect.",
+      "Face, hair, hands, trousers, shoes and background are preserved according to saved masks."
+    ],
+    "productionQualityValidated": false
+  },
+  "tests": {
+    "python": "experiments/final-vton-tests-20261015.xml",
+    "actualNeuralBrowser": "experiments/anchored-live-browser-report-20261015.json",
+    "previousGlbBrowser": "experiments/async-live-browser-report.json",
+    "frontendBuild": "experiments/frontend-build-report-20261014.json"
+  }
+}

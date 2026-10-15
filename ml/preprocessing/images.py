@@ -89,14 +89,12 @@ class PersonPreprocessor:
 
     def process(self, data: bytes, folder: Path | None = None) -> ImageFeatures:
         features = self.detect(data, folder)
-        self.validate_pose(features)
         return features
 
     def detect(self, data: bytes, folder: Path | None = None) -> ImageFeatures:
         """Detect one person without assuming that the entire body is in frame.
 
-        Each consumer must validate the landmarks its output actually needs. The
-        strict 3D process method retains its full-body validation above.
+        Each consumer validates the landmarks its output actually needs.
         """
         rgba = decode_image(data)
         rgb = np.ascontiguousarray(rgba[:, :, :3])
@@ -132,67 +130,6 @@ class PersonPreprocessor:
             save_features(features, folder, "person")
         return features
 
-    @staticmethod
-    def validate_pose(features: ImageFeatures) -> None:
-        p = features.landmarks
-        essential = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28, 31, 32]
-        # A portrait can produce extrapolated leg landmarks far outside the image.
-        # Report the framing problem before their low visibility is called occlusion.
-        if np.any(p[[0, 27, 28, 31, 32], :2] < 0.015) or np.any(p[[0, 27, 28, 31, 32], :2] > 0.985):
-            raise PipelineError(
-                "partial_body",
-                "This photo appears cropped or too tightly framed for 3D. Upload a head-to-toe photo "
-                "with both hands and feet visible, and space above your head and below your feet. "
-                "Portraits and waist-up photos are not supported in 3D mode; "
-                "choose Auto or 2D photo preview instead.",
-            )
-        x0, y0, x1, y1 = features.bbox
-        h, w = features.mask.shape
-        if y0 < 2 or y1 > h - 2 or x0 < 1 or x1 > w - 1:
-            raise PipelineError(
-                "partial_body",
-                "The person touches the image edge. Include the full body with margin for 3D, "
-                "or choose Auto or 2D photo preview.",
-            )
-        if np.min(p[essential, 3]) < 0.55:
-            raise PipelineError(
-                "occluded_body",
-                "Some body landmarks could not be detected clearly. Use a sharp, front-facing, "
-                "head-to-toe photo with arms slightly away from your body and legs uncrossed.",
-            )
-        shoulders, hips = p[[11, 12], :2].mean(axis=0), p[[23, 24], :2].mean(axis=0)
-        torso = hips[1] - shoulders[1]
-        shoulder_width = abs(p[11, 0] - p[12, 0]) * w
-        if (
-            torso <= 0
-            or shoulder_width < torso * h * 0.45
-            or abs(hips[0] - shoulders[0]) * w > torso * h * 0.4
-        ):
-            raise PipelineError("extreme_pose", "Stand upright and face the camera directly.")
-        if (
-            abs(p[11, 1] - p[12, 1]) > torso * 0.32
-            or np.min(p[[27, 28], 1]) < hips[1] + torso * 0.8
-        ):
-            raise PipelineError(
-                "extreme_pose", "Use a standing frontal pose with both legs extended."
-            )
-        if np.any(p[[15, 16], 1] < shoulders[1]) or abs(p[27, 1] - p[28, 1]) > torso * 0.4:
-            raise PipelineError("extreme_pose", "Lower your arms and keep both feet on the ground.")
-        # Crossed arms/legs and strongly foreshortened limbs are not reliable inputs.
-        if (p[11, 0] - p[12, 0]) * (p[27, 0] - p[28, 0]) < 0:
-            raise PipelineError("extreme_pose", "Keep legs uncrossed and face forward.")
-        world = features.world_landmarks
-        for hip, knee, ankle in ((23, 25, 27), (24, 26, 28)):
-            a, b = world[hip] - world[knee], world[ankle] - world[knee]
-            cosine = np.dot(a, b) / max(np.linalg.norm(a) * np.linalg.norm(b), 1e-8)
-            if np.degrees(np.arccos(np.clip(cosine, -1, 1))) < 150:
-                raise PipelineError(
-                    "extreme_pose",
-                    "Seated poses and bent knees are unsupported. Stand with both legs straight.",
-                )
-        features.warnings.append(
-            "Hidden body depth is inferred from a template; loose clothing biases silhouette widths."
-        )
 
 
 def preprocess_garment(

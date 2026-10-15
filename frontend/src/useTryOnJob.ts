@@ -21,6 +21,8 @@ const stages: Record<string, string> = {
   checking_output: "Checking the generated image",
   refining_boundaries: "Refining clothing edges and preserving identity",
   saving_result: "Saving your result",
+  uploading_online: "Sending images to your Colab worker",
+  online_generating: "Your Colab GPU is generating the outfit",
 };
 
 function savedJob(): string | undefined {
@@ -70,7 +72,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
             forgetJob();
             callbacks.current.onError(job.error?.message ?? "Try-on failed.");
           }
-          else if (!job.result || (job.result.mode === "2d" && job.result.renderingMethod !== "pretrained-vton")) {
+          else if (!job.result || job.result.mode !== "2d" || job.result.renderingMethod !== "pretrained-vton") {
             forgetJob();
             callbacks.current.onError("The service did not return a pretrained try-on result.");
           } else callbacks.current.onResult(job.result);

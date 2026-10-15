@@ -1,0 +1,294 @@
+{
+  "jobId": "634e7985-502e-4141-af36-edb00770eebf",
+  "status": "success",
+  "requestHash": "a6d200836e00d7a76c25abe127fbfc6c2b277e9092762d21edf6a4072d1b47d1",
+  "createdAt": 1792047709.2087748,
+  "progress": {
+    "stage": "complete"
+  },
+  "statusUrl": "/api/tryon/jobs/634e7985-502e-4141-af36-edb00770eebf",
+  "result": {
+    "mode": "2d",
+    "renderingMethod": "pretrained-vton",
+    "fit": "regular",
+    "recommendedSize": null,
+    "score": null,
+    "explanation": {},
+    "candidates": [],
+    "measurements": null,
+    "avatarUrl": null,
+    "bodyUrl": null,
+    "garmentUrl": null,
+    "previewUrl": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/tryon-2d.png",
+    "originalUrl": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/original-person.png",
+    "fallbackReason": null,
+    "provenance": {
+      "backend": "catvton-vitonhd-16k-512",
+      "pretrainedComponent": "CatVTON garment-conditioned diffusion; FASHN SegFormer-B4 human parser",
+      "shapeRecovery": "masked garment-conditioned diffusion inpainting",
+      "validatedAnthropometry": false,
+      "weights": {
+        "backend": "CatVTON",
+        "source": "https://github.com/Zheng-Chong/CatVTON",
+        "sourceCommit": "999bdbe81e6008a3f5749af7c1e0b0fa3d21b48e",
+        "baseModel": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+        "baseRevision": "8a4288a76071f7280aedbdb3253bdb9e9d5d84bb",
+        "attentionCheckpoint": "zhengchong/CatVTON/vitonhd-16k-512",
+        "attentionRevision": "2969fcf85fe62f2036605716f0b56f0b81d01d79",
+        "vaeModel": "stabilityai/sd-vae-ft-mse",
+        "vaeRevision": "31f26fdeee1355a5c34592e401dd41e45d25a493",
+        "checkpointSha256": {
+          "base/unet/diffusion_pytorch_model.fp16.safetensors": "24b788b4a777748377cc20364eea4ae113c8c42f4468c16bc8c02fdae5492af9",
+          "attention/vitonhd-16k-512/attention/model.safetensors": "915df7bf19a33bee36a28d5f9ceaef1e2267c47526f98ca9e4c49e90ae5f0fd0",
+          "vae/diffusion_pytorch_model.safetensors": "a1d993488569e928462932c8c38a0760b874d166399b14414135bd9c42df5815",
+          "base/safety_checker/model.fp16.safetensors": "08902f19b1cfebd7c989f152fc0507bef6898c706a91d666509383122324b511"
+        },
+        "loadVerified": true,
+        "nativeResolution": [
+          384,
+          512
+        ],
+        "trainedResolution": [
+          384,
+          512
+        ],
+        "device": "cuda",
+        "dtype": "torch.float16",
+        "cudnnEnabled": true,
+        "convolutionMath": "float32",
+        "promotedConvolutionLayers": 162,
+        "inferenceSteps": 50,
+        "guidanceScale": 2.5,
+        "seed": 42,
+        "conditioning": "reference-anchor",
+        "experimentalConditioning": true,
+        "attention": "Official SDPA self attention; official cross attention skip",
+        "memoryPolicy": "Sequential classifier-free guidance; CPU safety checker; VAE slicing",
+        "vaeTiling": false,
+        "safetyChecker": "Official Stable Diffusion checker runs on every generated image, on CPU",
+        "maskSource": "Caller-supplied semantic binary replacement mask; not upstream SCHP/DensePose automasking",
+        "license": "CC-BY-NC-SA-4.0; research/non-commercial use"
+      }
+    },
+    "warnings": [
+      "Pretrained CatVTON generates clothing at 384 by 512 pixels. Inspect fine garment details and folds; this research model is not a guarantee of physically accurate fit.",
+      "Original face, hair, exposed limbs, lower clothing and background are preserved according to semantic parsing; parsing errors can affect boundaries.",
+      "The image model does not estimate body measurements or choose a clothing size. Use measured dimensions with the independent brand size engine.",
+      "Fit preference is recorded for sizing, but is not an input to the pretrained image model.",
+      "CatVTON and the human-parser weights have research/non-commercial license restrictions; see docs/vton-model.md."
+    ],
+    "fitting": null,
+    "photoAlignment": {
+      "method": "pretrained-garment-conditioned-diffusion-inpainting",
+      "modelVersion": "catvton-vitonhd-16k-512",
+      "model": {
+        "backend": "CatVTON",
+        "source": "https://github.com/Zheng-Chong/CatVTON",
+        "sourceCommit": "999bdbe81e6008a3f5749af7c1e0b0fa3d21b48e",
+        "baseModel": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+        "baseRevision": "8a4288a76071f7280aedbdb3253bdb9e9d5d84bb",
+        "attentionCheckpoint": "zhengchong/CatVTON/vitonhd-16k-512",
+        "attentionRevision": "2969fcf85fe62f2036605716f0b56f0b81d01d79",
+        "vaeModel": "stabilityai/sd-vae-ft-mse",
+        "vaeRevision": "31f26fdeee1355a5c34592e401dd41e45d25a493",
+        "checkpointSha256": {
+          "base/unet/diffusion_pytorch_model.fp16.safetensors": "24b788b4a777748377cc20364eea4ae113c8c42f4468c16bc8c02fdae5492af9",
+          "attention/vitonhd-16k-512/attention/model.safetensors": "915df7bf19a33bee36a28d5f9ceaef1e2267c47526f98ca9e4c49e90ae5f0fd0",
+          "vae/diffusion_pytorch_model.safetensors": "a1d993488569e928462932c8c38a0760b874d166399b14414135bd9c42df5815",
+          "base/safety_checker/model.fp16.safetensors": "08902f19b1cfebd7c989f152fc0507bef6898c706a91d666509383122324b511"
+        },
+        "loadVerified": true,
+        "nativeResolution": [
+          384,
+          512
+        ],
+        "trainedResolution": [
+          384,
+          512
+        ],
+        "device": "cuda",
+        "dtype": "torch.float16",
+        "cudnnEnabled": true,
+        "convolutionMath": "float32",
+        "promotedConvolutionLayers": 162,
+        "inferenceSteps": 50,
+        "guidanceScale": 2.5,
+        "seed": 42,
+        "conditioning": "reference-anchor",
+        "experimentalConditioning": true,
+        "attention": "Official SDPA self attention; official cross attention skip",
+        "memoryPolicy": "Sequential classifier-free guidance; CPU safety checker; VAE slicing",
+        "vaeTiling": false,
+        "safetyChecker": "Official Stable Diffusion checker runs on every generated image, on CPU",
+        "maskSource": "Caller-supplied semantic binary replacement mask; not upstream SCHP/DensePose automasking",
+        "license": "CC-BY-NC-SA-4.0; research/non-commercial use"
+      },
+      "nativeResolution": [
+        384,
+        512
+      ],
+      "personWindow": [
+        230,
+        142,
+        756,
+        842
+      ],
+      "replacementMaskVersion": "semantic-pose-short-sleeve-v3-rounded-cap",
+      "compositeVersion": "inference-bounded-seams-v2",
+      "maskLimitations": "Pose permits proximal upper-arm synthesis; long-sleeve changes are not validated.",
+      "garmentSegmentation": "flat-lay-background-segmentation",
+      "parsing": {
+        "modelVersion": "fashn-human-parser@1f80c34dbab321c5730dda5c3fea279fd3e97498",
+        "sourceCommit": "f2771f2fb8655349e87e2869bbde7ace0bd06f2c",
+        "checkpointSha256": "e43c8c8a9b04f28798f0a4630cf18caa2cdb27a0d454fae43a5716e6f7078244",
+        "device": "cpu",
+        "inputSize": {
+          "width": 1000,
+          "height": 1500
+        },
+        "modelInputSize": {
+          "width": 384,
+          "height": 576
+        },
+        "preprocessing": "Official cv2.INTER_AREA resize and ImageNet normalization",
+        "labels": {
+          "0": "background",
+          "1": "face",
+          "2": "hair",
+          "3": "top",
+          "4": "dress",
+          "5": "skirt",
+          "6": "pants",
+          "7": "belt",
+          "8": "bag",
+          "9": "hat",
+          "10": "scarf",
+          "11": "glasses",
+          "12": "arms",
+          "13": "hands",
+          "14": "legs",
+          "15": "feet",
+          "16": "torso",
+          "17": "jewelry"
+        },
+        "labelPixels": {
+          "background": 1279243,
+          "face": 9558,
+          "hair": 3403,
+          "top": 96606,
+          "pants": 68901,
+          "arms": 19481,
+          "hands": 9311,
+          "feet": 9887,
+          "torso": 3610
+        },
+        "timingSeconds": 5.336,
+        "limitations": "Semantic estimates; neck and left/right limbs are not separate model classes."
+      },
+      "compositing": {
+        "method": "pretrained-semantic-bounded-neural-composite",
+        "category": "t-shirt",
+        "oldClothingPixels": 96606,
+        "oldClothingMinimumAlpha": 1.0,
+        "editedPixels": 104853,
+        "preservedPixels": 1395147,
+        "changedPixelsOutsideEditMask": 0,
+        "identityPreservedExactly": true,
+        "collarTransition": "Narrow generated context on adjacent background/bare torso; further changes require generated clothing semantics.",
+        "collarTransitionRadiusPixels": 18,
+        "sourceContextRadiusPixels": 4,
+        "outerFeatherWidthPixels": 2,
+        "semanticContextPixels": 5696,
+        "generatedClothingExtensionPixels": 3642,
+        "poseSleeveSupportPixels": 22794,
+        "inferenceSupportPixels": 109810,
+        "inferenceSeamPixels": 4531,
+        "silhouettePolicy": "Bounded generated clothing may cover nearby background, bare torso or upper arms. Face, hair, hands and unrelated clothing stay exact; distant background and limbs stay exact.",
+        "limitations": "Preservation is conditional on semantic parsing; it does not guarantee perceptual realism or accurate fit."
+      },
+      "device": "cuda",
+      "qualityValidated": false,
+      "garmentFidelity": {
+        "status": "not_rejected",
+        "reason": "no_catastrophic_stripe_loss_detected",
+        "reference": {
+          "crop": [
+            125,
+            140,
+            259,
+            390
+          ],
+          "maskCoverage": 1.0,
+          "usable": true,
+          "localLuminanceContrast": 132.8781,
+          "rowLuminanceContrast": 132.4773,
+          "horizontalCoherence": 1.0,
+          "horizontalStripeGradientRatio": 1027.6429,
+          "periodicSpectralShare": 0.9579,
+          "dominantCycles": 7,
+          "pronouncedHorizontalStripes": true
+        },
+        "generated": {
+          "crop": [
+            439,
+            441,
+            558,
+            716
+          ],
+          "maskCoverage": 1.0,
+          "usable": true,
+          "localLuminanceContrast": 131.634,
+          "rowLuminanceContrast": 129.3559,
+          "horizontalCoherence": 0.9952,
+          "horizontalStripeGradientRatio": 18.0055,
+          "periodicSpectralShare": 0.9545,
+          "dominantCycles": 7,
+          "pronouncedHorizontalStripes": true,
+          "referenceContrastRatio": 0.99064,
+          "possibleRetainedStripeStructure": true
+        },
+        "version": "pronounced-horizontal-stripe-loss-v1"
+      }
+    },
+    "artifacts": {
+      "tryon-2d.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/tryon-2d.png",
+      "original-person.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/original-person.png",
+      "vton-diagnostics.json": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/vton-diagnostics.json",
+      "garment-fidelity.json": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/garment-fidelity.json",
+      "vton-model-output.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/vton-model-output.png",
+      "vton-replacement-mask.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/vton-replacement-mask.png",
+      "vton-inference-support.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/vton-inference-support.png",
+      "vton-person-input.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/vton-person-input.png",
+      "vton-garment-input.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/vton-garment-input.png",
+      "vton-garment-mask.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/vton-garment-mask.png",
+      "personParsing.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/personParsing.png",
+      "garmentParsing.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/garmentParsing.png",
+      "generatedParsing.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/generatedParsing.png",
+      "semantic-edit-mask.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/semantic-edit-mask.png",
+      "semantic-preserve-mask.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/semantic-preserve-mask.png",
+      "old-clothing-mask.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/old-clothing-mask.png",
+      "semantic-alpha.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/semantic-alpha.png",
+      "semantic-composite.json": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/semantic-composite.json",
+      "personMask.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/personMask.png",
+      "personCrop.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/personCrop.png",
+      "garmentMask.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/garmentMask.png",
+      "garmentCrop.png": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/garmentCrop.png",
+      "poseKeypoints.json": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/poseKeypoints.json",
+      "result": "/assets/fb1d78fa-aead-4313-9d83-2694e24cf7a7/result.json"
+    },
+    "status": "success",
+    "runId": "fb1d78fa-aead-4313-9d83-2694e24cf7a7",
+    "requestedMode": "2d",
+    "brandId": 1,
+    "brandName": "Atelier Demo",
+    "garmentCategory": "t-shirt",
+    "chartVersion": 1,
+    "chartSource": "Synthetic demonstration charts, not retailer sizing. Body measurement ranges in cm.",
+    "timings": {
+      "preprocessing": 0.7791006000002199,
+      "2d_pretrained_tryon": 892.8136519999998
+    },
+    "timingSeconds": 900.477,
+    "memoryRssMB": 209.0
+  }
+}

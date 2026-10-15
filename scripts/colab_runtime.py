@@ -149,7 +149,7 @@ def download_pose() -> None:
     import requests
     from download_vton import fetch
 
-    destination = ROOT / "assets/bodyModels/pose_landmarker_full.task"
+    destination = ROOT / "assets/pose/pose_landmarker_full.task"
     with requests.Session() as session:
         record = fetch(session, POSE_URL, destination, expected=POSE_SHA256)
     write_json(destination.parent / "pose-download-manifest.json", record)
@@ -243,7 +243,7 @@ def run(args: argparse.Namespace) -> int:
         from ml.preprocessing.images import PersonPreprocessor
         from ml.vton.service import PretrainedTryOn
 
-        processor = PersonPreprocessor(ROOT / "assets/bodyModels/pose_landmarker_full.task")
+        processor = PersonPreprocessor(ROOT / "assets/pose/pose_landmarker_full.task")
         service = PretrainedTryOn(ROOT / "assets/vton", "cuda", checkpoint=args.checkpoint, height=args.height,
                                    guidance_scale=args.guidance, seed=args.seed,
                                    conditioning=getattr(args, "conditioning", "official"))

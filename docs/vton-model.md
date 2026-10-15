@@ -282,3 +282,17 @@ at vitonhd-16k-512, seed at 42 and guidance at 2.5. Its execution and visual rev
 state are recorded separately from prior runs in
 `experiments/colab-conditioning-state-20261015.json`. Unit-test success is not
 evidence that this experimental mode improves fitting.
+
+The completed comparison has now been visually reviewed: reference anchoring
+preserves the supplied teal/cream stripes that the official control largely loses.
+Two additional T4 product-photo cases produce recognizable jersey/graphic shirts,
+with small-print and geometry limitations. The actual local API/browser run also
+completed and displays its own generated PNG. `VTON_CONDITIONING=reference-anchor`
+is now the application default; the low-level model retains `official` for explicit
+control experiments. All weights remain unchanged.
+
+The final compositor receives the exact projected inference mask, which prevents
+its narrower pose corridor from clipping synthesized seams. It rejects substantial
+background intrusion into original arm interiors with `vton_body_shape_changed`.
+This catches the observed vest-to-shirt shoulder failure without deleting skin.
+The threshold is an engineering heuristic, not a calibrated quality model.

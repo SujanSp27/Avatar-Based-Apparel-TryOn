@@ -23,7 +23,8 @@ classes. Postprocessing preserves original pixels outside the semantic edit area
 clothing pixels are fully replaced rather than blended back. This preservation depends on
 segmentation accuracy. The revised mask reserves pose-guided space on the proximal upper arms
 for short sleeves, and composition admits only model-generated clothing there. The correction
-has offline coverage but has not undergone new neural inference. Long-sleeve changes and large
+has been exercised on local CUDA and Colab T4. Significant generated shoulder/arm shrinkage
+is rejected rather than hidden by erasing original skin. Long-sleeve changes and large
 hem changes remain unvalidated; prefer short-sleeved product photographs.
 Natural neckline, sleeve alignment, pattern retention and lack of old-shirt fragments
 require visual inspection; neither mask tests nor successful inference prove realism.
@@ -76,6 +77,7 @@ alignment/identity/texture/occlusion/artifact review; success/failure rate, late
 Separate people and garments across train/validation/test. Augmentations of one photo remain
 the same identity; synthetic fixtures are not human-accuracy validation.
 
-Local research use: binds loopback, uploaded photos stay in local storage, no cloud API.
+Local research use: binds loopback; application uploads stay in local storage. The separate,
+user-authorized Colab evaluation uses only the explicit regression-fixture allowlist.
 No public deployment or multi-user authentication is included. Delete a run through the API
 to remove its inputs and generated outputs. Admin writes can be protected by ADMIN_TOKEN.

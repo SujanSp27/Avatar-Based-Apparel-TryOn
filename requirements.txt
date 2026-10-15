@@ -10,10 +10,6 @@ scipy==1.15.3
 Pillow==11.2.1
 opencv-contrib-python==4.11.0.86
 mediapipe==0.10.21
-trimesh==4.6.10
-rtree==1.4.0
-manifold3d==3.1.1
-scikit-image==0.25.2
 httpx==0.28.1
 psutil==7.0.0
 pytest==8.3.5

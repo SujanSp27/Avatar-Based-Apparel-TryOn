@@ -6,8 +6,6 @@ from ml.sizing.engine import Category, Fit
 
 
 class TryOnMode(str, Enum):
-    auto = "auto"
-    three_d = "3d"
     two_d = "2d"
 
 

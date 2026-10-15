@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = {
-    "assets/bodyModels/pose_landmarker_full.task": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
+    "assets/pose/pose_landmarker_full.task": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
     "data/raw/standing.jpg": "https://raw.githubusercontent.com/shubham-goel/4D-Humans/main/example_data/images/pexels-anete-lusina-4793258.jpg",
     "data/raw/skates.png": "https://raw.githubusercontent.com/shubham-goel/4D-Humans/main/example_data/images/skates.png",
     "data/raw/yoga.jpg": "https://storage.googleapis.com/mediapipe-assets/pose.jpg",

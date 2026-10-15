@@ -1,5 +1,5 @@
 {
-  "status": "completed_artifacts_recovered",
+  "status": "completed_artifacts_recovered_and_reviewed",
   "sourceArchiveSha256": "38a9b75373f46da755c0bdaac32a5e811e1f6b7ce8156849ee232e2d3bff07cc",
   "executionSourceSha256": "8cf2b52c83ad7aa6ee2428be062f17cca0ac401ff67f353f912c605fad4cce07",
   "notebookUrl": "https://colab.research.google.com/drive/1fbPlq8X1RzLc9w6sVQxMVaTIi_VoqY6r",
@@ -14,5 +14,7 @@
   "archive": "experiments\\colab-conditioning-results-20261015.zip",
   "archiveSha256": "c20ccdd55490f7ee77c771ad1cc57a132b25bc46d3ef9894e4f205b9fabe3f90",
   "collection": "experiments\\runs\\colab-conditioning-20261015",
-  "casesRecovered": 3
+  "casesRecovered": 3,
+  "review": "experiments/colab-conditioning-review-20261015/index.html",
+  "visualAcceptance": "controlled prototype only; see per-case findings"
 }
