@@ -150,7 +150,7 @@ class PretrainedTryOn:
         if category not in SUPPORTED:
             raise PipelineError(
                 "vton_category",
-                "The installed pretrained 2D model supports T-shirts and shirts only. Dress and trouser try-on remain available only in the separate approximate 3D mode.",
+                "This historical CatVTON evaluator supports T-shirts and shirts only. The application uses the separate online FASHN worker for other categories.",
             )
         with self._lock:
             try:

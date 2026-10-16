@@ -4,6 +4,7 @@ import path from "node:path";
 
 // Transport/UI contracts only. Controlled responses never claim model quality.
 test("refresh resumes the same job and reports its actual failure without another POST", async ({ page }) => {
+  await page.route("**/api/health", route => route.fulfill({json:{vton2d:{available:true,reason:null,backend:"test transport",nativeResolution:[576,864]}}}));
   let posts = 0;
   let jobId = "";
   let failed = false;

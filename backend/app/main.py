@@ -13,6 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.app.charts import chart_dict, create_chart, latest_chart, seed_database
+from backend.app.colab_connection import ColabConnection
 from backend.app.config import ROOT, settings
 from backend.app.db import SessionLocal, engine, get_db
 from backend.app.jobs import TryOnJobs
@@ -27,6 +28,7 @@ from ml.vton.categories import GarmentCategory
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 store = AssetStore(settings.asset_root)
 pipeline = TryOnPipeline(store)
+connection = ColabConnection(pipeline.worker)
 capacity = BoundedSemaphore(1)
 jobs = TryOnJobs(ROOT / ".runtime/tryon-jobs", capacity)
 
@@ -36,8 +38,12 @@ async def lifespan(app: FastAPI):
     jobs.recover_interrupted()
     with SessionLocal() as db:
         seed_database(db)
-    yield
-    jobs.close()
+    connection.start()
+    try:
+        yield
+    finally:
+        connection.close()
+        jobs.close()
 
 
 app = FastAPI(title="Form / Fit research API", version="0.1.0", lifespan=lifespan)
@@ -109,7 +115,7 @@ def health(db: Session = Depends(get_db)):
         "status": "ok",
         "database": engine.dialect.name,
         "tryonModes": ["2d"],
-        "vton2d": pipeline.worker.availability(),
+        "vton2d": connection.snapshot(),
         "scope": "Online GPU photo try-on; independent measured-input brand sizing",
     }
 

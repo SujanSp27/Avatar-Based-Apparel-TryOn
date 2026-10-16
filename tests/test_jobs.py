@@ -95,7 +95,7 @@ def test_async_api_acknowledges_and_returns_saved_result(worker, monkeypatch):
     client = TestClient(main.app, raise_server_exceptions=True)
     try:
         options = {
-            "data": {"brandId": "1", "garmentCategory": "t-shirt", "tryonMode": "2d"},
+            "data": {"garmentCategory": "t-shirt", "tryonMode": "2d"},
             "files": {"personImage": ("p.png", b"p"), "garmentImage": ("g.png", b"g")},
             "headers": {"Prefer": "respond-async", "Idempotency-Key": key},
         }

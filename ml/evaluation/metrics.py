@@ -28,33 +28,6 @@ def silhouette_iou(predicted, actual) -> float:
     return float(np.logical_and(p, a).sum() / union) if union else 1.0
 
 
-def pose_metrics(predicted, actual) -> dict:
-    p, a = np.asarray(predicted, dtype=float), np.asarray(actual, dtype=float)
-    if (
-        p.shape != a.shape
-        or p.ndim != 2
-        or p.shape[1] != 3
-        or len(p) < 3
-        or not np.isfinite(p).all()
-        or not np.isfinite(a).all()
-    ):
-        raise ValueError("Expected matching finite Nx3 joints")
-    pc, ac = p - p.mean(axis=0), a - a.mean(axis=0)
-    if np.linalg.norm(pc) < 1e-8 or np.linalg.norm(ac) < 1e-8:
-        raise ValueError("Degenerate pose")
-    u, s, vt = np.linalg.svd(pc.T @ ac)
-    correction = np.eye(3)
-    correction[-1, -1] = np.linalg.det(u @ vt)
-    rotation = u @ correction @ vt
-    scale = np.sum(s * np.diag(correction)) / np.square(pc).sum()
-    aligned = scale * pc @ rotation + a.mean(axis=0)
-    return {
-        "mpjpe": float(np.linalg.norm(p - a, axis=1).mean()),
-        "p_mpjpe": float(np.linalg.norm(aligned - a, axis=1).mean()),
-        "units": "same as input coordinates",
-    }
-
-
 def size_metrics(predictions: list[list[str]], actual: list[str], size_order: list[str]) -> dict:
     if not actual or len(predictions) != len(actual) or any(not p for p in predictions):
         raise ValueError("Nonempty paired rankings and labels required")

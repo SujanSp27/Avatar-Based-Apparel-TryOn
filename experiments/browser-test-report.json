@@ -58,13 +58,13 @@
   },
   "suites": [
     {
-      "title": "tryon.spec.ts",
-      "file": "tryon.spec.ts",
+      "title": "live-connection.spec.ts",
+      "file": "live-connection.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "real uploads produce measurements, size and interactive GLB",
+          "title": "existing private Colab connects without user-facing connection controls",
           "ok": true,
           "tags": [],
           "tests": [
@@ -79,12 +79,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 171243,
+                  "duration": 3103,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-12T15:33:56.841Z",
+                  "startTime": "2026-10-16T11:51:27.133Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -92,43 +92,9 @@
               "status": "expected"
             }
           ],
-          "id": "66c05e63e94605070546-ca45c151631ecce7c7f8",
-          "file": "tryon.spec.ts",
-          "line": 4,
-          "column": 1
-        },
-        {
-          "title": "sample button and mobile input layout work",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1590,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-12T15:36:48.543Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "66c05e63e94605070546-ac7711cce960cdc42430",
-          "file": "tryon.spec.ts",
-          "line": 82,
+          "id": "419a5df44beaed8228af-e36199d4f7ef19171346",
+          "file": "live-connection.spec.ts",
+          "line": 3,
           "column": 1
         }
       ]
@@ -136,9 +102,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-12T15:33:55.581Z",
-    "duration": 176029.611,
-    "expected": 2,
+    "startTime": "2026-10-16T11:51:25.963Z",
+    "duration": 5246.779999999999,
+    "expected": 1,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

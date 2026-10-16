@@ -1240,3 +1240,17 @@ footer > span:nth-child(2) {
     font-size: 9px;
   }
 }
+
+.form-controls { display: grid; gap: 14px; padding-top: 24px; }
+.form-controls select, .size-tool select, .size-tool input {
+  width: 100%; min-height: 42px; padding: 10px; border: 1px solid #d3d9c8;
+  border-radius: 7px; background: #fffefa; color: #233f33; font: inherit;
+}
+.form-controls p, .size-tool p { font-size: 13px; line-height: 1.6; }
+.model-status { padding: 14px; border: 1px solid #d3d9c8; border-radius: 8px; }
+.model-status[data-ready="true"] { background: #edf3e8; color: #344c35; }
+.model-status button, .size-tool button { padding: 10px 14px; border: 1px solid #d3d9c8; border-radius: 6px; background: #edf0e6; cursor: pointer; }
+.size-tool { margin-top: 24px; border-top: 1px solid #d3d9c8; padding-top: 20px; }
+.size-tool summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.size-tool label { display: block; margin-bottom: 12px; font-size: 13px; text-transform: capitalize; }
+.size-tool input, .size-tool select { margin-top: 6px; }

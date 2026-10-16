@@ -1,6 +1,6 @@
 """Run inside the existing Colab runtime, not on the user's computer."""
-import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -18,10 +18,13 @@ def main():
     root.mkdir(exist_ok=True)
     python = root / ".venv/bin/python"
     if not python.exists():
-        subprocess.run([sys.executable, "-m", "venv", "--system-site-packages", str(root / ".venv")], check=True)
+        uv = shutil.which("uv")
+        if not uv:
+            raise RuntimeError("This Colab runtime needs uv to seed its isolated Python environment.")
+        subprocess.run([uv, "venv", "--system-site-packages", "--seed", "--python", sys.executable, str(root / ".venv")], check=True)
     subprocess.run([str(python), "-m", "pip", "install", "--disable-pip-version-check",
                     f"git+https://github.com/fashn-AI/fashn-vton-1.5.git@{SOURCE}",
-                    "gradio==5.49.1", "fashn-human-parser==0.1.1"], check=True)
+                    "gradio==5.49.1", "fashn-human-parser==0.1.1", "transformers==4.49.0"], check=True)
     # Download pinned assets in the isolated interpreter. No local model loading.
     downloader = f'''
 import hashlib,json

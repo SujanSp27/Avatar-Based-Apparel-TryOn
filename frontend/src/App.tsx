@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowDownToLine, ArrowRight, CircleHelp, FlaskConical, LoaderCircle, Shirt, Sparkles, X } from "./icons";
 import PhotoViewer from "./PhotoViewer";
 import UploadCard from "./UploadCard";
 import SizeRecommendation from "./SizeRecommendation";
 import { useTryOnJob } from "./useTryOnJob";
-import { apiError, type Result, type VtonAvailability } from "./types";
+import { type Result, type VtonAvailability } from "./types";
 
 const categories = [
   ["t-shirt", "T-shirt"], ["shirt", "Shirt"], ["blouse", "Blouse"],
@@ -23,18 +23,33 @@ export default function App() {
   const [help, setHelp] = useState(false);
   const [demoBusy, setDemoBusy] = useState(false);
   const [vton, setVton] = useState<VtonAvailability>();
-  const [checking, setChecking] = useState(false);
+  const [apiUnavailable, setApiUnavailable] = useState(false);
   const { busy, message, submit } = useTryOnJob(setResult, setError);
-  const checkWorker = useCallback(async () => {
-    setChecking(true);
-    try {
-      const r = await fetch("/api/health");
-      if (!r.ok) throw new Error(await apiError(r));
-      setVton((await r.json()).vton2d);
-    } catch { setError("The local API could not be reached."); }
-    finally { setChecking(false); }
+  useEffect(() => {
+    let disposed = false;
+    let timer: ReturnType<typeof setTimeout>;
+    let controller: AbortController;
+    async function checkWorker() {
+      controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      let ready = false;
+      try {
+        const r = await fetch("/api/health", { signal: controller.signal });
+        if (!r.ok) throw new Error("API unavailable");
+        const next: VtonAvailability = (await r.json()).vton2d;
+        if (!disposed) { setVton(next); setApiUnavailable(false); }
+        ready = next.available;
+      } catch {
+        // A previous successful check must not leave Generate enabled offline.
+        if (!disposed) { setVton(undefined); setApiUnavailable(true); }
+      } finally {
+        clearTimeout(timeout);
+        if (!disposed) timer = setTimeout(checkWorker, ready ? 15000 : 3000);
+      }
+    }
+    void checkWorker();
+    return () => { disposed = true; clearTimeout(timer); controller?.abort(); };
   }, []);
-  useEffect(() => { void checkWorker(); }, [checkWorker]);
   async function demo() {
     setDemoBusy(true); setError("");
     try {
@@ -75,7 +90,7 @@ export default function App() {
             <label className="field-label" htmlFor="photo-type">Garment photo</label>
             <select id="photo-type" value={photoType} onChange={e => setPhotoType(e.target.value)} disabled={busy}><option value="flat-lay">Product / flat lay</option><option value="model">Worn by a person</option></select>
             <p>Choose the correct photo type to guide garment preparation.</p>
-            <div className="model-status" data-testid="model-status"><strong>{vton?.available ? "Colab worker configured" : "Colab connection needed"}</strong><p>{vton?.reason ?? "Photos are processed on your Colab GPU. Shared runtime and network delays affect generation time."}</p><button onClick={checkWorker} disabled={checking || busy}>{checking ? "Checking…" : "Check connection"}</button></div>
+            <div className="model-status" data-testid="model-status" role="status" aria-live="polite" data-ready={!!vton?.available}><strong>{vton?.available ? "Ready to try on" : apiUnavailable ? "Starting the app…" : "Preparing try-on…"}</strong><p>{apiUnavailable ? "Waiting for the app service. This page retries automatically." : vton?.reason ?? (vton?.available ? "Your online GPU is ready. Upload your photos to begin." : "Connecting to your Colab GPU automatically. You can choose your photos while you wait.")}</p></div>
             <button className="generate-button" disabled={!person || !garment || !vton?.available || busy} onClick={generate}>{busy ? <LoaderCircle className="spin" size={18}/> : <Sparkles size={18}/>} {busy ? "Generating try-on…" : "Generate try-on"}</button>
             {busy && <p role="status" data-testid="job-progress">{message}. Refreshing returns to the same job.</p>}
             <p className="local-note">Online inference only. Your computer’s GPU is never used.</p>

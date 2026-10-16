@@ -7,6 +7,7 @@ import base64
 import io
 import json
 import time
+from threading import Lock
 from urllib.parse import urlparse
 
 import httpx
@@ -43,21 +44,59 @@ class OnlineTryOn:
         self.url = (settings.online_vton_url if url is None else url).rstrip("/")
         self.token = settings.online_vton_token if token is None else token
         self.transport = transport
+        self.read_connection_file = url is None and token is None
+        self._connection_lock = Lock()
+        self._health_lock = Lock()
+        self._checked_at = 0.
+        self._checked_url = ""
+        self._reachable = False
 
-    def availability(self):
-        parsed = urlparse(self.url)
+    def refresh_connection(self):
+        if not self.read_connection_file or not settings.online_connection_path.is_file():
+            return
+        try:
+            connection = json.loads(settings.online_connection_path.read_text(encoding="utf-8"))
+            url, token = connection["url"].rstrip("/"), connection["token"]
+            if not isinstance(token, str):
+                raise ValueError("Invalid token")
+            with self._connection_lock:
+                self.url, self.token = url, token
+        except (OSError, ValueError, KeyError, TypeError, AttributeError):
+            with self._connection_lock:
+                self.url, self.token = "", ""
+
+    def credentials(self):
+        self.refresh_connection()
+        with self._connection_lock:
+            return self.url, self.token
+
+    def availability(self, *, check_connection=False):
+        url, token = self.credentials()
+        parsed = urlparse(url)
         configured = bool(
             parsed.scheme == "https" and parsed.hostname and not parsed.username
             and not parsed.password and not parsed.query and not parsed.fragment
-            and len(self.token) >= 32
+            and len(token) >= 32
         )
+        reachable = configured
+        if configured and check_connection:
+            with self._health_lock:
+                if url != self._checked_url or time.monotonic() - self._checked_at > 10:
+                    try:
+                        with httpx.Client(timeout=4, follow_redirects=False, transport=self.transport) as client:
+                            response = client.get(url + "/gradio_api/info")
+                            self._reachable = response.status_code == 200 and "/generate" in response.json().get("named_endpoints", {})
+                    except (httpx.HTTPError, ValueError, TypeError):
+                        self._reachable = False
+                    self._checked_at, self._checked_url = time.monotonic(), url
+                reachable = self._reachable
         return {
-            "available": configured, "backend": "FASHN VTON 1.5 / private Colab worker",
+            "available": reachable, "configured": configured, "backend": "FASHN VTON 1.5 / private Colab worker",
             "device": "online-gpu", "localGpuUsed": False,
             "supportedCategories": list(MODEL_CATEGORIES), "nativeResolution": [576, 864],
             "inferenceSteps": settings.online_vton_steps,
-            "reason": None if configured else "Connect the existing Colab GPU worker. Local GPU inference is disabled.",
-            "availabilityType": "configured; connection is checked on each request",
+            "reason": (None if reachable else "The configured Colab worker is offline. Reconnect the existing runtime; local GPU inference is disabled.") if configured else "Connect the existing Colab GPU worker. Local GPU inference is disabled.",
+            "availabilityType": "live-worker-check" if check_connection else "configuration-only",
         }
 
     def render(self, person: bytes, garment: bytes, category: str, photo_type: str, folder):
@@ -69,23 +108,28 @@ class OnlineTryOn:
         (folder / "original-person.png").write_bytes(person_png)
         report_progress("uploading_online")
         start = time.perf_counter()
-        data = [self.token, base64.b64encode(person_png).decode(),
+        # Keep the same worker for the whole event even if recovery rotates the
+        # saved tunnel while generation is in progress. Never replay a POST.
+        url, token = self.credentials()
+        if not url or not token:
+            raise PipelineError("online_gpu_unavailable", "The online worker is reconnecting automatically.", 503)
+        data = [token, base64.b64encode(person_png).decode(),
                 base64.b64encode(garment_png).decode(), MODEL_CATEGORIES[category],
                 photo_type, settings.online_vton_steps]
         try:
             with httpx.Client(timeout=httpx.Timeout(settings.online_vton_timeout, connect=10),
                               follow_redirects=False, transport=self.transport) as client:
-                response = client.post(self.url + "/gradio_api/call/generate", json={"data": data})
+                response = client.post(url + "/gradio_api/call/generate", json={"data": data})
                 response.raise_for_status()
                 event_id = response.json()["event_id"]
                 if not isinstance(event_id, str) or not event_id.isalnum() or len(event_id) > 100:
                     raise ValueError("Invalid remote event ID")
                 # Persist before waiting: never resubmit automatically after a lost response.
                 (folder / "remote-event.json").write_text(json.dumps({
-                    "eventId": event_id, "url": self.url, "model": "FASHN VTON 1.5",
+                    "eventId": event_id, "url": url, "model": "FASHN VTON 1.5",
                 }))
                 report_progress("online_generating")
-                with client.stream("GET", self.url + "/gradio_api/call/generate/" + event_id) as stream:
+                with client.stream("GET", url + "/gradio_api/call/generate/" + event_id) as stream:
                     stream.raise_for_status()
                     event = ""
                     for line in stream.iter_lines():

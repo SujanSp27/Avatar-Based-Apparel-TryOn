@@ -11,9 +11,7 @@ data/processed/*
 !data/processed/.gitkeep
 data/raw/*
 !data/raw/.gitkeep
-assets/bodyModels/*.task
-assets/bodyModels/*.pkl
-assets/bodyModels/*.ckpt
+assets/pose/*.task
 experiments/runs/
 assets/vton/
 frontend/test-results/

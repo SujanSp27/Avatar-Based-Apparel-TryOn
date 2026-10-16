@@ -13,7 +13,6 @@ import psutil
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from backend.app.config import settings
 from ml.preprocessing.images import PersonPreprocessor
 from ml.vton.service import PretrainedTryOn
 
@@ -21,6 +20,7 @@ from ml.vton.service import PretrainedTryOn
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--all", action="store_true")
+    parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
     parser.add_argument("--guidance", type=float, default=2.5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--checkpoint", choices=["vitonhd", "mix"], default="vitonhd")
@@ -55,10 +55,10 @@ def main():
         )
     args.output.mkdir(parents=True, exist_ok=True)
     service = PretrainedTryOn(
-        settings.vton_root, settings.vton_device, guidance_scale=args.guidance, seed=args.seed,
+        ROOT / "assets/vton", args.device, guidance_scale=args.guidance, seed=args.seed,
         checkpoint=args.checkpoint, height=args.height,
     )
-    preprocessor = PersonPreprocessor(settings.model_path)
+    preprocessor = PersonPreprocessor(ROOT / "assets/pose/pose_landmarker_full.task")
     records = []
     for name, person_path, garment_path, category in cases:
         destination = args.output / name

@@ -6,6 +6,8 @@ export type VtonAvailability = {
   nativeResolution: [number, number];
   supportedCategories: string[];
   inferenceSteps: number;
+  connectionState?: string;
+  automaticConnection?: boolean;
 };
 export type Result = {
   status: string; mode: "2d"; renderingMethod: "pretrained-vton";

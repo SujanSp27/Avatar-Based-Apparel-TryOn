@@ -1,4 +1,3 @@
-param([ValidateSet('cpu','cuda')][string]$Torch = 'cpu')
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 Set-Location $projectRoot
@@ -6,12 +5,8 @@ if (-not (Test-Path .venv/Scripts/python.exe)) { py -3.12 -m venv .venv }
 if (-not (Test-Path .venv/Scripts/python.exe)) { throw 'Python 3.12 virtual environment creation failed.' }
 & .venv/Scripts/python.exe -m pip install -r requirements.lock.txt
 if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
-if ($Torch -eq 'cuda') {
-    & .venv/Scripts/python.exe -m pip install --no-cache-dir -r requirements-torch-cuda.txt
-    if ($LASTEXITCODE -ne 0) { throw 'CUDA dependency installation failed.' }
-}
-& .venv/Scripts/python.exe scripts/download_assets.py
-if ($LASTEXITCODE -ne 0) { throw 'Model/sample asset download failed.' }
+& .venv/Scripts/python.exe scripts/download_samples.py
+if ($LASTEXITCODE -ne 0) { throw 'Sample asset download failed.' }
 & .venv/Scripts/python.exe scripts/create_demo_garment.py
 if ($LASTEXITCODE -ne 0) { throw 'Demo garment creation failed.' }
 if (-not (Test-Path .runtime/pgsql/bin/pg_ctl.exe)) {

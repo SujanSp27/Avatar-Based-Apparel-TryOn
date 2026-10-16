@@ -111,7 +111,7 @@ def test_failed_request_releases_pipeline_capacity(client, monkeypatch):
     for _ in range(2):
         response = client.post(
             "/api/tryon",
-            data={"brandId": 1, "garmentCategory": "shirt", "tryonMode": "auto"},
+            data={"brandId": 1, "garmentCategory": "shirt", "tryonMode": "2d"},
             files={"personImage": ("x.png", b"invalid"), "garmentImage": ("x.png", b"invalid")},
         )
         assert response.status_code == 422

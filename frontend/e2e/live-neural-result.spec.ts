@@ -25,7 +25,8 @@ test("the live neural job survives refresh and displays its actual generated ima
   }, { timeout: 850000, intervals: [3000] }).toBe("success");
   const job = await (await request.get(`/api/tryon/jobs/${jobId}`)).json();
   expect(job.result.renderingMethod).toBe("pretrained-vton");
-  expect(job.result.provenance.weights.conditioning).toBe("reference-anchor");
+  expect(job.result.provenance.execution).toBe("online-gpu-only");
+  expect(job.result.provenance.localGpuUsed).toBe(false);
   const viewer = page.getByTestId("viewer");
   await expect(viewer).toHaveAttribute("data-loaded", "true", { timeout: 30000 });
   await expect(viewer.locator("img")).toHaveAttribute("src", job.result.previewUrl);

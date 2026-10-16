@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-16T11:51:42.855983+00:00",
+  "health": {
+    "status": "ok",
+    "database": "postgresql",
+    "tryonModes": [
+      "2d"
+    ],
+    "vton2d": {
+      "available": true,
+      "configured": true,
+      "backend": "FASHN VTON 1.5 / private Colab worker",
+      "device": "online-gpu",
+      "localGpuUsed": false,
+      "supportedCategories": [
+        "t-shirt",
+        "shirt",
+        "blouse",
+        "sweater",
+        "jacket",
+        "trouser",
+        "jeans",
+        "shorts",
+        "skirt",
+        "dress",
+        "jumpsuit"
+      ],
+      "nativeResolution": [
+        576,
+        864
+      ],
+      "inferenceSteps": 20,
+      "reason": null,
+      "availabilityType": "live-worker-check",
+      "connectionState": "ready",
+      "automaticConnection": true
+    },
+    "scope": "Online GPU photo try-on; independent measured-input brand sizing"
+  },
+  "connectionControlInUI": false,
+  "newInferenceSubmittedForConnectionVerification": false
+}

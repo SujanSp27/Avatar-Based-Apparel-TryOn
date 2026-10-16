@@ -3,10 +3,10 @@
   "cloudExecution": "not performed by notebook builder",
   "visualAcceptance": "not evaluated by notebook builder",
   "notebook": "notebooks\\Virtual_TryOn_GPU.ipynb",
-  "notebookSha256": "9a304222d7d6491dcdd32e20fdd9bd9e827bc0a6f372c043c1285170030a9c12",
-  "notebookBytes": 1687563,
-  "sourceArchiveSha256": "b792ecc27c6a0ae3fc3890f96a9495e4181b0c6ccc1166da2740f08bedf1de16",
-  "sourceArchiveBytes": 1252925,
+  "notebookSha256": "4c5cdcb669124ce7a04f89eacc5e4270c4fa7d71d80b5a05bfa24f290c25ea2c",
+  "notebookBytes": 1686091,
+  "sourceArchiveSha256": "276c40f108db2ba570a85275309472284c81708c6dfb5c38263ba4db3a6da06e",
+  "sourceArchiveBytes": 1251822,
   "checks": {
     "nbformat": "4.5",
     "codeCellsCompile": 6,
@@ -65,8 +65,8 @@
         "bytes": 0
       },
       "ml/preprocessing/images.py": {
-        "sha256": "dbbe829b4153ac9750be6bc359262ead4a9c6aaaac7445fb909ca7b80a1a5f53",
-        "bytes": 12404
+        "sha256": "fbf608db86afac3939549fcb2f4727b76953c5fdf1cb23246a23ddac74057639",
+        "bytes": 9140
       },
       "ml/progress.py": {
         "sha256": "f9f79f9984d458570fcfcea442f98cf372a2d8531387a80550206e6f09662f9b",
@@ -109,8 +109,8 @@
         "bytes": 401
       },
       "ml/vton/service.py": {
-        "sha256": "50bbf5b5d5198a88c849d07722cbca62417fc31e005c542fb600d16656619a26",
-        "bytes": 14895
+        "sha256": "1f092899a13f2df2fb36569c05d2d5658f4f92ae1599c34d1ecff48603b6070b",
+        "bytes": 14887
       },
       "ml/vton/vendor/catvton/LICENSE": {
         "sha256": "095791f7f830b929a5c4c5bd8fb9e62a1694336fc6b915f771e25a44015c403c",
@@ -169,8 +169,8 @@
         "bytes": 627
       },
       "scripts/colab_runtime.py": {
-        "sha256": "80faaef42c95bf664989123c4e2c752bdd50d6e6ae0ea5ee1e3ba8831b3f31af",
-        "bytes": 14440
+        "sha256": "cb9190c2045cdbcdfabb702cd8225d6e2046afef15740113e3a63f14add6be75",
+        "bytes": 14736
       },
       "scripts/download_parser.py": {
         "sha256": "0684caec6d43ecb27bba3147ddac29cc5740a94249a56b4ba1abaa76949a360f",
