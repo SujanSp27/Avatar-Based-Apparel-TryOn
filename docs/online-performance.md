@@ -34,9 +34,19 @@ with source revisions and hashes in its manifest. They are public example inputs
 not model-generated substitutions for user photos. Their inference and visual
 acceptance are not yet verified.
 
-Verification so far: 333 Python tests passed, 2 integration tests deselected; no
-local CUDA was used. See `experiments/fp16-safeguards-tests.xml`. Live FP16 timing
-and category acceptance remain pending until the restored Colab worker is ready.
+Verification on 17 October: 351 Python tests passed, 2 integration tests deselected;
+no local CUDA was used. See `experiments/online-recovery-hem-tests.xml`. Live FP16
+timing and category acceptance remain pending until the restored Colab worker is
+ready. Runtime identity is checked before setup writes or process launches; a
+changed notebook connection cannot silently redirect restoration.
+
+The semantic compositor now allows a generated top to overlap a bounded waistband
+area instead of clipping every pixel against the original trouser boundary. It
+requires local hem proximity and connectivity after applying that bound; hands,
+head and unrelated trouser pixels remain protected. This change has synthetic-mask
+regression coverage but still needs photographic validation. Future comparisons
+must distinguish model inference timing from this separate compositing change.
+The worker saves raw output and source/target label maps for that review.
 
 References: [pinned FASHN pipeline](https://github.com/fashn-AI/fashn-vton-1.5/blob/7c0f10af3f91ad4048fe9729c470a13ef905d25a/src/fashn_vton/pipeline.py),
 [PyTorch BF16 support API](https://docs.pytorch.org/docs/2.14/generated/torch.cuda.is_bf16_supported.html).

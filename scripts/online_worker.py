@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 from ml.errors import PipelineError
 from ml.vton.checked_sampler import CheckedSamplerMixin
 from ml.vton.online_composite import preserve_regions
+from ml.vton.region import inference_region
 
 SOURCE = "7c0f10af3f91ad4048fe9729c470a13ef905d25a"
 MODEL = "7720683168567eb5a2a4c67f15116c6e29c83ded"
@@ -66,26 +67,44 @@ def main():
         torch.backends.cudnn.allow_tf32 = True
 
     profile = root / "worker-config.json"
-    precision = json.loads(profile.read_text()).get("precision", "upstream") if profile.exists() else "upstream"
+    profile_data = json.loads(profile.read_text()) if profile.exists() else {}
+    precision = profile_data.get("precision", "upstream")
     if precision not in {"upstream", "fp16"}:
         raise RuntimeError("Unsupported worker precision profile")
     use_fp16 = precision == "fp16" or os.environ.get("ONLINE_EXPERIMENTAL_FP16") == "1"
+    resolution_profile = profile_data.get("resolution", "native")
+    if resolution_profile not in {"native", "fast"}:
+        raise RuntimeError("Unsupported worker resolution profile")
+    # The pinned model uses convolutional patches and RoPE, with no learned
+    # spatial embedding tied to the native grid. Keep the aspect ratio and
+    # 12-pixel patch alignment. Reduced resolution requires visual evaluation.
+    input_shape = (576, 384) if resolution_profile == "fast" else (864, 576)
+    crop_person = profile_data.get("cropPerson", False)
+    guidance = profile_data.get("guidanceScale", 1.5)
+    if guidance not in {1.0, 1.5}:
+        raise RuntimeError("Unsupported guidance profile")
+    segmentation_free = profile_data.get("segmentationFree", True)
 
     class PinnedPipeline(CheckedSamplerMixin, TryOnPipeline):
         def _setup_tryon_model(self):
             if use_fp16:
                 self.inference_dtype = torch.float16
             super()._setup_tryon_model()
+            self.tryon_model.input_shape = input_shape
 
         def _setup_hp_model(self):
             self.hp_model = FashnHumanParser(model_id=str(root / "weights/parser"), device="cuda")
 
     pipeline = PinnedPipeline(weights_dir=str(root / "weights"), device="cuda")
+    pipeline.skip_unused_unconditional = profile_data.get("skipUnusedUnconditional", False)
     pipeline.hp_model.predict = ArrayCache(pipeline.hp_model.predict)
     pipeline.pose_model = ArrayCache(pipeline.pose_model)
     environment = {"torch": torch.__version__, "cuda": torch.version.cuda,
                    "gpu": torch.cuda.get_device_name(), "capability": list(torch.cuda.get_device_capability()),
                    "dtype": str(pipeline.inference_dtype), "precisionProfile": precision,
+                   "resolutionProfile": resolution_profile, "modelResolution": list(input_shape[::-1]),
+                   "guidanceScale": guidance, "segmentationFree": segmentation_free,
+                   "skipUnusedUnconditional": pipeline.skip_unused_unconditional,
                    "finitePredictionChecks": True, "finiteSamplerStateChecks": True}
     (root / "worker-environment.json").write_text(json.dumps(environment, indent=2))
     print("WORKER_ENVIRONMENT", json.dumps(environment), flush=True)
@@ -116,20 +135,26 @@ def main():
                 prepared_person = pipeline.pre_resize(person, allow_upsampling=False)
                 labels = pipeline.hp_model.predict(np.asarray(prepared_person))
                 labels = cv2.resize(labels, person.size, interpolation=cv2.INTER_NEAREST)
+                Image.fromarray(labels.astype(np.uint8)).save(run / "source-labels.png")
                 if category != "tops" and np.mean(np.isin(labels, [4, 5, 6, 14, 15])) < .08:
                     raise PipelineError("lower_body_not_visible", "Show the full lower body for trousers, skirts, dresses and jumpsuits.")
                 torch.cuda.synchronize()
                 torch.cuda.reset_peak_memory_stats()
+                crop = inference_region(labels, category) if crop_person else (0, 0, person.width, person.height)
+                cropped_person = person.crop(crop)
                 tick = time.perf_counter()
-                generated = pipeline(person_image=person, garment_image=garment, category=category,
+                generated_crop = pipeline(person_image=cropped_person, garment_image=garment, category=category,
                                      garment_photo_type=photo_type, num_samples=1, num_timesteps=int(steps),
-                                     guidance_scale=1.5, seed=42, segmentation_free=True).images[0]
+                                     guidance_scale=guidance, seed=42, segmentation_free=segmentation_free).images[0]
                 torch.cuda.synchronize()
                 inference_seconds = time.perf_counter() - tick
-                generated = np.asarray(generated.resize(person.size, Image.Resampling.LANCZOS))
+                generated = original.copy()
+                left, top, right, bottom = crop
+                generated[top:bottom, left:right] = np.asarray(generated_crop.resize((right-left, bottom-top), Image.Resampling.LANCZOS))
                 # Retain actual model output even if the preservation gate fails.
                 Image.fromarray(generated).save(run / "raw.png")
                 target = pipeline.hp_model.predict(generated)
+                Image.fromarray(target.astype(np.uint8)).save(run / "target-labels.png")
                 composite, alpha, review = preserve_regions(original, generated, labels, target, category)
                 output = io.BytesIO()
                 Image.fromarray(composite).save(output, format="PNG", compress_level=2)
@@ -139,6 +164,8 @@ def main():
                 diagnostics = {"model": "FASHN VTON 1.5", "sourceCommit": SOURCE,
                                "modelRevision": MODEL, "device": "cuda", "gpu": torch.cuda.get_device_name(),
                                "dtype": str(pipeline.inference_dtype), "steps": int(steps), "category": category,
+                               "modelResolution": list(input_shape[::-1]),
+                               "inferenceRegion": list(crop),
                                "environment": environment,
                                "inferenceSeconds": round(inference_seconds, 3),
                                "peakGpuAllocatedMB": round(torch.cuda.max_memory_allocated() / 1024**2, 1),
@@ -162,7 +189,9 @@ def main():
         output = gr.JSON(visible=False)
         gr.Button("Private API").click(generate, inputs=args, outputs=output, api_name="generate", concurrency_limit=1)
     _, _, url = app.queue(max_size=2).launch(share=True, server_name="127.0.0.1", prevent_thread_lock=True, show_api=False, quiet=True)
-    (root / "connection.json").write_text(json.dumps({"url": url, "gpu": torch.cuda.get_device_name(), "model": MODEL}))
+    (root / "connection.json").write_text(json.dumps({"url": url, "gpu": torch.cuda.get_device_name(),
+                                                    "model": MODEL, "modelResolution": list(input_shape[::-1]),
+                                                    "precision": str(pipeline.inference_dtype)}))
     print("ONLINE_VTON_READY", flush=True)
     while True:
         time.sleep(30)

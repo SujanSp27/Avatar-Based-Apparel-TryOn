@@ -3,6 +3,7 @@ import base64
 import io
 import json
 from pathlib import Path
+from unittest.mock import Mock
 
 import httpx
 import numpy as np
@@ -13,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.db import Base
 from backend.app.models import Run
-from backend.app.online_vton import OnlineTryOn, normalized_image
+from backend.app.online_vton import OnlineTryOn, normalized_image, transport_image
 from backend.app.pipeline import TryOnPipeline
 from backend.app.storage import AssetStore
 from ml.errors import PipelineError
@@ -35,8 +36,8 @@ def test_actual_upload_category_and_remote_image_are_used(tmp_path, category, ma
         if request.method == "POST":
             payload = json.loads(request.content)["data"]
             assert payload[0] == "x" * 32
-            assert base64.b64decode(payload[1]) == normalized_image(png())
-            assert base64.b64decode(payload[2]) == normalized_image(png("red"))
+            assert Image.open(io.BytesIO(base64.b64decode(payload[1]))).tobytes() == Image.open(io.BytesIO(normalized_image(png()))).tobytes()
+            assert Image.open(io.BytesIO(base64.b64decode(payload[2]))).tobytes() == Image.open(io.BytesIO(normalized_image(png("red")))).tobytes()
             assert payload[3:5] == [mapped, "flat-lay"]
             return httpx.Response(200, json={"event_id": "a" * 32})
         result = {"model": "FASHN VTON 1.5", "device": "cuda", "image": base64.b64encode(png("green")).decode()}
@@ -98,6 +99,16 @@ def test_upload_normalization_rejects_invalid_data_and_flattens_transparency():
     assert Image.open(io.BytesIO(normalized_image(buffer.getvalue()))).getpixel((0, 0)) == (255, 255, 255)
 
 
+def test_transport_compression_preserves_sanitized_pixels_exactly():
+    pixels = np.random.default_rng(41).integers(0, 256, (240, 160, 3), dtype=np.uint8)
+    buffer = io.BytesIO()
+    Image.fromarray(pixels).save(buffer, format="PNG")
+    clean = normalized_image(buffer.getvalue())
+    encoded = transport_image(clean)
+    assert len(encoded) <= len(clean)
+    np.testing.assert_array_equal(np.asarray(Image.open(io.BytesIO(encoded)).convert("RGB")), pixels)
+
+
 @pytest.mark.parametrize("category,old_label,new_label", [("tops", 3, 3), ("bottoms", 6, 5), ("one-pieces", 3, 4)])
 def test_clothing_replacement_preserves_face_hands_and_unrelated_pixels(category, old_label, new_label):
     source = np.zeros((100, 80), dtype=np.uint8)
@@ -127,6 +138,30 @@ def test_failed_remote_job_is_persisted_without_success(tmp_path):
         assert record.status == "failed"
         assert (tmp_path / record.id / "failure.json").exists()
         assert not (tmp_path / record.id / "result.json").exists()
+    engine.dispose()
+
+
+def test_successful_remote_job_persists_result_and_artifacts(tmp_path):
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    worker = Mock()
+
+    def fake_render(person, garment, category, photo_type, folder):
+        (folder / "original-person.png").write_bytes(person)
+        (folder / "tryon-2d.png").write_bytes(garment)
+        (folder / "vton-diagnostics.json").write_text("{}")
+        return {"remoteRoundTripSeconds": 1.2, "inferenceSeconds": 1.0}
+
+    worker.render = fake_render
+    pipeline = TryOnPipeline(AssetStore(tmp_path), worker)
+    with Session(engine) as db:
+        result = pipeline.run(db, png(), png("green"), None, "t-shirt")
+        assert result["status"] == "success"
+        record = db.scalar(select(Run))
+        assert record.status == "success"
+        assert (tmp_path / record.id / "result.json").exists()
+        assert result["artifacts"]["result"] == f"/assets/{record.id}/result.json"
+        assert result["previewUrl"] == f"/assets/{record.id}/tryon-2d.png"
     engine.dispose()
 
 

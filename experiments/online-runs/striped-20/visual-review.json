@@ -1,0 +1,12 @@
+{
+  "reviewType": "assistant visual inspection of actual generated PNG",
+  "acceptedAsProductionQuality": false,
+  "faceRecognizable": true,
+  "stripeAppearancePreserved": true,
+  "remainingArtifacts": [
+    "Shirt hem has an unnatural curved, jagged transition over the trousers.",
+    "Shoulder boundaries and collar remain simplified.",
+    "Fabric folds and shading are limited; this is not validated realistic fitting."
+  ],
+  "scope": "One controlled example only; no universal category or body-shape claim."
+}

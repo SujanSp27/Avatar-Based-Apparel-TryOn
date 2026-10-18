@@ -8,6 +8,42 @@ LABELS = {"tops": (3,), "bottoms": (5, 6), "one-pieces": (3, 4, 5, 6)}
 GENERATED_LABELS = {"tops": (3,), "bottoms": (5, 6), "one-pieces": (4, 3, 5, 6)}
 
 
+def _top_hem_extension(old, new, source, feather, clothing_extension):
+    """Allow a generated shirt to cover a small, connected part of a waistband.
+
+    Keeping every source trouser pixel clips a longer generated top to the old
+    shirt's hem. Only generated top pixels near a downward-facing source hem
+    may replace pants, skirt or belt pixels. This is deliberately narrower than
+    the general clothing extension radius used for nearby skin/background.
+    """
+    rows = np.nonzero(old)[0]
+    height = int(rows.max() - rows.min() + 1)
+    limit = max(feather * 2, round(height * .12))
+    # Lower-facing edges in the bottom 30% exclude sleeve ends and the collar.
+    below = np.zeros_like(old)
+    below[:-1] = old[1:]
+    hem = old & ~below
+    hem[:int(rows.min() + height * .70)] = False
+    proximity = cv2.distanceTransform((~hem).astype(np.uint8), cv2.DIST_L2, 5)
+    _, components = cv2.connectedComponents(new.astype(np.uint8), connectivity=8)
+    touching = np.unique(components[old & new])
+    touching = touching[touching != 0]
+    connected_top = np.isin(components, touching)
+    extension = (
+        new
+        & connected_top
+        & np.isin(source, (5, 6, 7))
+        & (proximity <= limit)
+    )
+    # A target component can connect through pixels outside the allowed edit
+    # area. Do not retain an isolated trouser patch after imposing the bound.
+    support = old | clothing_extension | extension
+    _, supported = cv2.connectedComponents(support.astype(np.uint8), connectivity=8)
+    attached = np.unique(supported[old])
+    extension &= np.isin(supported, attached[attached != 0])
+    return extension, limit
+
+
 def preserve_regions(original, generated, source, target, category):
     if category not in LABELS:
         raise ValueError("Unknown garment category")
@@ -20,12 +56,18 @@ def preserve_regions(original, generated, source, target, category):
         raise PipelineError("face_not_visible", "Use a clear photo with the person's face and hair visible.")
     if np.count_nonzero(old) < source.size * .003 or np.count_nonzero(new) < source.size * .003:
         raise PipelineError("clothing_not_visible", "The selected clothing region is not clearly visible in the input or generated image.")
-    # Model clothing may cover bare arms/legs and surrounding background, while
-    # unrelated clothing is retained. A dress may replace both top and bottom.
+    # Model clothing may cover bare arms/legs and surrounding background.
+    # A dress may replace both top and bottom. A top may overlap only a bounded
+    # waistband area; the rest of the lower-body clothing stays unchanged.
     eligible = np.isin(source, (0, 12, 14, 16))
     distance = cv2.distanceTransform((~old).astype(np.uint8), cv2.DIST_L2, 5)
     extension = new & eligible & (distance < min(source.shape) * .30)
     feather = max(2, round(min(source.shape) * .003))
+    hem_extension = np.zeros_like(old)
+    hem_limit = 0
+    if category == "tops":
+        hem_extension, hem_limit = _top_hem_extension(old, new, source, feather, extension)
+        extension |= hem_extension
     support = old | extension
     edge = cv2.dilate(support.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (feather * 2 + 1,) * 2)).astype(bool)
     support |= edge & eligible & (distance <= feather)
@@ -45,6 +87,8 @@ def preserve_regions(original, generated, source, target, category):
         "changedPixelsOutsideEditMask": int(np.count_nonzero(np.any(output != original, axis=2) & (alpha == 0))),
         "oldClothingMinimumAlpha": float(alpha[old & ~protected].min()),
         "editedPixels": int(np.count_nonzero(alpha)),
-        "compositor": "semantic-category-preservation-v1",
+        "hemExtensionPixels": int(np.count_nonzero(hem_extension)),
+        "hemExtensionLimitPixels": hem_limit,
+        "compositor": "semantic-category-preservation-v2",
         "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required.",
     }

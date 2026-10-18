@@ -21,6 +21,20 @@ from ml.vton.categories import MODEL_CATEGORIES
 MAX_IMAGE_BYTES = 12 * 1024 * 1024
 
 
+def transport_image(normalized: bytes) -> bytes:
+    """Use lossless WebP when smaller, retaining the sanitized pixels exactly."""
+    with Image.open(io.BytesIO(normalized)) as clean:
+        output = io.BytesIO()
+        try:
+            clean.save(output, format="WEBP", lossless=True, quality=0, method=0)
+        except (OSError, KeyError):
+            return normalized
+    compressed = output.getvalue()
+    if len(compressed) < len(normalized):
+        return compressed
+    return normalized
+
+
 def normalized_image(data: bytes) -> bytes:
     try:
         with Image.open(io.BytesIO(data)) as source:
@@ -33,7 +47,7 @@ def normalized_image(data: bytes) -> bytes:
             canvas = Image.new("RGB", image.size, "white")
             canvas.paste(image, mask=image.getchannel("A"))
             output = io.BytesIO()
-            canvas.save(output, format="PNG", compress_level=2)
+            canvas.save(output, format="PNG", compress_level=6)
             return output.getvalue()
     except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
         raise PipelineError("invalid_image", str(exc) or "Image could not be decoded.") from exc
@@ -113,8 +127,8 @@ class OnlineTryOn:
         url, token = self.credentials()
         if not url or not token:
             raise PipelineError("online_gpu_unavailable", "The online worker is reconnecting automatically.", 503)
-        data = [token, base64.b64encode(person_png).decode(),
-                base64.b64encode(garment_png).decode(), MODEL_CATEGORIES[category],
+        data = [token, base64.b64encode(transport_image(person_png)).decode(),
+                base64.b64encode(transport_image(garment_png)).decode(), MODEL_CATEGORIES[category],
                 photo_type, settings.online_vton_steps]
         try:
             with httpx.Client(timeout=httpx.Timeout(settings.online_vton_timeout, connect=10),

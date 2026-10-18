@@ -2,6 +2,7 @@
 import base64
 import json
 import secrets
+import socket
 import subprocess
 import sys
 import time
@@ -40,7 +41,25 @@ def gpu_available():
     return sys.platform == 'linux' and bool(list(Path('/dev').glob('nvidia[0-9]*')))
 
 
-def recover(root: Path, payload: dict):
+def recover(root: Path, payload: dict, expected_hostname: str | None = None):
+    """Identify first; only a caller-pinned runtime may change worker files.
+
+    Colab's browser connection can switch between duplicate notebook tabs. The
+    identity comparison must run in this same cell, before even creating root.
+    A missing pin is deliberately read-only, including on a GPU runtime.
+    """
+    hostname = socket.gethostname()
+    if expected_hostname is None:
+        return {'state': 'identified', 'hostname': hostname,
+                'gpuAvailable': gpu_available(), 'projectExists': root.is_dir()}
+    if hostname != expected_hostname:
+        return {'state': 'runtime_changed', 'hostname': hostname,
+                'expectedHostname': expected_hostname}
+    reply = _recover_pinned(root, payload)
+    return {**reply, 'hostname': hostname}
+
+
+def _recover_pinned(root: Path, payload: dict):
     if not gpu_available():
         return {'state': 'gpu_unavailable'}
     root.mkdir(exist_ok=True)

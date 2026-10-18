@@ -15,6 +15,8 @@ REASONS = {
     'notebook_busy': 'Waiting for the existing Colab task. Your running work will not be restarted.',
     'browser_required': 'Waiting for the existing Colab tab. Keep it open and complete any Google sign-in or permission prompt; the app resumes automatically.',
     'runtime_expired': 'The saved Colab runtime has expired and its worker files are gone. The online worker needs to be restored.',
+    'runtime_identified': 'Checking the existing Colab runtime before recovering its worker.',
+    'runtime_changed': 'The notebook connection reached a different runtime. Recovery is paused to preserve the original work; keep only the original Colab tab connected.',
     'gpu_unavailable': 'The existing Colab runtime has no GPU. Enable its GPU runtime; the app will detect it automatically.',
     'not_configured': 'The existing Colab notebook has not been configured on this installation.',
     'bridge_unavailable': 'The Colab connection helper is unavailable on this installation.',

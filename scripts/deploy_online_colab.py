@@ -37,7 +37,7 @@ print(json.dumps({'gpu':subprocess.run(['nvidia-smi','--query-gpu=name,memory.us
 """
     else:
         names = ["scripts/setup_online_worker.py"] if args.action == "setup" else [
-            "scripts/online_worker.py", "ml/__init__.py", "ml/vton/__init__.py", "ml/errors.py", "ml/vton/online_composite.py", "ml/vton/checked_sampler.py"]
+            "scripts/online_worker.py", "ml/__init__.py", "ml/vton/__init__.py", "ml/errors.py", "ml/vton/online_composite.py", "ml/vton/checked_sampler.py", "ml/vton/region.py"]
         payload = {name: base64.b64encode((ROOT / name).read_bytes()).decode() for name in names}
         token_file = ROOT / ".runtime/online-worker-token.txt"
         if not token_file.exists():

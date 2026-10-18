@@ -62,7 +62,7 @@ class TryOnPipeline:
                 "artifacts": {name: self.store.url(run_id, name) for name in
                               ("tryon-2d.png", "original-person.png", "vton-diagnostics.json")},
             }
-            result["artifacts"]["result"] = self.store.url(run_id, "result.json")
+            result["artifacts"]["result"] = f"/assets/{run_id}/result.json"
             self.store.write_json(run_id, "result.json", result)
             record.status = "success"
             record.metadata_json = {**metadata, "result": result}

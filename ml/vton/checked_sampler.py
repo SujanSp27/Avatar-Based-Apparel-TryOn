@@ -72,7 +72,7 @@ class CheckedSamplerMixin:
                     skip_cfg_last_n_steps > 0
                     and step_idx >= num_timesteps - skip_cfg_last_n_steps
                 )
-                if self.skip_unused_unconditional and omit_guidance:
+                if self.skip_unused_unconditional and (omit_guidance or guidance_scale == 1.0):
                     v_c = self.tryon_model.forward(images, t_vec, **model_kwargs)["x"]
                     v_guided = v_c
                     predictions_finite = torch.isfinite(v_c).all()

@@ -43,7 +43,7 @@ def test_adopted_url_still_requires_live_validation():
     assert manager.snapshot()['connectionState'] == 'connecting'
 
 
-@pytest.mark.parametrize('state', ['runtime_expired', 'gpu_unavailable', 'browser_required'])
+@pytest.mark.parametrize('state', ['runtime_expired', 'gpu_unavailable', 'browser_required', 'runtime_changed'])
 def test_external_runtime_constraints_are_reported_honestly(state):
     worker = Mock()
     worker.availability.return_value = {'available': False}
@@ -91,15 +91,100 @@ def test_recovery_resumes_pending_request_after_restart_without_replay(tmp_path,
     recovery.tick()
     assert requests[-1]['name'] == 'run_code_cell'
     assert requests[-1]['arguments'] == {'cellId': 'owned-cell'}
+    reply({'outputs': [{'output_type': 'stream', 'text': [json.dumps({
+        'state': 'identified', 'hostname': 'runtime-a', 'gpuAvailable': True,
+    })]}]})
+    assert recovery.tick() == 'connecting'
+    assert not target.exists()
+    assert json.loads(recovery.state_path.read_text())['expectedHostname'] == 'runtime-a'
+    # A fresh process retains the pin and must send it into the recovery cell.
+    recovery = ColabRecovery(tmp_path, target)
+    recovery.tick()
+    reply({'cells': [{'id': 'owned-cell', 'source': [recovery_module.recovery_source()]}]})
+    recovery.tick()
+    assert requests[-1]['name'] == 'update_cell'
+    assert "expected_hostname='runtime-a'" in requests[-1]['arguments']['content']
+    reply({})
+    recovery.tick()
+    assert requests[-1]['name'] == 'run_code_cell'
     connection = {'url': 'https://private.gradio.live', 'token': 'x' * 48}
     reply({'outputs': [{'output_type': 'stream', 'text': [json.dumps({
-        'state': 'ready', 'connection': connection,
+        'state': 'ready', 'connection': connection, 'hostname': 'runtime-a',
     })]}]})
     assert recovery.tick() == 'ready'
     assert json.loads(target.read_text()) == connection
     assert 'token' not in recovery.state_path.read_text()
     recovery.tick()
-    assert len(requests) == 2
+    assert len(requests) == 5
+
+
+def test_changed_runtime_cannot_replace_pin_or_adopt_credentials(tmp_path, bridge):
+    _, requests, reply = bridge
+    target = tmp_path / 'worker.json'
+    target.write_text('existing private connection')
+    recovery = ColabRecovery(tmp_path, target)
+    recovery._submit({'expectedHostname': 'runtime-a'}, 'probe', 'run_code_cell', {'cellId': 'owned-cell'})
+    reply({'outputs': [{'output_type': 'stream', 'text': [json.dumps({
+        'state': 'ready', 'hostname': 'runtime-b',
+        'connection': {'url': 'https://other.gradio.live', 'token': 'x' * 48},
+    })]}]})
+    assert recovery.tick() == 'runtime_changed'
+    state = json.loads(recovery.state_path.read_text())
+    assert state['expectedHostname'] == 'runtime-a'
+    assert state['observedHostname'] == 'runtime-b'
+    assert target.read_text() == 'existing private connection'
+    assert 'token' not in recovery.state_path.read_text()
+    recovery.tick()
+    assert len(requests) == 1
+
+
+def test_old_pending_reply_without_identity_cannot_adopt_credentials(tmp_path, bridge):
+    _, _, reply = bridge
+    target = tmp_path / 'worker.json'
+    recovery = ColabRecovery(tmp_path, target)
+    recovery._submit({}, 'probe', 'run_code_cell', {'cellId': 'old-cell'})
+    reply({'outputs': [{'output_type': 'stream', 'text': [json.dumps({
+        'state': 'ready', 'connection': {'url': 'https://other.gradio.live', 'token': 'x' * 48},
+    })]}]})
+    assert recovery.tick() == 'connecting'
+    assert not target.exists()
+    assert 'expectedHostname' not in json.loads(recovery.state_path.read_text())
+
+
+@pytest.mark.parametrize('stage', ['insert', 'updated'])
+def test_pre_upgrade_cell_is_never_executed_on_resume(tmp_path, bridge, stage):
+    _, requests, reply = bridge
+    recovery = ColabRecovery(tmp_path, tmp_path / 'worker.json')
+    recovery._submit({}, stage, 'add_code_cell', {})
+    state = json.loads(recovery.state_path.read_text())
+    state.pop('recoveryProtocol')
+    recovery._save(state)
+    reply({'newCellId': 'unsafe-old-cell'})
+    assert recovery.tick() == 'connecting'
+    assert len(requests) == 1
+    recovery.tick()
+    assert requests[-1]['name'] == 'get_cells'
+
+
+def test_runtime_pin_only_changes_by_explicit_operator_action(tmp_path, bridge):
+    current, _, _ = bridge
+    recovery = ColabRecovery(tmp_path, tmp_path / 'worker.json')
+    recovery._save({'expectedHostname': 'runtime-a', 'request': 'pending'})
+    with pytest.raises(RuntimeError, match='pending'):
+        recovery.pin_runtime('runtime-b')
+    assert json.loads(recovery.state_path.read_text())['expectedHostname'] == 'runtime-a'
+    recovery._save({'expectedHostname': 'runtime-a'})
+    current['status'] = 'processing'
+    with pytest.raises(RuntimeError, match='pending'):
+        recovery.pin_runtime('runtime-b')
+    current['status'] = 'ready'
+    recovery.pin_runtime('runtime-b')
+    state = json.loads(recovery.state_path.read_text())
+    assert state['expectedHostname'] == 'runtime-b'
+    assert state['previousHostname'] == 'runtime-a'
+    assert state['pinSource'] == 'operator'
+    with pytest.raises(ValueError, match='hostname'):
+        recovery.pin_runtime('')
 
 
 def test_busy_notebook_and_existing_open_prompt_are_not_duplicated(tmp_path, bridge):

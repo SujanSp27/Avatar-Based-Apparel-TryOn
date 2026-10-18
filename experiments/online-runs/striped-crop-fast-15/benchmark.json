@@ -1,0 +1,67 @@
+{
+  "status": "generated",
+  "diagnostics": {
+    "model": "FASHN VTON 1.5",
+    "sourceCommit": "7c0f10af3f91ad4048fe9729c470a13ef905d25a",
+    "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+    "device": "cuda",
+    "gpu": "Tesla T4",
+    "dtype": "torch.float16",
+    "steps": 15,
+    "category": "tops",
+    "modelResolution": [
+      384,
+      576
+    ],
+    "inferenceRegion": [
+      215,
+      93,
+      582,
+      691
+    ],
+    "environment": {
+      "torch": "2.11.0+cu130",
+      "cuda": "13.0",
+      "gpu": "Tesla T4",
+      "capability": [
+        7,
+        5
+      ],
+      "dtype": "torch.float16",
+      "precisionProfile": "fp16",
+      "resolutionProfile": "fast",
+      "modelResolution": [
+        384,
+        576
+      ],
+      "finitePredictionChecks": true,
+      "finiteSamplerStateChecks": true
+    },
+    "inferenceSeconds": 11.477,
+    "peakGpuAllocatedMB": 2527.1,
+    "workerSeconds": 12.635,
+    "cache": "bounded pose/parser cache; every result is a fresh generation",
+    "preservation": {
+      "identityPreservedExactly": true,
+      "changedPixelsOutsideEditMask": 0,
+      "oldClothingMinimumAlpha": 1.0,
+      "editedPixels": 64402,
+      "hemExtensionPixels": 66,
+      "hemExtensionLimitPixels": 42,
+      "compositor": "semantic-category-preservation-v2",
+      "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required."
+    },
+    "runPath": "/content/formfit-online/runs/1792333279703319563",
+    "remoteRoundTripSeconds": 22.582
+  },
+  "freshGeneration": true,
+  "visualAcceptance": "pending inspection",
+  "endToEndSeconds": 22.92,
+  "inputs": {
+    "personSha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+    "garmentSha256": "28b6ff594200c1264146b10fab679b4343ae0ee520083e5b3389816963e67535",
+    "category": "t-shirt",
+    "photoType": "flat-lay",
+    "steps": 15
+  }
+}

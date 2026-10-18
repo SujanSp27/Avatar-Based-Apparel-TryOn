@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-18",
+  "reviewer": "assistant visual inspection",
+  "image": "tryon-2d.png",
+  "faceRecognizable": true,
+  "oldShirtFragmentsVisible": false,
+  "hem": "Clean continuous hem; no baseline trouser clipping visible",
+  "sleeves": "Aligned around upper arms; both hands retained",
+  "limitations": [
+    "Simplified shading and fabric folds",
+    "Pattern/collar proportions are not an exact garment reconstruction",
+    "One sample does not establish general quality"
+  ],
+  "speedTargetMet": false,
+  "endToEndSeconds": 54.583,
+  "baselineEndToEndSeconds": 292.278
+}

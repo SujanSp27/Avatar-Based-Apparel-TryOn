@@ -8,6 +8,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -19,15 +20,20 @@ from scripts.colab_server import notebook_path
 MARKER = "# formfit-automatic-worker-recovery"
 
 
-def recovery_source():
+def recovery_source(expected_hostname: str | None = None):
     names = ['scripts/setup_online_worker.py', 'scripts/online_worker.py',
              'ml/__init__.py', 'ml/vton/__init__.py', 'ml/errors.py',
-             'ml/vton/online_composite.py', 'ml/vton/checked_sampler.py']
+             'ml/vton/online_composite.py', 'ml/vton/checked_sampler.py', 'ml/vton/region.py']
     payload = {name: base64.b64encode((bridge.ROOT / name).read_bytes()).decode()
                for name in names}
     source = (bridge.ROOT / 'scripts/colab_worker_recovery.py').read_text(encoding='utf-8')
-    return (MARKER + '-v2\n' + source + '\nprint(json.dumps(recover('
-            f"Path('/content/formfit-online'), {payload!r})))\n")
+    return (MARKER + '-v3\n' + source + '\nprint(json.dumps(recover('
+            f"Path('/content/formfit-online'), {payload!r}, "
+            f"expected_hostname={expected_hostname!r})))\n")
+
+
+def valid_hostname(value):
+    return isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]{0,252}', value) is not None
 
 
 class ColabRecovery:
@@ -44,9 +50,26 @@ class ColabRecovery:
         temporary.replace(self.state_path)
 
     def _submit(self, state, stage, tool, arguments):
-        state.update(stage=stage, request=bridge.submit({
+        state.update(stage=stage, recoveryProtocol=3, request=bridge.submit({
             'method': 'call_tool', 'name': tool, 'arguments': arguments,
         }))
+        self._save(state)
+
+    def pin_runtime(self, hostname: str):
+        """Explicit operator action after verifying a replacement runtime.
+
+        Stop the app first. Never discard a pending call or automatically adopt
+        a replacement hostname just because a notebook socket changed.
+        """
+        if not valid_hostname(hostname):
+            raise ValueError('Provide the hostname from a read-only Colab identity check')
+        state = json.loads(self.state_path.read_text()) if self.state_path.exists() else {}
+        if state.get('request') or bridge.status().get('status') == 'processing':
+            raise RuntimeError('A Colab request is still pending; preserve it before changing the runtime pin')
+        previous = state.get('expectedHostname')
+        state.update(expectedHostname=hostname, pinSource='operator',
+                     pinChangedAt=time.time(), previousHostname=previous)
+        state.pop('observedHostname', None)
         self._save(state)
 
     def _start_bridge(self):
@@ -97,6 +120,12 @@ class ColabRecovery:
             stage = state.pop('stage')
             state.pop('request')
             self._save(state)
+            if stage in {'insert', 'updated'} and state.get('recoveryProtocol') != 3:
+                # A pre-upgrade cell may contain unguarded recovery code. Read
+                # and replace it on the next tick instead of executing it.
+                state.pop('cellId', None)
+                self._save(state)
+                return 'connecting'
             if stage == 'open':
                 if output.get('result') is True:
                     state.pop('openedBridge', None)
@@ -106,7 +135,7 @@ class ColabRecovery:
                     self.next_attempt = time.monotonic() + 10
                 return 'connecting'
             if stage == 'cells':
-                source = recovery_source()
+                source = recovery_source(state.get('expectedHostname'))
                 cell = next((c for c in output.get('cells', [])
                              if MARKER in ''.join(c.get('source', []))), None)
                 if cell:
@@ -131,6 +160,29 @@ class ColabRecovery:
                 if not lines.strip():
                     return 'connecting'
                 reply = json.loads(lines.strip().splitlines()[-1])
+                hostname = reply.get('hostname')
+                if not valid_hostname(hostname):
+                    # Old, pending recovery cells predate the identity protocol.
+                    # Ignore their credentials; next tick installs our safe cell.
+                    return 'connecting'
+                expected = state.get('expectedHostname')
+                if expected and hostname != expected:
+                    state['observedHostname'] = hostname
+                    self._save(state)
+                    return 'runtime_changed'
+                if reply['state'] == 'identified':
+                    if not expected:
+                        state.update(expectedHostname=hostname, pinSource='identity_probe',
+                                     pinChangedAt=time.time())
+                        self._save(state)
+                    # The next cell rechecks this pin in the executing runtime
+                    # before installing sources or starting any process.
+                    self.next_attempt = time.monotonic() + 10
+                    return 'connecting'
+                if not expected:
+                    return 'connecting'
+                if state.pop('observedHostname', None) is not None:
+                    self._save(state)
                 if reply['state'] == 'ready':
                     from scripts.connect_online_worker import save_connection
                     save_connection(reply['connection'], self.connection_path)
@@ -158,3 +210,16 @@ class ColabRecovery:
         else:
             self._submit(state, 'cells', 'get_cells', {'includeOutputs': False})
         return 'connecting'
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Explicitly pin a verified replacement Colab runtime. Stop the app first.')
+    parser.add_argument('--pin-runtime', required=True, metavar='HOSTNAME')
+    args = parser.parse_args()
+    try:
+        ColabRecovery(bridge.ROOT, bridge.ROOT / '.runtime/online-connection.json').pin_runtime(args.pin_runtime)
+    except (ValueError, RuntimeError) as exc:
+        parser.error(str(exc))
+    print('Runtime pin saved. Automatic recovery will verify it before changing the worker.')
