@@ -1,0 +1,11 @@
+{
+  "identityPreservedExactly": true,
+  "changedPixelsOutsideEditMask": 0,
+  "oldClothingMinimumAlpha": 1.0,
+  "editedPixels": 153151,
+  "hemExtensionPixels": 35836,
+  "hemExtensionLimitPixels": 150,
+  "shoulderProjectionPixels": 564,
+  "compositor": "semantic-category-preservation-v4",
+  "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required."
+}

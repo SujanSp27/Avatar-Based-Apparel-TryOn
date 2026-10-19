@@ -12,9 +12,15 @@ from PIL import Image
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
+from backend.app.config import settings
 from backend.app.db import Base
 from backend.app.models import Run
-from backend.app.online_vton import OnlineTryOn, normalized_image, transport_image
+from backend.app.online_vton import (
+    OnlineTryOn,
+    conditioning_image,
+    normalized_image,
+    transport_image,
+)
 from backend.app.pipeline import TryOnPipeline
 from backend.app.storage import AssetStore
 from ml.errors import PipelineError
@@ -94,6 +100,54 @@ def test_patch_response_preserves_original_pixels_and_reconstructs_actual_image(
     with Image.open(tmp_path / "tryon-2d.png") as saved:
         assert saved.format == "PNG"
         assert saved.tobytes() == expected.tobytes()
+
+
+def test_compressed_conditioning_keeps_original_face_and_background_exact(tmp_path, monkeypatch):
+    monkeypatch.setattr(settings, "online_vton_input_encoding", "jpeg95")
+    pixels = np.random.default_rng(57).integers(0, 256, (160, 128, 3), dtype=np.uint8)
+    source = Image.fromarray(pixels)
+    buffer = io.BytesIO()
+    source.save(buffer, format="PNG")
+    payload = {}
+    def handle(request):
+        if request.method == "POST":
+            image_bytes = base64.b64decode(json.loads(request.content)["data"][1])
+            received = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+            assert received.size == source.size
+            assert received.tobytes() != source.tobytes()  # Explicitly lossy input.
+            generated = received.copy()
+            generated.paste((200, 30, 50), (30, 60, 90, 110))
+            encoded, metadata = encode_changed_pixels(received, generated)
+            payload.update(model="FASHN VTON 1.5", device="cuda", imageFormat="webp",
+                           image=base64.b64encode(encoded).decode(), **metadata)
+            return httpx.Response(200, json={"event_id": "d"})
+        return httpx.Response(200, text="event: complete\ndata: " + json.dumps([payload]) + "\n\n")
+    worker = OnlineTryOn("https://private.gradio.live", "x" * 32, transport=httpx.MockTransport(handle))
+    result = worker.render(buffer.getvalue(), png(), "t-shirt", "flat-lay", tmp_path)
+    expected = source.copy()
+    expected.paste((200, 30, 50), (30, 60, 90, 110))
+    assert Image.open(tmp_path / "tryon-2d.png").tobytes() == expected.tobytes()
+    assert result["transport"]["inputEncoding"] == "jpeg95"
+
+
+def test_compressed_input_rejects_legacy_full_frame_response(tmp_path, monkeypatch):
+    monkeypatch.setattr(settings, "online_vton_input_encoding", "jpeg95")
+    def handle(request):
+        if request.method == "POST":
+            return httpx.Response(200, json={"event_id": "e"})
+        payload = {"model": "FASHN VTON 1.5", "device": "cuda", "image": base64.b64encode(png()).decode()}
+        return httpx.Response(200, text="event: complete\ndata: " + json.dumps([payload]) + "\n\n")
+    worker = OnlineTryOn("https://private.gradio.live", "x" * 32, transport=httpx.MockTransport(handle))
+    with pytest.raises(PipelineError):
+        worker.render(png(), png(), "t-shirt", "flat-lay", tmp_path)
+    assert not (tmp_path / "tryon-2d.png").exists()
+
+
+def test_compressed_conditioning_keeps_small_flat_graphics_lossless():
+    source = png()
+    assert conditioning_image(source, "jpeg95") == transport_image(source)
+    with pytest.raises(ValueError):
+        conditioning_image(source, "unrecognized")
 
 
 def test_rotating_connection_does_not_retarget_an_inflight_generation(tmp_path):

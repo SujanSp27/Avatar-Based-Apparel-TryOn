@@ -36,6 +36,24 @@ def transport_image(normalized: bytes) -> bytes:
     return normalized
 
 
+def conditioning_image(normalized: bytes, encoding: str) -> bytes:
+    """Optional smaller model input; final preserved pixels use the local PNG.
+
+    JPEG changes conditioning pixels, so it is experimental and requires patch
+    output from the worker. It must not be described as lossless transport.
+    """
+    lossless = transport_image(normalized)
+    if encoding == "lossless":
+        return lossless
+    if encoding != "jpeg95":
+        raise ValueError("Unsupported conditioning encoding")
+    output = io.BytesIO()
+    with Image.open(io.BytesIO(normalized)) as image:
+        image.convert("RGB").save(output, format="JPEG", quality=95, subsampling=0)
+    jpeg = output.getvalue()
+    return jpeg if len(jpeg) < len(lossless) else lossless
+
+
 def normalized_image(data: bytes) -> bytes:
     try:
         with Image.open(io.BytesIO(data)) as source:
@@ -131,7 +149,9 @@ class OnlineTryOn:
         if not url or not token:
             raise PipelineError("online_gpu_unavailable", "The online worker is reconnecting automatically.", 503)
         encoding_started = time.perf_counter()
-        person_upload, garment_upload = transport_image(person_png), transport_image(garment_png)
+        input_encoding = settings.online_vton_input_encoding
+        person_upload = conditioning_image(person_png, input_encoding)
+        garment_upload = conditioning_image(garment_png, input_encoding)
         data = [token, base64.b64encode(person_upload).decode(),
                 base64.b64encode(garment_upload).decode(), MODEL_CATEGORIES[category],
                 photo_type, settings.online_vton_steps]
@@ -184,6 +204,8 @@ class OnlineTryOn:
                     raise ValueError("Invalid generated image")
                 with Image.open(io.BytesIO(output)) as image, Image.open(io.BytesIO(person_png)) as original:
                     patch = "patchBox" in payload or "canvasSize" in payload
+                    if input_encoding != "lossless" and not patch:
+                        raise ValueError("Compressed conditioning requires exact changed-pixel output")
                     if image.format != expected_format or image.width * image.height > original.width * original.height:
                         raise ValueError("Generated image dimensions do not match the original")
                     image.load()
@@ -201,6 +223,7 @@ class OnlineTryOn:
                 diagnostics = {key: value for key, value in payload.items() if key != "image"}
                 diagnostics["remoteRoundTripSeconds"] = round(time.perf_counter() - start, 3)
                 diagnostics["transport"] = {
+                    "inputEncoding": input_encoding,
                     "normalizedInputBytes": len(person_png) + len(garment_png),
                     "uploadedImageBytes": len(person_upload) + len(garment_upload),
                     "downloadedImageBytes": downloaded_image_bytes,

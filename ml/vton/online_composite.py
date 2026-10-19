@@ -19,7 +19,7 @@ def _top_hem_extension(old, new, source, feather, clothing_extension):
     rows = np.nonzero(old)[0]
     height = int(rows.max() - rows.min() + 1)
     baseline_limit = max(feather * 2, round(height * .12))
-    maximum_limit = max(baseline_limit, round(height * .35))
+    maximum_limit = max(baseline_limit, round(height * .40))
     # Lower-facing edges in the bottom 30% exclude sleeve ends and the collar.
     below = np.zeros_like(old)
     below[:-1] = old[1:]
@@ -54,6 +54,51 @@ def _top_hem_extension(old, new, source, feather, clothing_extension):
     return extension, limit
 
 
+def _align_shoulder_edge(generated, source, target, clothing, feather):
+    """Project tiny neural-clothing boundary gaps onto the original arm outline.
+
+    A model can shrink a sleeve edge by a few pixels, leaving an exposed strip
+    of the original upper arm after identity preservation. Only complete, narrow
+    source-arm / generated-background components adjacent to generated clothing
+    qualify. Broader limb changes, bare-skin predictions and hands never qualify.
+    Colours come from the nearest interior of the generated garment, not from
+    the uploaded flat-lay or a fabricated skin colour.
+    """
+    radius = max(2, round(min(source.shape) * .008))
+    distance = cv2.distanceTransform((~clothing).astype(np.uint8), cv2.DIST_L2, 5)
+    gaps = (source == 12) & (target == 0)
+    count, components, stats, _ = cv2.connectedComponentsWithStats(gaps.astype(np.uint8))
+    projected = np.zeros_like(clothing)
+    area_limit = max(16, round(np.count_nonzero(clothing) * .015))
+    for component in range(1, count):
+        if stats[component, cv2.CC_STAT_AREA] > area_limit:
+            continue
+        region = components == component
+        if distance[region].max() <= radius and distance[region].min() <= 1.5:
+            projected |= region
+    if not projected.any():
+        return generated, projected
+    # Parsing can leave one-pixel background gaps between the arm contour and
+    # shirt. Join only this narrow boundary band; never retain isolated dots.
+    joined = cv2.morphologyEx(
+        (clothing | projected).astype(np.uint8), cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (radius * 2 + 1,) * 2),
+    ).astype(bool)
+    projected |= joined & ~clothing & np.isin(source, (0, 12)) & (target == 0) & (distance <= radius)
+    # Avoid sampling the anti-aliased clothing/background boundary itself.
+    interior = cv2.distanceTransform(clothing.astype(np.uint8), cv2.DIST_L2, 5) > feather
+    if not interior.any():
+        return generated, np.zeros_like(clothing)
+    _, nearest = cv2.distanceTransformWithLabels(
+        (~interior).astype(np.uint8), cv2.DIST_L2, 5, labelType=cv2.DIST_LABEL_PIXEL,
+    )
+    coordinates = np.argwhere(interior)
+    y, x = coordinates[nearest[projected] - 1].T
+    aligned = generated.copy()
+    aligned[projected] = generated[y, x]
+    return aligned, projected
+
+
 def preserve_regions(original, generated, source, target, category):
     if category not in LABELS:
         raise ValueError("Unknown garment category")
@@ -69,10 +114,17 @@ def preserve_regions(original, generated, source, target, category):
     # Model clothing may cover bare arms/legs and surrounding background.
     # A dress may replace both top and bottom. A top may overlap only a bounded
     # waistband area; the rest of the lower-body clothing stays unchanged.
+    feather = max(2, round(min(source.shape) * .003))
+    projected = np.zeros_like(old)
+    if category == "tops":
+        _, components = cv2.connectedComponents(new.astype(np.uint8), connectivity=8)
+        touching = np.unique(components[new & old])
+        connected_top = new & np.isin(components, touching[touching != 0])
+        generated, projected = _align_shoulder_edge(generated, source, target, connected_top, feather)
+        new |= projected
     eligible = np.isin(source, (0, 12, 14, 16))
     distance = cv2.distanceTransform((~old).astype(np.uint8), cv2.DIST_L2, 5)
     extension = new & eligible & (distance < min(source.shape) * .30)
-    feather = max(2, round(min(source.shape) * .003))
     hem_extension = np.zeros_like(old)
     hem_limit = 0
     if category == "tops":
@@ -90,6 +142,7 @@ def preserve_regions(original, generated, source, target, category):
         raise PipelineError("body_shape_changed", "The generated outfit distorted an exposed arm or leg. Try a clearer frontal photo; this result was rejected.")
     alpha = np.minimum(cv2.distanceTransform(support.astype(np.uint8), cv2.DIST_L2, 5) / feather, 1.)
     alpha[old] = 1.
+    alpha[projected] = 1.
     alpha[protected] = 0.
     output = np.rint(generated * alpha[..., None] + original * (1 - alpha[..., None])).clip(0, 255).astype(np.uint8)
     return output, alpha, {
@@ -99,6 +152,7 @@ def preserve_regions(original, generated, source, target, category):
         "editedPixels": int(np.count_nonzero(alpha)),
         "hemExtensionPixels": int(np.count_nonzero(hem_extension)),
         "hemExtensionLimitPixels": hem_limit,
-        "compositor": "semantic-category-preservation-v3",
+        "shoulderProjectionPixels": int(np.count_nonzero(projected)),
+        "compositor": "semantic-category-preservation-v4",
         "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required.",
     }

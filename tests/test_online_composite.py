@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from ml.errors import PipelineError
-from ml.vton.online_composite import preserve_regions
+from ml.vton.online_composite import _align_shoulder_edge, preserve_regions
 
 
 @pytest.fixture
@@ -128,3 +128,40 @@ def test_top_hem_policy_does_not_expand_a_bottom_into_source_top(person):
     assert report["hemExtensionLimitPixels"] == 0
     assert not alpha[source == 3].any()
     np.testing.assert_array_equal(image[source == 3], original[source == 3])
+
+
+def test_narrow_shoulder_gap_uses_neural_garment_and_preserves_other_pixels(person):
+    original, generated, source = person
+    source[65:95, 43:45] = 12
+    target = source.copy()
+    target[65:95, 43:45] = 0
+    generated[source == 3] = (20, 50, 90)
+    generated[target == 0] = 255
+    before = generated.copy()
+    image, alpha, report = preserve_regions(original, generated, source, target, "tops")
+    assert report["shoulderProjectionPixels"] == 60
+    assert np.all(image[65:95, 43:45] == (20, 50, 90))
+    assert np.all(alpha[65:95, 43:45] == 1)
+    np.testing.assert_array_equal(image[alpha == 0], original[alpha == 0])
+    np.testing.assert_array_equal(generated, before)
+
+
+@pytest.mark.parametrize("source_label,target_label", [(13, 0), (1, 0), (16, 0), (12, 12)])
+def test_boundary_projection_cannot_paint_hands_head_neck_or_predicted_skin(person, source_label, target_label):
+    _, generated, source = person
+    source[65:95, 43:45] = source_label
+    target = source.copy()
+    target[65:95, 43:45] = target_label
+    image, projected = _align_shoulder_edge(generated, source, target, target == 3, 2)
+    assert not projected.any()
+    np.testing.assert_array_equal(image, generated)
+
+
+def test_projection_does_not_hide_a_broad_shrunken_arm(person):
+    _, generated, source = person
+    source[65:95, 30:45] = 12
+    target = source.copy()
+    target[source == 12] = 0
+    image, projected = _align_shoulder_edge(generated, source, target, target == 3, 2)
+    assert not projected.any()
+    np.testing.assert_array_equal(image, generated)

@@ -21,10 +21,12 @@ def main():
     parser.add_argument("--category", choices=list(MODEL_CATEGORIES), default="t-shirt")
     parser.add_argument("--photo-type", choices=["model", "flat-lay"], default="flat-lay")
     parser.add_argument("--steps", type=int, choices=[10, 15, 20, 30, 50], default=20)
+    parser.add_argument("--input-encoding", choices=["lossless", "jpeg95"], default="lossless")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     settings.online_vton_steps = args.steps
+    settings.online_vton_input_encoding = args.input_encoding
     settings.online_vton_timeout = 600
     start = time.perf_counter()
     try:
@@ -36,7 +38,8 @@ def main():
     report["endToEndSeconds"] = round(time.perf_counter() - start, 3)
     report["inputs"] = {"personSha256": hashlib.sha256(args.person.read_bytes()).hexdigest(),
                         "garmentSha256": hashlib.sha256(args.garment.read_bytes()).hexdigest(),
-                        "category": args.category, "photoType": args.photo_type, "steps": args.steps}
+                        "category": args.category, "photoType": args.photo_type, "steps": args.steps,
+                        "inputEncoding": args.input_encoding}
     (args.output / "benchmark.json").write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
     if report["status"] != "generated":
