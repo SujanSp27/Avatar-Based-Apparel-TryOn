@@ -29,6 +29,7 @@ are individual observations, not latency percentiles or a service guarantee.
 | [FP16, native, guidance 1.0, lossless patch transport](../experiments/online-runs/striped-native-patch-10/benchmark.json) | 10 | 11.764s | 22.377s | Identical decoded pixels to the earlier striped guidance-1.0 result; same rejected boundaries |
 | [Second person, graphic T-shirt, native guidance 1.0](../experiments/online-runs/rhude-native-patch-10/benchmark.json) | 10 | 10.288s | 18.644s | Rejected: clipped hem, exposed shoulder strip, minor graphic distortion |
 | [Dress, native guidance 1.0](../experiments/online-runs/dress-native-cfg1-10/benchmark.json) | 10 | 13.325s | 35.592s | Full-body validation passed; rejected for artificial newly exposed legs, sleeve transitions and background fragments |
+| [Second person, revised hem/shoulder boundaries](../experiments/online-runs/rhude-native-boundary-10/benchmark.json) | 10 | 13.181s | 31.078s | Continuous hem with no original-shirt fragments; minor shoulder-edge artifacts and graphic distortion remain |
 
 The native FP16 assessment is recorded in
 [`visual-review.json`](../experiments/online-runs/striped-fp16-20/visual-review.json).
@@ -96,11 +97,25 @@ on that particular run. The second-person test returned 116,070 bytes and took
 18.644 seconds, but its hem failed visual review.
 
 The compositor's revised hem rule retains the complete connected generated top
-when its extension over the source waistband is within 35% of the original
+when its extension over the source waistband is within 40% of the original
 clothing height. It rejects excessive extensions instead of clipping the hem.
-Protected head, hand and unrelated lower-body pixels remain unchanged. Synthetic
-regression tests cover this rule; a new live second-person test is required before
-claiming it resolves the observed artifact.
+The initial 35% rule rejected a sloping-waist corner in the
+[first hem test](../experiments/online-runs/rhude-native-hem-10/benchmark.json).
+Raw output and masks were recovered and inspected before revising that bound.
+The follow-up above has a continuous hem. Narrow source-arm / generated-background
+gaps immediately beside generated clothing can use projected interior garment
+pixels; broader limb changes and generated bare skin are excluded. This does not
+erase an arm to conceal a model error. Face, hands and unrelated lower-body
+pixels remain unchanged. Residual shoulder contour artifacts still fail the full
+acceptance criterion.
+
+`ONLINE_VTON_INPUT_ENCODING=jpeg95` is an **optional experiment**, not the default.
+It uses quality-95 JPEG without chroma subsampling when smaller than lossless
+transport. The second-person pair falls from 1,155,144 to 400,460 uploaded bytes.
+Conditioning pixels change, so image quality must be re-evaluated. The generated
+changed-pixel patch is applied to the original local PNG: tests prove exact face
+and background preservation outside that patch. Legacy full-frame responses are
+rejected with this setting. The live encoding comparison is still pending.
 
 Worker diagnostics now separate preprocessing, generation and postprocessing/saving.
 Transport diagnostics include normalized/uploaded/downloaded image byte counts and
@@ -124,7 +139,7 @@ area and extent, with background-padding regression tests. A new live dress test
 passed this input check, but its generated image failed visual review as recorded
 above. Resolving validation does not establish acceptable dress generation.
 
-Latest broad local verification: **438 CPU-only Python tests passed with zero failures or
+Latest broad local verification: **447 CPU-only Python tests passed with zero failures or
 errors** in `experiments/online-profile-transport-tests.xml`, covering worker profile
 validation/recovery, lossless image round trips, response validation and sampler
 safeguards. The earlier `experiments/online-recovery-hem-tests.xml` records 351 passed

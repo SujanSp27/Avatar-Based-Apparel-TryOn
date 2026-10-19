@@ -41,8 +41,9 @@ with guidance 1.5. Recovery seeds this configuration only when the Colab file is
 absent; it preserves existing runtime settings and running work. Lossless image
 transport reduces payload size without changing sanitized pixels, while stage
 timings separate generation, preprocessing and transport costs. These local changes
-have 438 passing CPU tests. A second-person graphic-shirt run reached 18.644
-seconds but had a clipped hem. A dress run passed the corrected full-body check
+have 447 passing CPU tests. A second-person graphic-shirt run reached 18.644
+seconds but had a clipped hem. The revised compositor fixes that hem in a
+31.078-second run, with residual shoulder-edge artifacts. A dress run passed the corrected full-body check
 but failed visual review. These native experiments include live transport and
 stage timings; none establishes production-quality fast fitting.
 

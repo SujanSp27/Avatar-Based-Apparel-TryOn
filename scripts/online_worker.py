@@ -182,12 +182,19 @@ def main():
                 (run / "report.json").write_text(json.dumps(diagnostics, indent=2))
                 return {**diagnostics, **patch_metadata, "imageFormat": "webp", "image": base64.b64encode(encoded).decode()}
             except PipelineError as exc:
-                (run / "failure.json").write_text(json.dumps({"code": exc.code, "message": str(exc)}))
-                return {"error": str(exc), "code": exc.code}
+                failure = {"code": exc.code, "message": str(exc), "model": "FASHN VTON 1.5",
+                           "modelRevision": MODEL, "runPath": str(run), "category": category,
+                           "steps": int(steps), "workerSeconds": round(time.perf_counter() - start, 3)}
+                (run / "failure.json").write_text(json.dumps(failure, indent=2))
+                return {**failure, "error": str(exc)}
             except Exception as exc:
                 print(type(exc).__name__, str(exc), flush=True)
-                (run / "failure.json").write_text(json.dumps({"code": "online_inference_failed", "type": type(exc).__name__}))
-                return {"error": "The online model could not process this image. See the Colab worker log.", "code": "online_inference_failed"}
+                failure = {"code": "online_inference_failed", "type": type(exc).__name__,
+                           "model": "FASHN VTON 1.5", "modelRevision": MODEL,
+                           "runPath": str(run), "category": category, "steps": int(steps),
+                           "workerSeconds": round(time.perf_counter() - start, 3)}
+                (run / "failure.json").write_text(json.dumps(failure, indent=2))
+                return {**failure, "error": "The online model could not process this image. See the Colab worker log."}
             finally:
                 active.unlink(missing_ok=True)
 

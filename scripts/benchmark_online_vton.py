@@ -35,6 +35,9 @@ def main():
                   "visualAcceptance": "pending inspection"}
     except PipelineError as exc:
         report = {"status": "failed", "code": exc.code, "message": str(exc)}
+        failure_path = args.output / "remote-failure.json"
+        if failure_path.is_file():
+            report["failureDiagnostics"] = json.loads(failure_path.read_text())
     report["endToEndSeconds"] = round(time.perf_counter() - start, 3)
     report["inputs"] = {"personSha256": hashlib.sha256(args.person.read_bytes()).hexdigest(),
                         "garmentSha256": hashlib.sha256(args.garment.read_bytes()).hexdigest(),

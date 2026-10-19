@@ -52,6 +52,14 @@ counts and preparation/encoding/request/saving times; worker diagnostics record
 preprocessing, generation and postprocessing/saving times. These changes have local
 CPU tests but do not establish a new live latency result or current Colab availability.
 
+The optional `ONLINE_VTON_INPUT_ENCODING=jpeg95` setting changes only model
+conditioning uploads and requires changed-pixel worker responses. It remains
+experimental; the default is lossless. Even with compressed conditioning, the API
+retains its original PNG and uses those exact pixels outside the generated patch.
+Rejected generations save a `remote-failure.json` record containing the remote run
+path and timing where supplied. This allows raw-output/mask recovery without
+resubmitting an inference job. It does not turn a rejected result into a success.
+
 The interface reports preparation, model loading, restoration, readiness and
 external constraints. Google authentication/consent and GPU allocation remain
 browser actions when Colab requires them. There is no local GPU or public VTON

@@ -1,0 +1,20 @@
+{
+  "reviewDate": "2026-10-19",
+  "reviewer": "assistant visual inspection of final image and raw output",
+  "accepted": false,
+  "faceRecognizable": true,
+  "oldShirtFragmentsVisible": false,
+  "hem": "Continuous generated hem; previous waistband clipping resolved",
+  "sleeves": "Aligned overall, with residual thin shoulder-edge artifacts",
+  "limitations": [
+    "Minor graphic distortion and simplified folds",
+    "Residual shoulder contour artifacts",
+    "One controlled example does not validate broader categories"
+  ],
+  "endToEndSeconds": 31.078,
+  "inferenceSeconds": 13.181,
+  "workerSeconds": 15.697,
+  "speedTargetMet": false,
+  "rawOutputAndMasksRecovered": true,
+  "followUp": "Optional smaller conditioning upload; requires fresh quality and timing validation"
+}

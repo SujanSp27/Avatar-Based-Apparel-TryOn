@@ -34,13 +34,15 @@ hem. This is one controlled example, not production-quality acceptance across
 categories. Reduced-resolution 10/15-step images and their cropped variants retain
 unnatural sleeve transitions and hem artifacts; none qualifies as an accepted fast
 preset. Native guidance-1.0 / 10 steps reached 21.274s; adding the official clothing
-mask reached 19.627s. Both failed visual review. Raw outputs and masks are saved;
+mask reached 19.627s. Both failed visual review. The revised second-person
+hem/shoulder compositor completed in 31.078s (13.181s generation), with a continuous
+hem but remaining shoulder-edge artifacts. Raw outputs and masks are saved;
 the faster settings are not promoted to the tracked default profile.
 
 Recorded connection and local verification (historical checks, not a claim that
 an ephemeral Colab session is currently live):
 
-- 438 CPU-only Python tests passed with zero failures or errors in
+- 447 CPU-only Python tests passed, with zero failures or errors in
   `experiments/online-profile-transport-tests.xml`. Coverage includes strict worker
   profile validation, seeding absent configuration while preserving existing files,
   lossless transport, malformed response rejection and sampler safeguards. These
@@ -87,6 +89,23 @@ transport is now verified on live output without changing decoded image pixels.
 `scripts/online_worker.py` also saves source and generated semantic label maps
 alongside raw output, allowing subsequent visual review to separate model,
 parsing and compositing errors.
+
+An optional quality-95 input encoding is implemented and covered by focused
+tests. It reduces uploaded bytes while preserving original pixels outside the
+generated edit patch. Live speed and garment-detail validation is still required;
+lossless remains the default.
+
+The 19 October continuation recovered the raw output and masks for the hem
+failure, completed a fresh 31.078-second boundary test, and passed 447 CPU tests
+plus 51 focused tests after adding failed-run artifact records. Four browser
+checks passed for automatic readiness/recovery, the photo-only interface and the
+real size API. The subsequent smaller-upload benchmark has **not run**: the
+connected notebook switched runtimes during worker restoration. The runtime pin
+blocked changes to the other machine. The user confirmed only one tab was open;
+two read-only checks then verified the same empty replacement T4 before its pin
+was updated. Restoration resumed on that existing notebook in one bounded cell.
+No new notebook or inference was submitted as a workaround. A changed hostname
+alone does not prove that duplicate tabs caused the problem.
 
 Colab can require Google authentication/consent or GPU selection. Those browser
 actions cannot be automated by the notebook helper. Automatic restoration requires

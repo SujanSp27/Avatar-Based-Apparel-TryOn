@@ -191,6 +191,12 @@ class OnlineTryOn:
                 if not isinstance(payload, dict):
                     raise ValueError("Invalid worker response")
                 if payload.get("error"):
+                    # Keep the failed run address for retrieving raw output and
+                    # masks. Never save an image or mark a rejected run successful.
+                    failure = {key: payload[key] for key in (
+                        "error", "code", "model", "modelRevision", "runPath", "category", "steps", "workerSeconds",
+                    ) if key in payload}
+                    (folder / "remote-failure.json").write_text(json.dumps(failure, indent=2))
                     raise PipelineError(payload.get("code", "online_gpu_failed"), payload["error"], 422)
                 if payload.get("model") != "FASHN VTON 1.5" or payload.get("device") != "cuda":
                     raise ValueError("Worker did not report the expected GPU model")
