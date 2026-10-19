@@ -2,6 +2,28 @@
 import numpy as np
 
 
+def lower_body_visible(labels: np.ndarray) -> bool:
+    """Check lower-body evidence relative to the person, not the background.
+
+    Large studio margins and mirror selfies must not invalidate an otherwise
+    visible skirt or legs. This is a parsing sanity check, not a pose-quality
+    guarantee; small isolated lower-body labels cannot qualify a portrait.
+    """
+    if labels.ndim != 2:
+        raise ValueError("Expected a semantic label map")
+    person = np.isin(labels, tuple(range(1, 18)))
+    rows = np.nonzero(person)[0]
+    if rows.size < 64:
+        return False
+    lower = np.isin(labels, (4, 5, 6, 14, 15))
+    lower_rows = np.nonzero(lower)[0]
+    if lower_rows.size < max(64, rows.size * .06):
+        return False
+    person_height = int(rows.max() - rows.min() + 1)
+    lower_height = int(lower_rows.max() - lower_rows.min() + 1)
+    return lower_height >= person_height * .18 and float(np.median(lower_rows)) > rows.min() + person_height * .4
+
+
 def inference_region(labels: np.ndarray, category: str) -> tuple[int, int, int, int]:
     """Return a padded PIL crop; no generated pixels or geometry warping.
 

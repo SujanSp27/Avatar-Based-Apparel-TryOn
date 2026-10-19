@@ -1,0 +1,13 @@
+{
+  "reviewDate": "2026-10-19",
+  "reviewer": "assistant visual inspection",
+  "accepted": false,
+  "faceRecognizable": true,
+  "sleeves": "Both aligned; minor edge artifacts",
+  "neckline": "Abrupt skin-tone boundary between original neck and newly exposed generated skin",
+  "hem": "Blurred transition and retained/generated waist band; requires further inspection",
+  "rawOutputInspected": true,
+  "endToEndSeconds": 21.274,
+  "speedTargetMet": false,
+  "nextExperiment": "Official masking enabled at the same native resolution"
+}

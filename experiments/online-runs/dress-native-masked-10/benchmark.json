@@ -1,0 +1,13 @@
+{
+  "status": "failed",
+  "code": "lower_body_not_visible",
+  "message": "Show the full lower body for trousers, skirts, dresses and jumpsuits.",
+  "endToEndSeconds": 10.445,
+  "inputs": {
+    "personSha256": "9c425d154d7bea584b4060e7e1ed28cd676e3f9ea3c475b922e986d04a48d273",
+    "garmentSha256": "8681fc59b1a7204144d9724840ed52b2a6174611a49abb20b57a3552d7d3cc84",
+    "category": "dress",
+    "photoType": "model",
+    "steps": 10
+  }
+}

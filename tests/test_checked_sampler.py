@@ -136,6 +136,19 @@ def test_opt_in_conditional_final_step_keeps_output(sampler_utils):
     assert optimized.tryon_model.conditional_calls == 1
 
 
+def test_unit_guidance_skips_only_algebraically_unused_branch(sampler_utils):
+    arguments = {**inputs(), "guidance_scale": 1.0}
+    torch.manual_seed(123)
+    expected = sampler()._sample(**arguments)
+    torch.manual_seed(123)
+    optimized = sampler()
+    optimized.skip_unused_unconditional = True
+    actual = optimized._sample(**arguments)
+    torch.testing.assert_close(actual[0], expected[0], rtol=1e-6, atol=1e-7)
+    assert optimized.tryon_model.cfg_calls == 0
+    assert optimized.tryon_model.conditional_calls == 4
+
+
 def test_import_does_not_load_torch_or_model():
     result = subprocess.run(
         [sys.executable, "-c", "import sys; import ml.vton.checked_sampler; assert 'torch' not in sys.modules; assert 'fashn_vton' not in sys.modules"],

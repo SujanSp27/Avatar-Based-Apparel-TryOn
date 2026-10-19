@@ -1,0 +1,15 @@
+{
+  "reviewDate": "2026-10-19",
+  "reviewer": "assistant visual inspection",
+  "accepted": false,
+  "faceRecognizable": true,
+  "endToEndSeconds": 19.627,
+  "speedTargetMet": true,
+  "combinedSpeedAndQualityTargetMet": false,
+  "defects": [
+    "Abrupt generated upper-arm skin bands at original sleeve edges",
+    "Generated trouser patch meets preserved trousers at curved original hem",
+    "Unnatural neckline"
+  ],
+  "experimentalColorCorrection": "Rejected locally; reduced colour offset but left visible seams. Not deployed."
+}

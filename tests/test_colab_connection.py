@@ -1,4 +1,5 @@
 """Automatic reconnection contracts; no GPU or notebook is used by these tests."""
+import ast
 import json
 from unittest.mock import Mock
 
@@ -152,18 +153,51 @@ def test_old_pending_reply_without_identity_cannot_adopt_credentials(tmp_path, b
 
 
 @pytest.mark.parametrize('stage', ['insert', 'updated'])
-def test_pre_upgrade_cell_is_never_executed_on_resume(tmp_path, bridge, stage):
+@pytest.mark.parametrize('old_protocol', [None, 3])
+def test_pre_upgrade_cell_is_never_executed_on_resume(tmp_path, bridge, stage, old_protocol):
     _, requests, reply = bridge
     recovery = ColabRecovery(tmp_path, tmp_path / 'worker.json')
     recovery._submit({}, stage, 'add_code_cell', {})
     state = json.loads(recovery.state_path.read_text())
-    state.pop('recoveryProtocol')
+    state['recoveryProtocol'] = old_protocol
     recovery._save(state)
     reply({'newCellId': 'unsafe-old-cell'})
     assert recovery.tick() == 'connecting'
     assert len(requests) == 1
     recovery.tick()
     assert requests[-1]['name'] == 'get_cells'
+
+
+def test_recovery_cell_embeds_persistent_profile_and_runtime_pin():
+    source = recovery_module.recovery_source('runtime-a')
+    tree = ast.parse(source)
+    call = next(node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name) and node.func.id == 'recover')
+    keywords = {kw.arg: ast.literal_eval(kw.value) for kw in call.keywords}
+    assert keywords['expected_hostname'] == 'runtime-a'
+    assert keywords['worker_profile'] == {
+        'precision': 'fp16', 'resolution': 'native', 'cropPerson': False,
+        'guidanceScale': 1.5, 'skipUnusedUnconditional': False, 'segmentationFree': True,
+    }
+    # Stable source avoids repeated cell updates between recovery cycles.
+    assert recovery_module.recovery_source('runtime-a') == source
+
+
+def test_recovery_rejects_invalid_local_profile_before_reading_payload(monkeypatch):
+    root = Mock()
+    monkeypatch.setattr(recovery_module.bridge, 'ROOT', root)
+    with pytest.raises(ValueError, match='profile'):
+        recovery_module.recovery_source('runtime-a', {'precision': 'fp16'})
+    root.assert_not_called()
+
+
+def test_recovery_supports_explicit_valid_profile_for_operator_experiments():
+    profile = {'precision': 'fp16', 'resolution': 'fast', 'cropPerson': True,
+               'guidanceScale': 1.0, 'skipUnusedUnconditional': True, 'segmentationFree': False}
+    tree = ast.parse(recovery_module.recovery_source('runtime-a', profile))
+    call = next(node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name) and node.func.id == 'recover')
+    assert ast.literal_eval(next(kw.value for kw in call.keywords if kw.arg == 'worker_profile')) == profile
 
 
 def test_runtime_pin_only_changes_by_explicit_operator_action(tmp_path, bridge):

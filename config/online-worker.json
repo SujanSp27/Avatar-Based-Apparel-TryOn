@@ -1,0 +1,8 @@
+{
+  "precision": "fp16",
+  "resolution": "native",
+  "cropPerson": false,
+  "guidanceScale": 1.5,
+  "skipUnusedUnconditional": false,
+  "segmentationFree": true
+}

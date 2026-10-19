@@ -26,12 +26,31 @@ the worker loads its models and creates a private tunnel. Failed launches are
 limited to three per hour for each of setup and worker. No recovery operation
 submits person/garment images or starts an inference job.
 
+The tracked `config/online-worker.json` supplies the reviewed starting profile:
+FP16, native 576 x 864 resolution, guidance 1.5, no person crop, segmentation-free
+conditioning and no conditional-branch shortcut. The recovery payload validates
+these settings and creates `/content/formfit-online/worker-config.json` only if
+that file is absent. It never overwrites an existing runtime profile or changes a
+running worker. Thus missing temporary files can be restored without silently
+reverting a new runtime to the much slower BF16 baseline. An existing experimental
+runtime profile still requires an explicit operator change after its work finishes.
+
 The returned HTTPS tunnel/token are written atomically to ignored
 `.runtime/online-connection.json`. The running API adopts them without restarting.
 Each submitted inference retains its original URL and event ID, even if the
 connection file changes. Failed generation requests are never retried implicitly.
-The default remote timeout is 600 seconds because measured T4 generations exceed
-180 seconds. This prevents premature failures; it does not improve model latency.
+The default remote timeout is 600 seconds because the original BF16 T4 baseline
+exceeded 180 seconds and cold starts or shared-runtime delays remain possible.
+The reviewed native FP16 example completed in 54.583 seconds. The timeout prevents
+premature failures; it does not improve model latency or guarantee a completion time.
+
+Inputs use lossless WebP when it is smaller than the normalized PNG. The worker
+returns lossless WebP, and the API validates the response object, declared and actual
+image formats, payload size and original image dimensions before saving an actual
+PNG. Older PNG worker responses remain supported. Transport diagnostics record byte
+counts and preparation/encoding/request/saving times; worker diagnostics record
+preprocessing, generation and postprocessing/saving times. These changes have local
+CPU tests but do not establish a new live latency result or current Colab availability.
 
 The interface reports preparation, model loading, restoration, readiness and
 external constraints. Google authentication/consent and GPU allocation remain

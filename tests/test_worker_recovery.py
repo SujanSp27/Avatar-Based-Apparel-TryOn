@@ -7,6 +7,9 @@ import pytest
 
 from scripts import colab_worker_recovery as worker
 
+PROFILE = {'precision': 'fp16', 'resolution': 'native', 'cropPerson': False,
+           'guidanceScale': 1.5, 'skipUnusedUnconditional': False, 'segmentationFree': True}
+
 
 @pytest.fixture(autouse=True)
 def runtime_hostname(monkeypatch):
@@ -93,3 +96,90 @@ def test_expired_files_are_restored_then_worker_started_with_bounded_retries(tmp
     assert spawn.call_count == 4
     assert not (tmp_path / 'connection.json').exists()
     assert spawn.call_args.args[0][-1].endswith('online_worker.py')
+
+
+@pytest.mark.parametrize('invalid', [
+    [], {}, {**PROFILE, 'unknown': True},
+    {**PROFILE, 'precision': 'fp32'}, {**PROFILE, 'precision': ['fp16']},
+    {**PROFILE, 'resolution': 'tiny'}, {**PROFILE, 'resolution': None},
+    {**PROFILE, 'cropPerson': 'false'}, {**PROFILE, 'skipUnusedUnconditional': 0},
+    {**PROFILE, 'segmentationFree': 1}, {**PROFILE, 'guidanceScale': True},
+    {**PROFILE, 'guidanceScale': '1.5'}, {**PROFILE, 'guidanceScale': float('nan')},
+    {**PROFILE, 'guidanceScale': float('inf')}, {**PROFILE, 'guidanceScale': 2.0},
+])
+def test_invalid_profile_cannot_create_files_or_touch_processes(tmp_path, monkeypatch, invalid):
+    gpu, processes, spawn = Mock(), Mock(), Mock()
+    monkeypatch.setattr(worker, 'gpu_available', gpu)
+    monkeypatch.setattr(worker, 'running', processes)
+    monkeypatch.setattr(worker.subprocess, 'Popen', spawn)
+    root = tmp_path / 'new-project'
+    with pytest.raises(ValueError, match='[Pp]rofile'):
+        worker.recover(root, {}, 'runtime-a', invalid)
+    assert not root.exists()
+    gpu.assert_not_called()
+    processes.assert_not_called()
+    spawn.assert_not_called()
+
+
+@pytest.mark.parametrize('script', ['setup_online_worker.py', 'online_worker.py'])
+@pytest.mark.parametrize('existing_profile', [False, True])
+def test_running_process_prevents_profile_or_source_writes(tmp_path, monkeypatch, script, existing_profile):
+    monkeypatch.setattr(worker, 'gpu_available', lambda: True)
+    monkeypatch.setattr(worker, 'running', lambda path: path.name == script)
+    launch = Mock()
+    monkeypatch.setattr(worker, 'launch', launch)
+    config = tmp_path / 'worker-config.json'
+    if existing_profile:
+        config.write_text('{"precision": "upstream"}')
+    before = {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+    payload = {'scripts/online_worker.py': base64.b64encode(b'# new source').decode()}
+    worker.recover(tmp_path, payload, 'runtime-a', PROFILE)
+    assert {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()} == before
+    assert not (tmp_path / 'scripts').exists()
+    launch.assert_not_called()
+
+
+def test_profile_seed_persists_across_setup_worker_and_operator_changes(tmp_path, monkeypatch):
+    monkeypatch.setattr(worker, 'gpu_available', lambda: True)
+    monkeypatch.setattr(worker, 'running', lambda _: False)
+    launches = []
+    def launch(root, kind):
+        # The configured profile is already on disk when either process starts.
+        launches.append((kind, json.loads((root / 'worker-config.json').read_text())))
+        return {'state': 'setting_up' if kind == 'setup' else 'loading'}
+    monkeypatch.setattr(worker, 'launch', launch)
+    assert worker.recover(tmp_path, {}, 'runtime-a', PROFILE)['state'] == 'setting_up'
+    config = tmp_path / 'worker-config.json'
+    original = config.read_bytes()
+    original_mtime = config.stat().st_mtime_ns
+    (tmp_path / 'setup-complete.json').write_text('{}')
+    assert worker.recover(tmp_path, {}, 'runtime-a', PROFILE)['state'] == 'loading'
+    assert config.read_bytes() == original
+    assert config.stat().st_mtime_ns == original_mtime
+    assert launches == [('setup', PROFILE), ('worker', PROFILE)]
+    # Explicit experimental settings already in Colab must remain untouched.
+    override = {**PROFILE, 'guidanceScale': 1.0, 'resolution': 'fast', 'cropPerson': True}
+    config.write_text(json.dumps(override))
+    modified = config.read_bytes()
+    worker.recover(tmp_path, {}, 'runtime-a', PROFILE)
+    assert config.read_bytes() == modified
+    assert launches[-1] == ('worker', override)
+
+
+def test_invalid_sources_do_not_partially_seed_worker_profile(tmp_path, monkeypatch):
+    monkeypatch.setattr(worker, 'gpu_available', lambda: True)
+    monkeypatch.setattr(worker, 'running', lambda _: False)
+    root = tmp_path / 'new-project'
+    payload = {'scripts/online_worker.py': base64.b64encode(b'# valid').decode(),
+               '../outside.py': base64.b64encode(b'# invalid path').decode()}
+    with pytest.raises(ValueError, match='source path'):
+        worker.recover(root, payload, 'runtime-a', PROFILE)
+    assert not root.exists()
+
+
+def test_legacy_recovery_does_not_create_a_profile(tmp_path, monkeypatch):
+    monkeypatch.setattr(worker, 'gpu_available', lambda: True)
+    monkeypatch.setattr(worker, 'running', lambda _: False)
+    monkeypatch.setattr(worker, 'launch', lambda *_: {'state': 'setting_up'})
+    recover(tmp_path, {})
+    assert not (tmp_path / 'worker-config.json').exists()

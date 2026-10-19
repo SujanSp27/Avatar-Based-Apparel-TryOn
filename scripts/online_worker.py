@@ -18,8 +18,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from ml.errors import PipelineError
 from ml.vton.checked_sampler import CheckedSamplerMixin
+from ml.vton.image_transport import encode_changed_pixels
 from ml.vton.online_composite import preserve_regions
-from ml.vton.region import inference_region
+from ml.vton.region import inference_region, lower_body_visible
 
 SOURCE = "7c0f10af3f91ad4048fe9729c470a13ef905d25a"
 MODEL = "7720683168567eb5a2a4c67f15116c6e29c83ded"
@@ -136,18 +137,20 @@ def main():
                 labels = pipeline.hp_model.predict(np.asarray(prepared_person))
                 labels = cv2.resize(labels, person.size, interpolation=cv2.INTER_NEAREST)
                 Image.fromarray(labels.astype(np.uint8)).save(run / "source-labels.png")
-                if category != "tops" and np.mean(np.isin(labels, [4, 5, 6, 14, 15])) < .08:
+                if category != "tops" and not lower_body_visible(labels):
                     raise PipelineError("lower_body_not_visible", "Show the full lower body for trousers, skirts, dresses and jumpsuits.")
                 torch.cuda.synchronize()
                 torch.cuda.reset_peak_memory_stats()
                 crop = inference_region(labels, category) if crop_person else (0, 0, person.width, person.height)
                 cropped_person = person.crop(crop)
                 tick = time.perf_counter()
+                preprocessing_seconds = tick - start
                 generated_crop = pipeline(person_image=cropped_person, garment_image=garment, category=category,
                                      garment_photo_type=photo_type, num_samples=1, num_timesteps=int(steps),
                                      guidance_scale=guidance, seed=42, segmentation_free=segmentation_free).images[0]
                 torch.cuda.synchronize()
                 inference_seconds = time.perf_counter() - tick
+                postprocessing_started = time.perf_counter()
                 generated = original.copy()
                 left, top, right, bottom = crop
                 generated[top:bottom, left:right] = np.asarray(generated_crop.resize((right-left, bottom-top), Image.Resampling.LANCZOS))
@@ -156,8 +159,7 @@ def main():
                 target = pipeline.hp_model.predict(generated)
                 Image.fromarray(target.astype(np.uint8)).save(run / "target-labels.png")
                 composite, alpha, review = preserve_regions(original, generated, labels, target, category)
-                output = io.BytesIO()
-                Image.fromarray(composite).save(output, format="PNG", compress_level=2)
+                encoded, patch_metadata = encode_changed_pixels(person, Image.fromarray(composite))
                 # Persist artifacts in Colab for actual visual review and recovery.
                 Image.fromarray(composite).save(run / "result.png")
                 Image.fromarray((alpha * 255).astype(np.uint8)).save(run / "edit-mask.png")
@@ -170,10 +172,15 @@ def main():
                                "inferenceSeconds": round(inference_seconds, 3),
                                "peakGpuAllocatedMB": round(torch.cuda.max_memory_allocated() / 1024**2, 1),
                                "workerSeconds": round(time.perf_counter() - start, 3),
+                               "stageSeconds": {
+                                   "preprocessing": round(preprocessing_seconds, 3),
+                                   "generation": round(inference_seconds, 3),
+                                   "postprocessingAndSaving": round(time.perf_counter() - postprocessing_started, 3),
+                               },
                                "cache": "bounded pose/parser cache; every result is a fresh generation",
                                "preservation": review, "runPath": str(run)}
                 (run / "report.json").write_text(json.dumps(diagnostics, indent=2))
-                return {**diagnostics, "image": base64.b64encode(output.getvalue()).decode()}
+                return {**diagnostics, **patch_metadata, "imageFormat": "webp", "image": base64.b64encode(encoded).decode()}
             except PipelineError as exc:
                 (run / "failure.json").write_text(json.dumps({"code": exc.code, "message": str(exc)}))
                 return {"error": str(exc), "code": exc.code}

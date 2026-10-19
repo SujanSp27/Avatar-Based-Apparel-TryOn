@@ -1,0 +1,11 @@
+{
+  "reviewDate": "2026-10-19",
+  "accepted": false,
+  "pixelsIdenticalTo": "striped-native-cfg1-10",
+  "defects": [
+    "Same neckline and hem defects as reviewed reference"
+  ],
+  "endToEndSeconds": 22.377,
+  "downloadBytes": 75346,
+  "timingNote": "Network/runtime variation means reduced bytes did not reduce this observed end-to-end time"
+}

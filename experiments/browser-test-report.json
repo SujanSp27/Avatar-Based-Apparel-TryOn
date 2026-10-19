@@ -58,220 +58,6 @@
   },
   "suites": [
     {
-      "title": "job-recovery.spec.ts",
-      "file": "job-recovery.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "refresh resumes the same job and reports its actual failure without another POST",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 8029,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-17T13:13:57.228Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-dca59e1af23cdd930d3a",
-          "file": "job-recovery.spec.ts",
-          "line": 6,
-          "column": 1
-        },
-        {
-          "title": "a recovered job cannot present an overlay as a successful neural result",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 769,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-17T13:14:05.584Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-6fe5be84e597266a1bf4",
-          "file": "job-recovery.spec.ts",
-          "line": 40,
-          "column": 1
-        },
-        {
-          "title": "a recovered real CatVTON result loads its actual PNG and original comparison",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 996,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-17T13:14:06.360Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-c6f041f8a2f2a3a68bc2",
-          "file": "job-recovery.spec.ts",
-          "line": 51,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "live-connection.spec.ts",
-      "file": "live-connection.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "existing private Colab connects without user-facing connection controls",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Requires the user's existing Colab runtime"
-                }
-              ],
-              "expectedStatus": "skipped",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 232,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-17T13:14:07.372Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Requires the user's existing Colab runtime"
-                    }
-                  ],
-                  "attachments": []
-                }
-              ],
-              "status": "skipped"
-            }
-          ],
-          "id": "419a5df44beaed8228af-e36199d4f7ef19171346",
-          "file": "live-connection.spec.ts",
-          "line": 3,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "live-neural-result.spec.ts",
-      "file": "live-neural-result.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "the live neural job survives refresh and displays its actual generated image",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Set VTON_LIVE_JOB_ID to a submitted real inference job."
-                }
-              ],
-              "expectedStatus": "skipped",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 200,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-17T13:14:07.620Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Set VTON_LIVE_JOB_ID to a submitted real inference job."
-                    }
-                  ],
-                  "attachments": []
-                }
-              ],
-              "status": "skipped"
-            }
-          ],
-          "id": "4e0c4ac4b4e90e3fa601-e85f6d996b8d25a185d9",
-          "file": "live-neural-result.spec.ts",
-          "line": 5,
-          "column": 1
-        }
-      ]
-    },
-    {
       "title": "online-tryon.spec.ts",
       "file": "online-tryon.spec.ts",
       "column": 0,
@@ -293,12 +79,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3660,
+                  "duration": 9749,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T13:14:07.837Z",
+                  "startTime": "2026-10-19T05:13:12.918Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -327,12 +113,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 920,
+                  "duration": 1704,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T13:14:11.501Z",
+                  "startTime": "2026-10-19T05:13:23.061Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -361,12 +147,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 644,
+                  "duration": 910,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T13:14:12.426Z",
+                  "startTime": "2026-10-19T05:13:24.774Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -395,12 +181,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 995,
+                  "duration": 2436,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T13:14:13.075Z",
+                  "startTime": "2026-10-19T05:13:25.690Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -418,10 +204,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-17T13:13:55.924Z",
-    "duration": 19474.104,
-    "expected": 7,
-    "skipped": 2,
+    "startTime": "2026-10-19T05:13:11.557Z",
+    "duration": 17862.976,
+    "expected": 4,
+    "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   }

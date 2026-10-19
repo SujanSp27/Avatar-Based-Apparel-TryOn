@@ -1,0 +1,72 @@
+{
+  "model": "FASHN VTON 1.5",
+  "sourceCommit": "7c0f10af3f91ad4048fe9729c470a13ef905d25a",
+  "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+  "device": "cuda",
+  "gpu": "Tesla T4",
+  "dtype": "torch.float16",
+  "steps": 10,
+  "category": "tops",
+  "modelResolution": [
+    576,
+    864
+  ],
+  "inferenceRegion": [
+    0,
+    0,
+    800,
+    1200
+  ],
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "gpu": "Tesla T4",
+    "capability": [
+      7,
+      5
+    ],
+    "dtype": "torch.float16",
+    "precisionProfile": "fp16",
+    "resolutionProfile": "native",
+    "modelResolution": [
+      576,
+      864
+    ],
+    "guidanceScale": 1.0,
+    "segmentationFree": true,
+    "skipUnusedUnconditional": true,
+    "finitePredictionChecks": true,
+    "finiteSamplerStateChecks": true
+  },
+  "inferenceSeconds": 13.464,
+  "peakGpuAllocatedMB": 2564.9,
+  "workerSeconds": 15.811,
+  "stageSeconds": {
+    "preprocessing": 1.605,
+    "generation": 13.464,
+    "postprocessingAndSaving": 0.742
+  },
+  "cache": "bounded pose/parser cache; every result is a fresh generation",
+  "preservation": {
+    "identityPreservedExactly": true,
+    "changedPixelsOutsideEditMask": 0,
+    "oldClothingMinimumAlpha": 1.0,
+    "editedPixels": 67764,
+    "hemExtensionPixels": 1279,
+    "hemExtensionLimitPixels": 42,
+    "compositor": "semantic-category-preservation-v2",
+    "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required."
+  },
+  "runPath": "/content/formfit-online/runs/1792386813107382557",
+  "imageFormat": "webp",
+  "remoteRoundTripSeconds": 21.085,
+  "transport": {
+    "normalizedInputBytes": 365541,
+    "uploadedImageBytes": 274366,
+    "downloadedImageBytes": 290476,
+    "preparationSeconds": 0.165,
+    "encodingSeconds": 0.195,
+    "requestAndStreamSeconds": 20.631,
+    "savingSeconds": 0.259
+  }
+}

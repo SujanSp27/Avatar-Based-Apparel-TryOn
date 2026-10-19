@@ -20,9 +20,9 @@ class CheckedSamplerMixin:
     """Place before TryOnPipeline in the worker's inheritance list.
 
     The numerical algorithm, native model resolution and upstream defaults stay
-    unchanged. The optional conditional-only final steps avoid calculating an
-    unconditional prediction that upstream discards; this optimization is off
-    until separately validated on the deployed worker.
+    unchanged. Optional conditional-only steps avoid an unconditional prediction
+    that has zero weight at guidance 1.0 or that upstream discards at the end.
+    Changing guidance itself requires separate garment-quality validation.
     """
 
     skip_unused_unconditional = False

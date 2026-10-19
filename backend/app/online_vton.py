@@ -17,6 +17,7 @@ from backend.app.config import settings
 from ml.errors import PipelineError
 from ml.progress import report_progress
 from ml.vton.categories import MODEL_CATEGORIES
+from ml.vton.image_transport import restore_changed_pixels
 
 MAX_IMAGE_BYTES = 12 * 1024 * 1024
 
@@ -118,8 +119,10 @@ class OnlineTryOn:
             raise PipelineError("online_gpu_unavailable", self.availability()["reason"], 503)
         if category not in MODEL_CATEGORIES or photo_type not in {"flat-lay", "model"}:
             raise PipelineError("garment_category", "Choose a supported garment and photo type.")
+        preparation_started = time.perf_counter()
         person_png, garment_png = normalized_image(person), normalized_image(garment)
         (folder / "original-person.png").write_bytes(person_png)
+        preparation_seconds = time.perf_counter() - preparation_started
         report_progress("uploading_online")
         start = time.perf_counter()
         # Keep the same worker for the whole event even if recovery rotates the
@@ -127,9 +130,12 @@ class OnlineTryOn:
         url, token = self.credentials()
         if not url or not token:
             raise PipelineError("online_gpu_unavailable", "The online worker is reconnecting automatically.", 503)
-        data = [token, base64.b64encode(transport_image(person_png)).decode(),
-                base64.b64encode(transport_image(garment_png)).decode(), MODEL_CATEGORIES[category],
+        encoding_started = time.perf_counter()
+        person_upload, garment_upload = transport_image(person_png), transport_image(garment_png)
+        data = [token, base64.b64encode(person_upload).decode(),
+                base64.b64encode(garment_upload).decode(), MODEL_CATEGORIES[category],
                 photo_type, settings.online_vton_steps]
+        encoding_seconds = time.perf_counter() - encoding_started
         try:
             with httpx.Client(timeout=httpx.Timeout(settings.online_vton_timeout, connect=10),
                               follow_redirects=False, transport=self.transport) as client:
@@ -161,20 +167,48 @@ class OnlineTryOn:
                                 break
                     else:
                         raise ValueError("Remote connection ended without a result")
+                received_at = time.perf_counter()
+                if not isinstance(payload, dict):
+                    raise ValueError("Invalid worker response")
                 if payload.get("error"):
                     raise PipelineError(payload.get("code", "online_gpu_failed"), payload["error"], 422)
                 if payload.get("model") != "FASHN VTON 1.5" or payload.get("device") != "cuda":
                     raise ValueError("Worker did not report the expected GPU model")
                 output = base64.b64decode(payload["image"], validate=True)
-                if len(output) > MAX_IMAGE_BYTES or not output.startswith(b"\x89PNG\r\n\x1a\n"):
-                    raise ValueError("Invalid generated PNG")
+                downloaded_image_bytes = len(output)
+                expected_format = payload.get("imageFormat", "png")
+                if not isinstance(expected_format, str):
+                    raise ValueError("Invalid generated image format")
+                expected_format = expected_format.upper()
+                if len(output) > MAX_IMAGE_BYTES or expected_format not in {"PNG", "WEBP"}:
+                    raise ValueError("Invalid generated image")
                 with Image.open(io.BytesIO(output)) as image, Image.open(io.BytesIO(person_png)) as original:
-                    image.load()
-                    if image.size != original.size:
+                    patch = "patchBox" in payload or "canvasSize" in payload
+                    if image.format != expected_format or image.width * image.height > original.width * original.height:
                         raise ValueError("Generated image dimensions do not match the original")
+                    image.load()
+                    if patch:
+                        restored = restore_changed_pixels(original, image, payload.get("patchBox"), payload.get("canvasSize"))
+                    else:
+                        if image.size != original.size:
+                            raise ValueError("Generated image dimensions do not match the original")
+                        restored = image.convert("RGB")
+                    if expected_format != "PNG" or patch:
+                        png_buffer = io.BytesIO()
+                        restored.save(png_buffer, format="PNG", compress_level=6)
+                        output = png_buffer.getvalue()
                 (folder / "tryon-2d.png").write_bytes(output)
                 diagnostics = {key: value for key, value in payload.items() if key != "image"}
                 diagnostics["remoteRoundTripSeconds"] = round(time.perf_counter() - start, 3)
+                diagnostics["transport"] = {
+                    "normalizedInputBytes": len(person_png) + len(garment_png),
+                    "uploadedImageBytes": len(person_upload) + len(garment_upload),
+                    "downloadedImageBytes": downloaded_image_bytes,
+                    "preparationSeconds": round(preparation_seconds, 3),
+                    "encodingSeconds": round(encoding_seconds, 3),
+                    "requestAndStreamSeconds": round(received_at - start - encoding_seconds, 3),
+                    "savingSeconds": round(time.perf_counter() - received_at, 3),
+                }
                 (folder / "vton-diagnostics.json").write_text(json.dumps(diagnostics, indent=2))
                 report_progress("saving_result")
                 return diagnostics

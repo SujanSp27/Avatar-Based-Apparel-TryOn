@@ -28,11 +28,25 @@ notebook helper. The existing notebook is recorded in ignored
 The current model is official FASHN VTON 1.5, with source/checkpoint revisions
 pinned in `scripts/setup_online_worker.py`. The eleven UI categories map to tops,
 bottoms and one-pieces. Category support does not establish visual quality for
-every garment. No training has been performed. The last measured fresh T4 run
-took 292.3 seconds; the requested under-ten-second target is not achieved.
+every garment. No training has been performed. The best reviewed native-resolution
+T4 example took **54.583 seconds**, improved from 292.278 seconds. A reduced-resolution
+experiment took **14.914 seconds** but failed visual review because of sleeve and
+hem artifacts. Acceptable fresh try-on within the requested 10-20 seconds remains
+unverified. Photos are processed only in the user's Colab, never in a public GPU demo.
+Native-resolution 10-step experiments reached 21.274s and 19.627s, but were also
+rejected for neckline, exposed-skin and hem artifacts; they are not default presets.
+
+`config/online-worker.json` persists the reviewed FP16/native-resolution profile
+with guidance 1.5. Recovery seeds this configuration only when the Colab file is
+absent; it preserves existing runtime settings and running work. Lossless image
+transport reduces payload size without changing sanitized pixels, while stage
+timings separate generation, preprocessing and transport costs. These local changes
+have 422 passing CPU tests. The new native experiments include live transport and
+stage timings; neither establishes production-quality fitting.
 
 See [current requirements](docs/requirements.md),
 [implementation status](docs/implementation-status.md), and
-[automatic connection behavior](docs/automatic-colab.md).
+[automatic connection behavior](docs/automatic-colab.md). Actual timing and visual
+evidence are in [online performance](docs/online-performance.md).
 Previous 3D/CatVTON records are preserved under `docs/archive/` as historical
 evidence, not as documentation of the current application.

@@ -1,0 +1,36 @@
+[
+  {
+    "case": "striped-native-cfg1-10",
+    "fullResponseBytes": 290476,
+    "patchBytes": 75346,
+    "encodingSeconds": 0.207,
+    "allPixelsIdentical": true,
+    "patchBox": [
+      268,
+      259,
+      522,
+      628
+    ],
+    "canvasSize": [
+      800,
+      1200
+    ]
+  },
+  {
+    "case": "dress-native-cfg1-10",
+    "fullResponseBytes": 957246,
+    "patchBytes": 105608,
+    "encodingSeconds": 0.104,
+    "allPixelsIdentical": true,
+    "patchBox": [
+      277,
+      408,
+      535,
+      935
+    ],
+    "canvasSize": [
+      840,
+      1200
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "scope": "local CPU image serialization only; no inference or upload",
+  "results": [
+    {
+      "file": "data/raw/studio-person.jpg",
+      "normalizedPngBytes": 360770,
+      "transportBytes": 269754,
+      "reductionPercent": 25.23,
+      "normalizationSeconds": 0.186,
+      "encodingSeconds": 0.218,
+      "pixelsIdentical": true
+    },
+    {
+      "file": "data/raw/garment-demo.png",
+      "normalizedPngBytes": 4771,
+      "transportBytes": 4612,
+      "reductionPercent": 3.33,
+      "normalizationSeconds": 0.014,
+      "encodingSeconds": 0.007,
+      "pixelsIdentical": true
+    },
+    {
+      "file": "experiments/online-runs/striped-fp16-20/tryon-2d.png",
+      "normalizedPngBytes": 379973,
+      "transportBytes": 289484,
+      "reductionPercent": 23.81,
+      "normalizationSeconds": 0.093,
+      "encodingSeconds": 0.072,
+      "pixelsIdentical": true
+    }
+  ]
+}

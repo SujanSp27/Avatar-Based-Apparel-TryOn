@@ -10,26 +10,36 @@ import json
 import os
 import re
 import subprocess
+import sys
 import time
 from pathlib import Path
+
+if not __package__:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import colab_control as bridge
 from scripts.colab_notebook_control import result
 from scripts.colab_server import notebook_path
+from scripts.colab_worker_recovery import validate_worker_profile
 
 MARKER = "# formfit-automatic-worker-recovery"
+RECOVERY_PROTOCOL = 4
 
 
-def recovery_source(expected_hostname: str | None = None):
+def recovery_source(expected_hostname: str | None = None, worker_profile: dict | None = None):
+    if worker_profile is None:
+        worker_profile = json.loads((bridge.ROOT / 'config/online-worker.json').read_text(encoding='utf-8'))
+    worker_profile = validate_worker_profile(worker_profile)
     names = ['scripts/setup_online_worker.py', 'scripts/online_worker.py',
              'ml/__init__.py', 'ml/vton/__init__.py', 'ml/errors.py',
-             'ml/vton/online_composite.py', 'ml/vton/checked_sampler.py', 'ml/vton/region.py']
+             'ml/vton/online_composite.py', 'ml/vton/checked_sampler.py', 'ml/vton/region.py',
+             'ml/vton/image_transport.py']
     payload = {name: base64.b64encode((bridge.ROOT / name).read_bytes()).decode()
                for name in names}
     source = (bridge.ROOT / 'scripts/colab_worker_recovery.py').read_text(encoding='utf-8')
-    return (MARKER + '-v3\n' + source + '\nprint(json.dumps(recover('
+    return (MARKER + f'-v{RECOVERY_PROTOCOL}\n' + source + '\nprint(json.dumps(recover('
             f"Path('/content/formfit-online'), {payload!r}, "
-            f"expected_hostname={expected_hostname!r})))\n")
+            f"expected_hostname={expected_hostname!r}, worker_profile={worker_profile!r})))\n")
 
 
 def valid_hostname(value):
@@ -50,7 +60,7 @@ class ColabRecovery:
         temporary.replace(self.state_path)
 
     def _submit(self, state, stage, tool, arguments):
-        state.update(stage=stage, recoveryProtocol=3, request=bridge.submit({
+        state.update(stage=stage, recoveryProtocol=RECOVERY_PROTOCOL, request=bridge.submit({
             'method': 'call_tool', 'name': tool, 'arguments': arguments,
         }))
         self._save(state)
@@ -120,7 +130,7 @@ class ColabRecovery:
             stage = state.pop('stage')
             state.pop('request')
             self._save(state)
-            if stage in {'insert', 'updated'} and state.get('recoveryProtocol') != 3:
+            if stage in {'insert', 'updated'} and state.get('recoveryProtocol') != RECOVERY_PROTOCOL:
                 # A pre-upgrade cell may contain unguarded recovery code. Read
                 # and replace it on the next tick instead of executing it.
                 state.pop('cellId', None)

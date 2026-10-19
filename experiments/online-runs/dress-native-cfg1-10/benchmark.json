@@ -1,0 +1,85 @@
+{
+  "status": "generated",
+  "diagnostics": {
+    "model": "FASHN VTON 1.5",
+    "sourceCommit": "7c0f10af3f91ad4048fe9729c470a13ef905d25a",
+    "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+    "device": "cuda",
+    "gpu": "Tesla T4",
+    "dtype": "torch.float16",
+    "steps": 10,
+    "category": "one-pieces",
+    "modelResolution": [
+      576,
+      864
+    ],
+    "inferenceRegion": [
+      0,
+      0,
+      840,
+      1200
+    ],
+    "environment": {
+      "torch": "2.11.0+cu130",
+      "cuda": "13.0",
+      "gpu": "Tesla T4",
+      "capability": [
+        7,
+        5
+      ],
+      "dtype": "torch.float16",
+      "precisionProfile": "fp16",
+      "resolutionProfile": "native",
+      "modelResolution": [
+        576,
+        864
+      ],
+      "guidanceScale": 1.0,
+      "segmentationFree": true,
+      "skipUnusedUnconditional": true,
+      "finitePredictionChecks": true,
+      "finiteSamplerStateChecks": true
+    },
+    "inferenceSeconds": 13.325,
+    "peakGpuAllocatedMB": 2564.9,
+    "workerSeconds": 16.503,
+    "stageSeconds": {
+      "preprocessing": 1.964,
+      "generation": 13.325,
+      "postprocessingAndSaving": 1.214
+    },
+    "cache": "bounded pose/parser cache; every result is a fresh generation",
+    "preservation": {
+      "identityPreservedExactly": true,
+      "changedPixelsOutsideEditMask": 0,
+      "oldClothingMinimumAlpha": 1.0,
+      "editedPixels": 102652,
+      "hemExtensionPixels": 0,
+      "hemExtensionLimitPixels": 0,
+      "compositor": "semantic-category-preservation-v2",
+      "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required."
+    },
+    "runPath": "/content/formfit-online/runs/1792405131731961660",
+    "imageFormat": "webp",
+    "remoteRoundTripSeconds": 35.058,
+    "transport": {
+      "normalizedInputBytes": 1635358,
+      "uploadedImageBytes": 1340102,
+      "downloadedImageBytes": 957246,
+      "preparationSeconds": 0.524,
+      "encodingSeconds": 0.323,
+      "requestAndStreamSeconds": 34.436,
+      "savingSeconds": 0.3
+    }
+  },
+  "freshGeneration": true,
+  "visualAcceptance": "pending inspection",
+  "endToEndSeconds": 35.592,
+  "inputs": {
+    "personSha256": "9c425d154d7bea584b4060e7e1ed28cd676e3f9ea3c475b922e986d04a48d273",
+    "garmentSha256": "8681fc59b1a7204144d9724840ed52b2a6174611a49abb20b57a3552d7d3cc84",
+    "category": "dress",
+    "photoType": "model",
+    "steps": 10
+  }
+}

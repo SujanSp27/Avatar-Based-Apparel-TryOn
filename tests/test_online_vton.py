@@ -19,6 +19,7 @@ from backend.app.pipeline import TryOnPipeline
 from backend.app.storage import AssetStore
 from ml.errors import PipelineError
 from ml.vton.categories import MODEL_CATEGORIES
+from ml.vton.image_transport import encode_changed_pixels
 from ml.vton.online_composite import preserve_regions
 
 
@@ -46,6 +47,8 @@ def test_actual_upload_category_and_remote_image_are_used(tmp_path, category, ma
     result = worker.render(png(), png("red"), category, "flat-lay", tmp_path)
     assert (tmp_path / "tryon-2d.png").read_bytes() == png("green")
     assert result["remoteRoundTripSeconds"] >= 0
+    assert result["transport"]["uploadedImageBytes"] <= result["transport"]["normalizedInputBytes"]
+    assert result["transport"]["downloadedImageBytes"] == len(png("green"))
     assert len(requests) == 2
     assert "image" not in json.loads((tmp_path / "vton-diagnostics.json").read_text())
 
@@ -56,6 +59,41 @@ def test_missing_cloud_config_fails_without_local_fallback(tmp_path):
     with pytest.raises(PipelineError, match="Local GPU inference is disabled"):
         worker.render(png(), png(), "dress", "flat-lay", tmp_path)
     assert not list(tmp_path.iterdir())
+
+
+def test_lossless_webp_response_is_saved_as_actual_png_without_pixel_changes(tmp_path):
+    pixels = np.random.default_rng(11).integers(0, 256, (160, 128, 3), dtype=np.uint8)
+    buffer = io.BytesIO()
+    Image.fromarray(pixels).save(buffer, format="WEBP", lossless=True, quality=0, method=0)
+    def handle(request):
+        if request.method == "POST":
+            return httpx.Response(200, json={"event_id": "b"})
+        payload = {"model": "FASHN VTON 1.5", "device": "cuda", "imageFormat": "webp",
+                   "image": base64.b64encode(buffer.getvalue()).decode()}
+        return httpx.Response(200, text="event: complete\ndata: " + json.dumps([payload]) + "\n\n")
+    worker = OnlineTryOn("https://private.gradio.live", "x" * 32, transport=httpx.MockTransport(handle))
+    worker.render(png(), png(), "t-shirt", "flat-lay", tmp_path)
+    with Image.open(tmp_path / "tryon-2d.png") as saved:
+        assert saved.format == "PNG"
+        np.testing.assert_array_equal(np.asarray(saved), pixels)
+
+
+def test_patch_response_preserves_original_pixels_and_reconstructs_actual_image(tmp_path):
+    original = Image.open(io.BytesIO(png()))
+    expected = original.copy()
+    expected.paste((220, 40, 50), (35, 50, 90, 100))
+    encoded, metadata = encode_changed_pixels(original, expected)
+    def handle(request):
+        if request.method == "POST":
+            return httpx.Response(200, json={"event_id": "c"})
+        payload = {"model": "FASHN VTON 1.5", "device": "cuda", "imageFormat": "webp",
+                   **metadata, "image": base64.b64encode(encoded).decode()}
+        return httpx.Response(200, text="event: complete\ndata: " + json.dumps([payload]) + "\n\n")
+    worker = OnlineTryOn("https://private.gradio.live", "x" * 32, transport=httpx.MockTransport(handle))
+    worker.render(png(), png(), "t-shirt", "flat-lay", tmp_path)
+    with Image.open(tmp_path / "tryon-2d.png") as saved:
+        assert saved.format == "PNG"
+        assert saved.tobytes() == expected.tobytes()
 
 
 def test_rotating_connection_does_not_retarget_an_inflight_generation(tmp_path):
@@ -77,7 +115,7 @@ def test_rotating_connection_does_not_retarget_an_inflight_generation(tmp_path):
     assert hosts == ['original.gradio.live', 'original.gradio.live']
 
 
-@pytest.mark.parametrize("reply", ["event: error\ndata: null\n\n", "event: complete\ndata: [{}]\n\n"])
+@pytest.mark.parametrize("reply", ["event: error\ndata: null\n\n", "event: complete\ndata: [{}]\n\n", "event: complete\ndata: [null]\n\n"])
 def test_bad_worker_response_is_not_success_or_retry(tmp_path, reply):
     calls = []
     def handle(request):
@@ -89,6 +127,25 @@ def test_bad_worker_response_is_not_success_or_retry(tmp_path, reply):
     assert calls == ["POST", "GET"]
     assert not (tmp_path / "tryon-2d.png").exists()
     assert (tmp_path / "remote-event.json").is_file()
+
+
+@pytest.mark.parametrize("image_format", [None, 42, [], "jpeg", "webp"])
+def test_invalid_or_mismatched_image_format_is_a_meaningful_failure(tmp_path, image_format):
+    methods = []
+    def handle(request):
+        methods.append(request.method)
+        if request.method == "POST":
+            return httpx.Response(200, json={"event_id": "a"})
+        payload = {"model": "FASHN VTON 1.5", "device": "cuda", "imageFormat": image_format,
+                   "image": base64.b64encode(png()).decode()}
+        return httpx.Response(200, text="event: complete\ndata: " + json.dumps([payload]) + "\n\n")
+    worker = OnlineTryOn("https://private.gradio.live", "x" * 32, transport=httpx.MockTransport(handle))
+    with pytest.raises(PipelineError) as failure:
+        worker.render(png(), png(), "t-shirt", "flat-lay", tmp_path)
+    assert failure.value.code == "online_gpu_connection"
+    assert methods == ["POST", "GET"]
+    assert (tmp_path / "remote-event.json").is_file()
+    assert not (tmp_path / "tryon-2d.png").exists()
 
 
 def test_upload_normalization_rejects_invalid_data_and_flattens_transparency():

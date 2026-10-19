@@ -1,0 +1,14 @@
+{
+  "reviewDate": "2026-10-19",
+  "reviewer": "assistant visual inspection",
+  "accepted": false,
+  "faceRecognizable": true,
+  "garmentConditioning": "Recognizable red ruched garment",
+  "defects": [
+    "Artificial exposed legs below old long dress",
+    "Abrupt sleeve-to-hand transitions",
+    "Background fragments where old garment was removed"
+  ],
+  "endToEndSeconds": 35.592,
+  "lowerBodyValidationPassed": true
+}
