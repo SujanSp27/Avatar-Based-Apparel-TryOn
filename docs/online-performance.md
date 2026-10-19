@@ -26,6 +26,9 @@ are individual observations, not latency percentiles or a service guarantee.
 | [FP16, upper-body crop, 384 x 576](../experiments/online-runs/striped-crop-fast-15/benchmark.json) | 15 | 11.477s | 22.920s | Rejected: visible beige/white hem remnants and unnatural sleeve/arm boundaries |
 | [FP16, native, guidance 1.0](../experiments/online-runs/striped-native-cfg1-10/benchmark.json) | 10 | 13.464s | 21.274s | Rejected: abrupt neck skin transition and imperfect hem |
 | [FP16, native, guidance 1.0, official clothing mask](../experiments/online-runs/striped-native-masked-10/benchmark.json) | 10 | 12.431s | 19.627s | Rejected: mismatched exposed arm skin and generated trouser patch below hem |
+| [FP16, native, guidance 1.0, lossless patch transport](../experiments/online-runs/striped-native-patch-10/benchmark.json) | 10 | 11.764s | 22.377s | Identical decoded pixels to the earlier striped guidance-1.0 result; same rejected boundaries |
+| [Second person, graphic T-shirt, native guidance 1.0](../experiments/online-runs/rhude-native-patch-10/benchmark.json) | 10 | 10.288s | 18.644s | Rejected: clipped hem, exposed shoulder strip, minor graphic distortion |
+| [Dress, native guidance 1.0](../experiments/online-runs/dress-native-cfg1-10/benchmark.json) | 10 | 13.325s | 35.592s | Full-body validation passed; rejected for artificial newly exposed legs, sleeve transitions and background fragments |
 
 The native FP16 assessment is recorded in
 [`visual-review.json`](../experiments/online-runs/striped-fp16-20/visual-review.json).
@@ -83,6 +86,22 @@ not an isolated end-to-end speed improvement. The two native guidance-1.0 runs
 used this transport; they also changed guidance and step count, so those timings
 cannot attribute speed gains to transport alone.
 
+The latest transport sends only the changed pixels of the **actual generated
+image**, with lossless RGBA and validated canvas coordinates. It reconstructs that
+image exactly on the API; it does not paste the uploaded garment. CPU round-trip
+checks are recorded in [`patch-transport.json`](../experiments/patch-transport.json).
+The live striped test returned 75,346 bytes instead of 290,476 bytes and reproduced
+the previous output pixel-for-pixel. Network variation still increased total time
+on that particular run. The second-person test returned 116,070 bytes and took
+18.644 seconds, but its hem failed visual review.
+
+The compositor's revised hem rule retains the complete connected generated top
+when its extension over the source waistband is within 35% of the original
+clothing height. It rejects excessive extensions instead of clipping the hem.
+Protected head, hand and unrelated lower-body pixels remain unchanged. Synthetic
+regression tests cover this rule; a new live second-person test is required before
+claiming it resolves the observed artifact.
+
 Worker diagnostics now separate preprocessing, generation and postprocessing/saving.
 Transport diagnostics include normalized/uploaded/downloaded image byte counts and
 preparation, encoding, request/stream and saving times. Those counters make future
@@ -102,9 +121,10 @@ The first [dress test](../experiments/online-runs/dress-native-masked-10/benchma
 was rejected before generation by a whole-image lower-body area threshold, despite
 a visibly full-body input. `lower_body_visible` now measures relative to person
 area and extent, with background-padding regression tests. A new live dress test
-is still required before claiming that issue resolved for the actual parser.
+passed this input check, but its generated image failed visual review as recorded
+above. Resolving validation does not establish acceptable dress generation.
 
-Latest local verification: **422 CPU-only Python tests passed with zero failures or
+Latest broad local verification: **438 CPU-only Python tests passed with zero failures or
 errors** in `experiments/online-profile-transport-tests.xml`, covering worker profile
 validation/recovery, lossless image round trips, response validation and sampler
 safeguards. The earlier `experiments/online-recovery-hem-tests.xml` records 351 passed

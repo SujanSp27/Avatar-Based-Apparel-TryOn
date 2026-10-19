@@ -23,7 +23,7 @@ references, and the active requirements are in [requirements.md](requirements.md
 | 7 / 8 / 9 | Real pretrained image-based garment generation | PARTIALLY IMPLEMENTED | FASHN VTON 1.5 native FP16 result has a continuous hem, aligned sleeves and no visible old-shirt fragments in the reviewed example. Simplified folds/collar proportions remain; reduced-resolution experiments have unacceptable sleeve/hem artifacts |
 | 11 | Uploads, eleven categories, photo type, original comparison and PNG output | IMPLEMENTED | `frontend/src/App.tsx`, `PhotoViewer.tsx`; seven browser tests passed |
 | 12 | Colab-only transport, jobs, failures, reconnect without local fallback | IMPLEMENTED | Transport/DB/job/reconnection tests; same worker URL retained throughout an in-flight event. Lossless input/output transport, exact-pixel round-trip tests, response type/format/dimension checks and stage diagnostics |
-| 13 / 14 | Evaluation records and broader quality/generalization | PARTIALLY IMPLEMENTED | Eight saved striped-shirt benchmarks and images, plus a rejected dress-input check; native FP16 review and experiment rejections in `docs/online-performance.md`. Broad FASHN category quality remains unvalidated |
+| 13 / 14 | Evaluation records and broader quality/generalization | PARTIALLY IMPLEMENTED | Saved striped-shirt, second-person graphic-shirt and dress benchmarks, images and visual reviews in `docs/online-performance.md`. Fast results retain unacceptable artifacts; broad category quality remains unvalidated |
 | 15 | Acceptable fresh generation within 10-20 seconds | PARTIALLY IMPLEMENTED | Native FP16/20 steps improved from 292.278s to 54.583s end to end. Cropped 384 x 576/10 steps reached 14.914s but failed visual review; the combined speed-and-quality target is not met |
 | 16 | Complete production-quality application | PARTIALLY IMPLEMENTED | Web/API/size engine and online generation exist; garment quality, cloud environment isolation and latency need further work |
 
@@ -40,7 +40,7 @@ the faster settings are not promoted to the tracked default profile.
 Recorded connection and local verification (historical checks, not a claim that
 an ephemeral Colab session is currently live):
 
-- 422 CPU-only Python tests passed with zero failures or errors in
+- 438 CPU-only Python tests passed with zero failures or errors in
   `experiments/online-profile-transport-tests.xml`. Coverage includes strict worker
   profile validation, seeding absent configuration while preserving existing files,
   lossless transport, malformed response rejection and sampler safeguards. These
@@ -78,8 +78,12 @@ now refuses to mutate a runtime different from the verified pin. The original
 timings are safely local under `experiments/online-runs/`.
 The reviewed native FP16/guidance-1.5 settings are persisted in
 `config/online-worker.json` for restoring missing runtime configuration. Existing
-settings and running jobs are preserved. A native guidance-1.0 experiment has not
-run; it has no speed or quality claim here.
+settings and running jobs are preserved. Native guidance-1.0 experiments have
+completed: the second-person graphic-shirt result took 18.644 seconds but failed
+hem/shoulder review. The dress result passed the corrected lower-body validation
+and took 35.592 seconds, but generated exposed limbs and background were unnatural.
+Neither result establishes an accepted fast preset. Lossless changed-pixel
+transport is now verified on live output without changing decoded image pixels.
 `scripts/online_worker.py` also saves source and generated semantic label maps
 alongside raw output, allowing subsequent visual review to separate model,
 parsing and compositing errors.

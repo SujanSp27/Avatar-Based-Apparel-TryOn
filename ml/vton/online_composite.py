@@ -18,7 +18,8 @@ def _top_hem_extension(old, new, source, feather, clothing_extension):
     """
     rows = np.nonzero(old)[0]
     height = int(rows.max() - rows.min() + 1)
-    limit = max(feather * 2, round(height * .12))
+    baseline_limit = max(feather * 2, round(height * .12))
+    maximum_limit = max(baseline_limit, round(height * .35))
     # Lower-facing edges in the bottom 30% exclude sleeve ends and the collar.
     below = np.zeros_like(old)
     below[:-1] = old[1:]
@@ -29,10 +30,19 @@ def _top_hem_extension(old, new, source, feather, clothing_extension):
     touching = np.unique(components[old & new])
     touching = touching[touching != 0]
     connected_top = np.isin(components, touching)
+    waistband = new & connected_top & np.isin(source, (5, 6, 7))
+    # Follow the complete generated hem when it is modestly longer than the
+    # original. Cutting it at an arbitrary 12% depth leaves jagged jean wedges.
+    # An implausibly long or misparsed top must fail rather than be clipped into
+    # an apparently successful result or overwrite most of the trouser legs.
+    required_depth = float(proximity[waistband].max()) if waistband.any() else 0.
+    if required_depth > maximum_limit:
+        raise PipelineError("garment_length_changed",
+                            "The generated top extends too far over the lower body. "
+                            "Use a person photo wearing a top with similar coverage; this result was rejected.")
+    limit = max(baseline_limit, int(np.ceil(required_depth)))
     extension = (
-        new
-        & connected_top
-        & np.isin(source, (5, 6, 7))
+        waistband
         & (proximity <= limit)
     )
     # A target component can connect through pixels outside the allowed edit
@@ -89,6 +99,6 @@ def preserve_regions(original, generated, source, target, category):
         "editedPixels": int(np.count_nonzero(alpha)),
         "hemExtensionPixels": int(np.count_nonzero(hem_extension)),
         "hemExtensionLimitPixels": hem_limit,
-        "compositor": "semantic-category-preservation-v2",
+        "compositor": "semantic-category-preservation-v3",
         "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required.",
     }

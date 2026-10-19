@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import pytest
 
+from ml.errors import PipelineError
 from ml.vton.online_composite import preserve_regions
 
 
@@ -40,11 +41,9 @@ def test_excessive_generated_top_extension_does_not_replace_trouser_legs(person)
     original, generated, source = person
     target = source.copy()
     target[125:195, 45:115] = 3
-    image, alpha, report = preserve_regions(original, generated, source, target, "tops")
-    lower_edit = (alpha > 0) & (source == 6)
-    assert lower_edit.any()
-    assert np.nonzero(lower_edit)[0].max() <= 124 + report["hemExtensionLimitPixels"]
-    np.testing.assert_array_equal(image[135:], original[135:])
+    with pytest.raises(PipelineError) as failure:
+        preserve_regions(original, generated, source, target, "tops")
+    assert failure.value.code == "garment_length_changed"
 
 
 def test_disconnected_target_top_island_cannot_overwrite_nearby_pants(person):
@@ -57,19 +56,17 @@ def test_disconnected_target_top_island_cannot_overwrite_nearby_pants(person):
     np.testing.assert_array_equal(image[source == 6], original[source == 6])
 
 
-def test_trimming_an_oversized_target_top_does_not_leave_an_isolated_pants_patch(person):
+def test_oversized_connected_target_top_is_rejected_instead_of_leaving_pants_patch(person):
     original, generated, source = person
     target = source.copy()
     # Both strips are one target component, joined below the hem depth limit.
-    # Once that distant join is excluded, only the strip touching the old top
-    # may remain in the edit support.
-    target[125:151, 45:50] = 3
-    target[145:151, 45:101] = 3
-    target[128:151, 95:101] = 3
-    image, alpha, _ = preserve_regions(original, generated, source, target, "tops")
-    assert np.any(alpha[125:133, 45:50] > 0)
-    assert not alpha[128:134, 95:101].any()
-    np.testing.assert_array_equal(image[128:134, 95:101], original[128:134, 95:101])
+    # Clipping that distant join would leave isolated trouser patches. Reject
+    # the distorted garment rather than presenting a partial result.
+    target[125:175, 45:50] = 3
+    target[170:175, 45:101] = 3
+    target[128:175, 95:101] = 3
+    with pytest.raises(PipelineError, match="extends too far"):
+        preserve_regions(original, generated, source, target, "tops")
 
 
 def test_hem_extension_requires_generated_clothing_and_preserves_protected_pixels(person):
@@ -96,7 +93,7 @@ def test_sloping_source_hem_uses_local_contour_not_a_bounding_rectangle(person):
     # but the local extension limit must still apply at each part of the hem.
     source[112:125, 45:70] = 6
     target = source.copy()
-    target[110:145, 45:115] = 3
+    target[110:139, 45:115] = 3
     image, alpha, report = preserve_regions(original, generated, source, target, "tops")
     old = source == 3
     below = np.zeros_like(old)
@@ -105,9 +102,20 @@ def test_sloping_source_hem_uses_local_contour_not_a_bounding_rectangle(person):
     proximity = cv2.distanceTransform((~hem).astype(np.uint8), cv2.DIST_L2, 5)
     lower_edit = (alpha > 0) & (source == 6)
     assert lower_edit[115, 50]
-    assert not lower_edit[125, 50]
+    assert lower_edit[125, 50]
     assert lower_edit[130, 100]
     assert np.all(proximity[lower_edit] <= report["hemExtensionLimitPixels"])
+    np.testing.assert_array_equal(image[145:], original[145:])
+
+
+def test_plausible_longer_top_keeps_its_complete_hem(person):
+    original, generated, source = person
+    target = source.copy()
+    target[125:145, 45:115] = 3
+    image, alpha, report = preserve_regions(original, generated, source, target, "tops")
+    assert report["hemExtensionLimitPixels"] >= 20
+    assert np.all(alpha[125:142, 49:111] == 1)
+    np.testing.assert_array_equal(image[125:142, 49:111], generated[125:142, 49:111])
     np.testing.assert_array_equal(image[145:], original[145:])
 
 

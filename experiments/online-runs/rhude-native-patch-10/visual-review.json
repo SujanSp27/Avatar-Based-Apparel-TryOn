@@ -1,0 +1,14 @@
+{
+  "reviewDate": "2026-10-19",
+  "reviewer": "assistant visual inspection",
+  "accepted": false,
+  "faceRecognizable": true,
+  "graphicRecognizable": true,
+  "endToEndSeconds": 18.644,
+  "defects": [
+    "Jagged hem clipped by original waistband",
+    "Narrow exposed skin strip beside shoulder",
+    "Minor logo distortion"
+  ],
+  "followUp": "Adaptive hem compositor; original raw output expired with runtime so a fresh validation is required"
+}
