@@ -80,3 +80,46 @@ class Run(Base):
         ForeignKey("size_chart_versions.id"), nullable=True
     )
     metadata_json: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class BrandSizeChart(Base):
+    """Six-metric apparel charts for /api/v1; legacy charts retain their contract."""
+
+    __tablename__ = "brand_size_charts"
+    __table_args__ = (
+        UniqueConstraint("brand_id", "apparel_id", "version", "size_label"),
+        UniqueConstraint("brand_id", "apparel_id", "version", "sort_order"),
+        CheckConstraint("version > 0 AND sort_order >= 0"),
+        *(
+            CheckConstraint(
+                f"({metric}_min IS NULL AND {metric}_max IS NULL) OR "
+                f"({metric}_min IS NOT NULL AND {metric}_max IS NOT NULL AND "
+                f"{metric}_min > 0 AND {metric}_max >= {metric}_min)",
+                name=f"ck_brand_size_{metric}",
+            )
+            for metric in ("shoulder_width", "chest_circumference", "waist_circumference",
+                           "hip_circumference", "thigh_circumference", "inseam_length")
+        ),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    brand_id: Mapped[str] = mapped_column(String(120), index=True)
+    brand_name: Mapped[str] = mapped_column(String(120))
+    apparel_id: Mapped[str] = mapped_column(String(120), index=True)
+    category: Mapped[str] = mapped_column(String(20))
+    size_label: Mapped[str] = mapped_column(String(20))
+    sort_order: Mapped[int] = mapped_column(Integer)
+    version: Mapped[int] = mapped_column(Integer)
+    source: Mapped[str] = mapped_column(String(500))
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
+    shoulder_width_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    shoulder_width_max: Mapped[float | None] = mapped_column(Float, nullable=True)
+    chest_circumference_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    chest_circumference_max: Mapped[float | None] = mapped_column(Float, nullable=True)
+    waist_circumference_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    waist_circumference_max: Mapped[float | None] = mapped_column(Float, nullable=True)
+    hip_circumference_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    hip_circumference_max: Mapped[float | None] = mapped_column(Float, nullable=True)
+    thigh_circumference_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    thigh_circumference_max: Mapped[float | None] = mapped_column(Float, nullable=True)
+    inseam_length_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    inseam_length_max: Mapped[float | None] = mapped_column(Float, nullable=True)

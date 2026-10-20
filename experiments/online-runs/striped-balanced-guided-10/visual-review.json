@@ -1,0 +1,15 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": false,
+  "acceptanceScope": "Strict visual fitting and pattern fidelity.",
+  "reviewer": "assistant visual inspection of actual generated image",
+  "findings": [
+    "Original face and unrelated background/lower-body regions are retained.",
+    "Continuous hem and aligned sleeves improve the earlier flat-overlay appearance.",
+    "Neckline is broad and one collar corner has a small bright outline.",
+    "Stripe spacing and fabric folds are simplified; strict fidelity remains unmet."
+  ],
+  "timingTargetMet": true,
+  "endToEndSeconds": 25.151,
+  "rawOutputAndMasksRecovered": true
+}

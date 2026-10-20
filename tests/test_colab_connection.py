@@ -176,8 +176,8 @@ def test_recovery_cell_embeds_persistent_profile_and_runtime_pin():
     keywords = {kw.arg: ast.literal_eval(kw.value) for kw in call.keywords}
     assert keywords['expected_hostname'] == 'runtime-a'
     assert keywords['worker_profile'] == {
-        'precision': 'fp16', 'resolution': 'native', 'cropPerson': False,
-        'guidanceScale': 1.5, 'skipUnusedUnconditional': False, 'segmentationFree': True,
+        'precision': 'fp16', 'resolution': 'balanced', 'cropPerson': False,
+        'guidanceScale': 1.5, 'skipUnusedUnconditional': True, 'segmentationFree': True,
     }
     # Stable source avoids repeated cell updates between recovery cycles.
     assert recovery_module.recovery_source('runtime-a') == source

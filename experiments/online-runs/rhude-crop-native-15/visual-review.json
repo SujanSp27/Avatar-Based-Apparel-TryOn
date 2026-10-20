@@ -1,0 +1,11 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": false,
+  "reviewer": "assistant visual inspection",
+  "findings": [
+    "Rejected: improved shoulder seam on one side, but thin shoulder fringe and distorted lettering remain."
+  ],
+  "endToEndSeconds": 23.009,
+  "timingTargetMet": true,
+  "rawOutputAndMasksRecovered": false
+}

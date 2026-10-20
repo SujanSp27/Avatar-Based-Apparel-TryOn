@@ -79,12 +79,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9749,
+                  "duration": 9668,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-19T05:13:12.918Z",
+                  "startTime": "2026-10-20T09:55:32.878Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -113,12 +113,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1704,
+                  "duration": 1339,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-19T05:13:23.061Z",
+                  "startTime": "2026-10-20T09:55:43.258Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -147,12 +147,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 910,
+                  "duration": 942,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-19T05:13:24.774Z",
+                  "startTime": "2026-10-20T09:55:44.607Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -181,12 +181,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2436,
+                  "duration": 1280,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-19T05:13:25.690Z",
+                  "startTime": "2026-10-20T09:55:45.554Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -204,8 +204,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-19T05:13:11.557Z",
-    "duration": 17862.976,
+    "startTime": "2026-10-20T09:55:30.511Z",
+    "duration": 17671.164,
     "expected": 4,
     "skipped": 0,
     "unexpected": 0,

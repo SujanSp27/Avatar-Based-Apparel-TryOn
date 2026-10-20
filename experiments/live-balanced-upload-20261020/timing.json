@@ -1,0 +1,15 @@
+{
+  "jobId": "7e6dd126-1c75-4656-9094-e48c3ed873b4",
+  "runId": "bcab4adf-31ac-40d6-868c-ea458f257819",
+  "browserSeconds": 25.449,
+  "pipelineSeconds": 22.668,
+  "gpuSeconds": 16.943,
+  "targetSeconds": 30,
+  "timingTargetMet": true,
+  "freshGeneration": true,
+  "visualAcceptance": "accepted for controlled research prototype example; see visual-review.json for detail loss",
+  "inputs": {
+    "personSha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+    "garmentSha256": "3929f83104c547bcf4a74985999438c05f887d97445c700029414466680eeee3"
+  }
+}

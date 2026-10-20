@@ -1,0 +1,11 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": false,
+  "reviewer": "assistant visual inspection",
+  "findings": [
+    "Rejected: invented white hem band, missing upper stripes and dark upper-arm artifacts."
+  ],
+  "endToEndSeconds": 23.501,
+  "timingTargetMet": true,
+  "rawOutputAndMasksRecovered": true
+}

@@ -1,0 +1,20 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": true,
+  "acceptanceScope": "Controlled research prototype example only; no universal quality or latency guarantee.",
+  "reviewer": "assistant visual inspection of actual browser screenshot, downloaded generated PNG and uploaded product image",
+  "jobId": "7e6dd126-1c75-4656-9094-e48c3ed873b4",
+  "runId": "bcab4adf-31ac-40d6-868c-ea458f257819",
+  "browserSeconds": 25.449,
+  "pipelineSeconds": 22.668,
+  "timingTargetMet": true,
+  "rawOutputAndMasksRecovered": true,
+  "findings": [
+    "Actual uploaded person and product shirt are shown in the browser.",
+    "Face and identity are preserved; neckline, shoulders, sleeves and hem align.",
+    "No visible old beige shirt fragments.",
+    "Small graphic lettering and fabric texture are simplified.",
+    "Browser original/result comparison works without another inference POST."
+  ],
+  "relatedDetailedReview": "../online-runs/studio-rhude-balanced-10/visual-review.json"
+}

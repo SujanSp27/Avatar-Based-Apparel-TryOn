@@ -1,0 +1,16 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": true,
+  "acceptanceScope": "Controlled research prototype example only; not production or garment-detail fidelity certification.",
+  "reviewer": "assistant visual inspection of actual generated image and uploaded product image",
+  "findings": [
+    "Original face, hair, visible hands, jeans and background are retained.",
+    "Round neckline, both loose sleeves and continuous hem align with the person.",
+    "No visible fragments of the original beige shirt.",
+    "Uploaded graphic, main lettering and colors determine the result.",
+    "Small SKI CLUB lettering and fine collar/fabric detail are lost; graphic proportions are approximate."
+  ],
+  "timingTargetMet": true,
+  "endToEndSeconds": 23.08,
+  "rawOutputAndMasksRecovered": true
+}

@@ -1,0 +1,11 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": false,
+  "reviewer": "assistant inspection of actual final/raw images",
+  "findings": [
+    "Improved neckline and continuous hem; shoulder highlight/fringe and simplified fabric remain. No universal acceptance."
+  ],
+  "timingTargetMet": true,
+  "endToEndSeconds": 29.91,
+  "rawOutputAndMasksRecovered": true
+}

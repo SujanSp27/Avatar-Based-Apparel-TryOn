@@ -20,14 +20,53 @@ references, and the active requirements are in [requirements.md](requirements.md
 | 3 / 4 | 3D human reconstruction and mesh measurements | BLOCKED | Removed from active scope at user's request; no image-derived measurement claims |
 | 5 / 6 | Versioned charts and explainable size engine | IMPLEMENTED | Existing database/API/engine retained; independent measured-input size API/browser test |
 | 7 / 8 / 9 / 10 | 3D garments, fitting, cloth simulation and GLB scene | BLOCKED | Removed from active scope at user's request; replaced by photo generation |
-| 7 / 8 / 9 | Real pretrained image-based garment generation | PARTIALLY IMPLEMENTED | FASHN VTON 1.5 native FP16 result has a continuous hem, aligned sleeves and no visible old-shirt fragments in the reviewed example. Simplified folds/collar proportions remain; reduced-resolution experiments have unacceptable sleeve/hem artifacts |
+| 7 / 8 / 9 | Real pretrained image-based garment generation | PARTIALLY IMPLEMENTED | FASHN VTON 1.5 FP16/504 x 756 result has a natural collar, aligned sleeves and continuous hem without old-shirt fragments in the controlled graphic-shirt example. Small graphic details, striped collar corners and other-person contours remain imperfect |
 | 11 | Uploads, eleven categories, photo type, original comparison and PNG output | IMPLEMENTED | `frontend/src/App.tsx`, `PhotoViewer.tsx`; seven browser tests passed |
-| 12 | Colab-only transport, jobs, failures, reconnect without local fallback | IMPLEMENTED | Transport/DB/job/reconnection tests; same worker URL retained throughout an in-flight event. Lossless input/output transport, exact-pixel round-trip tests, response type/format/dimension checks and stage diagnostics |
+| 12 | Colab-only transport, jobs, failures, reconnect without local fallback | IMPLEMENTED | Transport/DB/job/reconnection tests; same worker URL retained throughout an in-flight event. JPEG95 conditioning plus lossless changed-pixel output preserves original pixels outside the edit; response type/format/dimension checks and stage diagnostics |
 | 13 / 14 | Evaluation records and broader quality/generalization | PARTIALLY IMPLEMENTED | Saved striped-shirt, second-person graphic-shirt and dress benchmarks, images and visual reviews in `docs/online-performance.md`. Fast results retain unacceptable artifacts; broad category quality remains unvalidated |
-| 15 | Acceptable fresh generation within 30 seconds | PARTIALLY IMPLEMENTED | Native FP16/20 steps improved from 292.278s to 54.583s end to end. Revised 10-step boundaries took 31.078s and retain shoulder artifacts. Faster examples failed visual review; the combined target is not met |
+| 15 | Acceptable fresh generation within 30 seconds | PARTIALLY IMPLEMENTED | Current FP16/504 x 756/10-step graphic-shirt benchmark 23.080s; fresh browser upload-to-visible-image 25.449s (pipeline 22.668s). This controlled example passed prototype visual review. Striped, other-person and skirt/dress limitations remain; no universal guarantee |
 | 16 | Complete production-quality application | PARTIALLY IMPLEMENTED | Web/API/size engine and online generation exist; garment quality, cloud environment isolation and latency need further work |
 
 Saved benchmark evidence is detailed in [online-performance.md](online-performance.md).
+The current default is FP16, 504 x 756, 10 steps, guidance 1.5, no crop and JPEG95
+conditioning. The existing Colab T4 produced a fresh result through the real app:
+**25.449 seconds from Generate to a loaded image**, including 22.668 seconds in
+the pipeline and 16.943 seconds in GPU generation. The opt-in browser test passed
+with exactly one inference POST; original/result comparison also worked.
+Evidence and visual limitations are saved under
+`experiments/live-balanced-upload-20261020/`. The graphic-shirt example meets
+controlled prototype acceptance; small printed details are lost, and all-category
+production acceptance remains open.
+
+The 20 October work corrected ProPhoto-to-sRGB conversion before metadata removal,
+then added a bounded semantic blend where a new neckline or hem reveals material
+under the original outfit. Protected face/hair/hands and pixels outside the edit
+mask remain unchanged. A new coverage gate rejects results inventing exposed skin
+across more than 20% of the replaced garment area. These fixes are implemented;
+their existence does not establish photographic accuracy for every category.
+
+Fresh tests on the existing Colab T4: striped shirt 23.230s, graphic shirt 22.252s,
+tiered skirt 23.318s, dress 24.340s. Each has actual output, raw model image, parsing
+maps, timings and a separate visual review. The skirt fixture had been mislabeled
+as trousers; it validates neither trouser fitting nor category accuracy. The dress
+result predates the new coverage rejection. A larger shoulder projection was
+tested at 26.443s, rejected for a rough contour, and reverted. Native crop tests
+also remain unaccepted, including a white shirt band in the striped result.
+
+The final full regression run passed **470 CPU-only tests**, with 2 integration
+tests deselected, recorded in `experiments/online-balanced-full-tests.xml`.
+Ruff passed for the changed Python files. The live browser upload test passed and
+its raw output and masks were recovered from Colab to the evidence directory.
+
+456 CPU-only tests passed before the coverage gate. The earlier focused run passed
+104 tests covering compositing, colour handling, recovery, API/database and jobs
+after reverting the rejected contour experiment. Another 115 focused tests passed
+for the promoted preset, including parsing integer inference steps from environment
+variables without breaking API startup. Four browser checks, a fresh live upload
+test and the production frontend build passed on 20 October. These local checks are separate
+from visual model acceptance; no model trained and no local GPU was used.
+
+Earlier records:
 The 54.583-second native FP16 image was reviewed on 18 October: face recognizable,
 hands retained, sleeves aligned, no visible old-shirt fragments and a continuous
 hem. This is one controlled example, not production-quality acceptance across
@@ -37,7 +76,8 @@ preset. Native guidance-1.0 / 10 steps reached 21.274s; adding the official clot
 mask reached 19.627s. Both failed visual review. The revised second-person
 hem/shoulder compositor completed in 31.078s (13.181s generation), with a continuous
 hem but remaining shoulder-edge artifacts. Raw outputs and masks are saved;
-the faster settings are not promoted to the tracked default profile.
+those earlier faster settings were not promoted. The later 504 x 756 preset above
+is now the research default after its controlled real-shirt review.
 
 Recorded connection and local verification (historical checks, not a claim that
 an ephemeral Colab session is currently live):
@@ -78,7 +118,7 @@ The 17 October connection reached several different runtime hostnames. Recovery
 now refuses to mutate a runtime different from the verified pin. The original
 292.3-second result and the subsequent native/reduced-resolution FP16 images and
 timings are safely local under `experiments/online-runs/`.
-The reviewed native FP16/guidance-1.5 settings are persisted in
+The current 504 x 756 FP16/guidance-1.5 settings are persisted in
 `config/online-worker.json` for restoring missing runtime configuration. Existing
 settings and running jobs are preserved. Native guidance-1.0 experiments have
 completed: the second-person graphic-shirt result took 18.644 seconds but failed
@@ -90,17 +130,19 @@ transport is now verified on live output without changing decoded image pixels.
 alongside raw output, allowing subsequent visual review to separate model,
 parsing and compositing errors.
 
-An optional quality-95 input encoding is implemented and covered by focused
+Quality-95 input encoding is implemented and covered by focused
 tests. It reduces uploaded bytes while preserving original pixels outside the
-generated edit patch. Live speed and garment-detail validation is still required;
-lossless remains the default.
+generated edit patch. It was used in the fresh 20 October results above and is now
+the default research setting. Lossless input remains configurable. This change
+does not establish exact garment-detail fidelity.
 
 The 19 October continuation recovered the raw output and masks for the hem
 failure, completed a fresh 31.078-second boundary test, and passed 447 CPU tests
 plus 51 focused tests after adding failed-run artifact records. Four browser
 checks passed for automatic readiness/recovery, the photo-only interface and the
-real size API. The subsequent smaller-upload benchmark has **not run**: the
-connected notebook switched runtimes during worker restoration. The runtime pin
+real size API. At that point the smaller-upload benchmark had not run because the
+connected notebook switched runtimes during worker restoration. It subsequently
+completed on 20 October as recorded above. The runtime pin
 blocked changes to the other machine. The user confirmed only one tab was open;
 two read-only checks then verified the same empty replacement T4 before its pin
 was updated. Restoration resumed on that existing notebook in one bounded cell.

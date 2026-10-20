@@ -11,6 +11,11 @@ PROFILE = {'precision': 'fp16', 'resolution': 'native', 'cropPerson': False,
            'guidanceScale': 1.5, 'skipUnusedUnconditional': False, 'segmentationFree': True}
 
 
+def test_balanced_resolution_survives_profile_validation():
+    profile = {**PROFILE, 'resolution': 'balanced', 'skipUnusedUnconditional': True}
+    assert worker.validate_worker_profile(profile) == profile
+
+
 @pytest.fixture(autouse=True)
 def runtime_hostname(monkeypatch):
     monkeypatch.setattr(worker.socket, 'gethostname', lambda: 'runtime-a')

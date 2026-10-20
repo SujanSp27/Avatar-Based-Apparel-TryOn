@@ -1,0 +1,11 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": false,
+  "reviewer": "assistant inspection of actual final/raw images",
+  "findings": [
+    "Recognizable graphic and continuous hem, but thin shoulder fringe remains and total time exceeds 30 seconds."
+  ],
+  "timingTargetMet": false,
+  "endToEndSeconds": 31.2,
+  "rawOutputAndMasksRecovered": true
+}

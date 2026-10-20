@@ -1,0 +1,6 @@
+{
+  "verification": "CPU replay of actual recovered Colab labels/raw output; no new inference",
+  "code": "coverage_change_too_large",
+  "message": "This outfit would expose too much skin hidden by the original clothing. Use a person photo with similar sleeve and hem coverage; the generated result was rejected.",
+  "compositor": "v7"
+}

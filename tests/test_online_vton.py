@@ -35,6 +35,13 @@ def png(color="blue"):
     return buffer.getvalue()
 
 
+@pytest.fixture(autouse=True)
+def lossless_legacy_transport(monkeypatch):
+    # Exercise compatibility independently of the application's JPEG preset.
+    # JPEG-specific tests override this and require exact changed-pixel output.
+    monkeypatch.setattr(settings, "online_vton_input_encoding", "lossless")
+
+
 @pytest.mark.parametrize("category,mapped", MODEL_CATEGORIES.items())
 def test_actual_upload_category_and_remote_image_are_used(tmp_path, category, mapped):
     requests = []

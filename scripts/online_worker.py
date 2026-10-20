@@ -74,12 +74,13 @@ def main():
         raise RuntimeError("Unsupported worker precision profile")
     use_fp16 = precision == "fp16" or os.environ.get("ONLINE_EXPERIMENTAL_FP16") == "1"
     resolution_profile = profile_data.get("resolution", "native")
-    if resolution_profile not in {"native", "fast"}:
+    if resolution_profile not in {"native", "balanced", "fast"}:
         raise RuntimeError("Unsupported worker resolution profile")
     # The pinned model uses convolutional patches and RoPE, with no learned
     # spatial embedding tied to the native grid. Keep the aspect ratio and
     # 12-pixel patch alignment. Reduced resolution requires visual evaluation.
-    input_shape = (576, 384) if resolution_profile == "fast" else (864, 576)
+    input_shape = {"native": (864, 576), "balanced": (756, 504),
+                   "fast": (576, 384)}[resolution_profile]
     crop_person = profile_data.get("cropPerson", False)
     guidance = profile_data.get("guidanceScale", 1.5)
     if guidance not in {1.0, 1.5}:

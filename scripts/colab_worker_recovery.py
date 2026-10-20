@@ -20,7 +20,7 @@ def validate_worker_profile(profile: dict | None) -> dict | None:
         raise ValueError('Worker profile must contain exactly the supported settings')
     if type(profile['precision']) is not str or profile['precision'] not in {'upstream', 'fp16'}:
         raise ValueError('Unsupported worker precision profile')
-    if type(profile['resolution']) is not str or profile['resolution'] not in {'native', 'fast'}:
+    if type(profile['resolution']) is not str or profile['resolution'] not in {'native', 'balanced', 'fast'}:
         raise ValueError('Unsupported worker resolution profile')
     for name in ('cropPerson', 'skipUnusedUnconditional', 'segmentationFree'):
         if type(profile[name]) is not bool:

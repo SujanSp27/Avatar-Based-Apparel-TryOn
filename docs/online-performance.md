@@ -1,15 +1,22 @@
 # Online inference performance work - 20 October 2026
 
 The current acceptance target is **a visually correct fresh result within 30
-seconds**, revised by the user on 20 October. Earlier targets and individual
-timings below remain historical evidence. Fresh native-resolution 15-step tests
-now take 22.252-26.443 seconds, but garment quality remains under review. Timing
-alone is not acceptance and these observations are not a service guarantee.
+seconds**, revised by the user on 20 October. The current 504 x 756 / 10-step
+research preset produced a real graphic T-shirt in **23.080 seconds** and the
+striped sample in **25.151 seconds**. The graphic-shirt result is acceptable for
+this controlled prototype example: aligned neckline/sleeves/hem, preserved face,
+and no visible old-shirt fragments. Small printed details are lost. The striped
+result has simplified fabric and an imperfect collar corner. Earlier experiments
+remain below, including rejected fast images. Broad quality acceptance and a
+reliable 30-second upper bound remain unverified.
 
-Fresh generation has improved from **292.278 seconds to 54.583 seconds** for the
-reviewed native-resolution striped-shirt example. A reduced-resolution experiment
-finished in **14.914 seconds**, but its sleeve and hem artifacts fail the visual
-acceptance criteria. **Acceptable try-on within 30 seconds is not yet verified.**
+The final real-browser upload check passed at **25.449 seconds from Generate to
+the loaded image**, with a 22.668-second pipeline and 16.943-second GPU generation.
+It submitted exactly one job to the existing private Colab worker; original/result
+comparison worked. [Timing](../experiments/live-balanced-upload-20261020/timing.json),
+[browser screenshot](../experiments/live-balanced-upload-20261020/browser.png) and
+[visual review](../experiments/live-balanced-upload-20261020/visual-review.json)
+are saved separately from API-only benchmarks.
 
 All model inference below ran on the user's existing Colab Tesla T4. Person and
 garment photos remain restricted to that Colab worker; permission to use free
@@ -44,6 +51,12 @@ are individual observations, not latency percentiles or a service guarantee.
 | [Tiered skirt](../experiments/online-runs/trouser-native-transition-15/benchmark.json) | 15 | 16.689s | 23.318s | Rejected waist seam/detail; fixture was mislabeled as trousers but is a skirt |
 | [Dress](../experiments/online-runs/dress-native-transition-15/benchmark.json) | 15 | 16.988s | 24.340s | Rejected: large newly exposed skin/background area |
 | [Graphic shirt, expanded contour experiment](../experiments/online-runs/rhude-native-contour-15/benchmark.json) | 15 | 18.525s | 26.443s | Rejected: rough shoulder contour; this expansion was reverted |
+| [Striped, native torso crop](../experiments/online-runs/striped-crop-native-15/benchmark.json) | 15 | 17.786s | 23.501s | Rejected: invented white hem band and missing upper stripes |
+| [Graphic shirt, native torso crop](../experiments/online-runs/rhude-crop-native-15/benchmark.json) | 15 | 16.694s | 23.009s | Rejected: shoulder fringe and lettering distortion |
+| [Striped, native guidance 1.5](../experiments/online-runs/striped-native-guided-10/benchmark.json) | 10 | 22.272s | 29.910s | Improved neckline; shoulder fringe/highlight and simplified fabric remain |
+| [Graphic shirt, native guidance 1.5](../experiments/online-runs/rhude-native-guided-10/benchmark.json) | 10 | 20.598s | 31.200s | Shoulder fringe remains; exceeds timing target |
+| [Striped, 504 x 756, guidance 1.5](../experiments/online-runs/striped-balanced-guided-10/benchmark.json) | 10 | 17.087s | 25.151s | Continuous hem and aligned sleeves; simplified fabric/stripe spacing and imperfect collar corner |
+| [Studio person, real graphic T-shirt, 504 x 756](../experiments/online-runs/studio-rhude-balanced-10/benchmark.json) | 10 | 16.439s | 23.080s | Acceptable controlled prototype example: natural collar, aligned sleeves, no visible old shirt; small graphic details lost |
 
 The native FP16 assessment is recorded in
 [`visual-review.json`](../experiments/online-runs/striped-fp16-20/visual-review.json).
@@ -79,16 +92,18 @@ that semantic labels or clothing boundaries are correct.
 predictions, guidance and updated states before clamping or image conversion.
 CPU tests cover NaN/Inf predictions, guidance overflow, final-state overflow and
 equivalence to the upstream algorithm. Reduced resolution, crops and fewer than
-the upstream recommended fast preset of 20 steps remain experimental; their current
-images must not be presented as a validated fast-quality preset.
+the upstream recommended fast preset of 20 steps remain experimental; one good
+controlled example does not validate photographic accuracy across categories.
 
-`config/online-worker.json` now persists the reviewed FP16/native profile with
-guidance 1.5, no crop, segmentation-free conditioning and the conditional-branch
-shortcut disabled. Automatic recovery validates this profile and seeds the Colab
+`config/online-worker.json` now persists the FP16/504 x 756 research profile with
+guidance 1.5, no crop, segmentation-free conditioning and skipping unused
+unconditional predictions enabled. With guidance 1.5 this avoids only the last
+unused branch; it retains guidance on earlier steps. `ONLINE_VTON_STEPS=10` is
+the API default. Automatic recovery validates this profile and seeds the Colab
 configuration only if it is absent; it preserves existing runtime settings and
-running work. Guidance 1.0 and skipping unused unconditional predictions have now
-been measured on native-resolution images above, but their visual defects prevent
-promotion to the default profile.
+running work. The current runtime was updated while idle and verified by the
+live benchmark diagnostics. The earlier 384 x 576 and guidance-1.0 settings failed
+visual review and are not the current profile.
 
 Lossless transport is implemented for sanitized inputs and generated output. Inputs
 use WebP only when smaller than PNG; the worker returns lossless WebP, and the API
@@ -123,7 +138,7 @@ erase an arm to conceal a model error. Face, hands and unrelated lower-body
 pixels remain unchanged. Residual shoulder contour artifacts still fail the full
 acceptance criterion.
 
-`ONLINE_VTON_INPUT_ENCODING=jpeg95` is an **optional experiment**, not the default.
+`ONLINE_VTON_INPUT_ENCODING=jpeg95` is now the default for this research preset.
 It uses quality-95 JPEG without chroma subsampling when smaller than lossless
 transport. The second-person pair falls from 1,155,144 to 400,460 uploaded bytes.
 Conditioning pixels change, so image quality must be re-evaluated. The generated
@@ -159,7 +174,7 @@ timings and fresh output. Use a new output directory for each experiment. Recove
 an existing event instead of resubmitting a generation after a transport timeout.
 Only pose/parser results are cached; every benchmark image is generated anew.
 
-Official dress and trousers fixtures are prepared under `data/raw/fashn-samples/`,
+Official dress and skirt fixtures are prepared under `data/raw/fashn-samples/`,
 with source revisions and hashes in its manifest. Saved results above do not
 establish their inference quality or support for every kind of dress. Repeat timing,
 broader category validation and acceptable quality within 30 seconds remain open.
@@ -170,14 +185,25 @@ area and extent, with background-padding regression tests. A new live dress test
 passed this input check, but its generated image failed visual review as recorded
 above. Resolving validation does not establish acceptable dress generation.
 
-Latest broad local verification: **447 CPU-only Python tests passed with zero failures or
-errors** in `experiments/online-profile-transport-tests.xml`, covering worker profile
+Latest broad local verification: **470 CPU-only Python tests passed, 2 integration
+tests deselected**, in `experiments/online-balanced-full-tests.xml`. The earlier
+`experiments/online-color-boundary-tests.xml` records 456 passes. After adding the coverage
+gate and reverting the expanded shoulder contour, **104 focused tests passed** in
+`experiments/online-final-boundary-tests.xml`. Coverage includes worker profile
 validation/recovery, lossless image round trips, response validation and sampler
 safeguards. The earlier `experiments/online-recovery-hem-tests.xml` records 351 passed
 and 2 integration tests deselected. Tests validate transport, recovery and mask
 behavior, not photographic realism or live deployment. Runtime identity
 checks prevent recovery from silently installing or launching work on a different
 Colab machine. A live allocated GPU and authenticated notebook remain prerequisites.
+
+The promoted preset passed **115 focused CPU tests** in
+`experiments/online-balanced-preset-tests.xml`. This includes an API startup fix:
+environment strings such as `ONLINE_VTON_STEPS=10` are parsed as integers before
+checking the worker's allowed step counts. Unsupported counts fail at startup.
+The opt-in `frontend/e2e/live-upload.spec.ts` submits exactly one real private
+Colab job, saves its ID before waiting, and records browser-visible latency and
+the downloaded PNG. It refuses to overwrite a previous test's evidence directory.
 
 References: [pinned FASHN pipeline](https://github.com/fashn-AI/fashn-vton-1.5/blob/7c0f10af3f91ad4048fe9729c470a13ef905d25a/src/fashn_vton/pipeline.py),
 [PyTorch BF16 support API](https://docs.pytorch.org/docs/2.14/generated/torch.cuda.is_bf16_supported.html).

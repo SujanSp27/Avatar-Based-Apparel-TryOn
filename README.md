@@ -28,24 +28,32 @@ notebook helper. The existing notebook is recorded in ignored
 The current model is official FASHN VTON 1.5, with source/checkpoint revisions
 pinned in `scripts/setup_online_worker.py`. The eleven UI categories map to tops,
 bottoms and one-pieces. Category support does not establish visual quality for
-every garment. No training has been performed. The best reviewed native-resolution
-T4 example took **54.583 seconds**, improved from 292.278 seconds. A reduced-resolution
-experiment took **14.914 seconds** but failed visual review because of sleeve and
-hem artifacts. Acceptable fresh try-on within the revised 30-second target remains
-unverified. Photos are processed only in the user's Colab, never in a public GPU demo.
-Native-resolution 10-step experiments reached 21.274s and 19.627s, but were also
-rejected for neckline, exposed-skin and hem artifacts; they are not default presets.
+every garment. No training has been performed. The current research preset produced
+a real graphic T-shirt in **23.080 seconds** and the striped sample in **25.151
+seconds**, including transport. In the reviewed graphic-shirt example, the face
+is preserved, collar/sleeves/hem align, and no old-shirt fragments are visible.
+Small printed details are lost; striped collar corners and difficult shoulder
+boundaries still need improvement. Accurate output within 30 seconds across
+people and categories is **not verified**. Photos are processed only in the
+user's Colab, never in a public GPU demo.
 
-`config/online-worker.json` persists the reviewed FP16/native-resolution profile
-with guidance 1.5. Recovery seeds this configuration only when the Colab file is
-absent; it preserves existing runtime settings and running work. Lossless image
-transport reduces payload size without changing sanitized pixels, while stage
-timings separate generation, preprocessing and transport costs. These local changes
-have 447 passing CPU tests. A second-person graphic-shirt run reached 18.644
-seconds but had a clipped hem. The revised compositor fixes that hem in a
-31.078-second run, with residual shoulder-edge artifacts. A dress run passed the corrected full-body check
-but failed visual review. These native experiments include live transport and
-stage timings; none establishes production-quality fast fitting.
+A fresh upload through the browser completed in **25.449 seconds** to a visible
+image (22.668 seconds in the API pipeline). The actual screenshot, timing and
+visual review are saved in `experiments/live-balanced-upload-20261020/`.
+
+`config/online-worker.json` persists FP16, 504 x 756 model resolution, guidance 1.5
+and no crop. The API defaults to 10 steps and quality-95 input encoding. Only
+unused unconditional predictions are skipped; the guided steps remain intact.
+Lossless output patches retain the original pixels outside the clothing edit.
+Recovery seeds this configuration only when the Colab file is absent; existing
+runtime settings and running work are preserved. Warm model/pose caches help,
+but every output is a fresh generation. Cold starts, shared GPU load and network
+delays can exceed 30 seconds.
+
+Colour-profile conversion and neckline/hem blending are corrected. Excessive
+newly exposed skin is rejected rather than shown as a successful result. Skirt,
+dress and second-person shoulder cases have failed visual review and remain
+limitations, not production-quality support claims.
 
 See [current requirements](docs/requirements.md),
 [implementation status](docs/implementation-status.md), and

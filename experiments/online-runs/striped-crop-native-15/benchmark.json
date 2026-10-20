@@ -86,7 +86,7 @@
     }
   },
   "freshGeneration": true,
-  "visualAcceptance": "pending inspection",
+  "visualAcceptance": "rejected; see visual-review.json",
   "endToEndSeconds": 23.501,
   "targetSeconds": 30.0,
   "timingTargetMet": true,
