@@ -20,6 +20,30 @@ class PoseObservation:
     mask: np.ndarray
 
 
+def refine_mask(image: np.ndarray, probabilities: np.ndarray) -> np.ndarray:
+    """Image-guided CPU refinement recovers gaps blurred by the pose mask."""
+    import cv2
+
+    # Pose probability maps alone bridge narrow arm/torso gaps. GrabCut uses
+    # image colours within the pose prior; it is not an anatomical body parser.
+    height, width = image.shape[:2]
+    ratio = min(1.0, 800 / max(height, width))
+    dimensions = (round(width * ratio), round(height * ratio))
+    small = cv2.resize(image, dimensions, interpolation=cv2.INTER_AREA)
+    prior = cv2.resize(probabilities, dimensions, interpolation=cv2.INTER_LINEAR)
+    labels = np.where(prior > 0.5, cv2.GC_PR_FGD, cv2.GC_PR_BGD).astype(np.uint8)
+    labels[prior < 0.01] = cv2.GC_BGD
+    core = cv2.erode((prior > 0.99).astype(np.uint8), np.ones((9, 9), np.uint8))
+    labels[core > 0] = cv2.GC_FGD
+    if not np.any(labels == cv2.GC_FGD) or not np.any(labels == cv2.GC_BGD):
+        raise PipelineError("segmentation_missing", "A clear person outline and background are required.")
+    # Called under the detector lock; a fixed seed also fixes GrabCut's GMM initialization.
+    cv2.setRNGSeed(0)
+    cv2.grabCut(small, labels, None, np.zeros((1, 65)), np.zeros((1, 65)), 3, cv2.GC_INIT_WITH_MASK)
+    mask = np.isin(labels, (cv2.GC_FGD, cv2.GC_PR_FGD)).astype(np.uint8)
+    return cv2.resize(mask, (width, height), interpolation=cv2.INTER_NEAREST).astype(bool)
+
+
 def decode_person(data: bytes) -> np.ndarray:
     try:
         with Image.open(io.BytesIO(data)) as source:
@@ -81,7 +105,10 @@ class MediaPipePose:
                     self.model_sha256 = hashlib.sha256(self.model_path.read_bytes()).hexdigest()
                 except (RuntimeError, ValueError) as exc:
                     raise PipelineError("measurement_model_unavailable", "MediaPipe could not load its checkpoint.", 503) from exc
-            result = self._model.detect(mp.Image(image_format=mp.ImageFormat.SRGB, data=image))
+            try:
+                result = self._model.detect(mp.Image(image_format=mp.ImageFormat.SRGB, data=image))
+            except (RuntimeError, ValueError) as exc:
+                raise PipelineError("pose_inference_failed", "The pose estimator could not process this image.", 422) from exc
             if len(result.pose_landmarks) != 1:
                 raise PipelineError("person_count", f"Expected one person; detected {len(result.pose_landmarks)}.")
             if not result.segmentation_masks:
@@ -91,7 +118,7 @@ class MediaPipePose:
                 image=image,
                 landmarks=np.array([[p.x, p.y, p.z, p.visibility] for p in result.pose_landmarks[0]]),
                 world_landmarks=np.array([[p.x, p.y, p.z] for p in result.pose_world_landmarks[0]]),
-                mask=(result.segmentation_masks[0].numpy_view() > 0.5).copy(),
+                mask=refine_mask(image, result.segmentation_masks[0].numpy_view().copy()),
             )
 
     def close(self):

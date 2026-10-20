@@ -12,6 +12,9 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from backend.app.anthropometry.repository import repository as measurement_repository
+from backend.app.anthropometry.router import get_measurement_service
+from backend.app.anthropometry.router import router as measurement_router
 from backend.app.charts import chart_dict, create_chart, latest_chart, seed_database
 from backend.app.colab_connection import ColabConnection
 from backend.app.config import ROOT, settings
@@ -44,6 +47,10 @@ async def lifespan(app: FastAPI):
     finally:
         connection.close()
         jobs.close()
+        if get_measurement_service.cache_info().currsize:
+            get_measurement_service().detector.close()
+            get_measurement_service.cache_clear()
+        measurement_repository.close()
 
 
 app = FastAPI(title="Form / Fit research API", version="0.1.0", lifespan=lifespan)
@@ -54,12 +61,17 @@ app.add_middleware(
     allow_headers=["Content-Type", "X-Admin-Token", "Prefer", "Idempotency-Key"],
 )
 app.mount("/assets", StaticFiles(directory=str(store.root)), name="assets")
+annotation_root = settings.measurement_output_root / "annotated"
+annotation_root.mkdir(parents=True, exist_ok=True)
+app.mount("/static/annotated", StaticFiles(directory=str(annotation_root)), name="annotated")
+app.include_router(measurement_router)
 
 
 @app.middleware("http")
 async def limit_request(request, call_next):
     length = request.headers.get("content-length")
-    if request.url.path == "/api/tryon" and request.method == "POST":
+    upload_paths = {"/api/tryon": 2, "/api/v1/measurements/extract": 1}
+    if request.url.path in upload_paths and request.method == "POST":
         if not length:
             return JSONResponse(
                 status_code=411,
@@ -70,7 +82,9 @@ async def limit_request(request, call_next):
                     }
                 },
             )
-        if not length.isdigit() or int(length) > (settings.max_upload_mb * 2 + 1) * 1024 * 1024:
+        if not length.isdigit() or int(length) > (
+            settings.max_upload_mb * upload_paths[request.url.path] + 1
+        ) * 1024 * 1024:
             return JSONResponse(
                 status_code=413,
                 content={

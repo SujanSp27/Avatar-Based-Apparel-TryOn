@@ -20,6 +20,8 @@ KEY_LANDMARKS = {
     27: "left ankle", 28: "right ankle", 29: "left heel", 30: "right heel",
 }
 KAPPA = {"chest": 2.45, "waist": 2.30, "hip": 2.40, "thigh": 2.50}
+THIGH_FRACTION = 0.40  # Hip joints sit above the crotch; 25% often spans both legs.
+CHEST_FRACTIONS = (0.25, 0.30, 0.35, 0.40, 0.45)
 
 
 def validate_pose(observation: PoseObservation) -> np.ndarray:
@@ -46,6 +48,8 @@ def validate_pose(observation: PoseObservation) -> np.ndarray:
     shoulder_width = float(np.linalg.norm(points[11] - points[12]))
     if shoulder_width < 10 or abs(points[11, 1] - points[12, 1]) > 0.3 * shoulder_width:
         raise PipelineError("unsupported_pose", "Keep your shoulders level and face the camera.")
+    if (points[23, 0] - points[24, 0]) * (points[25, 0] - points[26, 0]) <= 0:
+        raise PipelineError("unsupported_pose", "Stand with uncrossed legs, facing the camera.")
     world = observation.world_landmarks
     if world.shape == (33, 3) and np.isfinite(world).all():
         span = world[11] - world[12]
@@ -75,7 +79,10 @@ def silhouette_width(mask: np.ndarray, center: np.ndarray, direction: np.ndarray
         left -= 1
     while right + 1 < len(offsets) and foreground[right + 1]:
         right += 1
-    if not inside[left] or not inside[right] or left == 0 or right == len(offsets) - 1:
+    endpoints = coordinates[[left, right]]
+    if (not inside[left] or not inside[right] or left == 0 or right == len(offsets) - 1
+            or np.any(endpoints <= 0)
+            or np.any(endpoints >= np.array([mask.shape[1] - 1, mask.shape[0] - 1]))):
         raise PipelineError("partial_body", "Body outline reaches the image boundary.")
     width = float(offsets[right] - offsets[left] + 1)
     if width < 4:
@@ -87,6 +94,23 @@ def band_width(mask, center, direction, axis):
     # Median over five adjacent sections limits isolated segmentation speckles.
     samples = [silhouette_width(mask, center + shift * axis, direction) for shift in (-2, -1, 0, 1, 2)]
     return sorted(samples, key=lambda item: item[0])[2]
+
+
+def intersects_arm(segment, points, visibility) -> bool:
+    """Reject a torso section that includes a confidently detected arm centerline."""
+    start, end = segment
+    line = end - start
+    for a, b in ((11, 13), (13, 15), (12, 14), (14, 16)):
+        if min(visibility[[a, b]]) <= VISIBILITY_THRESHOLD:
+            continue
+        limb = points[b] - points[a]
+        matrix = np.column_stack((line, -limb))
+        if abs(np.linalg.det(matrix)) < 1e-6:
+            continue
+        along_section, along_arm = np.linalg.solve(matrix, points[a] - start)
+        if 0 <= along_section <= 1 and 0 <= along_arm <= 1:
+            return True
+    return False
 
 
 def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list]:
@@ -107,15 +131,24 @@ def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list
     torso_direction = np.array([torso_axis[1], -torso_axis[0]])
     sections = []
     widths = {}
-    for name, fraction in (("chest", 0.25), ("waist", 0.50)):
-        center = shoulder_center * (1 - fraction) + hip_center * fraction
-        width, segment = band_width(observation.mask, center, torso_direction, torso_axis)
-        if width > 1.65 * np.linalg.norm(p[11] - p[12]):
+    fractions = {}
+    for name, candidates in (("chest", CHEST_FRACTIONS), ("waist", (0.50,))):
+        # The first section below the armpits that is separate from the arms.
+        # Report its position: a lower chest proxy is not the fullest bust.
+        for fraction in candidates:
+            center = shoulder_center * (1 - fraction) + hip_center * fraction
+            width, segment = band_width(observation.mask, center, torso_direction, torso_axis)
+            if (width <= 1.65 * np.linalg.norm(p[11] - p[12])
+                    and not intersects_arm(segment, p, observation.landmarks[:, 3])):
+                break
+        else:
             raise PipelineError("ambiguous_silhouette", "Torso outline includes arms or loose clothing. Keep arms apart and wear close-fitting clothing.")
+        fractions[name] = fraction
         widths[name] = width
         sections.append((name, segment))
     thigh_widths = []
-    thigh_centers = [p[hip] * 0.75 + p[knee] * 0.25 for hip, knee in ((23, 25), (24, 26))]
+    thigh_centers = [p[hip] * (1 - THIGH_FRACTION) + p[knee] * THIGH_FRACTION
+                     for hip, knee in ((23, 25), (24, 26))]
     for index, (hip, knee) in enumerate(((23, 25), (24, 26))):
         axis = p[knee] - p[hip]
         axis /= np.linalg.norm(axis)
@@ -151,13 +184,14 @@ def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list
                      "head_landmark_indices": head_indices,
                      "image_size": list(observation.image.shape[1::-1]),
                      "projection_multipliers": KAPPA,
-                     "chest_torso_fraction": 0.25, "waist_torso_fraction": 0.50,
-                     "thigh_leg_fraction": 0.25,
+                     "chest_torso_fraction": fractions["chest"], "waist_torso_fraction": fractions["waist"],
+                     "thigh_leg_fraction": THIGH_FRACTION,
                      "inseam_reference": "mean Euclidean distance from hip midpoint to ankles 27/28"},
         "warnings": [
             "Single-view estimates depend on self-reported height, perspective, clothing and segmentation.",
             "MediaPipe has no crown or crotch landmark. Face-to-ankle scale and hip-midpoint inseam are biased anatomical proxies.",
             "Circumference multipliers are specified heuristics, not calibrated tape measurements. Hip joint spacing is not outer hip width.",
+            f"Chest uses the first arm-free section at {fractions['chest']:.0%} of shoulder-to-hip distance; it may miss the fullest chest/bust.",
             "Confirm important dimensions with a tape measure before choosing a size.",
         ],
     }, sections
@@ -193,7 +227,8 @@ class MeasurementService:
             provenance={"model": "MediaPipe Pose Landmarker Full", "landmarks": 33,
                         "model_sha256": self.detector.model_sha256, "device": "cpu",
                         "local_gpu_used": False, "input_sha256": hashlib.sha256(data).hexdigest(),
-                        "method": "landmark-silhouette-projection-v1"},
+                        "method": "landmark-silhouette-projection-v2",
+                        "segmentation": "MediaPipe probabilities with deterministic CPU GrabCut refinement"},
         )
         # Validate all geometry before creating successful artifacts.
         Measurements.model_validate(result["measurements"])

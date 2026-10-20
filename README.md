@@ -1,7 +1,10 @@
 # Form / Fit Studio
 
 Photo virtual try-on on the user's existing Google Colab GPU, with independent
-brand size recommendations from measurements entered by the user. The active app
+brand size recommendations from measurements entered by the user. New independent
+MediaPipe body-estimation and exact six-metric sizing APIs use MongoDB; see
+[measurements and sizing](docs/measurements-and-sizing.md). Four verified Nike/Puma
+India product guides cover men and women. The active app
 is now 2D only. Local GPU inference and the old avatar workflow are removed.
 
 Start on this Windows installation:
@@ -34,8 +37,8 @@ seconds**, including transport. In the reviewed graphic-shirt example, the face
 is preserved, collar/sleeves/hem align, and no old-shirt fragments are visible.
 Small printed details are lost; striped collar corners and difficult shoulder
 boundaries still need improvement. Accurate output within 30 seconds across
-people and categories is **not verified**. Photos are processed only in the
-user's Colab, never in a public GPU demo.
+people and categories is **not verified**. VTON generation runs only in the
+user's Colab, never in a public GPU demo. The separate measurement API uses local CPU.
 
 A fresh upload through the browser completed in **25.449 seconds** to a visible
 image (22.668 seconds in the API pipeline). The actual screenshot, timing and

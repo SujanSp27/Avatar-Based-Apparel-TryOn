@@ -1,0 +1,120 @@
+[
+  {
+    "brand_id": "nike",
+    "brand_name": "Nike",
+    "market": "IN",
+    "checked_on": "2026-10-20",
+    "coverage": [
+      {
+        "gender": "men",
+        "status": "verified_body_chart",
+        "apparel_ids": [
+          "nike-in-hv4188-013"
+        ],
+        "source_url": "https://www.nike.in/nike-men-s-dri-fit-t-shirt/p/27753405",
+        "reason": "Verified body guide for this product only; category t-shirt."
+      },
+      {
+        "gender": "women",
+        "status": "verified_body_chart",
+        "apparel_ids": [
+          "nike-in-im6415-133"
+        ],
+        "source_url": "https://www.nike.in/nike-sportswear-chill-knit-women-s-slim-mod-cropped-t-shirt/p/27753683",
+        "reason": "Verified body guide for this product only; category t-shirt."
+      }
+    ]
+  },
+  {
+    "brand_id": "puma",
+    "brand_name": "Puma",
+    "market": "IN",
+    "checked_on": "2026-10-20",
+    "coverage": [
+      {
+        "gender": "men",
+        "status": "verified_body_chart",
+        "apparel_ids": [
+          "puma-in-634184"
+        ],
+        "source_url": "https://in.puma.com/in/en/pd/premium-essentials-mens-graphic-t-shirt/634184",
+        "reason": "Verified body guide for this product only; category t-shirt."
+      },
+      {
+        "gender": "women",
+        "status": "verified_body_chart",
+        "apparel_ids": [
+          "puma-in-691419"
+        ],
+        "source_url": "https://in.puma.com/in/en/pd/essentials-elevated-womens-logo-polo-t-shirt/691419?swatch=65",
+        "reason": "Verified body guide for this product only; category t-shirt."
+      }
+    ]
+  },
+  {
+    "brand_id": "us-polo-assn",
+    "brand_name": "U.S. Polo Assn.",
+    "market": "IN",
+    "checked_on": "2026-10-20",
+    "coverage": [
+      {
+        "gender": "men",
+        "status": "body_chart_unverified",
+        "reason": "India product size tables describe finished garment dimensions. Body ranges and garment ease are not established; no recommendation is enabled.",
+        "apparel_ids": [],
+        "source_url": "https://uspoloassn.in/collections/aw26-americana-shop-all/products/menswear-solid-muscle-fit-polo-shirt-d7ypv1zgm5z"
+      },
+      {
+        "gender": "women",
+        "status": "body_chart_unverified",
+        "reason": "India product size tables describe finished garment dimensions. Body ranges and garment ease are not established; no recommendation is enabled.",
+        "apparel_ids": [],
+        "source_url": "https://uspoloassn.in/products/womenswear-boxy-fit-solid-polo-shirt-6szenlweh8y"
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "market": "IN",
+    "checked_on": "2026-10-20",
+    "coverage": [
+      {
+        "gender": "men",
+        "status": "source_unavailable",
+        "reason": "The India size-guide pages returned access denied. Charts from other markets have not been substituted.",
+        "apparel_ids": [],
+        "source_url": "https://www.adidas.co.in/help/size_charts/men-shirts-tops"
+      },
+      {
+        "gender": "women",
+        "status": "source_unavailable",
+        "reason": "The India size-guide pages returned access denied. Charts from other markets have not been substituted.",
+        "apparel_ids": [],
+        "source_url": "https://www.adidas.co.in/help/size_charts/women-shirts-tops"
+      }
+    ]
+  },
+  {
+    "brand_id": "allen-solly",
+    "brand_name": "Allen Solly",
+    "market": "IN",
+    "checked_on": "2026-10-20",
+    "coverage": [
+      {
+        "gender": "men",
+        "status": "source_unavailable",
+        "reason": "The India product pages expose a size-guide control but the interactive browser returned access denied. Model-worn sizes are not size charts.",
+        "apparel_ids": [],
+        "source_url": "https://allensolly.abfrl.in/p/men-navy-slim-fit-solid-full-sleeves-casual-shirts-892194.html"
+      },
+      {
+        "gender": "women",
+        "status": "source_unavailable",
+        "reason": "The India product pages expose a size-guide control but the interactive browser returned access denied. Model-worn sizes are not size charts.",
+        "apparel_ids": [],
+        "source_url": "https://allensolly.abfrl.in/p/allen-solly-blue-sweatshirt-637800.html"
+      }
+    ]
+  }
+]

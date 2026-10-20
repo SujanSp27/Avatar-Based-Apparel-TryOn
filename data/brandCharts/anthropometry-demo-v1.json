@@ -1,0 +1,788 @@
+[
+  {
+    "brand_id": "brand_b",
+    "brand_name": "Atelier Anthropometry Demo",
+    "apparel_id": "apparel_a",
+    "category": "t-shirt",
+    "version": 1,
+    "source": "Synthetic engineering fixtures; not a retailer size guide.",
+    "is_demo": true,
+    "sizes": [
+      {
+        "size_label": "S",
+        "sort_order": 0,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 38,
+            "upper": 42
+          },
+          "chest_circumference": {
+            "lower": 84,
+            "upper": 92
+          },
+          "waist_circumference": {
+            "lower": 69,
+            "upper": 79
+          },
+          "hip_circumference": {
+            "lower": 88,
+            "upper": 96
+          },
+          "thigh_circumference": {
+            "lower": 48.5,
+            "upper": 53.5
+          },
+          "inseam_length": {
+            "lower": 74,
+            "upper": 78
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 1,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 42,
+            "upper": 46
+          },
+          "chest_circumference": {
+            "lower": 92,
+            "upper": 100
+          },
+          "waist_circumference": {
+            "lower": 79,
+            "upper": 89
+          },
+          "hip_circumference": {
+            "lower": 96,
+            "upper": 104
+          },
+          "thigh_circumference": {
+            "lower": 53.5,
+            "upper": 58.5
+          },
+          "inseam_length": {
+            "lower": 78,
+            "upper": 82
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 2,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 46,
+            "upper": 50
+          },
+          "chest_circumference": {
+            "lower": 100,
+            "upper": 108
+          },
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 99
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 112
+          },
+          "thigh_circumference": {
+            "lower": 58.5,
+            "upper": 63.5
+          },
+          "inseam_length": {
+            "lower": 82,
+            "upper": 86
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 3,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 50,
+            "upper": 54
+          },
+          "chest_circumference": {
+            "lower": 108,
+            "upper": 116
+          },
+          "waist_circumference": {
+            "lower": 99,
+            "upper": 109
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 120
+          },
+          "thigh_circumference": {
+            "lower": 63.5,
+            "upper": 68.5
+          },
+          "inseam_length": {
+            "lower": 86,
+            "upper": 90
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "brand_b",
+    "brand_name": "Atelier Anthropometry Demo",
+    "apparel_id": "apparel_trouser",
+    "category": "trouser",
+    "version": 1,
+    "source": "Synthetic engineering fixtures; not a retailer size guide.",
+    "is_demo": true,
+    "sizes": [
+      {
+        "size_label": "S",
+        "sort_order": 0,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 38,
+            "upper": 42
+          },
+          "chest_circumference": {
+            "lower": 84,
+            "upper": 92
+          },
+          "waist_circumference": {
+            "lower": 69,
+            "upper": 79
+          },
+          "hip_circumference": {
+            "lower": 88,
+            "upper": 96
+          },
+          "thigh_circumference": {
+            "lower": 48.5,
+            "upper": 53.5
+          },
+          "inseam_length": {
+            "lower": 74,
+            "upper": 78
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 1,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 42,
+            "upper": 46
+          },
+          "chest_circumference": {
+            "lower": 92,
+            "upper": 100
+          },
+          "waist_circumference": {
+            "lower": 79,
+            "upper": 89
+          },
+          "hip_circumference": {
+            "lower": 96,
+            "upper": 104
+          },
+          "thigh_circumference": {
+            "lower": 53.5,
+            "upper": 58.5
+          },
+          "inseam_length": {
+            "lower": 78,
+            "upper": 82
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 2,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 46,
+            "upper": 50
+          },
+          "chest_circumference": {
+            "lower": 100,
+            "upper": 108
+          },
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 99
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 112
+          },
+          "thigh_circumference": {
+            "lower": 58.5,
+            "upper": 63.5
+          },
+          "inseam_length": {
+            "lower": 82,
+            "upper": 86
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 3,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 50,
+            "upper": 54
+          },
+          "chest_circumference": {
+            "lower": 108,
+            "upper": 116
+          },
+          "waist_circumference": {
+            "lower": 99,
+            "upper": 109
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 120
+          },
+          "thigh_circumference": {
+            "lower": 63.5,
+            "upper": 68.5
+          },
+          "inseam_length": {
+            "lower": 86,
+            "upper": 90
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "brand_b",
+    "brand_name": "Atelier Anthropometry Demo",
+    "apparel_id": "apparel_all",
+    "category": "jumpsuit",
+    "version": 1,
+    "source": "Synthetic engineering fixtures; not a retailer size guide.",
+    "is_demo": true,
+    "sizes": [
+      {
+        "size_label": "S",
+        "sort_order": 0,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 38,
+            "upper": 42
+          },
+          "chest_circumference": {
+            "lower": 84,
+            "upper": 92
+          },
+          "waist_circumference": {
+            "lower": 69,
+            "upper": 79
+          },
+          "hip_circumference": {
+            "lower": 88,
+            "upper": 96
+          },
+          "thigh_circumference": {
+            "lower": 48.5,
+            "upper": 53.5
+          },
+          "inseam_length": {
+            "lower": 74,
+            "upper": 78
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 1,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 42,
+            "upper": 46
+          },
+          "chest_circumference": {
+            "lower": 92,
+            "upper": 100
+          },
+          "waist_circumference": {
+            "lower": 79,
+            "upper": 89
+          },
+          "hip_circumference": {
+            "lower": 96,
+            "upper": 104
+          },
+          "thigh_circumference": {
+            "lower": 53.5,
+            "upper": 58.5
+          },
+          "inseam_length": {
+            "lower": 78,
+            "upper": 82
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 2,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 46,
+            "upper": 50
+          },
+          "chest_circumference": {
+            "lower": 100,
+            "upper": 108
+          },
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 99
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 112
+          },
+          "thigh_circumference": {
+            "lower": 58.5,
+            "upper": 63.5
+          },
+          "inseam_length": {
+            "lower": 82,
+            "upper": 86
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 3,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 50,
+            "upper": 54
+          },
+          "chest_circumference": {
+            "lower": 108,
+            "upper": 116
+          },
+          "waist_circumference": {
+            "lower": 99,
+            "upper": 109
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 120
+          },
+          "thigh_circumference": {
+            "lower": 63.5,
+            "upper": 68.5
+          },
+          "inseam_length": {
+            "lower": 86,
+            "upper": 90
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "brand_c",
+    "brand_name": "Studio Anthropometry Demo",
+    "apparel_id": "apparel_a",
+    "category": "t-shirt",
+    "version": 1,
+    "source": "Synthetic engineering fixtures; not a retailer size guide.",
+    "is_demo": true,
+    "sizes": [
+      {
+        "size_label": "S",
+        "sort_order": 0,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 40,
+            "upper": 44
+          },
+          "chest_circumference": {
+            "lower": 86,
+            "upper": 94
+          },
+          "waist_circumference": {
+            "lower": 71,
+            "upper": 81
+          },
+          "hip_circumference": {
+            "lower": 90,
+            "upper": 98
+          },
+          "thigh_circumference": {
+            "lower": 50.5,
+            "upper": 55.5
+          },
+          "inseam_length": {
+            "lower": 76,
+            "upper": 80
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 1,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 44,
+            "upper": 48
+          },
+          "chest_circumference": {
+            "lower": 94,
+            "upper": 102
+          },
+          "waist_circumference": {
+            "lower": 81,
+            "upper": 91
+          },
+          "hip_circumference": {
+            "lower": 98,
+            "upper": 106
+          },
+          "thigh_circumference": {
+            "lower": 55.5,
+            "upper": 60.5
+          },
+          "inseam_length": {
+            "lower": 80,
+            "upper": 84
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 2,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 48,
+            "upper": 52
+          },
+          "chest_circumference": {
+            "lower": 102,
+            "upper": 110
+          },
+          "waist_circumference": {
+            "lower": 91,
+            "upper": 101
+          },
+          "hip_circumference": {
+            "lower": 106,
+            "upper": 114
+          },
+          "thigh_circumference": {
+            "lower": 60.5,
+            "upper": 65.5
+          },
+          "inseam_length": {
+            "lower": 84,
+            "upper": 88
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 3,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 52,
+            "upper": 56
+          },
+          "chest_circumference": {
+            "lower": 110,
+            "upper": 118
+          },
+          "waist_circumference": {
+            "lower": 101,
+            "upper": 111
+          },
+          "hip_circumference": {
+            "lower": 114,
+            "upper": 122
+          },
+          "thigh_circumference": {
+            "lower": 65.5,
+            "upper": 70.5
+          },
+          "inseam_length": {
+            "lower": 88,
+            "upper": 92
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "brand_c",
+    "brand_name": "Studio Anthropometry Demo",
+    "apparel_id": "apparel_trouser",
+    "category": "trouser",
+    "version": 1,
+    "source": "Synthetic engineering fixtures; not a retailer size guide.",
+    "is_demo": true,
+    "sizes": [
+      {
+        "size_label": "S",
+        "sort_order": 0,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 40,
+            "upper": 44
+          },
+          "chest_circumference": {
+            "lower": 86,
+            "upper": 94
+          },
+          "waist_circumference": {
+            "lower": 71,
+            "upper": 81
+          },
+          "hip_circumference": {
+            "lower": 90,
+            "upper": 98
+          },
+          "thigh_circumference": {
+            "lower": 50.5,
+            "upper": 55.5
+          },
+          "inseam_length": {
+            "lower": 76,
+            "upper": 80
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 1,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 44,
+            "upper": 48
+          },
+          "chest_circumference": {
+            "lower": 94,
+            "upper": 102
+          },
+          "waist_circumference": {
+            "lower": 81,
+            "upper": 91
+          },
+          "hip_circumference": {
+            "lower": 98,
+            "upper": 106
+          },
+          "thigh_circumference": {
+            "lower": 55.5,
+            "upper": 60.5
+          },
+          "inseam_length": {
+            "lower": 80,
+            "upper": 84
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 2,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 48,
+            "upper": 52
+          },
+          "chest_circumference": {
+            "lower": 102,
+            "upper": 110
+          },
+          "waist_circumference": {
+            "lower": 91,
+            "upper": 101
+          },
+          "hip_circumference": {
+            "lower": 106,
+            "upper": 114
+          },
+          "thigh_circumference": {
+            "lower": 60.5,
+            "upper": 65.5
+          },
+          "inseam_length": {
+            "lower": 84,
+            "upper": 88
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 3,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 52,
+            "upper": 56
+          },
+          "chest_circumference": {
+            "lower": 110,
+            "upper": 118
+          },
+          "waist_circumference": {
+            "lower": 101,
+            "upper": 111
+          },
+          "hip_circumference": {
+            "lower": 114,
+            "upper": 122
+          },
+          "thigh_circumference": {
+            "lower": 65.5,
+            "upper": 70.5
+          },
+          "inseam_length": {
+            "lower": 88,
+            "upper": 92
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "brand_c",
+    "brand_name": "Studio Anthropometry Demo",
+    "apparel_id": "apparel_all",
+    "category": "jumpsuit",
+    "version": 1,
+    "source": "Synthetic engineering fixtures; not a retailer size guide.",
+    "is_demo": true,
+    "sizes": [
+      {
+        "size_label": "S",
+        "sort_order": 0,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 40,
+            "upper": 44
+          },
+          "chest_circumference": {
+            "lower": 86,
+            "upper": 94
+          },
+          "waist_circumference": {
+            "lower": 71,
+            "upper": 81
+          },
+          "hip_circumference": {
+            "lower": 90,
+            "upper": 98
+          },
+          "thigh_circumference": {
+            "lower": 50.5,
+            "upper": 55.5
+          },
+          "inseam_length": {
+            "lower": 76,
+            "upper": 80
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 1,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 44,
+            "upper": 48
+          },
+          "chest_circumference": {
+            "lower": 94,
+            "upper": 102
+          },
+          "waist_circumference": {
+            "lower": 81,
+            "upper": 91
+          },
+          "hip_circumference": {
+            "lower": 98,
+            "upper": 106
+          },
+          "thigh_circumference": {
+            "lower": 55.5,
+            "upper": 60.5
+          },
+          "inseam_length": {
+            "lower": 80,
+            "upper": 84
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 2,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 48,
+            "upper": 52
+          },
+          "chest_circumference": {
+            "lower": 102,
+            "upper": 110
+          },
+          "waist_circumference": {
+            "lower": 91,
+            "upper": 101
+          },
+          "hip_circumference": {
+            "lower": 106,
+            "upper": 114
+          },
+          "thigh_circumference": {
+            "lower": 60.5,
+            "upper": 65.5
+          },
+          "inseam_length": {
+            "lower": 84,
+            "upper": 88
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 3,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 52,
+            "upper": 56
+          },
+          "chest_circumference": {
+            "lower": 110,
+            "upper": 118
+          },
+          "waist_circumference": {
+            "lower": 101,
+            "upper": 111
+          },
+          "hip_circumference": {
+            "lower": 114,
+            "upper": 122
+          },
+          "thigh_circumference": {
+            "lower": 65.5,
+            "upper": 70.5
+          },
+          "inseam_length": {
+            "lower": 88,
+            "upper": 92
+          }
+        }
+      }
+    ]
+  }
+]

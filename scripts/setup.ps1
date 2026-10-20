@@ -5,6 +5,8 @@ if (-not (Test-Path .venv/Scripts/python.exe)) { py -3.12 -m venv .venv }
 if (-not (Test-Path .venv/Scripts/python.exe)) { throw 'Python 3.12 virtual environment creation failed.' }
 & .venv/Scripts/python.exe -m pip install -r requirements.lock.txt
 if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
+& .venv/Scripts/python.exe scripts/download_measurement_model.py
+if ($LASTEXITCODE -ne 0) { throw 'Measurement model setup failed.' }
 & .venv/Scripts/python.exe scripts/download_samples.py
 if ($LASTEXITCODE -ne 0) { throw 'Sample asset download failed.' }
 & .venv/Scripts/python.exe scripts/create_demo_garment.py
@@ -25,3 +27,5 @@ if ($LASTEXITCODE -ne 0) { throw 'Frontend installation failed.' }
 & "$PSScriptRoot/start-postgres.ps1"
 & .venv/Scripts/python.exe -m alembic upgrade head
 if ($LASTEXITCODE -ne 0) { throw 'Database migration failed.' }
+& .venv/Scripts/python.exe scripts/start_mongodb.py
+if ($LASTEXITCODE -ne 0) { throw 'Measurement MongoDB startup failed.' }

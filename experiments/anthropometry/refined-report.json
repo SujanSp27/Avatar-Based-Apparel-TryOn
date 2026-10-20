@@ -1,0 +1,22 @@
+[
+  {
+    "input": "studio-person.jpg",
+    "error": "ambiguous_silhouette",
+    "message": "Torso outline includes arms or loose clothing. Keep arms apart and wear close-fitting clothing."
+  },
+  {
+    "input": "fashion.jpg",
+    "error": "low_visibility",
+    "message": "Visibility must exceed 0.65 for: left heel."
+  },
+  {
+    "input": "fashn-samples/person1.png",
+    "error": "low_visibility",
+    "message": "Visibility must exceed 0.65 for: left ankle, left heel, right heel."
+  },
+  {
+    "input": "fashn-samples/person5.png",
+    "error": "low_visibility",
+    "message": "Visibility must exceed 0.65 for: right heel."
+  }
+]

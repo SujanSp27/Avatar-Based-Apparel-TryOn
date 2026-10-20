@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
     max_upload_mb: int = 12
     admin_token: str = ""
+    mongodb_uri: str = "mongodb://127.0.0.1:27018"
+    mongodb_database: str = Field(default="formfit_measurements", pattern=r"^[a-zA-Z0-9_-]{1,63}$")
+    measurement_model_path: Path = ROOT / "assets/pose/pose_landmarker_full.task"
+    measurement_output_root: Path = ROOT / "data/processed/measurements"
 
     @field_validator("online_vton_steps")
     @classmethod

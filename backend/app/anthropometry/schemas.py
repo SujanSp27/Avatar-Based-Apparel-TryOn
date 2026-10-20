@@ -1,6 +1,7 @@
+from datetime import date
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
 from backend.app.anthropometry.constants import CATEGORY_METRICS
 from ml.vton.categories import GarmentCategory
@@ -11,6 +12,7 @@ Metric = Literal[
 ]
 Identifier = Annotated[str, Field(min_length=1, max_length=120, pattern=r"^[a-zA-Z0-9_-]+$")]
 Centimeters = Annotated[float, Field(gt=0, le=400)]
+Gender = Literal["men", "women", "unisex"]
 
 
 class StrictSchema(BaseModel):
@@ -61,7 +63,21 @@ class ChartCreate(StrictSchema):
     version: int = Field(ge=1)
     source: str = Field(min_length=3, max_length=500)
     is_demo: bool = False
+    gender: Gender = "unisex"
+    market: str = Field(default="UNSPECIFIED", pattern=r"^(?:[A-Z]{2}|UNSPECIFIED)$")
+    source_url: HttpUrl | None = None
+    checked_on: date | None = None
+    source_unit: Literal["cm", "in"] = "cm"
+    measurement_basis: Literal["body", "garment"] = "body"
+    notes: list[str] = Field(default_factory=list, max_length=20)
+    # Explicit subsets are needed for official charts that do not publish all
+    # category dimensions. Never fabricate shoulder/thigh ranges to fill gaps.
+    active_metrics: list[Metric] | None = Field(default=None, min_length=1, max_length=6)
     sizes: list[ChartSize] = Field(min_length=1, max_length=30)
+
+    @property
+    def metrics(self) -> tuple[str, ...]:
+        return tuple(self.active_metrics or CATEGORY_METRICS[self.category.value])
 
     @model_validator(mode="after")
     def consistent_sizes(self):
@@ -69,7 +85,11 @@ class ChartCreate(StrictSchema):
             raise ValueError("Size labels must be unique")
         if len({r.sort_order for r in self.sizes}) != len(self.sizes):
             raise ValueError("Sort orders must be unique")
-        required = set(CATEGORY_METRICS[self.category.value])
+        required = set(self.metrics)
+        if len(required) != len(self.metrics):
+            raise ValueError("Active metrics must be unique")
+        if required - set(CATEGORY_METRICS[self.category.value]):
+            raise ValueError("Active metrics must belong to the apparel category")
         for row in self.sizes:
             if missing := required - row.bounds.keys():
                 raise ValueError(f"{row.size_label} is missing category bounds: {sorted(missing)}")
@@ -98,3 +118,4 @@ class SizingResponse(StrictSchema):
     active_weights: dict[Metric, float]
     chart: dict
     score_meaning: str
+    warnings: list[str] = Field(default_factory=list)

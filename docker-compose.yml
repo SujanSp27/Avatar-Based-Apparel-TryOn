@@ -13,5 +13,17 @@ services:
       test: ["CMD-SHELL", "pg_isready -U tryon -d tryon"]
       interval: 5s
       retries: 10
+  measurements-db:
+    image: mongo:8.2.2
+    ports:
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - tryon_measurements:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 volumes:
   tryon_pg:
+  tryon_measurements:

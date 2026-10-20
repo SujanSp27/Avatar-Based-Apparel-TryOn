@@ -18,9 +18,15 @@ VTON service fallback and no local GPU inference.
   comparison, actual timings, provenance and downloadable JSON. No mesh/GLB.
 - Face, hands and unrelated regions are restored using semantic preservation.
   Parsing errors, unnatural edges and body-shape changes remain possible.
-- Size advice is separate: actual user-entered centimetre measurements, selected
+- Legacy browser size advice is separate: actual user-entered centimetre measurements, selected
   brand chart/category and fit preference. It is not inferred from the generated
   image. Seed brands are explicitly fictional demonstration charts.
+- New `/api/v1` measurement and sizing APIs use MongoDB and CPU MediaPipe.
+  Full-body JPEG/PNG plus reported height produces six explicitly approximate
+  dimensions. Exact midpoint-relative sizing is independent of image generation.
+  Nike/Puma India product-specific charts cover men and women; U.S. Polo,
+  Adidas and Allen Solly are listed with their unverified/unavailable status.
+  See [scope, formulas and limitations](measurements-and-sizing.md).
 - Connection starts automatically with the API. Worker restoration never submits
   an image-generation job. Colab authentication and GPU allocation cannot be bypassed.
 - Images go only to the user's private Colab worker. Local inputs/results and

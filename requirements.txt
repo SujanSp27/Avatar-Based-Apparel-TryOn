@@ -10,3 +10,8 @@ httpx==0.28.1
 psutil==7.0.0
 pytest==8.3.5
 ruff==0.11.13
+numpy==1.26.4
+mediapipe==0.10.21
+opencv-contrib-python==4.11.0.86
+pymongo==4.15.3
+mongomock==4.3.0

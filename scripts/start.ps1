@@ -5,6 +5,8 @@ Set-Location $projectRoot
 if (-not $SkipDatabase) { & "$PSScriptRoot/start-postgres.ps1" }
 & .venv/Scripts/python.exe -m alembic upgrade head
 if ($LASTEXITCODE -ne 0) { throw 'Database migration failed.' }
+& .venv/Scripts/python.exe scripts/start_mongodb.py
+if ($LASTEXITCODE -ne 0) { throw 'Measurement MongoDB startup failed.' }
 $runtimePath = Join-Path $projectRoot '.runtime'
 New-Item -ItemType Directory -Force -Path $runtimePath | Out-Null
 $pythonExe = Join-Path $projectRoot '.venv/Scripts/python.exe'

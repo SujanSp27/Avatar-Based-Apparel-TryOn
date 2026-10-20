@@ -8,7 +8,12 @@ from ml.errors import PipelineError
 
 
 def recommend(measurements: dict[str, float], chart: ChartCreate) -> SizingResponse:
-    active = CATEGORY_METRICS[chart.category.value]
+    if chart.measurement_basis != "body":
+        raise PipelineError(
+            "chart_basis_unsupported",
+            "This chart describes garment dimensions, not body ranges. A verified body size guide is required.",
+        )
+    active = chart.metrics
     if missing := set(active) - measurements.keys():
         raise PipelineError("missing_measurement", f"This apparel requires: {', '.join(sorted(missing))}.")
     for name in active:
@@ -36,6 +41,12 @@ def recommend(measurements: dict[str, float], chart: ChartCreate) -> SizingRespo
         comparisons[size.size_label] = details
     candidates.sort(key=lambda candidate: (candidate[0], candidate[1], candidate[2]))
     best_error, _, best_size, _ = candidates[0]
+    warnings = list(chart.notes)
+    omitted = sorted(set(CATEGORY_METRICS[chart.category.value]) - set(active))
+    if omitted:
+        warnings.append("Chart does not score these category measurements: " + ", ".join(omitted) + ".")
+    if not any(all(item["within_range"] for item in details.values()) for _, _, _, details in candidates):
+        warnings.append("No listed size contains every active measurement; this is only the closest midpoint match.")
     return SizingResponse(
         recommended_size=best_size,
         minimum_error=best_error,
@@ -47,9 +58,7 @@ def recommend(measurements: dict[str, float], chart: ChartCreate) -> SizingRespo
         ],
         active_weights=weights,
         chart_comparison=comparisons,
-        chart={"brand_id": chart.brand_id, "brand_name": chart.brand_name,
-               "apparel_id": chart.apparel_id, "category": chart.category.value,
-               "version": chart.version, "source": chart.source, "is_demo": chart.is_demo,
-               "units": "cm"},
+        chart={**chart.model_dump(mode="json", exclude={"sizes"}), "units": "cm"},
         score_meaning="100/(1+weighted midpoint-relative error); a heuristic fit score, not a calibrated probability.",
+        warnings=warnings,
     )

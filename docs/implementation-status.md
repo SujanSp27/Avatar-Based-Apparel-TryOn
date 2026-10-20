@@ -10,14 +10,29 @@ Previous scope and verification records are preserved in
 root specification file is no longer present. The phase labels below are historical
 references, and the active requirements are in [requirements.md](requirements.md).
 
+The subsequent body-measurement request adds **CPU MediaPipe and MongoDB**.
+This is separate from the removed 3D workflow and Colab image generation.
+The new backend is documented in [measurements and sizing](measurements-and-sizing.md).
+
+| New requirement | Status | Evidence |
+|---|---|---|
+| MediaPipe 33 landmarks, strict visibility, reported-height scale and six estimates | IMPLEMENTED | `backend/app/anthropometry/`; real CPU image extraction and deterministic repeat test |
+| Anatomically accurate single-image measurements | PARTIALLY IMPLEMENTED | Requested projection formulas run, but hip joint spacing and head/crotch proxies are biased; no tape-measure ground truth or calibrated uncertainty |
+| Exact weighted midpoint error, rankings and 100/(1+E) score | IMPLEMENTED | Hand-calculated .1/.29 fixtures and live Nike midpoint → M, error 0 |
+| MongoDB chart versions and measurement records | IMPLEMENTED | Running MongoDB 8.2.2, unique version index, 10 seeded charts, HTTP extraction persistence |
+| Both men's and women's Nike/Puma India guides | IMPLEMENTED | Four product-specific body guides, official URLs and source values in `data/brandCharts/india-*.json` |
+| U.S. Polo Assn., Adidas, Allen Solly India body charts | BLOCKED | USPA tables describe garment dimensions; Adidas India access denied; Allen Solly interactive guide access denied. Catalog states these limitations |
+| New routes, validation, annotation downloads and errors | IMPLEMENTED | `experiments/anthropometry/live-api/report.json`; real HTTP cold 2.6757s/warm 0.6725s, cropped image rejected |
+| Regression checks | IMPLEMENTED | 506 CPU tests passed; separate 37-test measurement suite including real CPU integration passed; Ruff and pip check passed |
+
 | Phase | Requirement | Status | Evidence |
 |------|------|------|------|
 | 0 | Explicit image/category/privacy scope | IMPLEMENTED | `docs/requirements.md`; image validation and category enums |
-| 1 | FastAPI, React, PostgreSQL, local assets | IMPLEMENTED | Running app, API/database/browser tests; local base requirements exclude GPU/3D dependencies |
+| 1 | FastAPI, React, PostgreSQL, MongoDB, local assets | IMPLEMENTED | Running app and API/database tests; local base dependencies include CPU MediaPipe and exclude CUDA/3D runtimes |
 | 1 / 12 | Automatic Colab connection and status-only UI | IMPLEMENTED | `backend/app/colab_connection.py`, `scripts/auto_connect_colab.py`; startup monitor; automatic browser recovery tests |
 | 1 / 12 | Restore missing worker on existing GPU | IMPLEMENTED | `scripts/colab_worker_recovery.py`; runtime identity checked before writes, owned-process checks, pinned setup, bounded retries, no inference replay. Validated `config/online-worker.json` seeds missing runtime configuration only; recovery unit tests |
 | 2 | Person/garment decoding, pose/parsing in online model | IMPLEMENTED | `online_vton.py`, FASHN official preprocessing; actual T4 inference report |
-| 3 / 4 | 3D human reconstruction and mesh measurements | BLOCKED | Removed from active scope at user's request; no image-derived measurement claims |
+| 3 / 4 | 3D human reconstruction and mesh measurements | BLOCKED | Removed from active scope at user's request; new 2D pose estimates are separate and do not reconstruct a body mesh |
 | 5 / 6 | Versioned charts and explainable size engine | IMPLEMENTED | Existing database/API/engine retained; independent measured-input size API/browser test |
 | 7 / 8 / 9 / 10 | 3D garments, fitting, cloth simulation and GLB scene | BLOCKED | Removed from active scope at user's request; replaced by photo generation |
 | 7 / 8 / 9 | Real pretrained image-based garment generation | PARTIALLY IMPLEMENTED | FASHN VTON 1.5 FP16/504 x 756 result has a natural collar, aligned sleeves and continuous hem without old-shirt fragments in the controlled graphic-shirt example. Small graphic details, striped collar corners and other-person contours remain imperfect |
