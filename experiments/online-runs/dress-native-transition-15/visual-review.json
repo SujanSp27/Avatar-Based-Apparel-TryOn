@@ -1,0 +1,16 @@
+{
+  "reviewDate": "2026-10-20",
+  "reviewer": "assistant visual inspection of actual saved final and raw images",
+  "accepted": false,
+  "findings": [
+    "Rejected: excessive newly generated skin and mismatched background after replacing a long outfit with a short dress.",
+    "The v6 coverage guard now rejects this type of change; this saved v5 image predates the guard."
+  ],
+  "faceRecognizable": true,
+  "endToEndSeconds": 24.34,
+  "targetSeconds": 30,
+  "timingTargetMet": true,
+  "rawOutputAndMasksRecovered": true,
+  "model": "FASHN VTON 1.5",
+  "compositor": "semantic-category-preservation-v5"
+}

@@ -1,0 +1,16 @@
+{
+  "reviewDate": "2026-10-20",
+  "reviewer": "assistant visual inspection of actual saved final and raw images",
+  "accepted": false,
+  "findings": [
+    "Improved: neck and denim bands removed; aligned sleeves and continuous hem.",
+    "Remaining collar corner artifacts and simplified fabric; strict combined acceptance not established."
+  ],
+  "faceRecognizable": true,
+  "endToEndSeconds": 30.005,
+  "targetSeconds": 30,
+  "timingTargetMet": false,
+  "rawOutputAndMasksRecovered": true,
+  "model": "FASHN VTON 1.5",
+  "compositor": "semantic-category-preservation-v5"
+}

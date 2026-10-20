@@ -1,0 +1,16 @@
+{
+  "reviewDate": "2026-10-20",
+  "reviewer": "assistant visual inspection of actual saved final and raw images",
+  "accepted": false,
+  "findings": [
+    "Rejected: hard neckline transition and untreated ProPhoto RGB input colours.",
+    "Old shirt removed; simplified collar/folds."
+  ],
+  "faceRecognizable": true,
+  "endToEndSeconds": 29.81,
+  "targetSeconds": 30,
+  "timingTargetMet": true,
+  "rawOutputAndMasksRecovered": true,
+  "model": "FASHN VTON 1.5",
+  "compositor": "semantic-category-preservation-v4"
+}

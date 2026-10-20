@@ -99,6 +99,38 @@ def _align_shoulder_edge(generated, source, target, clothing, feather):
     return aligned, projected
 
 
+def _revealed_region_transitions(alpha, old, source, target, category):
+    """Blend newly exposed material into the same material in the source.
+
+    A lower neckline or shorter hem exposes pixels that did not exist in the
+    source photo. Keeping the source up to its old clothing edge creates a skin
+    or denim stripe even when the raw neural output is continuous. Extend only
+    those seams into an adjacent, agreeing semantic region, with a smooth fade.
+    Never blend through clothing, a disconnected region, the face or hands.
+    """
+    rows = np.nonzero(old)[0]
+    radius = min(max(4, round(min(source.shape) * .04)),
+                 max(4, round((rows.max() - rows.min() + 1) * .10)))
+    core = max(1, radius * .16)
+    labels = (12, 14, 16, 5, 6) if category == "tops" else (12, 14, 16)
+    adjusted = np.zeros_like(old)
+    for label in labels:
+        revealed = old & (target == label)
+        if not revealed.any():
+            continue
+        agreement = (source == label) & (target == label)
+        _, components = cv2.connectedComponents((revealed | agreement).astype(np.uint8))
+        touching = np.unique(components[revealed])
+        connected = np.isin(components, touching[touching != 0])
+        distance = cv2.distanceTransform((~revealed).astype(np.uint8), cv2.DIST_L2, 5)
+        band = agreement & connected & (distance < radius)
+        fade = np.clip((radius - distance) / (radius - core), 0., 1.)
+        fade = fade * fade * (3. - 2. * fade)
+        adjusted |= band & (fade > alpha)
+        alpha[band] = np.maximum(alpha[band], fade[band])
+    return adjusted
+
+
 def preserve_regions(original, generated, source, target, category):
     if category not in LABELS:
         raise ValueError("Unknown garment category")
@@ -111,6 +143,16 @@ def preserve_regions(original, generated, source, target, category):
         raise PipelineError("face_not_visible", "Use a clear photo with the person's face and hair visible.")
     if np.count_nonzero(old) < source.size * .003 or np.count_nonzero(new) < source.size * .003:
         raise PipelineError("clothing_not_visible", "The selected clothing region is not clearly visible in the input or generated image.")
+    # A short outfit cannot faithfully reveal a large amount of anatomy hidden
+    # by a long source outfit. Do not present invented limbs/background as an
+    # identity-preserving success. This conservative gate is not a quality score.
+    revealed_skin = old & np.isin(target, (12, 14, 16))
+    if np.count_nonzero(revealed_skin) > np.count_nonzero(old) * .20:
+        raise PipelineError(
+            "coverage_change_too_large",
+            "This outfit would expose too much skin hidden by the original clothing. "
+            "Use a person photo with similar sleeve and hem coverage; the generated result was rejected.",
+        )
     # Model clothing may cover bare arms/legs and surrounding background.
     # A dress may replace both top and bottom. A top may overlap only a bounded
     # waistband area; the rest of the lower-body clothing stays unchanged.
@@ -143,6 +185,7 @@ def preserve_regions(original, generated, source, target, category):
     alpha = np.minimum(cv2.distanceTransform(support.astype(np.uint8), cv2.DIST_L2, 5) / feather, 1.)
     alpha[old] = 1.
     alpha[projected] = 1.
+    transitions = _revealed_region_transitions(alpha, old, source, target, category)
     alpha[protected] = 0.
     output = np.rint(generated * alpha[..., None] + original * (1 - alpha[..., None])).clip(0, 255).astype(np.uint8)
     return output, alpha, {
@@ -153,6 +196,7 @@ def preserve_regions(original, generated, source, target, category):
         "hemExtensionPixels": int(np.count_nonzero(hem_extension)),
         "hemExtensionLimitPixels": hem_limit,
         "shoulderProjectionPixels": int(np.count_nonzero(projected)),
-        "compositor": "semantic-category-preservation-v4",
+        "revealedRegionTransitionPixels": int(np.count_nonzero(transitions & ~protected)),
+        "compositor": "semantic-category-preservation-v7",
         "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required.",
     }

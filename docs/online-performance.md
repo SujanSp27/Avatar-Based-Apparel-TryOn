@@ -1,9 +1,15 @@
-# Online inference performance work - 19 October 2026
+# Online inference performance work - 20 October 2026
+
+The current acceptance target is **a visually correct fresh result within 30
+seconds**, revised by the user on 20 October. Earlier targets and individual
+timings below remain historical evidence. Fresh native-resolution 15-step tests
+now take 22.252-26.443 seconds, but garment quality remains under review. Timing
+alone is not acceptance and these observations are not a service guarantee.
 
 Fresh generation has improved from **292.278 seconds to 54.583 seconds** for the
 reviewed native-resolution striped-shirt example. A reduced-resolution experiment
 finished in **14.914 seconds**, but its sleeve and hem artifacts fail the visual
-acceptance criteria. **Acceptable try-on within 10-20 seconds is not yet verified.**
+acceptance criteria. **Acceptable try-on within 30 seconds is not yet verified.**
 
 All model inference below ran on the user's existing Colab Tesla T4. Person and
 garment photos remain restricted to that Colab worker; permission to use free
@@ -30,6 +36,14 @@ are individual observations, not latency percentiles or a service guarantee.
 | [Second person, graphic T-shirt, native guidance 1.0](../experiments/online-runs/rhude-native-patch-10/benchmark.json) | 10 | 10.288s | 18.644s | Rejected: clipped hem, exposed shoulder strip, minor graphic distortion |
 | [Dress, native guidance 1.0](../experiments/online-runs/dress-native-cfg1-10/benchmark.json) | 10 | 13.325s | 35.592s | Full-body validation passed; rejected for artificial newly exposed legs, sleeve transitions and background fragments |
 | [Second person, revised hem/shoulder boundaries](../experiments/online-runs/rhude-native-boundary-10/benchmark.json) | 10 | 13.181s | 31.078s | Continuous hem with no original-shirt fragments; minor shoulder-edge artifacts and graphic distortion remain |
+| [Striped, JPEG95 conditioning](../experiments/online-runs/striped-native-jpeg-20/benchmark.json) | 20 | 22.600s | 29.810s | Rejected: skin colour profile and hard neckline transition |
+| [Striped, corrected sRGB colours](../experiments/online-runs/striped-native-color-20/benchmark.json) | 20 | 19.873s | 25.318s | Skin tones corrected; hard neckline and denim band still rejected |
+| [Striped, semantic transition blend](../experiments/online-runs/striped-native-transition-20/benchmark.json) | 20 | 22.590s | 30.005s | Neck/hem bands improved; collar corners and simplified fabric remain |
+| [Striped, semantic transition blend](../experiments/online-runs/striped-native-transition-15/benchmark.json) | 15 | 16.194s | 23.230s | Similar to 20 steps; strict visual acceptance not established |
+| [Graphic shirt, second person](../experiments/online-runs/rhude-native-transition-15/benchmark.json) | 15 | 16.624s | 22.252s | Recognizable graphic and continuous hem; shoulder outline rejected |
+| [Tiered skirt](../experiments/online-runs/trouser-native-transition-15/benchmark.json) | 15 | 16.689s | 23.318s | Rejected waist seam/detail; fixture was mislabeled as trousers but is a skirt |
+| [Dress](../experiments/online-runs/dress-native-transition-15/benchmark.json) | 15 | 16.988s | 24.340s | Rejected: large newly exposed skin/background area |
+| [Graphic shirt, expanded contour experiment](../experiments/online-runs/rhude-native-contour-15/benchmark.json) | 15 | 18.525s | 26.443s | Rejected: rough shoulder contour; this expansion was reverted |
 
 The native FP16 assessment is recorded in
 [`visual-review.json`](../experiments/online-runs/striped-fp16-20/visual-review.json).
@@ -115,7 +129,24 @@ transport. The second-person pair falls from 1,155,144 to 400,460 uploaded bytes
 Conditioning pixels change, so image quality must be re-evaluated. The generated
 changed-pixel patch is applied to the original local PNG: tests prove exact face
 and background preservation outside that patch. Legacy full-frame responses are
-rejected with this setting. The live encoding comparison is still pending.
+rejected with this setting. The live comparisons above now use this encoding.
+They measure the complete request; quality remains image-dependent.
+
+The supplied studio JPEG embeds a ProPhoto RGB profile. Stripping it before
+converting its pixels to sRGB caused a visible skin-tone error even when face
+pixels were preserved numerically. `normalized_image` now performs the colour
+conversion before metadata removal and retains transparency. Three regression
+tests cover colour conversion, alpha and invalid profiles. Earlier studio-image
+benchmarks predate this correction.
+
+The semantic compositor now blends newly exposed skin/denim into a bounded,
+connected region of the same semantic class. It leaves original face/hair/hands,
+the neural fabric interior and distant pixels unchanged. This removes the hard
+band where a lower collar or shorter hem crossed the source clothing boundary;
+it does not repair arbitrary generated anatomy. Results exposing skin over more
+than 20% of the replaced clothing region are rejected with
+`coverage_change_too_large`. The long-to-short dress example triggers that rule;
+an error is not counted as a successful fast generation.
 
 Worker diagnostics now separate preprocessing, generation and postprocessing/saving.
 Transport diagnostics include normalized/uploaded/downloaded image byte counts and
@@ -131,7 +162,7 @@ Only pose/parser results are cached; every benchmark image is generated anew.
 Official dress and trousers fixtures are prepared under `data/raw/fashn-samples/`,
 with source revisions and hashes in its manifest. Saved results above do not
 establish their inference quality or support for every kind of dress. Repeat timing,
-broader category validation and acceptable quality below 20 seconds remain open.
+broader category validation and acceptable quality within 30 seconds remain open.
 The first [dress test](../experiments/online-runs/dress-native-masked-10/benchmark.json)
 was rejected before generation by a whole-image lower-body area threshold, despite
 a visibly full-body input. `lower_body_visible` now measures relative to person

@@ -1,9 +1,9 @@
-# Current implementation status - 19 October 2026
+# Current implementation status - 20 October 2026
 
 The latest user direction is **2D only, existing Colab only, no local GPU**, with
 automatic connection at app startup and no manual connection control in the UI.
 The user reconfirmed that photos must remain in their Colab only; public GPU demo
-uploads are not authorized. The latest speed target is 10-20 seconds for a fresh,
+uploads are not authorized. The latest speed target is at most 30 seconds for a fresh,
 visually acceptable result. No local GPU is used for inference.
 Previous scope and verification records are preserved in
 [the archive](archive/implementation-status-before-online-only.md); the original
@@ -24,7 +24,7 @@ references, and the active requirements are in [requirements.md](requirements.md
 | 11 | Uploads, eleven categories, photo type, original comparison and PNG output | IMPLEMENTED | `frontend/src/App.tsx`, `PhotoViewer.tsx`; seven browser tests passed |
 | 12 | Colab-only transport, jobs, failures, reconnect without local fallback | IMPLEMENTED | Transport/DB/job/reconnection tests; same worker URL retained throughout an in-flight event. Lossless input/output transport, exact-pixel round-trip tests, response type/format/dimension checks and stage diagnostics |
 | 13 / 14 | Evaluation records and broader quality/generalization | PARTIALLY IMPLEMENTED | Saved striped-shirt, second-person graphic-shirt and dress benchmarks, images and visual reviews in `docs/online-performance.md`. Fast results retain unacceptable artifacts; broad category quality remains unvalidated |
-| 15 | Acceptable fresh generation within 10-20 seconds | PARTIALLY IMPLEMENTED | Native FP16/20 steps improved from 292.278s to 54.583s end to end. Cropped 384 x 576/10 steps reached 14.914s but failed visual review; the combined speed-and-quality target is not met |
+| 15 | Acceptable fresh generation within 30 seconds | PARTIALLY IMPLEMENTED | Native FP16/20 steps improved from 292.278s to 54.583s end to end. Revised 10-step boundaries took 31.078s and retain shoulder artifacts. Faster examples failed visual review; the combined target is not met |
 | 16 | Complete production-quality application | PARTIALLY IMPLEMENTED | Web/API/size engine and online generation exist; garment quality, cloud environment isolation and latency need further work |
 
 Saved benchmark evidence is detailed in [online-performance.md](online-performance.md).

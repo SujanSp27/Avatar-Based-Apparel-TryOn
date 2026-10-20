@@ -31,7 +31,7 @@ bottoms and one-pieces. Category support does not establish visual quality for
 every garment. No training has been performed. The best reviewed native-resolution
 T4 example took **54.583 seconds**, improved from 292.278 seconds. A reduced-resolution
 experiment took **14.914 seconds** but failed visual review because of sleeve and
-hem artifacts. Acceptable fresh try-on within the requested 10-20 seconds remains
+hem artifacts. Acceptable fresh try-on within the revised 30-second target remains
 unverified. Photos are processed only in the user's Colab, never in a public GPU demo.
 Native-resolution 10-step experiments reached 21.274s and 19.627s, but were also
 rejected for neckline, exposed-skin and hem artifacts; they are not default presets.

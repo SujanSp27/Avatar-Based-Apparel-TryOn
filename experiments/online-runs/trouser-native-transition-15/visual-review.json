@@ -1,0 +1,16 @@
+{
+  "reviewDate": "2026-10-20",
+  "reviewer": "assistant visual inspection of actual saved final and raw images",
+  "accepted": false,
+  "findings": [
+    "Rejected: recognizable tiered skirt, but a jagged waist seam and loss of small fabric detail.",
+    "The fixture is a skirt, incorrectly annotated as trouser; both map to the same bottoms model category. This does not validate trousers."
+  ],
+  "faceRecognizable": true,
+  "endToEndSeconds": 23.318,
+  "targetSeconds": 30,
+  "timingTargetMet": true,
+  "rawOutputAndMasksRecovered": true,
+  "model": "FASHN VTON 1.5",
+  "compositor": "semantic-category-preservation-v5"
+}

@@ -1,0 +1,45 @@
+{
+  "method": "Local CPU serialization only; this does not measure model accuracy or end-to-end latency",
+  "samples": [
+    {
+      "file": "data/raw/studio-person.jpg",
+      "normalizedBytes": 360770,
+      "losslessBytes": 269754,
+      "conditioningBytes": 131488,
+      "encodingSeconds": 0.3003,
+      "encoding": "JPEG",
+      "psnrDb": 51.759,
+      "losslessPixels": false
+    },
+    {
+      "file": "data/raw/garment-demo.png",
+      "normalizedBytes": 4771,
+      "losslessBytes": 4612,
+      "conditioningBytes": 4612,
+      "encodingSeconds": 0.0123,
+      "encoding": "WEBP",
+      "psnrDb": null,
+      "losslessPixels": true
+    },
+    {
+      "file": "data/raw/vton-official/person-model-5.png",
+      "normalizedBytes": 648822,
+      "losslessBytes": 513376,
+      "conditioningBytes": 167977,
+      "encodingSeconds": 0.1036,
+      "encoding": "JPEG",
+      "psnrDb": 46.566,
+      "losslessPixels": false
+    },
+    {
+      "file": "data/raw/vton-official/garment-rhude.jpg",
+      "normalizedBytes": 739232,
+      "losslessBytes": 641768,
+      "conditioningBytes": 232483,
+      "encodingSeconds": 0.3115,
+      "encoding": "JPEG",
+      "psnrDb": 46.961,
+      "losslessPixels": false
+    }
+  ]
+}

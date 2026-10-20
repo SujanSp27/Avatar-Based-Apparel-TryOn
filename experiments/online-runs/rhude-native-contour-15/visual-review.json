@@ -1,0 +1,11 @@
+{
+  "reviewDate": "2026-10-20",
+  "accepted": false,
+  "reviewer": "assistant inspection of actual raw and final images",
+  "findings": [
+    "Expanded projection removes the thin bright line but creates a rough shoulder contour. Reverted in compositor v7."
+  ],
+  "timingTargetMet": true,
+  "endToEndSeconds": 26.443,
+  "rawOutputAndMasksRecovered": true
+}

@@ -11,7 +11,7 @@ from threading import Lock
 from urllib.parse import urlparse
 
 import httpx
-from PIL import Image, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageCms, ImageOps, UnidentifiedImageError
 
 from backend.app.config import settings
 from ml.errors import PipelineError
@@ -61,14 +61,26 @@ def normalized_image(data: bytes) -> bytes:
                 raise ValueError("Use a JPG, PNG or WebP image.")
             if min(source.size) < 128 or source.width * source.height > 20_000_000:
                 raise ValueError("Images must be at least 128 pixels per side and below 20 megapixels.")
-            image = ImageOps.exif_transpose(source).convert("RGBA")
+            oriented = ImageOps.exif_transpose(source)
+            image = oriented.convert("RGBA")
+            profile_bytes = source.info.get("icc_profile")
+            if profile_bytes:
+                # Preserve displayed colours before stripping metadata. For
+                # example, treating ProPhoto RGB samples as sRGB darkens skin.
+                profile = ImageCms.ImageCmsProfile(io.BytesIO(profile_bytes))
+                colour = oriented if oriented.mode in {"RGB", "CMYK", "L"} else oriented.convert("RGB")
+                converted = ImageCms.profileToProfile(
+                    colour, profile, ImageCms.createProfile("sRGB"), outputMode="RGB",
+                )
+                converted.putalpha(image.getchannel("A"))
+                image = converted
             image.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
             canvas = Image.new("RGB", image.size, "white")
             canvas.paste(image, mask=image.getchannel("A"))
             output = io.BytesIO()
             canvas.save(output, format="PNG", compress_level=6)
             return output.getvalue()
-    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError, ImageCms.PyCMSError) as exc:
         raise PipelineError("invalid_image", str(exc) or "Image could not be decoded.") from exc
 
 

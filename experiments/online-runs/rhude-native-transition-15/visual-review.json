@@ -1,0 +1,15 @@
+{
+  "reviewDate": "2026-10-20",
+  "reviewer": "assistant visual inspection of actual saved final and raw images",
+  "accepted": false,
+  "findings": [
+    "Rejected: recognizable graphic and continuous hem, but bright shoulder contours and a source-skin fringe remain."
+  ],
+  "faceRecognizable": true,
+  "endToEndSeconds": 22.252,
+  "targetSeconds": 30,
+  "timingTargetMet": true,
+  "rawOutputAndMasksRecovered": true,
+  "model": "FASHN VTON 1.5",
+  "compositor": "semantic-category-preservation-v5"
+}

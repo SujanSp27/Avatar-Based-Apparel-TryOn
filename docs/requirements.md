@@ -9,6 +9,9 @@ VTON service fallback and no local GPU inference.
   per side, below 20 megapixels and 12 MB per upload. Normalized to at most 1200px.
 - Tops require a visible face/torso. Bottoms and one-piece garments require a
   visible lower body. Avoid crossed arms, severe occlusion and multiple people.
+- Use a source outfit with similar sleeve and hem coverage. Results that reveal
+  skin across more than 20% of the replaced clothing region are rejected: the
+  model cannot faithfully reconstruct that hidden anatomy from this photo.
 - Categories: T-shirt, shirt, blouse, sweater, jacket (tops); trousers, jeans,
   shorts, skirt (bottoms); dress, jumpsuit (one-pieces).
 - Output: generated PNG at the normalized person's dimensions, original image
@@ -26,6 +29,13 @@ VTON service fallback and no local GPU inference.
 - No claim of universal garment support, calibrated physical fitting, or a
   sub-ten-second latency guarantee. All eleven transport mappings are tested;
   visual validation across those categories remains incomplete.
+
+The latest user target (20 October) is **a visually correct result within 30
+seconds end to end**, superseding the earlier 10-20 second target. Both image
+quality and elapsed time must pass; returning an error after 30 seconds, reducing
+steps until the garment is distorted, or reusing a cached result does not meet it.
+Cold setup is reported separately. Shared Colab/network delays are measured and
+must not be hidden from the request timing.
 
 Evaluation records separate fresh end-to-end latency, worker/model latency,
 input identity preservation and visual garment acceptance. Historical 3D

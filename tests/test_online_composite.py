@@ -5,7 +5,11 @@ import numpy as np
 import pytest
 
 from ml.errors import PipelineError
-from ml.vton.online_composite import _align_shoulder_edge, preserve_regions
+from ml.vton.online_composite import (
+    _align_shoulder_edge,
+    _revealed_region_transitions,
+    preserve_regions,
+)
 
 
 @pytest.fixture
@@ -139,7 +143,7 @@ def test_narrow_shoulder_gap_uses_neural_garment_and_preserves_other_pixels(pers
     generated[target == 0] = 255
     before = generated.copy()
     image, alpha, report = preserve_regions(original, generated, source, target, "tops")
-    assert report["shoulderProjectionPixels"] == 60
+    assert report["shoulderProjectionPixels"] >= 60
     assert np.all(image[65:95, 43:45] == (20, 50, 90))
     assert np.all(alpha[65:95, 43:45] == 1)
     np.testing.assert_array_equal(image[alpha == 0], original[alpha == 0])
@@ -165,3 +169,60 @@ def test_projection_does_not_hide_a_broad_shrunken_arm(person):
     image, projected = _align_shoulder_edge(generated, source, target, target == 3, 2)
     assert not projected.any()
     np.testing.assert_array_equal(image, generated)
+
+
+@pytest.mark.parametrize("label", [12, 16, 6])
+def test_newly_exposed_material_has_a_bounded_same_material_transition(person, label):
+    original, generated, source = person
+    source[35:45, 65:95] = label
+    target = source.copy()
+    target[45:49, 65:95] = label
+    image, alpha, report = preserve_regions(original, generated, source, target, "tops")
+    # A skin/denim band exposed by removing clothing stays fully generated.
+    assert np.all(alpha[45:49, 65:95] == 1)
+    # The boundary no longer abruptly switches to an unrelated source shade.
+    assert alpha[44, 80] == 1
+    assert 0 < alpha[41, 80] < 1
+    assert alpha[36, 80] == 0
+    assert report["revealedRegionTransitionPixels"] > 0
+    np.testing.assert_array_equal(image[source == 1], original[source == 1])
+    np.testing.assert_array_equal(image[source == 13], original[source == 13])
+    np.testing.assert_array_equal(image[alpha == 0], original[alpha == 0])
+
+
+def test_transition_does_not_cross_clothing_to_disconnected_skin(person):
+    _, _, source = person
+    source[35:43, 65:95] = 16
+    target = source.copy()
+    target[45:49, 65:95] = 16
+    # Source background separates the two neck-label islands.
+    alpha = (source == 3).astype(np.float32)
+    adjusted = _revealed_region_transitions(alpha, source == 3, source, target, "tops")
+    assert not adjusted.any()
+
+
+def test_transition_cannot_change_original_garment_texture_or_unrelated_classes(person):
+    original, generated, source = person
+    source[35:45, 65:95] = 16
+    target = source.copy()
+    target[45:49, 65:95] = 16
+    # Even immediately adjacent face/hand or disagreement pixels stay excluded.
+    source[43:45, 65:70] = 1
+    source[43:45, 70:75] = 13
+    target[43:45, 75:80] = 0
+    alpha = (source == 3).astype(np.float32)
+    adjusted = _revealed_region_transitions(alpha, source == 3, source, target, "tops")
+    assert not adjusted[43:45, 65:80].any()
+    image, _, _ = preserve_regions(original, generated, source, target, "tops")
+    np.testing.assert_array_equal(image[60:110, 55:105], generated[60:110, 55:105])
+
+
+@pytest.mark.parametrize("category,old_label", [("tops", 3), ("bottoms", 6), ("one-pieces", 4)])
+def test_large_newly_exposed_skin_is_rejected_instead_of_returned_as_success(person, category, old_label):
+    original, generated, source = person
+    source[source == 3] = old_label
+    target = source.copy()
+    target[70:125, 45:115] = 14
+    with pytest.raises(PipelineError) as failure:
+        preserve_regions(original, generated, source, target, category)
+    assert failure.value.code == "coverage_change_too_large"

@@ -22,8 +22,11 @@ def main():
     parser.add_argument("--photo-type", choices=["model", "flat-lay"], default="flat-lay")
     parser.add_argument("--steps", type=int, choices=[10, 15, 20, 30, 50], default=20)
     parser.add_argument("--input-encoding", choices=["lossless", "jpeg95"], default="lossless")
+    parser.add_argument("--target-seconds", type=float, default=30.)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if not 0 < args.target_seconds <= 600:
+        parser.error("--target-seconds must be between 0 and 600")
     args.output.mkdir(parents=True, exist_ok=False)
     settings.online_vton_steps = args.steps
     settings.online_vton_input_encoding = args.input_encoding
@@ -39,6 +42,8 @@ def main():
         if failure_path.is_file():
             report["failureDiagnostics"] = json.loads(failure_path.read_text())
     report["endToEndSeconds"] = round(time.perf_counter() - start, 3)
+    report["targetSeconds"] = args.target_seconds
+    report["timingTargetMet"] = report["status"] == "generated" and report["endToEndSeconds"] <= args.target_seconds
     report["inputs"] = {"personSha256": hashlib.sha256(args.person.read_bytes()).hexdigest(),
                         "garmentSha256": hashlib.sha256(args.garment.read_bytes()).hexdigest(),
                         "category": args.category, "photoType": args.photo_type, "steps": args.steps,

@@ -1,0 +1,101 @@
+{
+  "status": "generated",
+  "diagnostics": {
+    "model": "FASHN VTON 1.5",
+    "sourceCommit": "7c0f10af3f91ad4048fe9729c470a13ef905d25a",
+    "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+    "device": "cuda",
+    "gpu": "Tesla T4",
+    "dtype": "torch.float16",
+    "steps": 15,
+    "category": "tops",
+    "modelResolution": [
+      576,
+      864
+    ],
+    "inferenceRegion": [
+      0,
+      0,
+      768,
+      1024
+    ],
+    "environment": {
+      "torch": "2.11.0+cu130",
+      "cuda": "13.0",
+      "gpu": "Tesla T4",
+      "capability": [
+        7,
+        5
+      ],
+      "dtype": "torch.float16",
+      "precisionProfile": "fp16",
+      "resolutionProfile": "native",
+      "modelResolution": [
+        576,
+        864
+      ],
+      "guidanceScale": 1.0,
+      "segmentationFree": true,
+      "skipUnusedUnconditional": true,
+      "finitePredictionChecks": true,
+      "finiteSamplerStateChecks": true
+    },
+    "inferenceSeconds": 18.525,
+    "peakGpuAllocatedMB": 2564.9,
+    "workerSeconds": 19.725,
+    "stageSeconds": {
+      "preprocessing": 0.503,
+      "generation": 18.525,
+      "postprocessingAndSaving": 0.697
+    },
+    "cache": "bounded pose/parser cache; every result is a fresh generation",
+    "preservation": {
+      "identityPreservedExactly": true,
+      "changedPixelsOutsideEditMask": 0,
+      "oldClothingMinimumAlpha": 1.0,
+      "editedPixels": 153851,
+      "hemExtensionPixels": 35945,
+      "hemExtensionLimitPixels": 150,
+      "shoulderProjectionPixels": 1607,
+      "revealedRegionTransitionPixels": 0,
+      "compositor": "semantic-category-preservation-v6",
+      "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required."
+    },
+    "runPath": "/content/formfit-online/runs/1792471009781446714",
+    "patchBox": [
+      196,
+      234,
+      577,
+      769
+    ],
+    "canvasSize": [
+      768,
+      1024
+    ],
+    "imageFormat": "webp",
+    "remoteRoundTripSeconds": 25.757,
+    "transport": {
+      "inputEncoding": "jpeg95",
+      "normalizedInputBytes": 1388054,
+      "uploadedImageBytes": 400460,
+      "downloadedImageBytes": 126416,
+      "preparationSeconds": 0.677,
+      "encodingSeconds": 0.579,
+      "requestAndStreamSeconds": 25.064,
+      "savingSeconds": 0.114
+    }
+  },
+  "freshGeneration": true,
+  "visualAcceptance": "rejected; see visual-review.json",
+  "endToEndSeconds": 26.443,
+  "targetSeconds": 30.0,
+  "timingTargetMet": true,
+  "inputs": {
+    "personSha256": "5faaea84635da215bd0819cf5ce65512ca1b742c39ee8fd67176b19e084ed872",
+    "garmentSha256": "3929f83104c547bcf4a74985999438c05f887d97445c700029414466680eeee3",
+    "category": "t-shirt",
+    "photoType": "flat-lay",
+    "steps": 15,
+    "inputEncoding": "jpeg95"
+  }
+}

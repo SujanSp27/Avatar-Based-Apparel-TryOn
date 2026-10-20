@@ -1,0 +1,85 @@
+{
+  "model": "FASHN VTON 1.5",
+  "sourceCommit": "7c0f10af3f91ad4048fe9729c470a13ef905d25a",
+  "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+  "device": "cuda",
+  "gpu": "Tesla T4",
+  "dtype": "torch.float16",
+  "steps": 15,
+  "category": "bottoms",
+  "modelResolution": [
+    576,
+    864
+  ],
+  "inferenceRegion": [
+    0,
+    0,
+    840,
+    1200
+  ],
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "gpu": "Tesla T4",
+    "capability": [
+      7,
+      5
+    ],
+    "dtype": "torch.float16",
+    "precisionProfile": "fp16",
+    "resolutionProfile": "native",
+    "modelResolution": [
+      576,
+      864
+    ],
+    "guidanceScale": 1.0,
+    "segmentationFree": true,
+    "skipUnusedUnconditional": true,
+    "finitePredictionChecks": true,
+    "finiteSamplerStateChecks": true
+  },
+  "inferenceSeconds": 16.689,
+  "peakGpuAllocatedMB": 2564.9,
+  "workerSeconds": 17.82,
+  "stageSeconds": {
+    "preprocessing": 0.211,
+    "generation": 16.689,
+    "postprocessingAndSaving": 0.92
+  },
+  "cache": "bounded pose/parser cache; every result is a fresh generation",
+  "preservation": {
+    "identityPreservedExactly": true,
+    "changedPixelsOutsideEditMask": 0,
+    "oldClothingMinimumAlpha": 1.0,
+    "editedPixels": 62829,
+    "hemExtensionPixels": 0,
+    "hemExtensionLimitPixels": 0,
+    "shoulderProjectionPixels": 0,
+    "revealedRegionTransitionPixels": 4362,
+    "compositor": "semantic-category-preservation-v5",
+    "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required."
+  },
+  "runPath": "/content/formfit-online/runs/1792470780837261315",
+  "patchBox": [
+    264,
+    550,
+    567,
+    802
+  ],
+  "canvasSize": [
+    840,
+    1200
+  ],
+  "imageFormat": "webp",
+  "remoteRoundTripSeconds": 22.784,
+  "transport": {
+    "inputEncoding": "jpeg95",
+    "normalizedInputBytes": 1371736,
+    "uploadedImageBytes": 340327,
+    "downloadedImageBytes": 52706,
+    "preparationSeconds": 0.512,
+    "encodingSeconds": 0.575,
+    "requestAndStreamSeconds": 21.811,
+    "savingSeconds": 0.399
+  }
+}

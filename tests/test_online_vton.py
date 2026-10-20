@@ -230,6 +230,37 @@ def test_upload_normalization_rejects_invalid_data_and_flattens_transparency():
     assert Image.open(io.BytesIO(normalized_image(buffer.getvalue()))).getpixel((0, 0)) == (255, 255, 255)
 
 
+def test_wide_gamut_photo_is_converted_before_profile_is_stripped():
+    profile = (Path(__file__).parent / "fixtures/prophoto-rgb.icc").read_bytes()
+    source = Image.new("RGB", (128, 160), (100, 80, 60))
+    buffer = io.BytesIO()
+    source.save(buffer, format="PNG", icc_profile=profile)
+    with Image.open(io.BytesIO(normalized_image(buffer.getvalue()))) as normalized:
+        # Reference conversion of these ProPhoto samples to sRGB via LittleCMS.
+        assert normalized.getpixel((0, 0)) == (140, 93, 72)
+        assert "icc_profile" not in normalized.info
+        assert normalized.size == source.size
+
+
+def test_profile_conversion_retains_transparent_background_compositing():
+    profile = (Path(__file__).parent / "fixtures/prophoto-rgb.icc").read_bytes()
+    source = Image.new("RGBA", (128, 160), (100, 80, 60, 0))
+    source.putpixel((64, 80), (100, 80, 60, 255))
+    buffer = io.BytesIO()
+    source.save(buffer, format="PNG", icc_profile=profile)
+    with Image.open(io.BytesIO(normalized_image(buffer.getvalue()))) as normalized:
+        assert normalized.getpixel((0, 0)) == (255, 255, 255)
+        assert normalized.getpixel((64, 80)) == (140, 93, 72)
+
+
+def test_invalid_colour_profile_is_reported_as_input_error():
+    buffer = io.BytesIO()
+    Image.new("RGB", (128, 160)).save(buffer, format="PNG", icc_profile=b"not a profile")
+    with pytest.raises(PipelineError) as failure:
+        normalized_image(buffer.getvalue())
+    assert failure.value.code == "invalid_image"
+
+
 def test_transport_compression_preserves_sanitized_pixels_exactly():
     pixels = np.random.default_rng(41).integers(0, 256, (240, 160, 3), dtype=np.uint8)
     buffer = io.BytesIO()
