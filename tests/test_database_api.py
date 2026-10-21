@@ -108,6 +108,7 @@ def test_failed_request_releases_pipeline_capacity(client, monkeypatch):
         raise PipelineError("invalid_image", "Invalid image fixture")
 
     monkeypatch.setattr(pipeline, "run", fail)
+    monkeypatch.setattr(pipeline.worker, "availability", lambda **_: {"available": True})
     for _ in range(2):
         response = client.post(
             "/api/tryon",

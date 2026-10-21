@@ -61,6 +61,13 @@ delivery configuration the UI reports the real 503; it never claims to send mail
 
 ## Verification and deployment limits
 
+The later availability work adds an outage Retry action, expiring authenticated
+model checks, and safe replacement-runtime recovery. Sample selection now uses
+the sage-polo product image as a real conditioning input. The BEFORE/AFTER slider
+layout is unchanged. See [tryon-recovery.md](tryon-recovery.md) for the current
+behavior and [implementation-status.md](implementation-status.md) for live-GPU
+verification limits.
+
 Regression tests live in `tests/test_accounts.py` and `frontend/e2e/studio.spec.ts`.
 The latter exercises the real local account, CPU measurement and sizing APIs;
 connection/failure tests explicitly control network responses. Retained-result

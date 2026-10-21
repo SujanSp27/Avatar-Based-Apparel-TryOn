@@ -149,3 +149,16 @@ Verification: `scripts/verify_backend_api.py` exercises actual local HTTP,
 CPU MediaPipe, MongoDB persistence, saved-record sizing and artifact deletion.
 It deletes only the measurement it creates and submits no try-on generation.
 Current evidence is in `experiments/backend-completion/`.
+# Try-on availability and recovery
+
+`GET /api/tryon/availability` returns the cached, expiring model readiness state,
+`connectionState`, user-facing `displayState`, and the current recovery reason.
+It does not block on notebook execution or depend on PostgreSQL.
+`POST /api/tryon/retry` returns HTTP 202 and wakes the existing recovery monitor;
+it never resets Colab or starts another inference job. Both responses contain
+no private worker token or URL.
+
+The sample garment rail now uses `GET /api/samples/polo` for its real sage-polo
+conditioning photograph. `/api/samples/garment` still serves the previous striped
+sample. These are inputs; generated images continue to come from actual
+successful `/api/tryon` jobs. See [tryon-recovery.md](tryon-recovery.md).

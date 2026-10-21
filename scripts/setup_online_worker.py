@@ -1,5 +1,6 @@
 """Run inside the existing Colab runtime, not on the user's computer."""
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -16,20 +17,35 @@ def main():
         raise RuntimeError("This installer runs only in the connected Colab GPU runtime.")
     root = Path("/content/formfit-online")
     root.mkdir(exist_ok=True)
+    # Colab's small system RAM must not be consumed by parallel Xet download
+    # buffers. Ordinary streaming HTTP also retains resumable HF cache files.
+    os.environ['HF_HUB_DISABLE_XET'] = '1'
+    os.environ['HF_XET_HIGH_PERFORMANCE'] = '0'
+    os.environ['OMP_NUM_THREADS'] = '2'
+    os.environ['MAX_JOBS'] = '2'
     python = root / ".venv/bin/python"
     if not python.exists():
         uv = shutil.which("uv")
         if not uv:
             raise RuntimeError("This Colab runtime needs uv to seed its isolated Python environment.")
         subprocess.run([uv, "venv", "--system-site-packages", "--seed", "--python", sys.executable, str(root / ".venv")], check=True)
-    subprocess.run([str(python), "-m", "pip", "install", "--disable-pip-version-check",
+    # Preserve Colab's compatible CUDA stack instead of letting the resolver
+    # download a second torch/CUDA distribution into the isolated environment.
+    constraints = root / 'runtime-constraints.txt'
+    inventory = subprocess.run([str(python), '-c',
+        "from importlib.metadata import version; print('\\n'.join(n+'=='+version(n) for n in ('torch','torchvision','numpy')))"],
+        check=True, capture_output=True, text=True).stdout
+    constraints.write_text(inventory)
+    print('Installing pinned VTON dependencies with the existing Colab CUDA stack', flush=True)
+    subprocess.run([str(python), "-m", "pip", "install", "--disable-pip-version-check", '--no-cache-dir',
+                    '--constraint', str(constraints),
                     f"git+https://github.com/fashn-AI/fashn-vton-1.5.git@{SOURCE}",
                     "gradio==5.49.1", "fashn-human-parser==0.1.1", "transformers==4.49.0"], check=True)
     # Download pinned assets in the isolated interpreter. No local model loading.
     downloader = f'''
 import hashlib,json
 from pathlib import Path
-from huggingface_hub import hf_hub_download,snapshot_download
+from huggingface_hub import hf_hub_download
 root=Path({str(root)!r})
 records=[]
 for repo,revision,names,relative in [
@@ -37,6 +53,7 @@ for repo,revision,names,relative in [
  ("fashn-ai/DWPose",{POSE!r},["yolox_l.onnx","dw-ll_ucoco_384.onnx"],"weights/dwpose"),
  ("fashn-ai/fashn-human-parser",{PARSER!r},["config.json","model.safetensors"],"weights/parser")]:
  for name in names:
+  print('Downloading',repo,name,flush=True)
   path=Path(hf_hub_download(repo,filename=name,revision=revision,local_dir=str(root/relative)))
   digest=hashlib.sha256()
   with path.open("rb") as stream:

@@ -23,7 +23,7 @@ from scripts.colab_server import notebook_path
 from scripts.colab_worker_recovery import validate_worker_profile
 
 MARKER = "# formfit-automatic-worker-recovery"
-RECOVERY_PROTOCOL = 5
+RECOVERY_PROTOCOL = 7
 
 
 def recovery_source(expected_hostname: str | None = None, worker_profile: dict | None = None):
@@ -39,7 +39,7 @@ def recovery_source(expected_hostname: str | None = None, worker_profile: dict |
     source = (bridge.ROOT / 'scripts/colab_worker_recovery.py').read_text(encoding='utf-8')
     return (MARKER + f'-v{RECOVERY_PROTOCOL}\n' + source + '\nprint(json.dumps(recover('
             f"Path('/content/formfit-online'), {payload!r}, "
-            f"expected_hostname={expected_hostname!r}, worker_profile={worker_profile!r})))\n")
+            f"expected_hostname={expected_hostname!r}, worker_profile={worker_profile!r}, supervise_seconds=180)))\n")
 
 
 def valid_hostname(value):
@@ -76,6 +76,13 @@ class ColabRecovery:
         candidate = state.get('candidate', {})
         identity = [hostname, current.get('createTime')]
         now = time.time()
+        # A disappearing machine during setup can be a runtime crash/quota
+        # failure. Do not reinstall indefinitely on rapidly replaced machines.
+        recent = [item for item in state.get('runtimeHistory', []) if now - item['verifiedAt'] < 900]
+        if len(recent) >= 3:
+            self.next_attempt = time.monotonic() + 60
+            self._save(state)
+            return 'runtime_unstable'
         if reply.get('state') != 'runtime_changed' or reply.get('gpuAvailable') is not True:
             state.pop('candidate', None)
             self._save(state)
@@ -94,6 +101,9 @@ class ColabRecovery:
             except (OSError, ValueError):
                 active = True  # Do not switch while job ownership is uncertain.
         if candidate['observations'] >= 2 and not active:
+            state['runtimeHistory'] = (state.get('runtimeHistory', []) + [{
+                'from': state.get('expectedHostname'), 'to': hostname, 'verifiedAt': now,
+            }])[-20:]
             state.update(previousHostname=state.get('expectedHostname'), expectedHostname=hostname,
                          pinSource='verified_replacement', pinChangedAt=now)
             state.pop('candidate', None)
@@ -105,8 +115,8 @@ class ColabRecovery:
     def pin_runtime(self, hostname: str):
         """Explicit operator action after verifying a replacement runtime.
 
-        Stop the app first. Never discard a pending call or automatically adopt
-        a replacement hostname just because a notebook socket changed.
+        Stop the app first. Never discard a pending call. Automatic replacement
+        adoption uses the separate, repeated identity-verification path.
         """
         if not valid_hostname(hostname):
             raise ValueError('Provide the hostname from a read-only Colab identity check')
@@ -156,7 +166,8 @@ class ColabRecovery:
         if request:
             response = bridge.STATE / 'responses' / f'{request}.json'
             if not response.is_file():
-                if time.time() - state.get('submittedAt', 0) > 90:
+                limit = 240 if state.get('stage') == 'probe' and state.get('recoveryProtocol') == RECOVERY_PROTOCOL else 90
+                if time.time() - state.get('submittedAt', 0) > limit:
                     # Keep the pending ID: a delayed mutating call must not be replayed.
                     return 'recovery_delayed'
                 return 'browser_required' if state.get('stage') == 'open' else 'connecting'
@@ -204,12 +215,24 @@ class ColabRecovery:
             elif stage == 'updated':
                 self._submit(state, 'probe', 'run_code_cell', {'cellId': state.pop('cellId')})
             elif stage == 'probe':
+                if any(o.get('output_type') == 'error' for o in output.get('outputs', [])):
+                    # A final exception supersedes earlier progress lines. Do
+                    # not mistake a crashed check for a still-loading worker.
+                    state['lastReplyState'] = 'recovery_failed'
+                    state['lastReplyAt'] = time.time()
+                    self._save(state)
+                    self.next_attempt = time.monotonic() + 60
+                    return 'recovery_failed'
                 lines = ''.join(''.join(o.get('text', [])) for o in output.get('outputs', [])
                                 if o.get('output_type') == 'stream')
                 self.next_attempt = time.monotonic() + 60
                 if not lines.strip():
                     return 'connecting'
                 reply = json.loads(lines.strip().splitlines()[-1])
+                # Persist diagnostic state only, never worker credentials or logs.
+                state['lastReplyState'] = reply.get('state')
+                state['lastReplyAt'] = time.time()
+                self._save(state)
                 hostname = reply.get('hostname')
                 if not valid_hostname(hostname):
                     # Old, pending recovery cells predate the identity protocol.

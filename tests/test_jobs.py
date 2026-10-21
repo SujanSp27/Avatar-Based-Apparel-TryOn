@@ -71,6 +71,20 @@ def test_failure_releases_capacity_and_preserves_the_real_error(worker):
     assert finish(worker, next_job["jobId"])["status"] == "success"
 
 
+def test_completed_job_is_returned_during_later_model_outage(worker):
+    key = str(uuid4())
+    job = worker.submit(b'p', b'g', {}, lambda: {'status': 'success'}, key)
+    finish(worker, job['jobId'])
+    def unavailable():
+        raise PipelineError('online_gpu_unavailable', 'Offline', 503)
+    assert worker.submit(b'p', b'g', {}, lambda: pytest.fail('No duplicate'), key,
+                         preflight=unavailable)['status'] == 'success'
+    with pytest.raises(PipelineError):
+        worker.submit(b'p', b'g', {}, lambda: pytest.fail('No unavailable inference'),
+                      preflight=unavailable)
+    assert len(list(worker.directory.glob('*.json'))) == 1
+
+
 def test_restart_does_not_rerun_abandoned_work(worker):
     key = str(uuid4())
     worker._save({"jobId": key, "requestHash": "unused", "status": "processing", "createdAt": 1})

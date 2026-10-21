@@ -19,8 +19,10 @@ REASONS = {
     'runtime_identified': 'Checking the existing Colab runtime before recovering its worker.',
     'runtime_changed': 'Verifying the replacement Colab GPU before safely restoring the worker. Recovery continues automatically.',
     'recovery_delayed': 'Colab has not answered its runtime check. The existing request is preserved; keep the notebook connected. Retry checks that request without starting another task.',
+    'recovery_failed': 'The Colab recovery check failed. Its diagnostic output is saved in the existing notebook. Automatic recovery will retry; Retry checks sooner without duplicating inference.',
     'stale': 'The last model check has expired. Checking the connection again automatically.',
     'recovering_tunnel': 'The Colab worker connection failed. Verifying it before safely restarting the idle worker; files and completed results are retained.',
+    'runtime_unstable': 'Colab repeatedly restarted during restoration. Automatic setup is cooling down for up to 15 minutes to avoid a restart loop. Keep the existing GPU notebook connected; recovery will retry safely.',
     'gpu_unavailable': 'The existing Colab runtime has no GPU. Enable its GPU runtime; the app will detect it automatically.',
     'not_configured': 'The existing Colab notebook has not been configured on this installation.',
     'bridge_unavailable': 'The Colab connection helper is unavailable on this installation.',
@@ -64,8 +66,8 @@ class ColabConnection:
                 snapshot.update(available=False, connectionState='stale', reason=REASONS['stale'])
             state = snapshot['connectionState']
             unavailable = (time.monotonic() - self._unavailable_since > 180 or state in {
-                'stale', 'recovery_delayed', 'setup_failed', 'worker_failed', 'gpu_unavailable',
-                'browser_required', 'not_configured', 'bridge_unavailable'})
+                'stale', 'recovery_delayed', 'recovery_failed', 'setup_failed', 'worker_failed', 'gpu_unavailable',
+                'browser_required', 'not_configured', 'bridge_unavailable', 'runtime_unstable'})
             snapshot['displayState'] = ('Ready' if snapshot['available'] else
                 'Temporarily unavailable' if unavailable else
                 'Recovering' if state in {'runtime_changed', 'setting_up', 'loading', 'recovering_tunnel'} else 'Preparing')

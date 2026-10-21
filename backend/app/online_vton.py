@@ -84,6 +84,41 @@ def normalized_image(data: bytes) -> bytes:
         raise PipelineError("invalid_image", str(exc) or "Image could not be decoded.") from exc
 
 
+def receive_event(client, url, event_id, started):
+    """Reconnect only GET to the same event, never resubmit image generation."""
+    for attempt in range(3):
+        remaining = settings.online_vton_timeout - (time.perf_counter() - started)
+        if remaining <= 0:
+            raise httpx.ReadTimeout("Online generation timed out")
+        try:
+            with client.stream("GET", url + "/gradio_api/call/generate/" + event_id,
+                               timeout=httpx.Timeout(remaining, connect=min(10, remaining))) as stream:
+                stream.raise_for_status()
+                event = ""
+                for line in stream.iter_lines():
+                    if time.perf_counter() - started > settings.online_vton_timeout:
+                        raise httpx.ReadTimeout("Online generation timed out")
+                    if len(line) > 24 * 1024 * 1024:
+                        raise ValueError("Remote result exceeds the response limit")
+                    if line.startswith("event:"):
+                        event = line[6:].strip()
+                    elif line.startswith("data:"):
+                        if event == "error":
+                            raise PipelineError("online_gpu_failed", "The Colab worker rejected or could not finish this request. Check its runtime log; no local inference was started.", 502)
+                        if event == "complete":
+                            payload = json.loads(line[5:])[0]
+                            return json.loads(payload) if isinstance(payload, str) else payload
+                raise httpx.RemoteProtocolError("Remote connection ended without a result")
+        except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+            transient = (not isinstance(exc, httpx.HTTPStatusError)
+                         or exc.response.status_code in {408, 429, 502, 503, 504})
+            remaining = settings.online_vton_timeout - (time.perf_counter() - started)
+            if not transient or attempt == 2 or remaining <= 0:
+                raise
+            report_progress("online_reconnecting")
+            time.sleep(min(2 ** attempt, remaining))
+
+
 class OnlineTryOn:
     def __init__(self, url=None, token=None, *, transport=None):
         self.url = (settings.online_vton_url if url is None else url).rstrip("/")
@@ -132,8 +167,10 @@ class OnlineTryOn:
                         with httpx.Client(timeout=4, follow_redirects=False, transport=self.transport) as client:
                             response = client.post(url + "/gradio_api/run/status", json={"data": [token]})
                             data = response.json().get("data", []) if response.status_code == 200 else []
-                            status = data[0] if data and isinstance(data[0], dict) else {}
-                            self._reachable = (status.get("ready") is True and status.get("device") == "cuda"
+                            status = data[0] if isinstance(data, list) and data else {}
+                            if isinstance(status, str):
+                                status = json.loads(status)
+                            self._reachable = (isinstance(status, dict) and status.get("ready") is True and status.get("device") == "cuda"
                                 and status.get("modelRevision") == "7720683168567eb5a2a4c67f15116c6e29c83ded")
                     except (httpx.HTTPError, ValueError, TypeError, AttributeError):
                         self._reachable = False
@@ -186,24 +223,7 @@ class OnlineTryOn:
                     "eventId": event_id, "url": url, "model": "FASHN VTON 1.5",
                 }))
                 report_progress("online_generating")
-                with client.stream("GET", url + "/gradio_api/call/generate/" + event_id) as stream:
-                    stream.raise_for_status()
-                    event = ""
-                    for line in stream.iter_lines():
-                        if time.perf_counter() - start > settings.online_vton_timeout:
-                            raise httpx.ReadTimeout("Online generation timed out")
-                        if len(line) > 24 * 1024 * 1024:
-                            raise ValueError("Remote result exceeds the response limit")
-                        if line.startswith("event:"):
-                            event = line[6:].strip()
-                        elif line.startswith("data:"):
-                            if event == "error":
-                                raise PipelineError("online_gpu_failed", "The Colab worker rejected or could not finish this request. Check its runtime log; no local inference was started.", 502)
-                            if event == "complete":
-                                payload = json.loads(line[5:])[0]
-                                break
-                    else:
-                        raise ValueError("Remote connection ended without a result")
+                payload = receive_event(client, url, event_id, start)
                 received_at = time.perf_counter()
                 if not isinstance(payload, dict):
                     raise ValueError("Invalid worker response")

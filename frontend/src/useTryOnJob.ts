@@ -23,6 +23,7 @@ const stages: Record<string, string> = {
   saving_result: "Saving your result",
   uploading_online: "Sending images to your Colab worker",
   online_generating: "Your Colab GPU is generating the outfit",
+  online_reconnecting: "Reconnecting to your existing generation; your images will not be resubmitted",
 };
 
 function savedJob(): string | undefined {

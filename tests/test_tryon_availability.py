@@ -6,7 +6,7 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.app import colab_connection, main
+from backend.app import main
 from backend.app.colab_connection import ColabConnection
 from backend.app.online_vton import OnlineTryOn
 from ml.errors import PipelineError
@@ -14,6 +14,39 @@ from scripts import auto_connect_colab as module
 from scripts.auto_connect_colab import ColabRecovery
 
 REVISION = '7720683168567eb5a2a4c67f15116c6e29c83ded'
+
+
+@pytest.mark.parametrize('encode', [False, True])
+def test_colab_and_backend_accept_gradio_json_component_formats(monkeypatch, encode):
+    import io
+
+    from scripts import colab_worker_recovery as recovery
+
+    value = {'ready': True, 'device': 'cuda', 'modelRevision': REVISION}
+    body = {'data': [json.dumps(value) if encode else value]}
+    monkeypatch.setattr(recovery, 'urlopen', lambda *_args, **_kwargs:
+                        io.BytesIO(json.dumps(body).encode()))
+    assert recovery.worker_reachable({'url': 'https://private.gradio.live', 'token': 'x' * 48})
+    worker = OnlineTryOn('https://private.gradio.live', 'x' * 48,
+        transport=httpx.MockTransport(lambda _: httpx.Response(200, json=body)))
+    assert worker.availability(check_connection=True)['available']
+
+
+@pytest.mark.parametrize('value', ['not json', 'null', '[]', 'true', 1, None,
+    "root={'ready': True, 'device': 'cuda'}",
+    json.dumps({'ready': True, 'device': 'cuda', 'modelRevision': 'wrong'})])
+def test_malformed_health_component_is_unavailable_without_crashing(monkeypatch, value):
+    import io
+
+    from scripts import colab_worker_recovery as recovery
+
+    body = {'data': [value]}
+    monkeypatch.setattr(recovery, 'urlopen', lambda *_args, **_kwargs:
+                        io.BytesIO(json.dumps(body).encode()))
+    assert not recovery.worker_reachable({'url': 'https://private.gradio.live', 'token': 'x' * 48})
+    worker = OnlineTryOn('https://private.gradio.live', 'x' * 48,
+        transport=httpx.MockTransport(lambda _: httpx.Response(200, json=body)))
+    assert not worker.availability(check_connection=True)['available']
 
 
 def test_replacement_requires_repeated_spaced_gpu_identity(tmp_path, monkeypatch):
@@ -67,6 +100,22 @@ def test_delayed_request_is_retained_without_replay(tmp_path, monkeypatch):
     assert recovery.tick() == 'recovery_delayed'
     assert json.loads(recovery.state_path.read_text())['request'] == 'pending'
     submit.assert_not_called()
+
+
+def test_repeated_runtime_crashes_cool_down_then_retry_without_losing_pin(tmp_path, monkeypatch):
+    clock = [1000.]
+    monkeypatch.setattr(module.time, 'time', lambda: clock[0])
+    recovery = ColabRecovery(tmp_path, tmp_path / 'connection.json')
+    state = {'expectedHostname': 'old', 'runtimeHistory': [
+        {'from': 'a', 'to': 'b', 'verifiedAt': 800 + i} for i in range(3)]}
+    reply = {'hostname': 'new', 'state': 'runtime_changed', 'gpuAvailable': True}
+    assert recovery._verify_replacement(state, reply, {'createTime': 1}) == 'runtime_unstable'
+    assert state['expectedHostname'] == 'old'
+    clock[0] += 901
+    assert recovery._verify_replacement(state, reply, {'createTime': 1}) == 'runtime_changed'
+    clock[0] += 15
+    recovery._verify_replacement(state, reply, {'createTime': 1})
+    assert state['expectedHostname'] == 'new'
 
 
 def test_stale_ready_expires_and_retry_is_coalesced(monkeypatch):
@@ -152,3 +201,22 @@ def test_new_job_rejected_until_live_model_ready(monkeypatch):
         main.require_tryon_ready()
     assert error.value.status_code == 503
     manager.retry.assert_called_once()
+
+
+def test_restore_checks_actual_environment_weights_and_revision(tmp_path):
+    from scripts.colab_worker_recovery import installation_complete
+    paths = ['setup-complete.json', '.venv/bin/python', 'weights/model.safetensors',
+             'weights/dwpose/yolox_l.onnx', 'weights/dwpose/dw-ll_ucoco_384.onnx',
+             'weights/parser/config.json', 'weights/parser/model.safetensors']
+    for name in paths:
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('fixture')
+    assert not installation_complete(tmp_path)
+    (tmp_path / paths[0]).write_text(json.dumps({'source': 'wrong', 'model': REVISION}))
+    assert not installation_complete(tmp_path)
+    (tmp_path / paths[0]).write_text(json.dumps({
+        'source': '7c0f10af3f91ad4048fe9729c470a13ef905d25a', 'model': REVISION}))
+    assert installation_complete(tmp_path)
+    (tmp_path / paths[-1]).unlink()
+    assert not installation_complete(tmp_path)

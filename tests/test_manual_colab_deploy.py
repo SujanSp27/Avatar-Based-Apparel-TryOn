@@ -31,6 +31,7 @@ def cell_functions(source):
     invocation = tree.body[-1].value.args[0].args[0]
     assert invocation.func.id == 'recover'
     kwargs = {item.arg: ast.literal_eval(item.value) for item in invocation.keywords}
+    assert kwargs.pop('supervise_seconds') == 180
     payload = ast.literal_eval(invocation.args[1])
     return namespace, payload, kwargs
 
@@ -107,7 +108,9 @@ def test_manual_cell_preserves_idle_existing_profile_and_token(project, monkeypa
     namespace['recover'](root, payload, **kwargs)
     assert (root / 'worker-config.json').read_text() == profile
     assert (root / 'worker-token.txt').read_text() == 'retained-token'
-    namespace['launch'].assert_called_once_with(root, 'worker')
+    # A completion marker alone cannot prove this runtime still has its Python
+    # environment and weights. Restore missing files without touching config.
+    namespace['launch'].assert_called_once_with(root, 'setup')
 
 
 def test_status_cell_remains_read_only_without_any_pin(project):

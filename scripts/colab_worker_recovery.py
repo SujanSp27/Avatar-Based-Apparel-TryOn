@@ -9,8 +9,8 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from urllib.request import Request, urlopen
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 
 def validate_worker_profile(profile: dict | None) -> dict | None:
@@ -79,7 +79,12 @@ def worker_reachable(connection):
                           headers={'Content-Type': 'application/json'})
         with urlopen(request, timeout=4) as response:
             status = json.load(response)['data'][0]
-        return status.get('ready') is True and status.get('device') == 'cuda'
+        # Gradio's JSON component can serialize its value as JSON text.
+        if isinstance(status, str):
+            status = json.loads(status)
+        return (isinstance(status, dict) and status.get('ready') is True
+                and status.get('device') == 'cuda'
+                and status.get('modelRevision') == '7720683168567eb5a2a4c67f15116c6e29c83ded')
     except (OSError, ValueError, KeyError, IndexError, TypeError):
         return False
 
@@ -118,11 +123,38 @@ def installation_complete(root):
     required = ['setup-complete.json', '.venv/bin/python', 'weights/model.safetensors',
                 'weights/dwpose/yolox_l.onnx', 'weights/dwpose/dw-ll_ucoco_384.onnx',
                 'weights/parser/config.json', 'weights/parser/model.safetensors']
-    return all((root / name).is_file() and (root / name).stat().st_size > 0 for name in required)
+    if not all((root / name).is_file() and (root / name).stat().st_size > 0 for name in required):
+        return False
+    try:
+        installed = json.loads((root / 'setup-complete.json').read_text())
+        return (installed.get('source') == '7c0f10af3f91ad4048fe9729c470a13ef905d25a'
+                and installed.get('model') == '7720683168567eb5a2a4c67f15116c6e29c83ded')
+    except (OSError, ValueError, AttributeError):
+        return False
 
 
 def recover(root: Path, payload: dict, expected_hostname: str | None = None,
-            worker_profile: dict | None = None):
+            worker_profile: dict | None = None, supervise_seconds: int = 0):
+    """Supervise real setup/model loading in the executing notebook cell.
+
+    Bounded supervision captures failures before the browser changes sessions;
+    it never keeps an idle runtime alive or performs image inference.
+    """
+    if type(supervise_seconds) is not int or not 0 <= supervise_seconds <= 180:
+        raise ValueError('Invalid setup supervision duration')
+    deadline = time.monotonic() + supervise_seconds
+    while True:
+        reply = _recover_once(root, payload, expected_hostname, worker_profile)
+        remaining = deadline - time.monotonic()
+        if reply['state'] not in {'setting_up', 'loading'} or remaining <= 0:
+            return reply
+        # Persist visible progress in notebook output as well as runtime logs.
+        print(json.dumps({'state': reply['state'], 'hostname': reply['hostname']}), flush=True)
+        time.sleep(min(10, remaining))
+
+
+def _recover_once(root: Path, payload: dict, expected_hostname: str | None = None,
+                  worker_profile: dict | None = None):
     """Identify first; only a caller-pinned runtime may change worker files.
 
     Colab's browser connection can switch between duplicate notebook tabs. The

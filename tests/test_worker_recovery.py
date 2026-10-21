@@ -231,3 +231,41 @@ def test_stale_pid_cannot_kill_an_unrelated_process(tmp_path, monkeypatch):
     monkeypatch.setattr(worker.os, 'kill', kill)
     worker.repair_stale_worker(tmp_path)
     kill.assert_not_called()
+
+
+def test_supervision_waits_only_for_real_setup_and_stops_when_ready(tmp_path, monkeypatch):
+    clock = [0.]
+    monkeypatch.setattr(worker.time, 'monotonic', lambda: clock[0])
+    monkeypatch.setattr(worker.time, 'sleep', lambda seconds: clock.__setitem__(0, clock[0] + seconds))
+    probe = Mock(side_effect=[{'state': 'setting_up', 'hostname': 'runtime-a'},
+                             {'state': 'loading', 'hostname': 'runtime-a'},
+                             {'state': 'ready', 'hostname': 'runtime-a'}])
+    monkeypatch.setattr(worker, '_recover_once', probe)
+    assert worker.recover(tmp_path, {}, 'runtime-a', supervise_seconds=180)['state'] == 'ready'
+    assert clock[0] == 20
+    assert probe.call_count == 3
+
+
+@pytest.mark.parametrize('state', ['runtime_changed', 'gpu_unavailable', 'setup_failed', 'notebook_busy'])
+def test_supervision_never_waits_or_retries_unrelated_or_failed_work(tmp_path, monkeypatch, state):
+    probe = Mock(return_value={'state': state, 'hostname': 'runtime-a'})
+    sleep = Mock()
+    monkeypatch.setattr(worker, '_recover_once', probe)
+    monkeypatch.setattr(worker.time, 'sleep', sleep)
+    assert worker.recover(tmp_path, {}, 'runtime-a', supervise_seconds=180)['state'] == state
+    probe.assert_called_once()
+    sleep.assert_not_called()
+
+
+def test_supervision_expires_and_leaves_running_work_intact(tmp_path, monkeypatch):
+    clock = [0.]
+    monkeypatch.setattr(worker.time, 'monotonic', lambda: clock[0])
+    monkeypatch.setattr(worker.time, 'sleep', lambda seconds: clock.__setitem__(0, clock[0] + seconds))
+    probe = Mock(return_value={'state': 'loading', 'hostname': 'runtime-a'})
+    kill = Mock()
+    monkeypatch.setattr(worker, '_recover_once', probe)
+    monkeypatch.setattr(worker.os, 'kill', kill)
+    assert worker.recover(tmp_path, {}, 'runtime-a', supervise_seconds=15)['state'] == 'loading'
+    assert clock[0] == 15
+    assert probe.call_count == 3
+    kill.assert_not_called()

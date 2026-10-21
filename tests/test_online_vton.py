@@ -43,7 +43,8 @@ def lossless_legacy_transport(monkeypatch):
 
 
 @pytest.mark.parametrize("category,mapped", MODEL_CATEGORIES.items())
-def test_actual_upload_category_and_remote_image_are_used(tmp_path, category, mapped):
+@pytest.mark.parametrize("json_text", [False, True])
+def test_actual_upload_category_and_remote_image_are_used(tmp_path, category, mapped, json_text):
     requests = []
     def transport(request):
         requests.append(request)
@@ -55,6 +56,8 @@ def test_actual_upload_category_and_remote_image_are_used(tmp_path, category, ma
             assert payload[3:5] == [mapped, "flat-lay"]
             return httpx.Response(200, json={"event_id": "a" * 32})
         result = {"model": "FASHN VTON 1.5", "device": "cuda", "image": base64.b64encode(png("green")).decode()}
+        if json_text:
+            result = json.dumps(result)
         return httpx.Response(200, text="event: heartbeat\ndata: null\n\nevent: complete\ndata: " + json.dumps([result]) + "\n\n")
     worker = OnlineTryOn("https://private.gradio.live", "x" * 32, transport=httpx.MockTransport(transport))
     result = worker.render(png(), png("red"), category, "flat-lay", tmp_path)
@@ -72,6 +75,42 @@ def test_missing_cloud_config_fails_without_local_fallback(tmp_path):
     with pytest.raises(PipelineError, match="Local GPU inference is disabled"):
         worker.render(png(), png(), "dress", "flat-lay", tmp_path)
     assert not list(tmp_path.iterdir())
+
+
+def test_stream_interruption_recovers_same_event_without_another_generation(tmp_path, monkeypatch):
+    monkeypatch.setattr('backend.app.online_vton.time.sleep', lambda _: None)
+    calls = []
+    def transport(request):
+        calls.append((request.method, str(request.url)))
+        if request.method == 'POST':
+            return httpx.Response(200, json={'event_id': 'sameevent'})
+        if len(calls) == 2:
+            raise httpx.RemoteProtocolError('lost connection')
+        result = {'model': 'FASHN VTON 1.5', 'device': 'cuda',
+                  'image': base64.b64encode(png('green')).decode()}
+        return httpx.Response(200, text='event: complete\ndata: ' + json.dumps([result]) + '\n\n')
+    worker = OnlineTryOn('https://private.gradio.live', 'x' * 48, transport=httpx.MockTransport(transport))
+    worker.render(png(), png('red'), 't-shirt', 'flat-lay', tmp_path)
+    assert [call[0] for call in calls] == ['POST', 'GET', 'GET']
+    assert calls[1] == calls[2]
+    assert (tmp_path / 'tryon-2d.png').read_bytes() == png('green')
+
+
+def test_stream_retry_exhaustion_retains_event_without_fake_result(tmp_path, monkeypatch):
+    monkeypatch.setattr('backend.app.online_vton.time.sleep', lambda _: None)
+    calls = []
+    def transport(request):
+        calls.append(request.method)
+        if request.method == 'POST':
+            return httpx.Response(200, json={'event_id': 'preserved'})
+        raise httpx.ReadTimeout('offline worker')
+    worker = OnlineTryOn('https://private.gradio.live', 'x' * 48, transport=httpx.MockTransport(transport))
+    with pytest.raises(PipelineError) as error:
+        worker.render(png(), png(), 't-shirt', 'flat-lay', tmp_path)
+    assert error.value.status_code == 504
+    assert calls == ['POST', 'GET', 'GET', 'GET']
+    assert json.loads((tmp_path / 'remote-event.json').read_text())['eventId'] == 'preserved'
+    assert not (tmp_path / 'tryon-2d.png').exists()
 
 
 def test_lossless_webp_response_is_saved_as_actual_png_without_pixel_changes(tmp_path):

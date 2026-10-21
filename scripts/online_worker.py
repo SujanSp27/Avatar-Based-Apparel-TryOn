@@ -206,12 +206,22 @@ def main():
                 "modelRevision": MODEL, "device": "cuda", "protocol": 1,
                 "busy": lock.locked()}
 
+    def generate_api(access_token, person_b64, garment_b64, category, photo_type, steps):
+        return json.dumps(generate(access_token, person_b64, garment_b64, category, photo_type, steps),
+                          allow_nan=False)
+
+    def status_api(supplied_token):
+        return json.dumps(status(supplied_token), allow_nan=False)
+
     with gr.Blocks(analytics_enabled=False) as app:
         args = [gr.Textbox(visible=False) for _ in range(5)] + [gr.Number(value=20, visible=False)]
-        output = gr.JSON(visible=False)
-        gr.Button("Private API").click(generate, inputs=args, outputs=output, api_name="generate", concurrency_limit=1)
-        gr.Button("Worker status", visible=False).click(status, inputs=args[0],
-                outputs=gr.JSON(visible=False), api_name="status", queue=False)
+        # Explicit JSON text avoids Gradio's JSONData RootModel being coerced to
+        # Python repr by newer FastAPI versions inherited from Colab. The client
+        # accepts JSON text and legacy objects, never evaluates Python repr.
+        output = gr.Textbox(visible=False)
+        gr.Button("Private API").click(generate_api, inputs=args, outputs=output, api_name="generate", concurrency_limit=1)
+        gr.Button("Worker status", visible=False).click(status_api, inputs=args[0],
+                outputs=gr.Textbox(visible=False), api_name="status", queue=False)
     _, _, url = app.queue(max_size=2).launch(share=True, server_name="127.0.0.1", prevent_thread_lock=True, show_api=False, quiet=True)
     (root / "connection.json").write_text(json.dumps({"url": url, "gpu": torch.cuda.get_device_name(),
                                                     "model": MODEL, "modelResolution": list(input_shape[::-1]),

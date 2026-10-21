@@ -44,7 +44,7 @@ def test_adopted_url_still_requires_live_validation():
     assert manager.snapshot()['connectionState'] == 'connecting'
 
 
-@pytest.mark.parametrize('state', ['runtime_expired', 'gpu_unavailable', 'browser_required', 'runtime_changed'])
+@pytest.mark.parametrize('state', ['runtime_expired', 'gpu_unavailable', 'browser_required', 'runtime_changed', 'recovery_failed'])
 def test_external_runtime_constraints_are_reported_honestly(state):
     worker = Mock()
     worker.availability.return_value = {'available': False}
@@ -53,6 +53,22 @@ def test_external_runtime_constraints_are_reported_honestly(state):
     assert not manager.snapshot()['available']
     assert manager.snapshot()['connectionState'] == state
     assert manager.snapshot()['reason']
+
+
+def test_notebook_exception_overrides_stale_progress(tmp_path, bridge):
+    _, requests, reply = bridge
+    recovery = ColabRecovery(tmp_path, tmp_path / 'connection.json')
+    recovery._submit({}, 'probe', 'run_code_cell', {'cellId': 'owned'})
+    reply({'outputs': [
+        {'output_type': 'stream', 'text': ['{"state":"loading","hostname":"known"}\n']},
+        {'output_type': 'error', 'ename': 'AttributeError', 'evalue': 'private detail'},
+    ]})
+    assert recovery.tick() == 'recovery_failed'
+    assert len(requests) == 1
+    saved = recovery.state_path.read_text()
+    assert 'private detail' not in saved
+    assert json.loads(saved)['lastReplyState'] == 'recovery_failed'
+    assert recovery.tick() is None
 
 
 @pytest.fixture
