@@ -63,3 +63,7 @@ sentencepiece==0.2.2
 sentinels==1.1.1
 six==1.17.0
 sounddevice==0.5.6
+PyJWT==2.10.1
+argon2-cffi==25.1.0
+argon2-cffi-bindings==26.1.0
+email-validator==2.3.0

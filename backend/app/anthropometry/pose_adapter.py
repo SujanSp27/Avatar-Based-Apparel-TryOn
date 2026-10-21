@@ -39,7 +39,10 @@ def refine_mask(image: np.ndarray, probabilities: np.ndarray) -> np.ndarray:
         raise PipelineError("segmentation_missing", "A clear person outline and background are required.")
     # Called under the detector lock; a fixed seed also fixes GrabCut's GMM initialization.
     cv2.setRNGSeed(0)
-    cv2.grabCut(small, labels, None, np.zeros((1, 65)), np.zeros((1, 65)), 3, cv2.GC_INIT_WITH_MASK)
+    try:
+        cv2.grabCut(small, labels, None, np.zeros((1, 65)), np.zeros((1, 65)), 3, cv2.GC_INIT_WITH_MASK)
+    except cv2.error as exc:
+        raise PipelineError("segmentation_failed", "The person outline could not be refined. Use a clear, contrasting background.") from exc
     mask = np.isin(labels, (cv2.GC_FGD, cv2.GC_PR_FGD)).astype(np.uint8)
     return cv2.resize(mask, (width, height), interpolation=cv2.INTER_NEAREST).astype(bool)
 
@@ -86,7 +89,10 @@ class MediaPipePose:
                 503,
             )
         # Do not load MediaPipe (or any local ML runtime) just to serve try-on/sizing.
-        import mediapipe as mp
+        try:
+            import mediapipe as mp
+        except (ImportError, OSError) as exc:
+            raise PipelineError("measurement_runtime_unavailable", "The MediaPipe CPU runtime is unavailable. Check the backend dependencies.", 503) from exc
 
         with self._lock:
             if self._model is None:
@@ -103,7 +109,7 @@ class MediaPipePose:
                     )
                     self._model = mp.tasks.vision.PoseLandmarker.create_from_options(options)
                     self.model_sha256 = hashlib.sha256(self.model_path.read_bytes()).hexdigest()
-                except (RuntimeError, ValueError) as exc:
+                except (RuntimeError, ValueError, OSError) as exc:
                     raise PipelineError("measurement_model_unavailable", "MediaPipe could not load its checkpoint.", 503) from exc
             try:
                 result = self._model.detect(mp.Image(image_format=mp.ImageFormat.SRGB, data=image))

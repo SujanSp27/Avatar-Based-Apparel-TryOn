@@ -21,7 +21,7 @@ test("refresh resumes the same job and reports its actual failure without anothe
       : { jobId, status: "processing", elapsedSeconds: 38, progress: { stage: "generating", completed: 7, total: 50 } },
     });
   });
-  await page.goto("/");
+  await page.goto("/tryon");
   await page.getByRole("button", { name: "Try sample photos" }).click();
   await page.getByRole("button", { name: "Generate try-on", exact: true }).click();
   await expect(page.getByTestId("job-progress")).toContainText("step 7 of 50");
@@ -43,7 +43,7 @@ test("a recovered job cannot present an overlay as a successful neural result", 
     jobId: "00000000-0000-4000-8000-000000000001", status: "success",
     result: { mode: "2d", renderingMethod: "overlay" },
   } }));
-  await page.goto("/");
+  await page.goto("/tryon");
   await expect(page.getByRole("alert")).toContainText("did not return a pretrained try-on result");
   await expect(page.getByTestId("photo-result")).toHaveCount(0);
 });
@@ -61,15 +61,14 @@ test("a recovered real CatVTON result loads its actual PNG and original comparis
   await page.route("**/api/tryon/jobs/*", (route) => route.fulfill({ json: {
     jobId, status: "success", result,
   } }));
-  await page.goto("/");
+  await page.goto("/tryon");
   const viewer = page.getByTestId("viewer");
   await expect(viewer).toHaveAttribute("data-loaded", "true");
-  await expect(viewer.locator("img")).toHaveAttribute("src", result.previewUrl);
-  await page.getByRole("button", { name: "Original", exact: true }).click();
-  await expect(viewer.locator("img")).toHaveAttribute("src", result.originalUrl);
-  await expect(viewer).toHaveAttribute("data-loaded", "true");
-  await page.getByRole("button", { name: "Try-on", exact: true }).click();
-  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  await expect(viewer.getByRole("img", { name: "Generated virtual try-on", exact: true })).toHaveAttribute("src", result.previewUrl);
+  await expect(viewer.getByRole("img", { name: "Original person photo", exact: true })).toHaveAttribute("src", result.originalUrl);
+  await page.getByRole("slider", { name: "Before and after comparison slider" }).fill("75");
+  await page.getByRole("button", { name: "Side by side", exact: true }).click();
+  await expect(viewer.locator(".compare-stage")).toHaveClass(/side/);
   await expect(page.getByTestId("recommended-size")).toHaveCount(0);
   expect(errors).toEqual([]);
 });

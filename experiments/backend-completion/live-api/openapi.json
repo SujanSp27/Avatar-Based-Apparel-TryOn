@@ -1,0 +1,3839 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Form / Fit research API",
+    "description": "Private Colab 2D try-on, CPU body estimates, and MongoDB-backed brand sizing. Single-process local prototype.",
+    "version": "0.2.0"
+  },
+  "paths": {
+    "/api/v1/measurements/extract": {
+      "post": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Extract Measurements",
+        "operationId": "extract_measurements_api_v1_measurements_extract_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_extract_measurements_api_v1_measurements_extract_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/measurements/extract-and-recommend": {
+      "post": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Extract And Recommend",
+        "operationId": "extract_and_recommend_api_v1_measurements_extract_and_recommend_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_extract_and_recommend_api_v1_measurements_extract_and_recommend_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractAndRecommendResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/measurements": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "List Measurements",
+        "operationId": "list_measurements_api_v1_measurements_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeasurementPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/measurements/{measurement_id}": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Get Measurement",
+        "operationId": "get_measurement_api_v1_measurements__measurement_id__get",
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pose_[0-9a-f]{32}$",
+              "title": "Measurement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredMeasurement"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Delete Measurement",
+        "operationId": "delete_measurement_api_v1_measurements__measurement_id__delete",
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pose_[0-9a-f]{32}$",
+              "title": "Measurement Id"
+            }
+          },
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/measurements/{measurement_id}/annotation": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Annotation",
+        "operationId": "annotation_api_v1_measurements__measurement_id__annotation_get",
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pose_[0-9a-f]{32}$",
+              "title": "Measurement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sizing/recommend": {
+      "post": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Recommend Size",
+        "operationId": "recommend_size_api_v1_sizing_recommend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend__app__anthropometry__schemas__SizingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SizingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sizing/categories": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Sizing Categories",
+        "description": "Default sizing dimensions; each sourced chart may declare a smaller explicit subset.",
+        "operationId": "sizing_categories_api_v1_sizing_categories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryMetrics"
+                  },
+                  "type": "array",
+                  "title": "Response Sizing Categories Api V1 Sizing Categories Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sizing/charts": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "List Charts",
+        "operationId": "list_charts_api_v1_sizing_charts_get",
+        "parameters": [
+          {
+            "name": "gender",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "men",
+                    "women",
+                    "unisex"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Gender"
+            }
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:[A-Z]{2}|UNSPECIFIED)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Market"
+            }
+          },
+          {
+            "name": "brand_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/GarmentCategory"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "latest_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Latest Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response List Charts Api V1 Sizing Charts Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Create Chart",
+        "operationId": "create_chart_api_v1_sizing_charts_post",
+        "parameters": [
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend__app__anthropometry__schemas__ChartCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChartCreate-Output"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sizing/brands": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "List Brands",
+        "description": "Verified India coverage and explicit gaps; not a promise of brand-wide support.",
+        "operationId": "list_brands_api_v1_sizing_brands_get",
+        "parameters": [
+          {
+            "name": "include_demo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Demo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Create Brand",
+        "operationId": "create_brand_api_v1_sizing_brands_post",
+        "parameters": [
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend__app__anthropometry__schemas__BrandCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sizing/brands/{brand_id}": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Get Brand",
+        "operationId": "get_brand_api_v1_sizing_brands__brand_id__get",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "title": "Brand Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Update Brand",
+        "operationId": "update_brand_api_v1_sizing_brands__brand_id__patch",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BrandUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sizing/charts/{brand_id}/{apparel_id}/versions": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Chart Versions",
+        "operationId": "chart_versions_api_v1_sizing_charts__brand_id___apparel_id__versions_get",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "apparel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "title": "Apparel Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sizing/charts/{brand_id}/{apparel_id}": {
+      "get": {
+        "tags": [
+          "Body measurements and brand sizing"
+        ],
+        "summary": "Get Chart",
+        "operationId": "get_chart_api_v1_sizing_charts__brand_id___apparel_id__get",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "apparel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "title": "Apparel Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChartCreate-Output"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested record or chart does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Brand or immutable chart version conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Image upload exceeds the configured limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Measurement processor is busy; retry later",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required database, model or storage is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/live": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Live",
+        "operationId": "live_api_v1_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Ready",
+        "operationId": "ready_api_v1_health_ready_get",
+        "parameters": [
+          {
+            "name": "capability",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "sizing",
+                "measurements",
+                "tryon",
+                "all"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "Capability"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/brands": {
+      "get": {
+        "summary": "Brands",
+        "operationId": "brands_api_brands_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add Brand",
+        "operationId": "add_brand_api_brands_post",
+        "parameters": [
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend__app__schemas__BrandCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/brands/{brand_id}/charts": {
+      "get": {
+        "summary": "Get Chart",
+        "operationId": "get_chart_api_brands__brand_id__charts_get",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "garmentCategory",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Category"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Add Chart",
+        "operationId": "add_chart_api_brands__brand_id__charts_put",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend__app__schemas__ChartCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add Chart",
+        "operationId": "add_chart_api_brands__brand_id__charts_post",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend__app__schemas__ChartCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/brands/{brand_id}/chart-versions": {
+      "get": {
+        "summary": "Versions",
+        "operationId": "versions_api_brands__brand_id__chart_versions_get",
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Brand Id"
+            }
+          },
+          {
+            "name": "garmentCategory",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sizing/recommend": {
+      "post": {
+        "summary": "Sizing",
+        "operationId": "sizing_api_sizing_recommend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend__app__schemas__SizingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tryon": {
+      "post": {
+        "summary": "Tryon",
+        "operationId": "tryon_api_tryon_post",
+        "parameters": [
+          {
+            "name": "prefer",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Prefer"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_tryon_api_tryon_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tryon/jobs/{job_id}": {
+      "get": {
+        "summary": "Job Status",
+        "operationId": "job_status_api_tryon_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs": {
+      "get": {
+        "summary": "List Runs",
+        "operationId": "list_runs_api_runs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "processing",
+                    "success",
+                    "failed"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}": {
+      "get": {
+        "summary": "Get Run",
+        "operationId": "get_run_api_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Run",
+        "operationId": "delete_run_api_runs__run_id__delete",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/samples/{kind}": {
+      "get": {
+        "summary": "Sample",
+        "operationId": "sample_api_samples__kind__get",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Kind"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "APIError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "APIError"
+      },
+      "Body_extract_and_recommend_api_v1_measurements_extract_and_recommend_post": {
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "binary",
+            "title": "Image"
+          },
+          "height_cm": {
+            "type": "number",
+            "maximum": 250.0,
+            "minimum": 80.0,
+            "title": "Height Cm"
+          },
+          "brand_id": {
+            "type": "string",
+            "title": "Brand Id"
+          },
+          "apparel_id": {
+            "type": "string",
+            "title": "Apparel Id"
+          },
+          "chart_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chart Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image",
+          "height_cm",
+          "brand_id",
+          "apparel_id"
+        ],
+        "title": "Body_extract_and_recommend_api_v1_measurements_extract_and_recommend_post"
+      },
+      "Body_extract_measurements_api_v1_measurements_extract_post": {
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "binary",
+            "title": "Image"
+          },
+          "height_cm": {
+            "type": "number",
+            "maximum": 250.0,
+            "minimum": 80.0,
+            "title": "Height Cm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image",
+          "height_cm"
+        ],
+        "title": "Body_extract_measurements_api_v1_measurements_extract_post"
+      },
+      "Body_tryon_api_tryon_post": {
+        "properties": {
+          "personImage": {
+            "type": "string",
+            "format": "binary",
+            "title": "Personimage"
+          },
+          "garmentImage": {
+            "type": "string",
+            "format": "binary",
+            "title": "Garmentimage"
+          },
+          "brandId": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brandid"
+          },
+          "garmentCategory": {
+            "$ref": "#/components/schemas/GarmentCategory"
+          },
+          "fitPreference": {
+            "$ref": "#/components/schemas/Fit",
+            "default": "regular"
+          },
+          "tryonMode": {
+            "$ref": "#/components/schemas/TryOnMode",
+            "default": "2d"
+          },
+          "garmentPhotoType": {
+            "type": "string",
+            "pattern": "^(flat-lay|model)$",
+            "title": "Garmentphototype",
+            "default": "flat-lay"
+          }
+        },
+        "type": "object",
+        "required": [
+          "personImage",
+          "garmentImage",
+          "garmentCategory"
+        ],
+        "title": "Body_tryon_api_tryon_post"
+      },
+      "BrandUpdate": {
+        "properties": {
+          "brand_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand Name"
+          },
+          "official_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2083,
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Official Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BrandUpdate"
+      },
+      "Category": {
+        "type": "string",
+        "enum": [
+          "t-shirt",
+          "shirt",
+          "dress",
+          "trouser"
+        ],
+        "title": "Category"
+      },
+      "CategoryMetrics": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/GarmentCategory"
+          },
+          "default_metrics": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "shoulder_width",
+                "chest_circumference",
+                "waist_circumference",
+                "hip_circumference",
+                "thigh_circumference",
+                "inseam_length"
+              ]
+            },
+            "type": "array",
+            "title": "Default Metrics"
+          },
+          "default_weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "shoulder_width",
+                "chest_circumference",
+                "waist_circumference",
+                "hip_circumference",
+                "thigh_circumference",
+                "inseam_length"
+              ]
+            },
+            "type": "object",
+            "title": "Default Weights"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "category",
+          "default_metrics",
+          "default_weights"
+        ],
+        "title": "CategoryMetrics"
+      },
+      "ChartCreate-Output": {
+        "properties": {
+          "brand_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Brand Id"
+          },
+          "brand_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Brand Name"
+          },
+          "apparel_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Apparel Id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/GarmentCategory"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Source"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "default": false
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "men",
+              "women",
+              "unisex"
+            ],
+            "title": "Gender",
+            "default": "unisex"
+          },
+          "market": {
+            "type": "string",
+            "pattern": "^(?:[A-Z]{2}|UNSPECIFIED)$",
+            "title": "Market",
+            "default": "UNSPECIFIED"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2083,
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "checked_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checked On"
+          },
+          "source_unit": {
+            "type": "string",
+            "enum": [
+              "cm",
+              "in"
+            ],
+            "title": "Source Unit",
+            "default": "cm"
+          },
+          "measurement_basis": {
+            "type": "string",
+            "enum": [
+              "body",
+              "garment"
+            ],
+            "title": "Measurement Basis",
+            "default": "body"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Notes"
+          },
+          "active_metrics": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "shoulder_width",
+                    "chest_circumference",
+                    "waist_circumference",
+                    "hip_circumference",
+                    "thigh_circumference",
+                    "inseam_length"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 6,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Metrics"
+          },
+          "sizes": {
+            "items": {
+              "$ref": "#/components/schemas/ChartSize"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Sizes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "brand_id",
+          "brand_name",
+          "apparel_id",
+          "category",
+          "version",
+          "source",
+          "sizes"
+        ],
+        "title": "ChartCreate"
+      },
+      "ChartSize": {
+        "properties": {
+          "size_label": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Size Label"
+          },
+          "sort_order": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Sort Order"
+          },
+          "bounds": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MeasurementRange"
+            },
+            "propertyNames": {
+              "enum": [
+                "shoulder_width",
+                "chest_circumference",
+                "waist_circumference",
+                "hip_circumference",
+                "thigh_circumference",
+                "inseam_length"
+              ]
+            },
+            "type": "object",
+            "title": "Bounds"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "size_label",
+          "sort_order",
+          "bounds"
+        ],
+        "title": "ChartSize"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/APIError"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "ExtractAndRecommendResponse": {
+        "properties": {
+          "extraction": {
+            "$ref": "#/components/schemas/ExtractionResponse"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/SizingResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "extraction",
+          "recommendation"
+        ],
+        "title": "ExtractAndRecommendResponse"
+      },
+      "ExtractionResponse": {
+        "properties": {
+          "measurement_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^pose_[0-9a-f]{32}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurement Id"
+          },
+          "scale_factor": {
+            "type": "number",
+            "title": "Scale Factor"
+          },
+          "measurements": {
+            "$ref": "#/components/schemas/Measurements"
+          },
+          "annotated_image_url": {
+            "type": "string",
+            "title": "Annotated Image Url"
+          },
+          "quality": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Quality"
+          },
+          "geometry": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Geometry"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provenance"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scale_factor",
+          "measurements",
+          "annotated_image_url",
+          "quality",
+          "geometry",
+          "provenance",
+          "warnings"
+        ],
+        "title": "ExtractionResponse"
+      },
+      "Fit": {
+        "type": "string",
+        "enum": [
+          "tight",
+          "regular",
+          "loose"
+        ],
+        "title": "Fit"
+      },
+      "GarmentCategory": {
+        "type": "string",
+        "enum": [
+          "t-shirt",
+          "shirt",
+          "blouse",
+          "sweater",
+          "jacket",
+          "trouser",
+          "jeans",
+          "shorts",
+          "skirt",
+          "dress",
+          "jumpsuit"
+        ],
+        "title": "GarmentCategory"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MeasurementPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StoredMeasurement"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "MeasurementPage"
+      },
+      "MeasurementRange": {
+        "properties": {
+          "lower": {
+            "type": "number",
+            "maximum": 400.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Lower"
+          },
+          "upper": {
+            "type": "number",
+            "maximum": 400.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Upper"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lower",
+          "upper"
+        ],
+        "title": "MeasurementRange"
+      },
+      "Measurements": {
+        "properties": {
+          "shoulder_width": {
+            "type": "number",
+            "maximum": 100.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Shoulder Width"
+          },
+          "chest_circumference": {
+            "type": "number",
+            "maximum": 400.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Chest Circumference"
+          },
+          "waist_circumference": {
+            "type": "number",
+            "maximum": 400.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Waist Circumference"
+          },
+          "hip_circumference": {
+            "type": "number",
+            "maximum": 400.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Hip Circumference"
+          },
+          "thigh_circumference": {
+            "type": "number",
+            "maximum": 400.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Thigh Circumference"
+          },
+          "inseam_length": {
+            "type": "number",
+            "maximum": 200.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Inseam Length"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "shoulder_width",
+          "chest_circumference",
+          "waist_circumference",
+          "hip_circumference",
+          "thigh_circumference",
+          "inseam_length"
+        ],
+        "title": "Measurements"
+      },
+      "MeasurementsInput": {
+        "properties": {
+          "chest": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Chest"
+          },
+          "waist": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Waist"
+          },
+          "hip": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Hip"
+          },
+          "shoulderWidth": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shoulderwidth"
+          }
+        },
+        "type": "object",
+        "required": [
+          "chest",
+          "waist",
+          "hip"
+        ],
+        "title": "MeasurementsInput"
+      },
+      "RunPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RunSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "RunPage"
+      },
+      "RunSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at"
+        ],
+        "title": "RunSummary"
+      },
+      "SizeCreate": {
+        "properties": {
+          "sizeLabel": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Sizelabel"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Sortorder"
+          },
+          "chestMin": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Chestmin"
+          },
+          "chestMax": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Chestmax"
+          },
+          "waistMin": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Waistmin"
+          },
+          "waistMax": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Waistmax"
+          },
+          "hipMin": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Hipmin"
+          },
+          "hipMax": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Hipmax"
+          },
+          "shoulderMin": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shouldermin"
+          },
+          "shoulderMax": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shouldermax"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sizeLabel",
+          "sortOrder",
+          "chestMin",
+          "chestMax",
+          "waistMin",
+          "waistMax",
+          "hipMin",
+          "hipMax"
+        ],
+        "title": "SizeCreate"
+      },
+      "SizeRanking": {
+        "properties": {
+          "size": {
+            "type": "string",
+            "title": "Size"
+          },
+          "error": {
+            "type": "number",
+            "title": "Error"
+          },
+          "deviations": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "shoulder_width",
+                "chest_circumference",
+                "waist_circumference",
+                "hip_circumference",
+                "thigh_circumference",
+                "inseam_length"
+              ]
+            },
+            "type": "object",
+            "title": "Deviations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "size",
+          "error",
+          "deviations"
+        ],
+        "title": "SizeRanking"
+      },
+      "SizingResponse": {
+        "properties": {
+          "recommended_size": {
+            "type": "string",
+            "title": "Recommended Size"
+          },
+          "minimum_error": {
+            "type": "number",
+            "title": "Minimum Error"
+          },
+          "fit_confidence": {
+            "type": "number",
+            "title": "Fit Confidence"
+          },
+          "size_rankings": {
+            "items": {
+              "$ref": "#/components/schemas/SizeRanking"
+            },
+            "type": "array",
+            "title": "Size Rankings"
+          },
+          "chart_comparison": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Chart Comparison"
+          },
+          "active_weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "shoulder_width",
+                "chest_circumference",
+                "waist_circumference",
+                "hip_circumference",
+                "thigh_circumference",
+                "inseam_length"
+              ]
+            },
+            "type": "object",
+            "title": "Active Weights"
+          },
+          "chart": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Chart"
+          },
+          "score_meaning": {
+            "type": "string",
+            "title": "Score Meaning"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "measurement_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^pose_[0-9a-f]{32}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurement Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "recommended_size",
+          "minimum_error",
+          "fit_confidence",
+          "size_rankings",
+          "chart_comparison",
+          "active_weights",
+          "chart",
+          "score_meaning"
+        ],
+        "title": "SizingResponse"
+      },
+      "StoredMeasurement": {
+        "properties": {
+          "measurement_id": {
+            "type": "string",
+            "pattern": "^pose_[0-9a-f]{32}$",
+            "title": "Measurement Id"
+          },
+          "scale_factor": {
+            "type": "number",
+            "title": "Scale Factor"
+          },
+          "measurements": {
+            "$ref": "#/components/schemas/Measurements"
+          },
+          "annotated_image_url": {
+            "type": "string",
+            "title": "Annotated Image Url"
+          },
+          "quality": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Quality"
+          },
+          "geometry": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Geometry"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provenance"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "measurement_id",
+          "scale_factor",
+          "measurements",
+          "annotated_image_url",
+          "quality",
+          "geometry",
+          "provenance",
+          "warnings",
+          "created_at"
+        ],
+        "title": "StoredMeasurement"
+      },
+      "TryOnMode": {
+        "type": "string",
+        "enum": [
+          "2d"
+        ],
+        "title": "TryOnMode"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "backend__app__anthropometry__schemas__BrandCreate": {
+        "properties": {
+          "brand_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Brand Id"
+          },
+          "brand_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Brand Name"
+          },
+          "market": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "title": "Market",
+            "default": "IN"
+          },
+          "official_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2083,
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Official Url"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "brand_id",
+          "brand_name"
+        ],
+        "title": "BrandCreate"
+      },
+      "backend__app__anthropometry__schemas__ChartCreate": {
+        "properties": {
+          "brand_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Brand Id"
+          },
+          "brand_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Brand Name"
+          },
+          "apparel_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Apparel Id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/GarmentCategory"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Source"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "default": false
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "men",
+              "women",
+              "unisex"
+            ],
+            "title": "Gender",
+            "default": "unisex"
+          },
+          "market": {
+            "type": "string",
+            "pattern": "^(?:[A-Z]{2}|UNSPECIFIED)$",
+            "title": "Market",
+            "default": "UNSPECIFIED"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2083,
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "checked_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checked On"
+          },
+          "source_unit": {
+            "type": "string",
+            "enum": [
+              "cm",
+              "in"
+            ],
+            "title": "Source Unit",
+            "default": "cm"
+          },
+          "measurement_basis": {
+            "type": "string",
+            "enum": [
+              "body",
+              "garment"
+            ],
+            "title": "Measurement Basis",
+            "default": "body"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Notes"
+          },
+          "active_metrics": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "shoulder_width",
+                    "chest_circumference",
+                    "waist_circumference",
+                    "hip_circumference",
+                    "thigh_circumference",
+                    "inseam_length"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 6,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Metrics"
+          },
+          "sizes": {
+            "items": {
+              "$ref": "#/components/schemas/ChartSize"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Sizes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "brand_id",
+          "brand_name",
+          "apparel_id",
+          "category",
+          "version",
+          "source",
+          "sizes"
+        ],
+        "title": "ChartCreate"
+      },
+      "backend__app__anthropometry__schemas__SizingRequest": {
+        "properties": {
+          "brand_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Brand Id"
+          },
+          "apparel_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Apparel Id"
+          },
+          "measurements": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number",
+                  "maximum": 400.0,
+                  "exclusiveMinimum": 0.0
+                },
+                "propertyNames": {
+                  "enum": [
+                    "shoulder_width",
+                    "chest_circumference",
+                    "waist_circumference",
+                    "hip_circumference",
+                    "thigh_circumference",
+                    "inseam_length"
+                  ]
+                },
+                "type": "object",
+                "minProperties": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurements"
+          },
+          "measurement_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^pose_[0-9a-f]{32}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurement Id"
+          },
+          "chart_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chart Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "brand_id",
+          "apparel_id"
+        ],
+        "title": "SizingRequest"
+      },
+      "backend__app__schemas__BrandCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "title": "Slug"
+          },
+          "isDemo": {
+            "type": "boolean",
+            "title": "Isdemo",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "slug"
+        ],
+        "title": "BrandCreate"
+      },
+      "backend__app__schemas__ChartCreate": {
+        "properties": {
+          "garmentCategory": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Source"
+          },
+          "sizes": {
+            "items": {
+              "$ref": "#/components/schemas/SizeCreate"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Sizes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "garmentCategory",
+          "version",
+          "source",
+          "sizes"
+        ],
+        "title": "ChartCreate"
+      },
+      "backend__app__schemas__SizingRequest": {
+        "properties": {
+          "brandId": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Brandid"
+          },
+          "garmentCategory": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "fitPreference": {
+            "$ref": "#/components/schemas/Fit",
+            "default": "regular"
+          },
+          "measurements": {
+            "$ref": "#/components/schemas/MeasurementsInput"
+          }
+        },
+        "type": "object",
+        "required": [
+          "brandId",
+          "garmentCategory",
+          "measurements"
+        ],
+        "title": "SizingRequest"
+      }
+    }
+  }
+}

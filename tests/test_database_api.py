@@ -117,3 +117,33 @@ def test_failed_request_releases_pipeline_capacity(client, monkeypatch):
         assert response.status_code == 422
         assert response.json()["error"]["code"] == "invalid_image"
     assert len(calls) == 2
+
+
+def test_run_history_pagination_filtering_and_admin(client, monkeypatch):
+    from datetime import datetime, timedelta, timezone
+    from uuid import uuid4
+
+    from backend.app.config import settings
+    from backend.app.models import Run
+
+    sessions = app.dependency_overrides[get_db]()
+    db = next(sessions)
+    try:
+        now = datetime.now(timezone.utc)
+        records = [Run(id=str(uuid4()), status=status, created_at=now + timedelta(seconds=index),
+                       metadata_json={"private_diagnostic": "should-not-be-listed"})
+                   for index, status in enumerate(("success", "failed", "processing"))]
+        db.add_all(records)
+        db.commit()
+        page = client.get("/api/runs", params={"limit": 1, "offset": 1})
+        assert page.status_code == 200 and "private_diagnostic" not in page.text
+        assert page.json()["total"] == 3 and page.json()["items"][0]["id"] == records[1].id
+        filtered = client.get("/api/runs", params={"status": "success"}).json()
+        assert filtered["total"] == 1 and filtered["items"][0]["id"] == records[0].id
+        assert client.get("/api/runs", params={"status": "unknown"}).status_code == 422
+        assert client.get("/api/runs", params={"limit": 101}).status_code == 422
+        monkeypatch.setattr(settings, "admin_token", "test-history-token")
+        assert client.get("/api/runs").status_code == 403
+        assert client.get("/api/runs", headers={"X-Admin-Token": "test-history-token"}).status_code == 200
+    finally:
+        sessions.close()

@@ -21,12 +21,12 @@ test("a fresh upload displays its actual Colab result", async ({ page, request }
   page.on("request", r => {
     if (r.method() === "POST" && r.url().endsWith("/api/tryon")) posts++;
   });
-  await page.goto("/");
+  await page.goto("/tryon");
   await expect(page.getByTestId("model-status")).toHaveAttribute("data-ready", "true", { timeout: 60000 });
-  await page.getByLabel("Upload person image").setInputFiles(person);
-  await page.getByLabel("Upload garment image").setInputFiles(garment);
+  await page.getByLabel("Your person photo", { exact: true }).setInputFiles(person);
+  await page.getByLabel("Your garment", { exact: true }).setInputFiles(garment);
   await page.getByLabel("Garment category").selectOption("t-shirt");
-  await page.getByLabel("Garment photo", { exact: true }).selectOption("flat-lay");
+  await page.getByLabel("Garment photo type", { exact: true }).selectOption("flat-lay");
   const started = Date.now();
   const submitted = page.waitForResponse(r =>
     r.request().method() === "POST" && r.url().endsWith("/api/tryon"));
@@ -54,7 +54,7 @@ test("a fresh upload displays its actual Colab result", async ({ page, request }
   const diagnostics = result.provenance.weights;
   expect(diagnostics.steps).toBe(10);
   expect(diagnostics.modelResolution).toEqual([504, 756]);
-  await expect(viewer.locator("img")).toHaveAttribute("src", result.previewUrl);
+  await expect(viewer.getByRole("img", { name: "Generated virtual try-on", exact: true })).toHaveAttribute("src", result.previewUrl);
   const image = await request.get(result.previewUrl);
   expect(image.ok()).toBeTruthy();
   writeFileSync(resolve(output, "tryon-2d.png"), await image.body());
@@ -65,11 +65,10 @@ test("a fresh upload displays its actual Colab result", async ({ page, request }
     visualAcceptance: "pending inspection", inputs,
   }, null, 2));
   await page.screenshot({ path: resolve(output, "browser.png"), fullPage: true });
-  await page.getByRole("button", { name: "Original", exact: true }).click();
-  await expect(viewer.locator("img")).toHaveAttribute("src", result.originalUrl);
-  await expect(viewer).toHaveAttribute("data-loaded", "true");
-  await page.getByRole("button", { name: "Try-on", exact: true }).click();
-  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  await expect(viewer.getByRole("img", { name: "Original person photo", exact: true })).toHaveAttribute("src", result.originalUrl);
+  await page.getByRole("slider", { name: "Before and after comparison slider" }).fill("75");
+  await page.getByRole("button", { name: "Side by side", exact: true }).click();
+  await expect(viewer.locator(".compare-stage")).toHaveClass(/side/);
   expect(posts).toBe(1);
   expect(errors).toEqual([]);
   // Keep timing and image evidence even when the timing target is missed.

@@ -1,4 +1,6 @@
+from datetime import datetime
 from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -65,3 +67,19 @@ class SizingRequest(BaseModel):
     garmentCategory: Category
     fitPreference: Fit = Fit.regular
     measurements: MeasurementsInput
+
+
+class RunSummary(BaseModel):
+    id: str
+    status: str
+    created_at: datetime
+
+
+class RunPage(BaseModel):
+    items: list[RunSummary]
+    total: int
+    limit: int
+    offset: int
+
+
+RunStatus = Literal["processing", "success", "failed"]

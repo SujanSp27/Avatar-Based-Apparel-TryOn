@@ -14,6 +14,10 @@ powershell -ExecutionPolicy Bypass -File scripts/start.ps1
 ```
 
 The app is at http://127.0.0.1:5173 and the API at http://127.0.0.1:8000/docs.
+The [API contract](docs/api.md) covers extraction, saved measurements, combined
+extraction/sizing, brand administration, versioned charts, try-on jobs and health.
+`/api/v1/health/ready?capability=measurements` checks measurement dependencies
+independently of the Colab GPU; use `capability=tryon` for image generation.
 The backend automatically checks the saved private worker, reopens the existing
 notebook when needed, restores missing worker files on its GPU, and adopts the
 new tunnel address. There is no connection button in the interface. Uploads can

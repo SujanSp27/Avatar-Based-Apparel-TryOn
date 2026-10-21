@@ -13,7 +13,8 @@ class Base(DeclarativeBase):
 engine = create_engine(
     settings.database_url,
     pool_pre_ping=True,
-    connect_args={"check_same_thread": False} if settings.database_url.startswith("sqlite") else {},
+    connect_args=({"check_same_thread": False} if settings.database_url.startswith("sqlite")
+                  else {"connect_timeout": 5} if settings.database_url.startswith("postgresql") else {}),
 )
 if settings.database_url.startswith("sqlite"):
 

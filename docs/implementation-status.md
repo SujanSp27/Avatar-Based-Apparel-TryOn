@@ -1,4 +1,4 @@
-# Current implementation status - 20 October 2026
+# Current implementation status - 21 October 2026
 
 The latest user direction is **2D only, existing Colab only, no local GPU**, with
 automatic connection at app startup and no manual connection control in the UI.
@@ -14,16 +14,56 @@ The subsequent body-measurement request adds **CPU MediaPipe and MongoDB**.
 This is separate from the removed 3D workflow and Colab image generation.
 The new backend is documented in [measurements and sizing](measurements-and-sizing.md).
 
+Backend completion on 21 October adds a single-upload extraction/recommendation
+endpoint, saved-measurement retrieval/history/deletion, sizing by saved record ID,
+brand create/read/update, chart filtering/pagination/version history, category
+metadata, SQL run history and capability-specific health/readiness. There are
+33 documented operations in OpenAPI. Request IDs, retry headers, sanitized
+database errors and unreadable-job recovery are covered by regression tests.
+The full CPU regression suite passed **530 tests**, with no failures or errors
+(`experiments/backend-completion/unit-tests.xml`). The live acceptance script
+passed **29 HTTP checks** against real MediaPipe, MongoDB and PostgreSQL. Its
+combined extraction/recommendation took **4.021 seconds** on the first run;
+this measures CPU estimation and sizing, not VTON. The test record and its files
+were deleted through the API after verifying retrieval and reference-based sizing.
+See [the complete API contract](api.md) and `experiments/backend-completion/`.
+After local services stopped during the session, PostgreSQL, MongoDB and the API
+were restored without changing Colab. All 29 live checks passed again; combined
+CPU extraction/sizing took 6.4253s (`restarted-api/report.json`). The final four
+browser regressions passed in 12.7s, and TypeScript/Vite built successfully in
+1.69s. Ruff and `pip check` passed. These browser checks do not submit GPU inference.
+
+21 October continuation: the local app and both databases were restarted after
+their processes stopped. Fresh real HTTP extraction passed at 6.4897s cold and
+2.0882s warm, with identical measurements, retrievable PNG annotations, MongoDB
+persistence, and cropped-image rejection. Nike's known M midpoint returned zero
+error. Evidence: `experiments/anthropometry/live-api-20261021/report.json`.
+These are measurement latencies, not try-on generation timings. The previous
+Colab worker URL returned 404; no new VTON inference was submitted in this check.
+The frontend's annotation proxy now returns the actual PNG through port 5173.
+The pinned Rollup tree-shaking pass stalled for several minutes on this machine;
+disabling that pass restored a successful 1.05s Vite production bundle (TypeScript
+also passed). Minification remains enabled. JavaScript is 215.53 kB / 67.78 kB
+gzip, compared with the previous 212.18 / 67.07 kB. This is a build-time workaround,
+not an image-generation optimization; reconsider it after a verified bundler fix.
+All four `online-tryon.spec.ts` browser checks passed on 21 October, including the
+real legacy size API, with results in `experiments/anthropometry/browser-20261021.json`.
+Final health check reports the local API healthy and Colab `runtime_changed`;
+measurement/sizing work independently. No runtime reset or new inference was used.
+
 | New requirement | Status | Evidence |
 |---|---|---|
 | MediaPipe 33 landmarks, strict visibility, reported-height scale and six estimates | IMPLEMENTED | `backend/app/anthropometry/`; real CPU image extraction and deterministic repeat test |
 | Anatomically accurate single-image measurements | PARTIALLY IMPLEMENTED | Requested projection formulas run, but hip joint spacing and head/crotch proxies are biased; no tape-measure ground truth or calibrated uncertainty |
 | Exact weighted midpoint error, rankings and 100/(1+E) score | IMPLEMENTED | Hand-calculated .1/.29 fixtures and live Nike midpoint → M, error 0 |
 | MongoDB chart versions and measurement records | IMPLEMENTED | Running MongoDB 8.2.2, unique version index, 10 seeded charts, HTTP extraction persistence |
+| Saved-record APIs and single-upload extraction/recommendation | IMPLEMENTED | Real HTTP create/read/list/annotation/recommend/delete; measurement warnings retained; `scripts/verify_backend_api.py` |
+| Brand administration, chart discovery/version history and run history | IMPLEMENTED | Auth, immutable provenance, category filters, latest-version aggregation and pagination tests |
+| Independent health, readiness and failure handling | IMPLEMENTED | `backend/app/health.py`; SQL/Mongo/model/Colab failure tests; sanitized errors; corrupted jobs retained without replay |
 | Both men's and women's Nike/Puma India guides | IMPLEMENTED | Four product-specific body guides, official URLs and source values in `data/brandCharts/india-*.json` |
 | U.S. Polo Assn., Adidas, Allen Solly India body charts | BLOCKED | USPA tables describe garment dimensions; Adidas India access denied; Allen Solly interactive guide access denied. Catalog states these limitations |
 | New routes, validation, annotation downloads and errors | IMPLEMENTED | `experiments/anthropometry/live-api/report.json`; real HTTP cold 2.6757s/warm 0.6725s, cropped image rejected |
-| Regression checks | IMPLEMENTED | 506 CPU tests passed; separate 37-test measurement suite including real CPU integration passed; Ruff and pip check passed |
+| Regression checks | IMPLEMENTED | 530 CPU tests; 29 real HTTP checks repeated after service restoration; four browser checks; TypeScript/Vite build, Ruff and pip check passed |
 
 | Phase | Requirement | Status | Evidence |
 |------|------|------|------|

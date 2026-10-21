@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
@@ -13,10 +13,26 @@ Metric = Literal[
 Identifier = Annotated[str, Field(min_length=1, max_length=120, pattern=r"^[a-zA-Z0-9_-]+$")]
 Centimeters = Annotated[float, Field(gt=0, le=400)]
 Gender = Literal["men", "women", "unisex"]
+MeasurementId = Annotated[str, Field(pattern=r"^pose_[0-9a-f]{32}$")]
 
 
 class StrictSchema(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+
+
+class APIError(StrictSchema):
+    code: str
+    message: str
+
+
+class ErrorResponse(StrictSchema):
+    error: APIError
+
+
+class CategoryMetrics(StrictSchema):
+    category: GarmentCategory
+    default_metrics: list[Metric]
+    default_weights: dict[Metric, float]
 
 
 class Measurements(StrictSchema):
@@ -29,6 +45,7 @@ class Measurements(StrictSchema):
 
 
 class ExtractionResponse(StrictSchema):
+    measurement_id: MeasurementId | None = None
     scale_factor: float
     measurements: Measurements
     annotated_image_url: str
@@ -36,6 +53,39 @@ class ExtractionResponse(StrictSchema):
     geometry: dict
     provenance: dict
     warnings: list[str]
+    landmarks_normalized: list[list[float]] = Field(default_factory=list)
+
+
+class StoredMeasurement(ExtractionResponse):
+    measurement_id: MeasurementId
+    created_at: datetime
+
+
+class MeasurementPage(StrictSchema):
+    items: list[StoredMeasurement]
+    total: int
+    limit: int
+    offset: int
+
+
+class BrandCreate(StrictSchema):
+    brand_id: Identifier
+    brand_name: str = Field(min_length=1, max_length=120)
+    market: str = Field(default="IN", pattern=r"^[A-Z]{2}$")
+    official_url: HttpUrl | None = None
+    description: str = Field(default="", max_length=1000)
+
+
+class BrandUpdate(StrictSchema):
+    brand_name: str | None = Field(default=None, min_length=1, max_length=120)
+    official_url: HttpUrl | None = None
+    description: str | None = Field(default=None, max_length=1000)
+
+    @model_validator(mode="after")
+    def nonempty(self):
+        if not self.model_fields_set or any(getattr(self, key) is None for key in self.model_fields_set):
+            raise ValueError("Provide at least one non-null field to update")
+        return self
 
 
 class MeasurementRange(StrictSchema):
@@ -99,8 +149,15 @@ class ChartCreate(StrictSchema):
 class SizingRequest(StrictSchema):
     brand_id: Identifier
     apparel_id: Identifier
-    measurements: dict[Metric, Centimeters] = Field(min_length=1)
+    measurements: dict[Metric, Centimeters] | None = Field(default=None, min_length=1)
+    measurement_id: MeasurementId | None = None
     chart_version: int | None = Field(default=None, ge=1)
+
+    @model_validator(mode="after")
+    def one_measurement_source(self):
+        if (self.measurements is None) == (self.measurement_id is None):
+            raise ValueError("Provide exactly one of measurements or measurement_id")
+        return self
 
 
 class SizeRanking(StrictSchema):
@@ -119,3 +176,9 @@ class SizingResponse(StrictSchema):
     chart: dict
     score_meaning: str
     warnings: list[str] = Field(default_factory=list)
+    measurement_id: MeasurementId | None = None
+
+
+class ExtractAndRecommendResponse(StrictSchema):
+    extraction: ExtractionResponse
+    recommendation: SizingResponse

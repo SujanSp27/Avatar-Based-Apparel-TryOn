@@ -79,6 +79,25 @@ def test_restart_does_not_rerun_abandoned_work(worker):
     assert worker.get(key)["error"]["code"] == "job_interrupted"
 
 
+@pytest.mark.parametrize("content", ["{truncated", "[]", '{"status":"processing"}'])
+def test_corrupt_job_is_preserved_without_blocking_startup(worker, content):
+    corrupt_id, valid_id = str(uuid4()), str(uuid4())
+    worker.directory.mkdir(parents=True, exist_ok=True)
+    path = worker._path(corrupt_id)
+    path.write_text(content)
+    worker._save({"jobId": valid_id, "requestHash": "original", "status": "processing", "createdAt": 1})
+    worker.recover_interrupted()
+    assert path.read_text() == content
+    assert worker.get(valid_id)["error"]["code"] == "job_interrupted"
+    with pytest.raises(PipelineError) as error:
+        worker.get(corrupt_id)
+    assert error.value.status_code == 503 and error.value.code == "job_record_unavailable"
+    with pytest.raises(PipelineError):
+        worker.submit(b"p", b"g", {}, lambda: pytest.fail("Never replay corrupt jobs"), key=corrupt_id)
+    new = worker.submit(b"new", b"g", {}, lambda: {"status": "success"})
+    assert finish(worker, new["jobId"])["status"] == "success"
+
+
 def test_async_api_acknowledges_and_returns_saved_result(worker, monkeypatch):
     from fastapi.testclient import TestClient
 

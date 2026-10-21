@@ -15,3 +15,6 @@ mediapipe==0.10.21
 opencv-contrib-python==4.11.0.86
 pymongo==4.15.3
 mongomock==4.3.0
+PyJWT==2.10.1
+argon2-cffi==25.1.0
+email-validator==2.3.0

@@ -1,5 +1,14 @@
 # Measurement backend verification
 
+21 October continuation: `live-api-20261021/report.json` verifies fresh extraction
+after starting the app and databases again. Cold/warm requests took 6.4897/2.0882
+seconds and returned identical measurements. Both records were verified in MongoDB.
+The known Nike M midpoint still produced zero error; a cropped image was rejected.
+This run did not submit any Colab inference. Earlier records below are preserved.
+`browser-20261021.json` records four passing browser checks. The production bundle
+built in 1.05 seconds after the documented tree-shaking workaround, and the
+annotation URL returned an actual PNG through frontend port 5173.
+
 `live-api/report.json` is the final live HTTP evidence for 20 October 2026.
 The API ran real MediaPipe CPU inference and persisted both successful extraction
 records in the project's MongoDB. Cold/warm latency: 2.6757/0.6725 seconds.

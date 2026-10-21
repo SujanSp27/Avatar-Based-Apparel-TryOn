@@ -1,0 +1,656 @@
+{
+  "image": "data\\raw\\studio-person.jpg",
+  "input_sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+  "height_cm": 172,
+  "height_note": "Test-supplied height, not independently measured ground truth.",
+  "local_gpu_used": false,
+  "checks": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/api/brands",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/sizing/brands",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/sizing/charts?market=IN&gender=men",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/sizing/charts?market=IN&gender=women",
+      "status": 200
+    }
+  ],
+  "cold": {
+    "elapsed_seconds": 6.4897,
+    "response": {
+      "scale_factor": 0.18085504010665485,
+      "measurements": {
+        "shoulder_width": 38.46,
+        "chest_circumference": 91.28,
+        "waist_circumference": 84.44,
+        "hip_circumference": 52.44,
+        "thigh_circumference": 50.41,
+        "inseam_length": 81.84
+      },
+      "annotated_image_url": "/static/annotated/pose_168dca6f84dc494e9d331a1822d3f0ae.png",
+      "quality": {
+        "estimates_only": true,
+        "minimum_key_landmark_visibility": 0.8559668064117432,
+        "visibility_threshold_exclusive": 0.65,
+        "statistical_uncertainty": "Not calibrated; landmark visibility is not measurement accuracy."
+      },
+      "geometry": {
+        "height_cm": 172.0,
+        "height_pixels": 951.0379135608673,
+        "head_y": 235.74471473693848,
+        "ankle_y": 1186.7826282978058,
+        "head_reference": "minimum y of visible MediaPipe face landmarks 0-10",
+        "head_landmark_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "image_size": [
+          1000,
+          1500
+        ],
+        "projection_multipliers": {
+          "chest": 2.45,
+          "waist": 2.3,
+          "hip": 2.4,
+          "thigh": 2.5
+        },
+        "chest_torso_fraction": 0.45,
+        "waist_torso_fraction": 0.5,
+        "thigh_leg_fraction": 0.4,
+        "inseam_reference": "mean Euclidean distance from hip midpoint to ankles 27/28"
+      },
+      "provenance": {
+        "model": "MediaPipe Pose Landmarker Full",
+        "landmarks": 33,
+        "model_sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1",
+        "device": "cpu",
+        "local_gpu_used": false,
+        "input_sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+        "method": "landmark-silhouette-projection-v2",
+        "segmentation": "MediaPipe probabilities with deterministic CPU GrabCut refinement"
+      },
+      "warnings": [
+        "Single-view estimates depend on self-reported height, perspective, clothing and segmentation.",
+        "MediaPipe has no crown or crotch landmark. Face-to-ankle scale and hip-midpoint inseam are biased anatomical proxies.",
+        "Circumference multipliers are specified heuristics, not calibrated tape measurements. Hip joint spacing is not outer hip width.",
+        "Chest uses the first arm-free section at 45% of shoulder-to-hip distance; it may miss the fullest chest/bust.",
+        "Confirm important dimensions with a tape measure before choosing a size."
+      ]
+    }
+  },
+  "warm": {
+    "elapsed_seconds": 2.0882,
+    "response": {
+      "scale_factor": 0.18085504010665485,
+      "measurements": {
+        "shoulder_width": 38.46,
+        "chest_circumference": 91.28,
+        "waist_circumference": 84.44,
+        "hip_circumference": 52.44,
+        "thigh_circumference": 50.41,
+        "inseam_length": 81.84
+      },
+      "annotated_image_url": "/static/annotated/pose_01cd5c5189d641758a18245ee612f08e.png",
+      "quality": {
+        "estimates_only": true,
+        "minimum_key_landmark_visibility": 0.8559668064117432,
+        "visibility_threshold_exclusive": 0.65,
+        "statistical_uncertainty": "Not calibrated; landmark visibility is not measurement accuracy."
+      },
+      "geometry": {
+        "height_cm": 172.0,
+        "height_pixels": 951.0379135608673,
+        "head_y": 235.74471473693848,
+        "ankle_y": 1186.7826282978058,
+        "head_reference": "minimum y of visible MediaPipe face landmarks 0-10",
+        "head_landmark_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "image_size": [
+          1000,
+          1500
+        ],
+        "projection_multipliers": {
+          "chest": 2.45,
+          "waist": 2.3,
+          "hip": 2.4,
+          "thigh": 2.5
+        },
+        "chest_torso_fraction": 0.45,
+        "waist_torso_fraction": 0.5,
+        "thigh_leg_fraction": 0.4,
+        "inseam_reference": "mean Euclidean distance from hip midpoint to ankles 27/28"
+      },
+      "provenance": {
+        "model": "MediaPipe Pose Landmarker Full",
+        "landmarks": 33,
+        "model_sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1",
+        "device": "cpu",
+        "local_gpu_used": false,
+        "input_sha256": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+        "method": "landmark-silhouette-projection-v2",
+        "segmentation": "MediaPipe probabilities with deterministic CPU GrabCut refinement"
+      },
+      "warnings": [
+        "Single-view estimates depend on self-reported height, perspective, clothing and segmentation.",
+        "MediaPipe has no crown or crotch landmark. Face-to-ankle scale and hip-midpoint inseam are biased anatomical proxies.",
+        "Circumference multipliers are specified heuristics, not calibrated tape measurements. Hip joint spacing is not outer hip width.",
+        "Chest uses the first arm-free section at 45% of shoulder-to-hip distance; it may miss the fullest chest/bust.",
+        "Confirm important dimensions with a tape measure before choosing a size."
+      ]
+    }
+  },
+  "known_chart_midpoint": {
+    "recommended_size": "M",
+    "minimum_error": 1.580642344496413e-16,
+    "fit_confidence": 99.99999999999997,
+    "size_rankings": [
+      {
+        "size": "M",
+        "error": 1.580642344496413e-16,
+        "deviations": {
+          "chest_circumference": 1.512114781357949e-16,
+          "waist_circumference": 1.734829361557957e-16,
+          "hip_circumference": 1.512114781357949e-16
+        }
+      },
+      {
+        "size": "L",
+        "error": 0.05996324562480941,
+        "deviations": {
+          "chest_circumference": 0.05732484076433111,
+          "waist_circumference": 0.07194244604316541,
+          "hip_circumference": 0.051282051282051266
+        }
+      },
+      {
+        "size": "S",
+        "error": 0.06834206842670665,
+        "deviations": {
+          "chest_circumference": 0.06474820143884896,
+          "waist_circumference": 0.08403361344537827,
+          "hip_circumference": 0.05714285714285712
+        }
+      },
+      {
+        "size": "XL",
+        "error": 0.11327843780012606,
+        "deviations": {
+          "chest_circumference": 0.11377245508982034,
+          "waist_circumference": 0.1283783783783782,
+          "hip_circumference": 0.09756097560975606
+        }
+      },
+      {
+        "size": "2XL",
+        "error": 0.1624250607401243,
+        "deviations": {
+          "chest_circumference": 0.16384180790960445,
+          "waist_circumference": 0.18354430379746828,
+          "hip_circumference": 0.13953488372093018
+        }
+      }
+    ],
+    "chart_comparison": {
+      "S": {
+        "chest_circumference": {
+          "measurement": 93.98,
+          "lower": 85.09,
+          "upper": 91.44,
+          "midpoint": 88.265,
+          "deviation": 0.06474820143884896,
+          "weighted_error": 0.02490315439955729,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 81.915,
+          "lower": 72.39,
+          "upper": 78.74,
+          "midpoint": 75.565,
+          "deviation": 0.08403361344537827,
+          "weighted_error": 0.025856496444731775,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 93.98,
+          "lower": 86.36,
+          "upper": 91.44,
+          "midpoint": 88.9,
+          "deviation": 0.05714285714285712,
+          "weighted_error": 0.017582417582417575,
+          "within_range": false
+        }
+      },
+      "M": {
+        "chest_circumference": {
+          "measurement": 93.98,
+          "lower": 91.44,
+          "upper": 96.52,
+          "midpoint": 93.97999999999999,
+          "deviation": 1.512114781357949e-16,
+          "weighted_error": 5.815826082145957e-17,
+          "within_range": true
+        },
+        "waist_circumference": {
+          "measurement": 81.915,
+          "lower": 78.74,
+          "upper": 85.09,
+          "midpoint": 81.91499999999999,
+          "deviation": 1.734829361557957e-16,
+          "weighted_error": 5.3379364971014065e-17,
+          "within_range": true
+        },
+        "hip_circumference": {
+          "measurement": 93.98,
+          "lower": 91.44,
+          "upper": 96.52,
+          "midpoint": 93.97999999999999,
+          "deviation": 1.512114781357949e-16,
+          "weighted_error": 4.6526608657167664e-17,
+          "within_range": true
+        }
+      },
+      "L": {
+        "chest_circumference": {
+          "measurement": 93.98,
+          "lower": 96.52,
+          "upper": 102.87,
+          "midpoint": 99.695,
+          "deviation": 0.05732484076433111,
+          "weighted_error": 0.022048015678588887,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 81.915,
+          "lower": 85.09,
+          "upper": 91.44,
+          "midpoint": 88.265,
+          "deviation": 0.07194244604316541,
+          "weighted_error": 0.022136137244050898,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 93.98,
+          "lower": 96.52,
+          "upper": 101.6,
+          "midpoint": 99.06,
+          "deviation": 0.051282051282051266,
+          "weighted_error": 0.015779092702169623,
+          "within_range": false
+        }
+      },
+      "XL": {
+        "chest_circumference": {
+          "measurement": 93.98,
+          "lower": 102.87,
+          "upper": 109.22,
+          "midpoint": 106.045,
+          "deviation": 0.11377245508982034,
+          "weighted_error": 0.04375863657300782,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 81.915,
+          "lower": 91.44,
+          "upper": 96.52,
+          "midpoint": 93.97999999999999,
+          "deviation": 0.1283783783783782,
+          "weighted_error": 0.03950103950103945,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 93.98,
+          "lower": 101.6,
+          "upper": 106.68,
+          "midpoint": 104.14,
+          "deviation": 0.09756097560975606,
+          "weighted_error": 0.03001876172607879,
+          "within_range": false
+        }
+      },
+      "2XL": {
+        "chest_circumference": {
+          "measurement": 93.98,
+          "lower": 109.22,
+          "upper": 115.57,
+          "midpoint": 112.395,
+          "deviation": 0.16384180790960445,
+          "weighted_error": 0.06301607996523248,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 81.915,
+          "lower": 96.52,
+          "upper": 104.14,
+          "midpoint": 100.33,
+          "deviation": 0.18354430379746828,
+          "weighted_error": 0.05647517039922101,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 93.98,
+          "lower": 106.68,
+          "upper": 111.76,
+          "midpoint": 109.22,
+          "deviation": 0.13953488372093018,
+          "weighted_error": 0.042933810375670824,
+          "within_range": false
+        }
+      }
+    },
+    "active_weights": {
+      "chest_circumference": 0.3846153846153846,
+      "waist_circumference": 0.3076923076923077,
+      "hip_circumference": 0.3076923076923077
+    },
+    "chart": {
+      "brand_id": "nike",
+      "brand_name": "Nike",
+      "apparel_id": "nike-in-hv4188-013",
+      "category": "t-shirt",
+      "version": 1,
+      "source": "Nike Men's Dri-FIT T-Shirt HV4188-013 / India body size guide",
+      "is_demo": false,
+      "gender": "men",
+      "market": "IN",
+      "source_url": "https://www.nike.in/nike-men-s-dri-fit-t-shirt/p/27753405",
+      "checked_on": "2026-10-20",
+      "source_unit": "in",
+      "measurement_basis": "body",
+      "notes": [
+        "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+        "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+        "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one."
+      ],
+      "active_metrics": [
+        "chest_circumference",
+        "waist_circumference",
+        "hip_circumference"
+      ],
+      "units": "cm"
+    },
+    "score_meaning": "100/(1+weighted midpoint-relative error); a heuristic fit score, not a calibrated probability.",
+    "warnings": [
+      "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+      "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+      "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one.",
+      "Chart does not score these category measurements: shoulder_width."
+    ]
+  },
+  "photo_estimates": {
+    "recommended_size": "M",
+    "minimum_error": 0.1565370675423779,
+    "fit_confidence": 86.46501941567541,
+    "size_rankings": [
+      {
+        "size": "M",
+        "error": 0.1565370675423779,
+        "deviations": {
+          "chest_circumference": 0.028729516918493177,
+          "waist_circumference": 0.03082463529268151,
+          "hip_circumference": 0.44200893807193015
+        }
+      },
+      {
+        "size": "S",
+        "error": 0.17546781960695945,
+        "deviations": {
+          "chest_circumference": 0.03415849997167621,
+          "waist_circumference": 0.11744855422483955,
+          "hip_circumference": 0.4101237345331834
+        }
+      },
+      {
+        "size": "L",
+        "error": 0.19060571634208442,
+        "deviations": {
+          "chest_circumference": 0.08440744270023565,
+          "waist_circumference": 0.04333541041182805,
+          "hip_circumference": 0.47062386432465175
+        }
+      },
+      {
+        "size": "XL",
+        "error": 0.23753837866231478,
+        "deviations": {
+          "chest_circumference": 0.13923334433495216,
+          "waist_circumference": 0.10151095977867625,
+          "hip_circumference": 0.49644709045515656
+        }
+      },
+      {
+        "size": "2XL",
+        "error": 0.28094639901216234,
+        "deviations": {
+          "chest_circumference": 0.18786422883580225,
+          "waist_circumference": 0.15837735472939302,
+          "hip_circumference": 0.5198681560153818
+        }
+      }
+    ],
+    "chart_comparison": {
+      "S": {
+        "chest_circumference": {
+          "measurement": 91.28,
+          "lower": 85.09,
+          "upper": 91.44,
+          "midpoint": 88.265,
+          "deviation": 0.03415849997167621,
+          "weighted_error": 0.013137884604490847,
+          "within_range": true
+        },
+        "waist_circumference": {
+          "measurement": 84.44,
+          "lower": 72.39,
+          "upper": 78.74,
+          "midpoint": 75.565,
+          "deviation": 0.11744855422483955,
+          "weighted_error": 0.03613801668456602,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 52.44,
+          "lower": 86.36,
+          "upper": 91.44,
+          "midpoint": 88.9,
+          "deviation": 0.4101237345331834,
+          "weighted_error": 0.12619191831790258,
+          "within_range": false
+        }
+      },
+      "M": {
+        "chest_circumference": {
+          "measurement": 91.28,
+          "lower": 91.44,
+          "upper": 96.52,
+          "midpoint": 93.97999999999999,
+          "deviation": 0.028729516918493177,
+          "weighted_error": 0.011049814199420452,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 84.44,
+          "lower": 78.74,
+          "upper": 85.09,
+          "midpoint": 81.91499999999999,
+          "deviation": 0.03082463529268151,
+          "weighted_error": 0.009484503166978927,
+          "within_range": true
+        },
+        "hip_circumference": {
+          "measurement": 52.44,
+          "lower": 91.44,
+          "upper": 96.52,
+          "midpoint": 93.97999999999999,
+          "deviation": 0.44200893807193015,
+          "weighted_error": 0.13600275017597852,
+          "within_range": false
+        }
+      },
+      "L": {
+        "chest_circumference": {
+          "measurement": 91.28,
+          "lower": 96.52,
+          "upper": 102.87,
+          "midpoint": 99.695,
+          "deviation": 0.08440744270023565,
+          "weighted_error": 0.03246440103855217,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 84.44,
+          "lower": 85.09,
+          "upper": 91.44,
+          "midpoint": 88.265,
+          "deviation": 0.04333541041182805,
+          "weighted_error": 0.013333972434408632,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 52.44,
+          "lower": 96.52,
+          "upper": 101.6,
+          "midpoint": 99.06,
+          "deviation": 0.47062386432465175,
+          "weighted_error": 0.1448073428691236,
+          "within_range": false
+        }
+      },
+      "XL": {
+        "chest_circumference": {
+          "measurement": 91.28,
+          "lower": 102.87,
+          "upper": 109.22,
+          "midpoint": 106.045,
+          "deviation": 0.13923334433495216,
+          "weighted_error": 0.0535512862826739,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 84.44,
+          "lower": 91.44,
+          "upper": 96.52,
+          "midpoint": 93.97999999999999,
+          "deviation": 0.10151095977867625,
+          "weighted_error": 0.031234141470361923,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 52.44,
+          "lower": 101.6,
+          "upper": 106.68,
+          "midpoint": 104.14,
+          "deviation": 0.49644709045515656,
+          "weighted_error": 0.15275295090927896,
+          "within_range": false
+        }
+      },
+      "2XL": {
+        "chest_circumference": {
+          "measurement": 91.28,
+          "lower": 109.22,
+          "upper": 115.57,
+          "midpoint": 112.395,
+          "deviation": 0.18786422883580225,
+          "weighted_error": 0.0722554726291547,
+          "within_range": false
+        },
+        "waist_circumference": {
+          "measurement": 84.44,
+          "lower": 96.52,
+          "upper": 104.14,
+          "midpoint": 100.33,
+          "deviation": 0.15837735472939302,
+          "weighted_error": 0.04873149376289016,
+          "within_range": false
+        },
+        "hip_circumference": {
+          "measurement": 52.44,
+          "lower": 106.68,
+          "upper": 111.76,
+          "midpoint": 109.22,
+          "deviation": 0.5198681560153818,
+          "weighted_error": 0.1599594326201175,
+          "within_range": false
+        }
+      }
+    },
+    "active_weights": {
+      "chest_circumference": 0.3846153846153846,
+      "waist_circumference": 0.3076923076923077,
+      "hip_circumference": 0.3076923076923077
+    },
+    "chart": {
+      "brand_id": "nike",
+      "brand_name": "Nike",
+      "apparel_id": "nike-in-hv4188-013",
+      "category": "t-shirt",
+      "version": 1,
+      "source": "Nike Men's Dri-FIT T-Shirt HV4188-013 / India body size guide",
+      "is_demo": false,
+      "gender": "men",
+      "market": "IN",
+      "source_url": "https://www.nike.in/nike-men-s-dri-fit-t-shirt/p/27753405",
+      "checked_on": "2026-10-20",
+      "source_unit": "in",
+      "measurement_basis": "body",
+      "notes": [
+        "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+        "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+        "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one."
+      ],
+      "active_metrics": [
+        "chest_circumference",
+        "waist_circumference",
+        "hip_circumference"
+      ],
+      "units": "cm"
+    },
+    "score_meaning": "100/(1+weighted midpoint-relative error); a heuristic fit score, not a calibrated probability.",
+    "warnings": [
+      "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+      "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+      "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one.",
+      "Chart does not score these category measurements: shoulder_width.",
+      "No listed size contains every active measurement; this is only the closest midpoint match."
+    ]
+  },
+  "partial_body_rejection": {
+    "error": {
+      "code": "low_visibility",
+      "message": "Visibility must exceed 0.65 for: left ankle, right ankle, left heel, right heel."
+    }
+  },
+  "mongodb_persistence_verified": true,
+  "verification_date": "2026-10-21"
+}

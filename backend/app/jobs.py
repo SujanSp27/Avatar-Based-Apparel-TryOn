@@ -8,6 +8,7 @@ Only job metadata/results are stored here; inputs remain in normal run storage.
 import hashlib
 import json
 import logging
+import math
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -42,7 +43,17 @@ class TryOnJobs:
         path = self._path(job_id)
         if not path.is_file():
             raise PipelineError("job_not_found", "This try-on job was not found.", 404)
-        return json.loads(path.read_text(encoding="utf-8"))
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if (not isinstance(data, dict) or data.get("jobId") != str(UUID(str(job_id)))
+                    or data.get("status") not in {"queued", "processing", "success", "failed"}
+                    or not isinstance(data.get("createdAt"), (float, int))
+                    or not math.isfinite(data["createdAt"])
+                    or not isinstance(data.get("requestHash"), str)):
+                raise ValueError("Invalid job metadata")
+            return data
+        except (OSError, ValueError) as exc:
+            raise PipelineError("job_record_unavailable", "The saved job record cannot be read. Its artifacts have been retained; inference was not restarted.", 503) from exc
 
     def get(self, job_id):
         with self.lock:
@@ -55,7 +66,12 @@ class TryOnJobs:
     def recover_interrupted(self):
         with self.lock:
             for path in self.directory.glob("*.json"):
-                data = self._read(path.stem)
+                try:
+                    data = self._read(path.stem)
+                except (PipelineError, ValueError):
+                    # Retain the corrupt file for recovery without blocking unrelated APIs.
+                    logger.error("Skipped unreadable job record during startup: %s", path.name)
+                    continue
                 if data["status"] in {"queued", "processing"}:
                     data.update(status="failed", error={
                         "code": "job_interrupted",

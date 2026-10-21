@@ -10,7 +10,7 @@ test("connects automatically without a connection button or page reload", async 
       connectionState: ready ? "ready" : "connecting", automaticConnection: true,
     }}});
   });
-  await page.goto("/");
+  await page.goto("/tryon");
   await expect(page.getByTestId("model-status")).toContainText("Preparing try-on");
   await expect(page.getByRole("button", {name: /connect/i})).toHaveCount(0);
   await page.getByRole("button", {name: "Try sample photos"}).click();
@@ -27,7 +27,7 @@ test("losing the API clears readiness and retries automatically", async ({page})
   await page.route("**/api/health", route => offline ? route.abort() : route.fulfill({json: {
     status: "ok", vton2d: {available: true, reason: null},
   }}));
-  await page.goto("/");
+  await page.goto("/tryon");
   await expect(page.getByTestId("model-status")).toContainText("Ready to try on");
   await page.getByRole("button", {name: "Try sample photos"}).click();
   await expect(page.getByRole("button", {name: "Generate try-on", exact:true})).toBeEnabled();
@@ -42,7 +42,7 @@ test("losing the API clears readiness and retries automatically", async ({page})
 });
 
 test("photo-only app offers model categories and never exposes avatar controls", async ({page}) => {
-  await page.goto("/");
+  await page.goto("/tryon");
   await expect(page.getByLabel("Garment category").locator("option")).toHaveCount(11);
   await page.getByLabel("Garment category").selectOption("dress");
   await expect(page.getByLabel("Try-on mode")).toHaveCount(0);
@@ -53,13 +53,4 @@ test("photo-only app offers model categories and never exposes avatar controls",
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("measured dimensions still use the real independent size API", async ({page}) => {
-  await page.goto("/");
-  await page.getByText("Size recommendation (optional)", {exact:true}).click();
-  await page.getByLabel("chest measurement").fill("94");
-  await page.getByLabel("waist measurement").fill("78");
-  await page.getByLabel("hip measurement").fill("98");
-  await page.getByLabel("shoulderWidth measurement").fill("41");
-  await page.getByRole("button", {name:"Recommend size",exact:true}).click();
-  await expect(page.getByTestId("recommended-size")).toHaveText("M");
-});
+// Six-metric real sizing is covered in studio.spec.ts.

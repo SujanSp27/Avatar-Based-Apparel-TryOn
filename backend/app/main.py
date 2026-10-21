@@ -1,17 +1,20 @@
 import logging
 import secrets
+import time
 from contextlib import asynccontextmanager
 from threading import BoundedSemaphore
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import select, text
-from sqlalchemy.exc import IntegrityError
+from pymongo.errors import PyMongoError
+from sqlalchemy import func, select, text
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from backend.app.accounts.router import router as account_router
 from backend.app.anthropometry.repository import repository as measurement_repository
 from backend.app.anthropometry.router import get_measurement_service
 from backend.app.anthropometry.router import router as measurement_router
@@ -19,16 +22,25 @@ from backend.app.charts import chart_dict, create_chart, latest_chart, seed_data
 from backend.app.colab_connection import ColabConnection
 from backend.app.config import ROOT, settings
 from backend.app.db import SessionLocal, engine, get_db
+from backend.app.health import router as health_router
 from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
 from backend.app.pipeline import TryOnPipeline
-from backend.app.schemas import BrandCreate, ChartCreate, SizingRequest, TryOnMode
+from backend.app.schemas import (
+    BrandCreate,
+    ChartCreate,
+    RunPage,
+    RunStatus,
+    SizingRequest,
+    TryOnMode,
+)
 from backend.app.storage import AssetStore
 from ml.errors import PipelineError
 from ml.sizing.engine import Category, Fit, recommend
 from ml.vton.categories import GarmentCategory
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+logger = logging.getLogger(__name__)
 store = AssetStore(settings.asset_root)
 pipeline = TryOnPipeline(store)
 connection = ColabConnection(pipeline.worker)
@@ -39,8 +51,12 @@ jobs = TryOnJobs(ROOT / ".runtime/tryon-jobs", capacity)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     jobs.recover_interrupted()
-    with SessionLocal() as db:
-        seed_database(db)
+    try:
+        with SessionLocal() as db:
+            seed_database(db)
+    except SQLAlchemyError:
+        # The independent MongoDB APIs should remain usable during a SQL outage.
+        logger.error("PostgreSQL startup check failed; legacy sizing and try-on are unavailable.")
     connection.start()
     try:
         yield
@@ -53,24 +69,34 @@ async def lifespan(app: FastAPI):
         measurement_repository.close()
 
 
-app = FastAPI(title="Form / Fit research API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Form / Fit research API", version="0.2.0", lifespan=lifespan,
+              description="Private Colab 2D try-on, CPU body estimates, and MongoDB-backed brand sizing. Single-process local prototype.")
+app.state.tryon_connection = connection
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Content-Type", "X-Admin-Token", "Prefer", "Idempotency-Key"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_headers=["Content-Type", "Authorization", "X-Admin-Token", "Prefer", "Idempotency-Key"],
+    expose_headers=["Location", "X-Request-ID", "Retry-After"],
 )
 app.mount("/assets", StaticFiles(directory=str(store.root)), name="assets")
 annotation_root = settings.measurement_output_root / "annotated"
 annotation_root.mkdir(parents=True, exist_ok=True)
 app.mount("/static/annotated", StaticFiles(directory=str(annotation_root)), name="annotated")
 app.include_router(measurement_router)
+app.include_router(health_router)
+app.include_router(account_router)
 
 
 @app.middleware("http")
 async def limit_request(request, call_next):
     length = request.headers.get("content-length")
-    upload_paths = {"/api/tryon": 2, "/api/v1/measurements/extract": 1}
+    if request.url.path.startswith(("/api/v1/auth/", "/api/v1/profile")) and request.method in {"POST", "PATCH"}:
+        if length and (not length.isdigit() or int(length) > 1024 * 1024):
+            return JSONResponse(status_code=413, content={"error": {"code": "request_too_large", "message": "Account requests must be smaller than 1 MB."}})
+    upload_paths = {"/api/tryon": 2, "/api/v1/measurements/extract": 1,
+                    "/api/v1/measurements/extract-and-recommend": 1}
     if request.url.path in upload_paths and request.method == "POST":
         if not length:
             return JSONResponse(
@@ -97,6 +123,23 @@ async def limit_request(request, call_next):
     return await call_next(request)
 
 
+@app.middleware("http")
+async def request_metadata(request, call_next):
+    request.state.request_id = uuid4().hex
+    start = time.perf_counter()
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request.state.request_id
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    if request.url.path.startswith(("/api/v1/auth", "/api/v1/profile")):
+        response.headers["Cache-Control"] = "no-store"
+    if response.status_code in (429, 503):
+        response.headers["Retry-After"] = "5"
+    if request.url.path.startswith("/api/"):
+        logger.info("request=%s method=%s status=%s seconds=%.3f", request.state.request_id,
+                    request.method, response.status_code, time.perf_counter() - start)
+    return response
+
+
 @app.exception_handler(PipelineError)
 async def pipeline_error(_, exc: PipelineError):
     return JSONResponse(
@@ -115,6 +158,29 @@ async def integrity_error(_, exc):
             }
         },
     )
+
+
+@app.exception_handler(SQLAlchemyError)
+async def database_error(_, exc):
+    logger.error("PostgreSQL request failed (%s)", type(exc).__name__)
+    return JSONResponse(status_code=503, content={"error": {
+        "code": "database_unavailable", "message": "The application database is unavailable; retry when it is running."}})
+
+
+@app.exception_handler(PyMongoError)
+async def account_database_error(_, exc):
+    logger.error("Account database request failed (%s)", type(exc).__name__)
+    return JSONResponse(status_code=503, content={"error": {
+        "code": "account_database_unavailable", "message": "The account database is unavailable. Please retry shortly."}})
+
+
+@app.exception_handler(Exception)
+async def unexpected_error(request, exc):
+    request_id = getattr(request.state, "request_id", uuid4().hex)
+    logger.error("Unexpected API error request=%s type=%s", request_id, type(exc).__name__)
+    return JSONResponse(status_code=500, headers={"X-Request-ID": request_id}, content={"error": {
+        "code": "internal_error", "message": "An unexpected error occurred. Use the request ID to locate the server log.",
+        "request_id": request_id}})
 
 
 def admin(x_admin_token: str = Header(default="")):
@@ -254,6 +320,19 @@ def tryon(
 @app.get("/api/tryon/jobs/{job_id}")
 def job_status(job_id: UUID):
     return jobs.get(job_id)
+
+
+@app.get("/api/runs", response_model=RunPage, dependencies=[Depends(admin)])
+def list_runs(limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0),
+              status: RunStatus | None = None, db: Session = Depends(get_db)):
+    query = select(Run)
+    count = select(func.count()).select_from(Run)
+    if status is not None:
+        query = query.where(Run.status == status)
+        count = count.where(Run.status == status)
+    rows = db.scalars(query.order_by(Run.created_at.desc(), Run.id).offset(offset).limit(limit))
+    return {"items": [{"id": row.id, "status": row.status, "created_at": row.created_at} for row in rows],
+            "total": db.scalar(count), "limit": limit, "offset": offset}
 
 
 @app.get("/api/runs/{run_id}")

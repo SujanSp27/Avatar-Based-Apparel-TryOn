@@ -9,7 +9,7 @@ test("existing private Colab connects without user-facing connection controls", 
   const health = await (await request.get("/api/health")).json();
   expect(health.vton2d.localGpuUsed).toBe(false);
   expect(health.vton2d.automaticConnection).toBe(true);
-  await page.goto("/");
+  await page.goto("/tryon");
   await expect(page.getByTestId("model-status")).toContainText("Ready to try on");
   await expect(page.getByRole("button", { name: /connect/i })).toHaveCount(0);
   await page.getByRole("button", { name: "Try sample photos" }).click();

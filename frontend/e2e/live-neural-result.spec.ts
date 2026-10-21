@@ -14,7 +14,7 @@ test("the live neural job survives refresh and displays its actual generated ima
   });
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript((id) => localStorage.setItem("form-fit-last-job", id!), jobId);
-  await page.goto("/");
+  await page.goto("/tryon");
   await page.reload();
   await expect.poll(async () => {
     const response = await request.get(`/api/tryon/jobs/${jobId}`);
@@ -29,13 +29,12 @@ test("the live neural job survives refresh and displays its actual generated ima
   expect(job.result.provenance.localGpuUsed).toBe(false);
   const viewer = page.getByTestId("viewer");
   await expect(viewer).toHaveAttribute("data-loaded", "true", { timeout: 30000 });
-  await expect(viewer.locator("img")).toHaveAttribute("src", job.result.previewUrl);
+  await expect(viewer.getByRole("img", { name: "Generated virtual try-on", exact: true })).toHaveAttribute("src", job.result.previewUrl);
   await page.screenshot({ path: "../experiments/anchored-live-browser-20261015.png", fullPage: true });
-  await page.getByRole("button", { name: "Original", exact: true }).click();
-  await expect(viewer.locator("img")).toHaveAttribute("src", job.result.originalUrl);
-  await expect(viewer).toHaveAttribute("data-loaded", "true");
-  await page.getByRole("button", { name: "Try-on", exact: true }).click();
-  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  await expect(viewer.getByRole("img", { name: "Original person photo", exact: true })).toHaveAttribute("src", job.result.originalUrl);
+  await page.getByRole("slider", { name: "Before and after comparison slider" }).fill("75");
+  await page.getByRole("button", { name: "Side by side", exact: true }).click();
+  await expect(viewer.locator(".compare-stage")).toHaveClass(/side/);
   expect(posts).toBe(0);
   expect(errors).toEqual([]);
 });

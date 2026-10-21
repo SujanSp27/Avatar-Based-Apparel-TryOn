@@ -223,7 +223,8 @@ class MeasurementService:
             draw.line([tuple(end) for end in segment], fill="#00b0ff", width=3)
             draw.text(tuple(segment[0]), name, fill="#005085")
         response = ExtractionResponse(
-            **result, annotated_image_url=f"/static/annotated/{filename}.png",
+            **result, measurement_id=filename, annotated_image_url=f"/static/annotated/{filename}.png",
+            landmarks_normalized=observation.landmarks.tolist(),
             provenance={"model": "MediaPipe Pose Landmarker Full", "landmarks": 33,
                         "model_sha256": self.detector.model_sha256, "device": "cpu",
                         "local_gpu_used": False, "input_sha256": hashlib.sha256(data).hexdigest(),
@@ -232,11 +233,32 @@ class MeasurementService:
         )
         # Validate all geometry before creating successful artifacts.
         Measurements.model_validate(result["measurements"])
-        self.output_root.mkdir(parents=True, exist_ok=True)
-        canvas.save(self.output_root / f"{filename}.png")
-        Image.fromarray(observation.mask.astype(np.uint8) * 255).save(self.output_root / f"{filename}_mask.png")
-        (self.output_root / f"{filename}.json").write_text(json.dumps({
-            **response.model_dump(), "landmarks_normalized": observation.landmarks.tolist(),
-            "landmarks_world_meters": observation.world_landmarks.tolist(),
-        }, indent=2), encoding="utf-8")
+        try:
+            self.output_root.mkdir(parents=True, exist_ok=True)
+            canvas.save(self.output_root / f"{filename}.png")
+            Image.fromarray(observation.mask.astype(np.uint8) * 255).save(self.output_root / f"{filename}_mask.png")
+            (self.output_root / f"{filename}.json").write_text(json.dumps({
+                **response.model_dump(), "landmarks_normalized": observation.landmarks.tolist(),
+                "landmarks_world_meters": observation.world_landmarks.tolist(),
+            }, indent=2, allow_nan=False), encoding="utf-8")
+        except OSError as exc:
+            self.remove_artifacts(filename)
+            raise PipelineError("measurement_storage_unavailable", "Measurement output could not be saved. Check available storage.", 503) from exc
         return response
+
+    def artifact_path(self, measurement_id: str, suffix: str = ".png") -> Path:
+        import re
+        if not re.fullmatch(r"pose_[0-9a-f]{32}", measurement_id) or suffix not in (".png", "_mask.png", ".json"):
+            raise PipelineError("measurement_missing", "This measurement artifact was not found.", 404)
+        root = self.output_root.resolve()
+        path = root / f"{measurement_id}{suffix}"
+        if path.resolve().parent != root:
+            raise PipelineError("measurement_missing", "This measurement artifact was not found.", 404)
+        return path
+
+    def remove_artifacts(self, measurement_id: str):
+        try:
+            for suffix in (".png", "_mask.png", ".json"):
+                self.artifact_path(measurement_id, suffix).unlink(missing_ok=True)
+        except OSError as exc:
+            raise PipelineError("measurement_storage_unavailable", "Measurement artifacts could not be removed; retry when storage is writable.", 503) from exc

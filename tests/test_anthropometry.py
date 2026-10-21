@@ -195,7 +195,7 @@ def test_invalid_and_incomplete_charts_fail_validation(chart):
 
 @pytest.fixture
 def repository():
-    repo = MeasurementRepository(mongomock.MongoClient(), "test_anthropometry")
+    repo = MeasurementRepository(mongomock.MongoClient(tz_aware=True), "test_anthropometry")
     # mongomock does not implement database command; no network is used.
     repo.db.command = lambda *args, **kwargs: {"ok": 1}
     repo.initialize()
@@ -384,6 +384,204 @@ def test_database_failure_is_explicit_without_connection_secrets(api, monkeypatc
     assert result.status_code == 503
     assert "measurement_database_unavailable" in result.text
     assert "secret" not in result.text and "private-host" not in result.text
+
+
+def extract_fixture(client, endpoint="/api/v1/measurements/extract", **data):
+    response = client.post(endpoint, data={"height_cm": 160, **data},
+                           files={"image": ("person.png", image_bytes(), "image/png")})
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def test_saved_measurement_lifecycle_and_reference_sizing(api):
+    client, service = api
+    result = extract_fixture(client)
+    identifier = result["measurement_id"]
+    fetched = client.get(f"/api/v1/measurements/{identifier}")
+    assert fetched.status_code == 200
+    assert fetched.json()["measurements"] == result["measurements"]
+    assert fetched.json()["created_at"].endswith("Z")
+    page = client.get("/api/v1/measurements", params={"limit": 1}).json()
+    assert page["total"] == 1 and page["items"][0]["measurement_id"] == identifier
+    assert client.get("/api/v1/measurements", params={"offset": 1}).json()["items"] == []
+    png = client.get(f"/api/v1/measurements/{identifier}/annotation")
+    assert png.status_code == 200 and png.headers["content-type"] == "image/png"
+    assert png.content == service.artifact_path(identifier).read_bytes()
+    base = {"brand_id": "brand_b", "apparel_id": "apparel_all"}
+    stored = client.post("/api/v1/sizing/recommend", json={**base, "measurement_id": identifier})
+    manual = client.post("/api/v1/sizing/recommend", json={**base, "measurements": result["measurements"]})
+    assert stored.status_code == manual.status_code == 200
+    for key in ("minimum_error", "recommended_size", "fit_confidence", "size_rankings"):
+        assert stored.json()[key] == manual.json()[key]
+    assert stored.json()["measurement_id"] == identifier
+    assert set(result["warnings"]).issubset(stored.json()["warnings"])
+    deleted = client.delete(f"/api/v1/measurements/{identifier}")
+    assert deleted.status_code == 204 and not deleted.content
+    assert not list(service.output_root.glob(f"{identifier}*"))
+    assert client.get(f"/api/v1/measurements/{identifier}").status_code == 404
+    assert client.get(f"/api/v1/measurements/{identifier}/annotation").status_code == 404
+    assert client.delete(f"/api/v1/measurements/{identifier}").status_code == 404
+    assert client.post("/api/v1/sizing/recommend", json={**base, "measurement_id": identifier}).status_code == 404
+
+
+def test_combined_extraction_uses_same_chart_and_preserves_warning(api, repository):
+    client, _ = api
+    result = extract_fixture(client, "/api/v1/measurements/extract-and-recommend",
+                             brand_id="brand_b", apparel_id="apparel_all", chart_version=1)
+    extraction, recommendation = result["extraction"], result["recommendation"]
+    expected = recommend(extraction["measurements"], repository.get_chart("brand_b", "apparel_all", 1))
+    assert recommendation["minimum_error"] == expected.minimum_error
+    assert recommendation["measurement_id"] == extraction["measurement_id"]
+    assert set(extraction["warnings"]).issubset(recommendation["warnings"])
+    assert repository.measurements.count_documents({}) == 1
+
+
+def test_combined_rejects_missing_or_garment_chart_before_inference(api, repository, monkeypatch):
+    client, service = api
+    def must_not_infer(*args, **kwargs):
+        pytest.fail("invalid chart should be rejected before image processing")
+    monkeypatch.setattr(service, "extract", must_not_infer)
+    for brand, apparel, status in (("missing", "unknown", 404), ("brand_b", "apparel_all", 422)):
+        repository.charts.update_many({"brand_id": "brand_b"}, {"$set": {"measurement_basis": "garment"}})
+        response = client.post("/api/v1/measurements/extract-and-recommend", data={
+            "height_cm": 160, "brand_id": brand, "apparel_id": apparel,
+        }, files={"image": ("person.png", image_bytes(), "image/png")})
+        assert response.status_code == status, response.text
+    assert repository.measurements.count_documents({}) == 0
+
+
+def test_measurement_reference_and_pagination_validation(api):
+    client, _ = api
+    base = {"brand_id": "brand_b", "apparel_id": "apparel_all"}
+    for extra in ({}, {"measurements": dict.fromkeys(METRICS, 100), "measurement_id": "pose_" + "a" * 32},
+                  {"measurement_id": "../../secrets"}, {"measurements": {"unknown": 100}}):
+        assert client.post("/api/v1/sizing/recommend", json={**base, **extra}).status_code == 422
+    assert client.get("/api/v1/measurements/invalid").status_code == 422
+    for params in ({"limit": 0}, {"limit": 101}, {"offset": -1}):
+        assert client.get("/api/v1/measurements", params=params).status_code == 422
+
+
+def test_admin_protects_record_list_delete_and_brand_mutations(api, monkeypatch):
+    client, _ = api
+    identifier = extract_fixture(client)["measurement_id"]
+    monkeypatch.setattr(settings, "admin_token", "admin-fixture")
+    for method, url, kwargs in (
+        ("get", "/api/v1/measurements", {}),
+        ("delete", f"/api/v1/measurements/{identifier}", {}),
+        ("post", "/api/v1/sizing/brands", {"json": {"brand_id": "example", "brand_name": "Example"}}),
+        ("patch", "/api/v1/sizing/brands/nike", {"json": {"description": "fixture"}}),
+    ):
+        assert getattr(client, method)(url, **kwargs).status_code == 403
+        assert getattr(client, method)(url, headers={"X-Admin-Token": "admin-fixture"}, **kwargs).status_code in (200, 201, 204)
+
+
+def test_storage_cleanup_on_mongo_failure_and_retry_after_header(api, repository, monkeypatch):
+    from pymongo.errors import ServerSelectionTimeoutError
+    client, service = api
+    def broken(*args, **kwargs):
+        raise ServerSelectionTimeoutError("private-database-secret")
+    monkeypatch.setattr(repository.measurements, "insert_one", broken)
+    response = client.post("/api/v1/measurements/extract", data={"height_cm": 160},
+                           files={"image": ("person.png", image_bytes(), "image/png")})
+    assert response.status_code == 503 and response.headers["Retry-After"] == "5"
+    assert "private-database-secret" not in response.text
+    assert not list(service.output_root.glob("pose_*"))
+    assert repository.measurements.count_documents({}) == 0
+
+
+def test_delete_preserves_metadata_when_artifact_cleanup_fails(api, repository, monkeypatch):
+    client, service = api
+    identifier = extract_fixture(client)["measurement_id"]
+    def broken(*args, **kwargs):
+        raise PipelineError("measurement_storage_unavailable", "Cleanup could not finish.", 503)
+    monkeypatch.setattr(service, "remove_artifacts", broken)
+    assert client.delete(f"/api/v1/measurements/{identifier}").status_code == 503
+    assert repository.get_measurement(identifier).measurement_id == identifier
+
+
+def test_artifact_paths_reject_traversal_and_missing_annotation(api):
+    client, service = api
+    identifier = extract_fixture(client)["measurement_id"]
+    service.artifact_path(identifier).unlink()
+    assert client.get(f"/api/v1/measurements/{identifier}/annotation").status_code == 404
+    for invalid in ("../outside", "pose_" + "f" * 32 + "/../outside", "POSE_" + "f" * 32):
+        with pytest.raises(PipelineError):
+            service.artifact_path(invalid)
+    with pytest.raises(PipelineError):
+        service.artifact_path(identifier, "/../.env")
+
+
+def test_brand_creation_immutable_history_and_chart_discovery(api, chart):
+    client, _ = api
+    created = client.post("/api/v1/sizing/brands", json={
+        "brand_id": "fixture", "brand_name": "Fixture", "official_url": "https://example.com/",
+    })
+    assert created.status_code == 201
+    assert not created.json()["recommendation_available"]
+    assert client.post("/api/v1/sizing/brands", json={"brand_id": "fixture", "brand_name": "Other"}).status_code == 409
+    payload = chart.model_dump(mode="json")
+    payload.update(brand_id="fixture", brand_name="Wrong", is_demo=False, market="IN")
+    assert client.post("/api/v1/sizing/charts", json=payload).status_code == 409
+    payload["brand_name"] = "Fixture"
+    assert client.post("/api/v1/sizing/charts", json=payload).status_code == 201
+    updated = client.patch("/api/v1/sizing/brands/fixture", json={"brand_name": "Fixture Renamed"})
+    assert updated.status_code == 200 and updated.json()["recommendation_available"]
+    payload.update(version=2, brand_name="Fixture Renamed")
+    assert client.post("/api/v1/sizing/charts", json=payload).status_code == 201
+    path = "/api/v1/sizing/charts/fixture/apparel_all"
+    assert client.get(path, params={"version": 1}).json()["brand_name"] == "Fixture"
+    versions = client.get(path + "/versions").json()
+    assert [v["version"] for v in versions] == [2, 1]
+    latest = client.get("/api/v1/sizing/charts", params={"brand_id": "fixture", "latest_only": True}).json()
+    assert len(latest) == 1 and latest[0]["version"] == 2 and "sizes" not in latest[0]
+    page = client.get("/api/v1/sizing/charts", params={"brand_id": "fixture", "limit": 1, "offset": 1}).json()
+    assert page[0]["version"] == 1
+    assert client.patch("/api/v1/sizing/brands/fixture", json={}).status_code == 422
+    assert client.get("/api/v1/sizing/brands/missing").status_code == 404
+    assert client.patch("/api/v1/sizing/brands/missing", json={"description": "no"}).status_code == 404
+    assert client.get("/api/v1/sizing/charts/missing/apparel/versions").status_code == 404
+    default = client.get("/api/v1/sizing/brands").json()
+    assert "brand_b" not in {b["brand_id"] for b in default}
+    demos = client.get("/api/v1/sizing/brands", params={"include_demo": True}).json()
+    assert "brand_b" in {b["brand_id"] for b in demos}
+
+
+def test_categories_expose_normalized_weights_and_explicit_subsets(api):
+    from backend.app.anthropometry.constants import CATEGORY_METRICS
+    client, _ = api
+    records = client.get("/api/v1/sizing/categories").json()
+    assert {record["category"] for record in records} == set(CATEGORY_METRICS)
+    for record in records:
+        assert sum(record["default_weights"].values()) == pytest.approx(1)
+        assert set(record["default_weights"]) == set(record["default_metrics"])
+    assert next(r for r in records if r["category"] == "jumpsuit")["default_weights"] == WEIGHTS
+
+
+def test_corrupt_record_reports_typed_error(api, repository):
+    client, _ = api
+    identifier = "pose_" + "e" * 32
+    repository.measurements.insert_one({"measurement_id": identifier, "private_field": "do-not-expose"})
+    response = client.get(f"/api/v1/measurements/{identifier}")
+    assert response.status_code == 500
+    assert response.json()["error"]["code"] == "measurement_record_invalid"
+    assert "private_field" not in response.text
+    assert client.get("/api/v1/measurements").json()["error"]["code"] == "measurement_record_invalid"
+
+
+def test_owned_mongo_client_reopens_after_lifespan_shutdown(monkeypatch):
+    clients = []
+    def new_client():
+        client = mongomock.MongoClient(tz_aware=True)
+        client["reopen"].command = lambda *args, **kwargs: {"ok": 1}
+        clients.append(client)
+        return client
+    monkeypatch.setattr(MeasurementRepository, "_new_client", staticmethod(new_client))
+    repo = MeasurementRepository(database="reopen")
+    repo.initialize()
+    repo.close()
+    assert repo.ping() and len(clients) == 2
+    assert repo.get_chart("brand_b", "apparel_a").version == 1
+    repo.close()
 
 
 @pytest.mark.integration

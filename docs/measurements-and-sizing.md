@@ -70,11 +70,23 @@ Thigh sections are at 40% down each hip-to-knee axis, perpendicular to the leg.
 Five nearby sections are median-filtered. The selected positions are returned.
 These choices are documented heuristics, not anatomical landmark ground truth.
 
-The response contains `scale_factor`, all six `measurements` in cm,
+The response contains a persistent `measurement_id`, `scale_factor`, all six `measurements` in cm,
 `annotated_image_url`, geometry, quality, model/input hashes and warnings.
 The annotation, refined mask and diagnostic JSON are stored under
 `data/processed/measurements/annotated/`; metadata is saved in MongoDB. If the
 database write fails, new artifacts are cleaned up and the endpoint returns 503.
+
+Saved results are available at `GET /api/v1/measurements/{measurement_id}` with a
+UTC `created_at`; `/annotation` returns its PNG. `GET /api/v1/measurements` pages
+through records with `limit`/`offset`. `DELETE /api/v1/measurements/{measurement_id}`
+removes the record and its three artifacts. Listing/deletion require the admin
+token when configured. Returned static URLs remain supported.
+
+`POST /api/v1/measurements/extract-and-recommend` accepts the same multipart input
+plus `brand_id`, `apparel_id` and optional `chart_version`. It validates that the
+chart exists and uses body measurements before starting inference. It returns
+`{extraction,recommendation}`, persists the estimates once and carries their
+uncertainty warnings into the recommendation.
 
 **Accuracy limits:** MediaPipe has no crown or crotch point. Face-to-ankle height
 scaling and hip-midpoint inseam are biased. Hip *joint spacing* is substantially
@@ -105,6 +117,10 @@ Optional `chart_version` pins an immutable version; otherwise the latest for
 that exact brand/apparel is selected. Measurements required by the chart must
 be positive finite centimetres. The example is the published M midpoint, not
 an estimate extracted from the sample photo.
+
+Instead of `measurements`, supply a saved `measurement_id` to reuse the recorded
+estimates. Exactly one source is required. This path runs no pose model and returns
+the same score as direct dimensions, with the record's warnings and ID retained.
 
 For each active dimension:
 
@@ -150,8 +166,13 @@ Finished-garment charts are rejected for body-size recommendations.
 | Endpoint | Use |
 |---|---|
 | `GET /api/v1/sizing/brands` | Five requested brands, with separate India men's/women's verification status and source links |
+| `POST /api/v1/sizing/brands` | Create an admin-supplied brand; it has no available chart until one is added |
+| `GET` / `PATCH /api/v1/sizing/brands/{brand_id}` | Read a brand or update its metadata; historical chart names stay unchanged |
 | `GET /api/v1/sizing/charts?market=IN&gender=women&brand_id=nike` | Chart summaries; all filters optional |
+| `GET /api/v1/sizing/charts?latest_only=true&category=shirt&limit=20&offset=0` | Paginated latest versions with category filtering |
 | `GET /api/v1/sizing/charts/{brand_id}/{apparel_id}?version=1` | Full bounds and provenance |
+| `GET /api/v1/sizing/charts/{brand_id}/{apparel_id}/versions` | Newest-first immutable version history |
+| `GET /api/v1/sizing/categories` | Default category metrics and normalized weights |
 | `POST /api/v1/sizing/charts` | Insert a newer immutable version; `X-Admin-Token` required when `ADMIN_TOKEN` is set |
 
 Chart payloads contain brand/apparel/category/version, gender, market, source URL,
@@ -159,6 +180,10 @@ checked date, original unit, body/garment measurement basis, notes, active metri
 and `sizes:[{size_label,sort_order,bounds:{metric:{lower,upper}}}]`.
 Bounds are always stored in cm. A version cannot change apparel category, gender
 or market. Seed insertion is idempotent and never overwrites an existing version.
+Brand mutations and chart creation require `X-Admin-Token` when configured.
+Registered brand names must match a newly submitted chart. Brand listings separate
+published source-verification notes from actual admin-added `available_charts`.
+Fictional brands appear only with `include_demo=true`.
 
 Current verified coverage is in [India brand sources](india-brand-sources.md).
 The fictional six-metric fixture remains in
@@ -167,6 +192,11 @@ relabelled as a real brand.
 
 ## Verification and privacy
 
+- Backend completion: 530 CPU regression tests passed. `scripts/verify_backend_api.py`
+  passed 29 live checks, including combined extraction/recommendation, record reuse,
+  history, annotations and deletion. Repeated after restoring stopped services;
+  evidence in `experiments/backend-completion/`. The four final browser regressions
+  and production build passed. Colab generation was not submitted by these checks.
 - `tests/test_anthropometry.py`: analytical geometry, strict visibility, arm/thigh
   ambiguity, repeated mask refinement, known weighted errors/confidence, chart
   conversion and filtering, immutable versions, API validation and MongoDB failures.
@@ -179,6 +209,14 @@ relabelled as a real brand.
   times apply only to measurement extraction, not virtual try-on generation.
 - 506 CPU regression tests passed, 3 integration tests deselected. The separate
   37-test measurement suite includes its real CPU integration and passed.
+- A fresh 21 October live check passed at 6.4897/2.0882 seconds cold/warm, with
+  both records verified in MongoDB. The PNG bytes match the reviewed annotation.
+  Evidence: `experiments/anthropometry/live-api-20261021/report.json`.
+- Vite proxies `/static/annotated` to the API, so returned annotation URLs also
+  load from the frontend origin. TypeScript and production bundling pass; a
+  documented Rollup tree-shaking workaround keeps the build responsive.
+- Four local browser regression checks passed on 21 October, including the real
+  legacy recommendation endpoint; see `experiments/anthropometry/browser-20261021.json`.
 
 This is a local development service. Annotation URLs and diagnostic artifacts
 are not authenticated; photos and records persist until explicitly deleted.

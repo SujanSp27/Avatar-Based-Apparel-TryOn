@@ -23,12 +23,20 @@ class Settings(BaseSettings):
     online_connection_path: Path = ROOT / ".runtime/online-connection.json"
     online_auto_connect: bool = True
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
-    max_upload_mb: int = 12
+    max_upload_mb: int = Field(default=12, ge=1, le=50)
     admin_token: str = ""
     mongodb_uri: str = "mongodb://127.0.0.1:27018"
     mongodb_database: str = Field(default="formfit_measurements", pattern=r"^[a-zA-Z0-9_-]{1,63}$")
     measurement_model_path: Path = ROOT / "assets/pose/pose_landmarker_full.task"
     measurement_output_root: Path = ROOT / "data/processed/measurements"
+    auth_secret: str = ""
+    auth_cookie_secure: bool = False  # True behind HTTPS in deployment.
+    app_public_url: str = "http://127.0.0.1:5173"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
 
     @field_validator("online_vton_steps")
     @classmethod
