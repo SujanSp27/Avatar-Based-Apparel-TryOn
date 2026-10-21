@@ -30,6 +30,8 @@ export default function TryOnStudio() {
   const [error, setError] = useState("");
   const [availability, setAvailability] = useState<VtonAvailability>();
   const [offline, setOffline] = useState(false);
+  const [checkVersion, setCheckVersion] = useState(0);
+  const [retryBusy, setRetryBusy] = useState(false);
   const [preview, setPreview] = useState<string>();
   const [garmentPreview, setGarmentPreview] = useState<string>();
   const [samplesBusy, setSamplesBusy] = useState(false);
@@ -61,11 +63,11 @@ export default function TryOnStudio() {
       controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
-        const r = await fetch("/api/health", { signal: controller.signal });
+        const r = await fetch("/api/tryon/availability", { signal: controller.signal, cache: "no-store" });
         if (!r.ok) throw new Error();
         const data = await r.json();
         if (!stopped) {
-          setAvailability(data.vton2d);
+          setAvailability(data);
           setOffline(false);
         }
       } catch {
@@ -84,7 +86,21 @@ export default function TryOnStudio() {
       clearTimeout(timer);
       controller?.abort();
     };
-  }, []);
+  }, [checkVersion]);
+  async function retryConnection() {
+    setRetryBusy(true);
+    try {
+      const response = await fetch("/api/tryon/retry", { method: "POST", signal: AbortSignal.timeout(8000) });
+      if (!response.ok) throw new Error("The app service is not responding. Automatic checks will continue.");
+      setAvailability(await response.json());
+      setOffline(false);
+    } catch {
+      setOffline(true);
+    } finally {
+      setRetryBusy(false);
+      setCheckVersion((value) => value + 1);
+    }
+  }
   async function sample(withPerson = true) {
     setSamplesBusy(true);
     setError("");
@@ -98,10 +114,10 @@ export default function TryOnStudio() {
           }),
         );
       }
-      const r = await fetch("/api/samples/garment");
+      const r = await fetch("/api/samples/polo");
       if (!r.ok) throw new Error("Garment sample unavailable.");
       setGarment(
-        new File([await r.blob()], "garment-demo.png", { type: "image/png" }),
+        new File([await r.blob()], "sage-polo.jpg", { type: "image/jpeg" }),
       );
       setCategory("t-shirt");
       setPhotoType("flat-lay");
@@ -115,7 +131,6 @@ export default function TryOnStudio() {
   async function generate() {
     if (!person || !garment || !availability?.available) return;
     setError("");
-    setResult(undefined);
     const form = new FormData();
     form.append("personImage", person);
     form.append("garmentImage", garment);
@@ -217,8 +232,8 @@ export default function TryOnStudio() {
                 {availability?.available
                   ? "Ready to try on"
                   : offline
-                    ? "Starting the app…"
-                    : "Preparing try-on…"}
+                    ? "Temporarily unavailable"
+                    : availability?.displayState ?? "Preparing try-on…"}
               </strong>
               <p>
                 {offline
@@ -230,6 +245,8 @@ export default function TryOnStudio() {
               </p>
             </div>
           </div>
+          {!availability?.available && <button className="button secondary" disabled={retryBusy}
+            onClick={() => void retryConnection()}>{retryBusy ? "Checking…" : "Retry connection"}</button>}
           <button
             className="button"
             disabled={!person || !garment || busy || !availability?.available}
@@ -300,12 +317,12 @@ export default function TryOnStudio() {
                 onClick={() => void sample(false)}
               >
                 <img
-                  src="/api/samples/garment"
-                  alt="Sage striped T-shirt sample"
+                  src="/api/samples/polo"
+                  alt="Sage-green polo with a structured collar"
                 />
                 <div>
-                  <strong>Sage stripe tee</strong>
-                  <span>T-shirt · synthetic demo garment</span>
+                  <strong>Sage piqué polo</strong>
+                  <span>Short-sleeve polo · product photograph</span>
                   <small>
                     Use this garment <ArrowRight size={13} />
                   </small>

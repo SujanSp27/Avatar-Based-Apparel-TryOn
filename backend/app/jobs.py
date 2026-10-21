@@ -79,7 +79,7 @@ class TryOnJobs:
                     })
                     self._save(data)
 
-    def submit(self, person: bytes, garment: bytes, parameters: dict, work, key=None):
+    def submit(self, person: bytes, garment: bytes, parameters: dict, work, key=None, *, preflight=None):
         try:
             job_id = str(UUID(str(key))) if key else str(uuid4())
         except ValueError as exc:
@@ -95,6 +95,8 @@ class TryOnJobs:
                 if existing["requestHash"] != signature:
                     raise PipelineError("job_key_conflict", "This request ID belongs to different inputs.", 409)
                 return self.get(job_id)
+            if preflight:
+                preflight()
             if not self.capacity.acquire(blocking=False):
                 raise PipelineError("busy", "Another try-on is running. Wait for the active job to finish.", 429)
             data = {

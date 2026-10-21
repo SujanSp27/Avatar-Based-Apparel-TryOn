@@ -9,7 +9,12 @@ Password = Annotated[str, Field(min_length=12, max_length=128)]
 
 
 def strong_password(value: str) -> str:
-    if not re.search(r"[A-Z]", value) or not re.search(r"[a-z]", value) or not re.search(r"\d", value) or not re.search(r"[^a-zA-Z0-9\s]", value):
+    if (
+        not re.search(r"[A-Z]", value)
+        or not re.search(r"[a-z]", value)
+        or not re.search(r"\d", value)
+        or not re.search(r"[^a-zA-Z0-9\s]", value)
+    ):
         raise ValueError("Use 12+ characters with uppercase, lowercase, a number and a symbol.")
     return value
 
@@ -49,5 +54,3 @@ class SaveScan(StrictSchema):
     measurements: Measurements
     source: Literal["photo-estimate", "manually-corrected", "manual"]
     thumbnail_base64: str | None = Field(default=None, max_length=500_000)
-
-

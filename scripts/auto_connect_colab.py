@@ -23,7 +23,7 @@ from scripts.colab_server import notebook_path
 from scripts.colab_worker_recovery import validate_worker_profile
 
 MARKER = "# formfit-automatic-worker-recovery"
-RECOVERY_PROTOCOL = 4
+RECOVERY_PROTOCOL = 5
 
 
 def recovery_source(expected_hostname: str | None = None, worker_profile: dict | None = None):
@@ -60,10 +60,47 @@ class ColabRecovery:
         temporary.replace(self.state_path)
 
     def _submit(self, state, stage, tool, arguments):
-        state.update(stage=stage, recoveryProtocol=RECOVERY_PROTOCOL, request=bridge.submit({
+        state.update(stage=stage, submittedAt=time.time(), recoveryProtocol=RECOVERY_PROTOCOL, request=bridge.submit({
             'method': 'call_tool', 'name': tool, 'arguments': arguments,
         }))
         self._save(state)
+
+    def _verify_replacement(self, state, reply, current):
+        """Two independent, spaced read-only observations before any mutation.
+
+        Never adopt credentials from the mismatching cell. The following cell
+        must verify the new pin again before recovering our own worker.
+        """
+        hostname = reply['hostname']
+        state['observedHostname'] = hostname
+        candidate = state.get('candidate', {})
+        identity = [hostname, current.get('createTime')]
+        now = time.time()
+        if reply.get('state') != 'runtime_changed' or reply.get('gpuAvailable') is not True:
+            state.pop('candidate', None)
+            self._save(state)
+            return 'gpu_unavailable' if reply.get('gpuAvailable') is False else 'runtime_changed'
+        if candidate.get('identity') != identity or now - candidate.get('lastSeen', 0) > 300:
+            candidate = {'identity': identity, 'firstSeen': now, 'lastSeen': now, 'observations': 1}
+        elif now - candidate['lastSeen'] >= 10:
+            candidate['observations'] += 1
+            candidate['lastSeen'] = now
+        state['candidate'] = candidate
+        # An inference request retains its original runtime and event URL.
+        active = False
+        for path in (self.root / '.runtime/tryon-jobs').glob('*.json'):
+            try:
+                active |= json.loads(path.read_text()).get('status') in {'queued', 'processing'}
+            except (OSError, ValueError):
+                active = True  # Do not switch while job ownership is uncertain.
+        if candidate['observations'] >= 2 and not active:
+            state.update(previousHostname=state.get('expectedHostname'), expectedHostname=hostname,
+                         pinSource='verified_replacement', pinChangedAt=now)
+            state.pop('candidate', None)
+            state.pop('observedHostname', None)
+        self._save(state)
+        self.next_attempt = time.monotonic() + 10
+        return 'notebook_busy' if active else 'runtime_changed'
 
     def pin_runtime(self, hostname: str):
         """Explicit operator action after verifying a replacement runtime.
@@ -119,6 +156,9 @@ class ColabRecovery:
         if request:
             response = bridge.STATE / 'responses' / f'{request}.json'
             if not response.is_file():
+                if time.time() - state.get('submittedAt', 0) > 90:
+                    # Keep the pending ID: a delayed mutating call must not be replayed.
+                    return 'recovery_delayed'
                 return 'browser_required' if state.get('stage') == 'open' else 'connecting'
             try:
                 output = result(request)
@@ -177,9 +217,7 @@ class ColabRecovery:
                     return 'connecting'
                 expected = state.get('expectedHostname')
                 if expected and hostname != expected:
-                    state['observedHostname'] = hostname
-                    self._save(state)
-                    return 'runtime_changed'
+                    return self._verify_replacement(state, reply, current)
                 if reply['state'] == 'identified':
                     if not expected:
                         state.update(expectedHostname=hostname, pinSource='identity_probe',
@@ -192,6 +230,7 @@ class ColabRecovery:
                 if not expected:
                     return 'connecting'
                 if state.pop('observedHostname', None) is not None:
+                    state.pop('candidate', None)
                     self._save(state)
                 if reply['state'] == 'ready':
                     from scripts.connect_online_worker import save_connection
@@ -203,9 +242,10 @@ class ColabRecovery:
         if not current.get('notebookToolsAvailable'):
             # Reopen a dropped successful session with bounded retries. A failed
             # consent/sign-in prompt is never repeatedly opened or bypassed.
-            if state.get('openedBridge') == current.get('createTime'):
-                return 'browser_required'
             opens = [t for t in state.get('openAttempts', []) if time.time() - t < 900]
+            if (state.get('openedBridge') == current.get('createTime')
+                    and opens and time.time() - opens[-1] < 60):
+                return 'browser_required'
             if len(opens) >= 3:
                 return 'browser_required'
             if opens and time.time() - opens[-1] < 60:

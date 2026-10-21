@@ -1,5 +1,44 @@
 # Current implementation status - 21 October 2026
 
+## FormFit Studio frontend completion
+
+The React 19 studio is running at `http://127.0.0.1:5173`, backed by real account,
+measurement and sizing APIs. The API now exposes **48 OpenAPI operations**. New
+implementation details and deployment limitations are in
+[frontend-studio.md](frontend-studio.md). The earlier backend and VTON records
+below are retained as dated evidence.
+
+| Requirement | Status | Evidence |
+|---|---|---|
+| React 19, strict TypeScript, lazy routes, shared responsive design system | IMPLEMENTED | `frontend/src/App.tsx`, `components/`, `features/`, `services/`, `styles/`; production build passed, 172 modules |
+| Signup/login, password strength, confirmation, terms, guest mode, remember-me, protected profile | IMPLEMENTED | Real MongoDB account flow in `e2e/studio.spec.ts`; Argon2id passwords, JWT session API |
+| In-memory access tokens, HttpOnly refresh rotation, expiry/replay detection, logout, CSRF/rate limits | IMPLEMENTED | `tests/test_accounts.py`; browser reload, simultaneous tabs and forced-401 retry passed; no browser token storage |
+| Forgot/reset-password screens and single-use reset implementation | PARTIALLY IMPLEMENTED | Reset expiry/replay and SMTP adapter tested; actual email delivery is BLOCKED because SMTP host/sender credentials are not configured |
+| Editable profile height, authenticated scan history/thumbnails, saved brand sizes and deletion | IMPLEMENTED | Real HTTP profile/save/read/reuse/delete flow and account-isolation tests; desktop/mobile screenshots |
+| Upload validation/resizing, camera capture with alignment guide, cm/feet/inches conversion | IMPLEMENTED | Client module and browser validation/camera-denial checks; live physical-camera capture not manually verified |
+| Actual 33-point canvas, six metric cards, manual corrections and measurement-to-size flow | IMPLEMENTED | Real CPU MediaPipe request returned 33 points; canvas toggle, corrected values, saved profile and Nike M fixture verified |
+| Brand/category/collection selectors, ranges, exact deviation engine and fit gauge | IMPLEMENTED | Live MongoDB charts and API; midpoint/error/confidence verified; unavailable guides disable recommendation |
+| Try-on inputs, filtered sample rail, automatic readiness, status polling and retained-job recovery | IMPLEMENTED | Six connection/recovery/viewer browser checks; no connection button or local GPU inference |
+| Split slider, side-by-side, zoom, download and platform sharing adapter | IMPLEMENTED | Retained genuine CatVTON result loads both images; slider/zoom/PNG download passed. Sharing depends on browser support |
+| Responsive layout and keyboard/accessibility behavior | IMPLEMENTED | Widths 375, 768, 1440 and 3840 checked; no overflow; Axe WCAG 2 A/AA and 2.1 AA checks passed on tested screens; native-dialog Escape/focus and tab arrows tested |
+| Universal browser/device compatibility and enterprise deployment certification | PARTIALLY IMPLEMENTED | Chromium verified; broader device/manual assistive-technology audits, SSO/MFA/email verification and deployment security remain outside completed verification |
+| Fresh Colab inference during this frontend verification | BLOCKED | Health reports `runtime_changed`; existing worker tunnel is expired. No runtime reset, new notebook, public upload or new inference was submitted |
+
+Final verification: **542 Python tests passed**, three integration tests deselected;
+**10 browser tests passed**, three live-Colab opt-in tests skipped; strict TypeScript,
+Vite production build, Ruff and `pip check` passed. npm audit reports **zero known
+vulnerabilities** after compatible router/Vite/Playwright security updates. The
+main JavaScript bundle is 263.26 kB (83.90 kB gzip); routes and validation code are
+separate chunks. Evidence is in `experiments/frontend-studio/`, including the
+browser report, Python XML, npm audit and visually inspected screenshots.
+
+The old guest annotation and try-on asset URLs remain public on the local server.
+Private profile thumbnails enforce account ownership. Public deployment still
+requires protecting legacy assets and configuring HTTPS/cookies/secrets/SMTP;
+the interface is not evidence that those deployment tasks are complete.
+
+## Earlier pipeline and backend evidence
+
 The latest user direction is **2D only, existing Colab only, no local GPU**, with
 automatic connection at app startup and no manual connection control in the UI.
 The user reconfirmed that photos must remain in their Colab only; public GPU demo

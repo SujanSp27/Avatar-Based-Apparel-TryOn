@@ -25,6 +25,7 @@ from backend.app.db import SessionLocal, engine, get_db
 from backend.app.health import router as health_router
 from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
+from backend.app.online_vton import normalized_image
 from backend.app.pipeline import TryOnPipeline
 from backend.app.schemas import (
     BrandCreate,
@@ -208,6 +209,17 @@ def brands(db: Session = Depends(get_db)):
     ]
 
 
+@app.get("/api/tryon/availability")
+def tryon_availability():
+    # Independent from PostgreSQL and the inference queue, always fast.
+    return connection.snapshot()
+
+
+@app.post("/api/tryon/retry", status_code=202)
+def retry_tryon_connection():
+    return connection.retry()
+
+
 @app.post("/api/brands", status_code=201, dependencies=[Depends(admin)])
 def add_brand(data: BrandCreate, db: Session = Depends(get_db)):
     brand = Brand(name=data.name, slug=data.slug, is_demo=data.isDemo)
@@ -271,6 +283,14 @@ def upload_bytes(upload: UploadFile) -> bytes:
     return data
 
 
+def require_tryon_ready():
+    status = pipeline.worker.availability(check_connection=True)
+    if not status['available']:
+        connection.retry()
+        raise PipelineError('online_gpu_unavailable', connection.snapshot()['reason'] or
+                            'The Colab model is unavailable. Recovery has been requested; retry shortly.', 503)
+
+
 @app.post("/api/tryon")
 def tryon(
     personImage: UploadFile = File(),
@@ -299,11 +319,17 @@ def tryon(
             with SessionLocal() as worker_db:
                 return pipeline.run(worker_db, person_data, garment_data, **parameters)
 
-        state = jobs.submit(person_data, garment_data, parameters, work, idempotency_key)
+        def preflight():
+            normalized_image(person_data)
+            normalized_image(garment_data)
+            require_tryon_ready()
+
+        state = jobs.submit(person_data, garment_data, parameters, work, idempotency_key, preflight=preflight)
         return JSONResponse(status_code=202, content=state, headers={"Location": state["statusUrl"]})
     if not capacity.acquire(blocking=False):
         raise PipelineError("busy", "Another try-on is running. Retry after it finishes.", 429)
     try:
+        require_tryon_ready()
         return pipeline.run(
             db,
             upload_bytes(personImage),
@@ -357,10 +383,10 @@ def delete_run(run_id: UUID, db: Session = Depends(get_db)):
 
 @app.get("/api/samples/{kind}")
 def sample(kind: str):
-    files = {"person": "studio-person.jpg", "garment": "garment-demo.png"}
+    files = {"person": "studio-person.jpg", "garment": "garment-demo.png", "polo": "sage-polo.jpg"}
     if kind not in files or not (ROOT / "data/raw" / files[kind]).is_file():
         raise HTTPException(404, "Sample not available")
     return FileResponse(
         ROOT / "data/raw" / files[kind],
-        media_type="image/jpeg" if kind == "person" else "image/png",
+        media_type="image/png" if kind == "garment" else "image/jpeg",
     )

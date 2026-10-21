@@ -49,8 +49,11 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
     let stopped = false;
     let timer: ReturnType<typeof setTimeout>;
     let missing = 0;
-    const controller = new AbortController();
+    let controller: AbortController;
+    let failures = 0;
     async function poll() {
+      controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
       try {
         const response = await fetch(`/api/tryon/jobs/${jobId}`, { signal: controller.signal });
         if (stopped) return;
@@ -65,6 +68,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
           return;
         }
         const job: Job = await response.json();
+        failures = 0;
         if (stopped) return;
         if (job.status === "success" || job.status === "failed") {
           setBusy(false); setJobId(undefined); setMessage("");
@@ -84,12 +88,15 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
         setMessage(`${stages[progress?.stage ?? "queued"] ?? "Processing your try-on"}${steps}${elapsed}`);
       } catch {
         if (stopped) return;
+        failures++;
         setMessage("Connection interrupted. Reconnecting to the same job; no duplicate will be started.");
+      } finally {
+        clearTimeout(timeout);
       }
-      if (!stopped) timer = setTimeout(poll, 2000);
+      if (!stopped) timer = setTimeout(poll, Math.min(15000, 2000 * 2 ** Math.min(failures, 3)));
     }
     void poll();
-    return () => { stopped = true; controller.abort(); clearTimeout(timer); };
+    return () => { stopped = true; controller?.abort(); clearTimeout(timer); };
   }, [jobId]);
 
   async function submit(form: FormData) {
@@ -102,6 +109,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
       const response = await fetch("/api/tryon", {
         method: "POST", body: form,
         headers: { Prefer: "respond-async", "Idempotency-Key": id },
+        signal: AbortSignal.timeout(45000),
       });
       if (!response.ok) {
         callbacks.current.onError(await apiError(response));

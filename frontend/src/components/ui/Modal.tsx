@@ -28,7 +28,10 @@ export default function Modal({
       ref={ref}
       className={`modal ${wide ? "modal-wide" : ""}`}
       aria-labelledby={titleId}
-      onCancel={onClose}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
@@ -45,7 +48,7 @@ export default function Modal({
             <X size={20} />
           </button>
         </div>
-        {children}
+        {open ? children : null}
       </div>
     </dialog>
   );

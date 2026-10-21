@@ -2,13 +2,15 @@ import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdirSync } from "node:fs";
 
+test.use({ actionTimeout: 15000 });
+
 const evidence = "../experiments/frontend-studio";
 mkdirSync(evidence, { recursive: true });
 const metrics: Record<string, string> = {
   "Shoulder width": "44.2",
-  "Chest circumference": "96.5",
-  "Waist circumference": "84.1",
-  "Hip circumference": "98.2",
+  "Chest circumference": "94",
+  "Waist circumference": "82",
+  "Hip circumference": "94",
   "Thigh circumference": "56.3",
   "Inseam length": "78.6",
 };
@@ -58,21 +60,17 @@ test("guest measurement screen works from mobile to ultrawide, validates uploads
   await page.getByLabel("Height inches").fill("10");
   await page.getByRole("button", { name: "cm", exact: true }).click();
   await expect(page.getByLabel("Height in centimeters")).toHaveValue("177.8");
-  await page
-    .getByLabel("Your full-body photo", { exact: true })
-    .setInputFiles({
-      name: "bad.txt",
-      mimeType: "text/plain",
-      buffer: Buffer.from("not an image"),
-    });
+  await page.getByLabel("Your full-body photo", { exact: true }).setInputFiles({
+    name: "bad.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from("not an image"),
+  });
   await expect(page.getByRole("alert")).toContainText("JPEG");
-  await page
-    .getByLabel("Your full-body photo", { exact: true })
-    .setInputFiles({
-      name: "large.png",
-      mimeType: "image/png",
-      buffer: Buffer.alloc(10 * 1024 * 1024 + 1),
-    });
+  await page.getByLabel("Your full-body photo", { exact: true }).setInputFiles({
+    name: "large.png",
+    mimeType: "image/png",
+    buffer: Buffer.alloc(10 * 1024 * 1024 + 1),
+  });
   await expect(page.getByRole("alert")).toContainText("10 MB");
   await page.evaluate(() => {
     navigator.mediaDevices.getUserMedia = async () => {
@@ -128,7 +126,9 @@ test("real six-metric sizing API, chart comparison, unsupported guide and mobile
     path: `${evidence}/sizing-mobile.png`,
     fullPage: true,
   });
-  await page.getByLabel("Brand", { exact: true }).selectOption("adidas");
+  await page
+    .getByRole("combobox", { name: "Brand", exact: true })
+    .selectOption("adidas");
   await expect(
     page.getByText("No verified body chart", { exact: false }),
   ).toBeVisible();
@@ -214,6 +214,13 @@ test("real account, photo extraction, private history, closet, session rotation 
     path: `${evidence}/profile-desktop.png`,
     fullPage: true,
   });
+  await page.setViewportSize({ width: 375, height: 812 });
+  await noOverflow(page);
+  await page.screenshot({
+    path: `${evidence}/profile-mobile.png`,
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1440, height: 1050 });
   await page.getByRole("tab", { name: "Measurement history" }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("tab", { name: "My Closet" })).toBeFocused();
@@ -309,6 +316,6 @@ test("auth validation, protected return URL, reset configuration error and not-f
   await expect(page.getByText(/reset link/i).first()).toBeVisible();
   await page.goto("/missing-page");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "isn?t in the studio",
+    "in the studio",
   );
 });

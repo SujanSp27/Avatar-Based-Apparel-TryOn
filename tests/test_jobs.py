@@ -105,6 +105,8 @@ def test_async_api_acknowledges_and_returns_saved_result(worker, monkeypatch):
 
     monkeypatch.setattr(main, "jobs", worker)
     monkeypatch.setattr(main, "latest_chart", lambda *args: None)
+    monkeypatch.setattr(main, "normalized_image", lambda value: value)
+    monkeypatch.setattr(main, "require_tryon_ready", lambda: None)
     calls = []
     def work(*args, **kwargs):
         calls.append(True)

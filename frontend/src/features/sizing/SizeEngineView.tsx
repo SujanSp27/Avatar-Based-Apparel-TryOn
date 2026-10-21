@@ -155,6 +155,8 @@ export default function SizeEngineView() {
               <label className="field">
                 Brand
                 <select
+                  aria-label="Brand"
+                  disabled={busy}
                   value={brandId}
                   onChange={(e) => setBrandId(e.target.value)}
                 >
@@ -172,6 +174,7 @@ export default function SizeEngineView() {
                 <label className="field">
                   Collection
                   <select
+                    disabled={busy}
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
@@ -182,6 +185,7 @@ export default function SizeEngineView() {
                 <label className="field">
                   Category
                   <select
+                    disabled={busy}
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   >
@@ -197,12 +201,13 @@ export default function SizeEngineView() {
                 <label className="field">
                   Product size guide
                   <select
+                    disabled={busy}
                     value={apparel}
                     onChange={(e) => setApparel(e.target.value)}
                   >
                     {options.map((c) => (
                       <option value={c.apparel_id} key={c.apparel_id}>
-                        {c.apparel_id} · v{c.version}
+                        {c.source || c.apparel_id}
                       </option>
                     ))}
                   </select>
@@ -237,6 +242,7 @@ export default function SizeEngineView() {
                       {metricLabels[key]}
                       <div className="input-unit">
                         <input
+                          disabled={busy}
                           type="number"
                           aria-label={metricLabels[key]}
                           step=".1"

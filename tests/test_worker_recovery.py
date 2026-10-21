@@ -19,6 +19,8 @@ def test_balanced_resolution_survives_profile_validation():
 @pytest.fixture(autouse=True)
 def runtime_hostname(monkeypatch):
     monkeypatch.setattr(worker.socket, 'gethostname', lambda: 'runtime-a')
+    monkeypatch.setattr(worker, 'worker_reachable', lambda _: True)
+    monkeypatch.setattr(worker, 'installation_complete', lambda root: (root / 'setup-complete.json').exists())
 
 
 def recover(root, payload):
@@ -46,16 +48,17 @@ def test_wrong_runtime_never_modifies_files_or_starts_processes(tmp_path, monkey
         (root / 'connection.json').write_text('existing connection')
         (root / 'worker-token.txt').write_text('private token')
     before = {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob('*') if p.is_file()}
-    gpu_check, spawn = Mock(), Mock()
+    gpu_check, spawn = Mock(return_value=True), Mock()
     monkeypatch.setattr(worker, 'gpu_available', gpu_check)
     monkeypatch.setattr(worker.subprocess, 'Popen', spawn)
     payload = {'scripts/setup_online_worker.py': base64.b64encode(b'raise RuntimeError()').decode()}
     assert worker.recover(root, payload, expected_hostname='runtime-b') == {
         'state': 'runtime_changed', 'hostname': 'runtime-a', 'expectedHostname': 'runtime-b',
+        'gpuAvailable': True, 'projectExists': existing_project,
     }
     assert {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob('*') if p.is_file()} == before
     assert root.exists() is existing_project
-    gpu_check.assert_not_called()
+    gpu_check.assert_called_once()
     spawn.assert_not_called()
 
 
@@ -188,3 +191,43 @@ def test_legacy_recovery_does_not_create_a_profile(tmp_path, monkeypatch):
     monkeypatch.setattr(worker, 'launch', lambda *_: {'state': 'setting_up'})
     recover(tmp_path, {})
     assert not (tmp_path / 'worker-config.json').exists()
+
+
+def test_stale_tunnel_never_restarts_an_active_inference(tmp_path, monkeypatch):
+    (tmp_path / 'active-generation.json').write_text('{"runPath":"preserved"}')
+    kill = Mock()
+    monkeypatch.setattr(worker.os, 'kill', kill)
+    assert worker.repair_stale_worker(tmp_path)['state'] == 'notebook_busy'
+    assert not (tmp_path / 'tunnel-failures.json').exists()
+    kill.assert_not_called()
+
+
+def test_idle_stale_tunnel_needs_three_spaced_failures(tmp_path, monkeypatch):
+    clock = [1000.]
+    monkeypatch.setattr(worker.time, 'time', lambda: clock[0])
+    command = tmp_path / '123' / 'cmdline'
+    command.parent.mkdir()
+    command.write_bytes(b'python\0' + str(tmp_path / 'scripts/online_worker.py').encode() + b'\0')
+    monkeypatch.setattr(worker.Path, 'glob', lambda *_: [command])
+    kill = Mock()
+    monkeypatch.setattr(worker.os, 'kill', kill)
+    worker.repair_stale_worker(tmp_path)
+    worker.repair_stale_worker(tmp_path)
+    clock[0] += 31
+    worker.repair_stale_worker(tmp_path)
+    kill.assert_not_called()
+    clock[0] += 31
+    worker.repair_stale_worker(tmp_path)
+    kill.assert_called_once_with(123, worker.signal.SIGTERM)
+
+
+def test_stale_pid_cannot_kill_an_unrelated_process(tmp_path, monkeypatch):
+    command = tmp_path / '123' / 'cmdline'
+    command.parent.mkdir()
+    command.write_bytes(b'python\0someone-elses-project.py\0')
+    (tmp_path / 'tunnel-failures.json').write_text(json.dumps({'attempts': [worker.time.time()-90, worker.time.time()-45]}))
+    monkeypatch.setattr(worker.Path, 'glob', lambda *_: [command])
+    kill = Mock()
+    monkeypatch.setattr(worker.os, 'kill', kill)
+    worker.repair_stale_worker(tmp_path)
+    kill.assert_not_called()

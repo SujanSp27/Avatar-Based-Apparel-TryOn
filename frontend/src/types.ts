@@ -7,6 +7,7 @@ export type VtonAvailability = {
   supportedCategories: string[];
   inferenceSteps: number;
   connectionState?: string;
+  displayState?: "Ready" | "Preparing" | "Recovering" | "Temporarily unavailable";
   automaticConnection?: boolean;
 };
 export type Result = {

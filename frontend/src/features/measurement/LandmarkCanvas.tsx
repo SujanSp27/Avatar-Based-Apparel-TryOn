@@ -49,6 +49,7 @@ export default function LandmarkCanvas({
   const [error, setError] = useState("");
   useEffect(() => {
     let disposed = false;
+    setError("");
     const url = URL.createObjectURL(file);
     const image = new Image();
     image.onload = () => {
@@ -95,10 +96,14 @@ export default function LandmarkCanvas({
         });
       }
     };
-    image.onerror = () => setError("The photo preview could not be loaded.");
+    image.onerror = () => {
+      if (!disposed) setError("The photo preview could not be loaded.");
+    };
     image.src = url;
     return () => {
       disposed = true;
+      image.onload = null;
+      image.onerror = null;
       URL.revokeObjectURL(url);
     };
   }, [file, landmarks, show]);

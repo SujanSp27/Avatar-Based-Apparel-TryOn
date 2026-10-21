@@ -4,11 +4,36 @@ Base: `http://127.0.0.1:8000`; generated OpenAPI and interactive schemas at `/do
 The application is 2D only. VTON inference uses the user's private Colab worker;
 measurement estimation uses CPU MediaPipe. No local GPU or public GPU demo is used.
 
+## Account and private profile APIs
+
+| Endpoint | Contract |
+|---|---|
+| `POST /api/v1/auth/signup` | `name`, `email`, `password`, `terms_accepted:true`; 201, user and 15-minute access JWT, rotated-session HttpOnly cookie |
+| `POST /api/v1/auth/login` | `email`, `password`, optional `remember`; user/access JWT and refresh cookie |
+| `POST /api/v1/auth/refresh` | Cookie-authenticated atomic refresh rotation; replay revokes that session |
+| `POST /api/v1/auth/logout` | Revoke cookie session, clear cookie; 204 |
+| `POST /api/v1/auth/forgot-password` | `email`; generic delivery confirmation when SMTP is configured; otherwise explicit 503 |
+| `POST /api/v1/auth/reset-password` | `token`, `password`; consume expiring single-use token and revoke prior sessions |
+| `GET /api/v1/profile` | Bearer JWT; own user, name, email, height and creation timestamp |
+| `PATCH /api/v1/profile` | Bearer JWT; update `name`, nullable `height_cm` (80–250) |
+| `POST /api/v1/profile/scans` | Bearer JWT; six measurements, height, source, optional label and base64 JPEG/PNG thumbnail; 201 |
+| `GET /api/v1/profile/scans` | Own paginated scans, `limit` 1–100 and `offset`; `{items,total,limit,offset}` |
+| `GET /api/v1/profile/scans/{id}/thumbnail` | Own authenticated JPEG thumbnail; private/no-store cache policy |
+| `DELETE /api/v1/profile/scans/{id}` | Delete own scan and thumbnail; 204, unknown/other-account ID returns 404 |
+| `POST /api/v1/profile/sizes` | Bearer JWT; sizing request with actual measurements; engine recomputes and saves by brand/apparel, 201 |
+| `GET /api/v1/profile/sizes` | Own most recent 100 saved brand/apparel recommendations |
+| `DELETE /api/v1/profile/sizes/{id}` | Delete own saved size; 204 |
+
+Profile endpoints require an active server session as well as a valid JWT. Auth
+endpoints validate origins and rate-limit attempts. See [frontend-studio.md](frontend-studio.md)
+for cookie lifetimes, password policy, SMTP configuration and deployment limits.
+Legacy guest assets are not protected by the new profile session boundaries.
+
 ## Measurement and exact sizing APIs
 
 | Endpoint | Contract |
 |---|---|
-| `POST /api/v1/measurements/extract` | Multipart `image` (JPEG/PNG), `height_cm`; saved `measurement_id`, six approximate dimensions, scale, annotated PNG URL, quality/provenance/warnings |
+| `POST /api/v1/measurements/extract` | Multipart `image` (JPEG/PNG), `height_cm`; saved `measurement_id`, six approximate dimensions, scale, annotated PNG URL, `landmarks_normalized` (33 `[x,y,z,visibility]` arrays), quality/provenance/warnings |
 | `POST /api/v1/measurements/extract-and-recommend` | Same upload plus `brand_id`, `apparel_id`, optional `chart_version`; `{extraction,recommendation}` from one CPU inference |
 | `GET /api/v1/measurements` | Admin-protected history; `limit` 1–100, `offset` >=0; `{items,total,limit,offset}` |
 | `GET /api/v1/measurements/{measurement_id}` | Saved estimates, provenance, UTC creation time; no new inference |
@@ -27,8 +52,8 @@ measurement estimation uses CPU MediaPipe. No local GPU or public GPU demo is us
 
 These endpoints use MongoDB. See [measurements and sizing](measurements-and-sizing.md)
 for exact schemas, mathematical rules, supported poses, source limitations and
-test evidence. The existing browser manual-sizing form uses the legacy endpoint
-below; its interval/ease algorithm has not been silently replaced.
+test evidence. The new studio sizing screen uses the exact six-metric API above.
+The legacy interval/ease endpoint below remains available for existing clients.
 
 ## Health and readiness
 

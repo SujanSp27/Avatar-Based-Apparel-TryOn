@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, LoaderCircle, Ruler, UserRound } from "../../icons";
 import ImageUploader from "./ImageUploader";
@@ -23,6 +23,18 @@ export default function MeasurementWorkspace() {
   const [error, setError] = useState("");
   const [camera, setCamera] = useState(false);
   const [login, setLogin] = useState(false);
+  const pending = useRef<AbortController | null>(null);
+  useEffect(() => {
+    const cancel = () => {
+      pending.current?.abort();
+      setBusy(false);
+    };
+    window.addEventListener("formfit:clear-private", cancel);
+    return () => {
+      pending.current?.abort();
+      window.removeEventListener("formfit:clear-private", cancel);
+    };
+  }, []);
   useEffect(() => {
     if (auth.user?.height_cm && !state.measurements)
       state.setHeight(auth.user.height_cm);
@@ -47,10 +59,18 @@ export default function MeasurementWorkspace() {
   }
   async function extract() {
     if (!state.file) return;
+    pending.current?.abort();
+    const controller = new AbortController();
+    pending.current = controller;
     setBusy(true);
     setError("");
     try {
-      const result = await measurementService.extract(state.file, state.height);
+      const result = await measurementService.extract(
+        state.file,
+        state.height,
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
       state.setExtraction(result);
       state.setMeasurements(result.measurements);
       state.setEdited(false);
@@ -58,9 +78,9 @@ export default function MeasurementWorkspace() {
         "Your six estimates are ready. Review and correct them before choosing a size.",
       );
     } catch (e) {
-      setError((e as Error).message);
+      if (!controller.signal.aborted) setError((e as Error).message);
     } finally {
-      setBusy(false);
+      if (!controller.signal.aborted) setBusy(false);
     }
   }
   async function save() {

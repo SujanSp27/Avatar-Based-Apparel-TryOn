@@ -199,10 +199,19 @@ def main():
             finally:
                 active.unlink(missing_ok=True)
 
+    def status(supplied_token):
+        if not isinstance(supplied_token, str) or not secrets.compare_digest(supplied_token, token):
+            return {"ready": False}
+        return {"ready": torch.cuda.is_available() and pipeline.tryon_model is not None,
+                "modelRevision": MODEL, "device": "cuda", "protocol": 1,
+                "busy": lock.locked()}
+
     with gr.Blocks(analytics_enabled=False) as app:
         args = [gr.Textbox(visible=False) for _ in range(5)] + [gr.Number(value=20, visible=False)]
         output = gr.JSON(visible=False)
         gr.Button("Private API").click(generate, inputs=args, outputs=output, api_name="generate", concurrency_limit=1)
+        gr.Button("Worker status", visible=False).click(status, inputs=args[0],
+                outputs=gr.JSON(visible=False), api_name="status", queue=False)
     _, _, url = app.queue(max_size=2).launch(share=True, server_name="127.0.0.1", prevent_thread_lock=True, show_api=False, quiet=True)
     (root / "connection.json").write_text(json.dumps({"url": url, "gpu": torch.cuda.get_device_name(),
                                                     "model": MODEL, "modelResolution": list(input_shape[::-1]),

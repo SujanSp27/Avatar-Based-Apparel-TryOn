@@ -1,7 +1,11 @@
-# Form / Fit Studio
+# FormFit Studio
 
 Photo virtual try-on on the user's existing Google Colab GPU, with independent
-brand size recommendations from measurements entered by the user. New independent
+brand size recommendations from photo estimates or tape measurements. The React
+studio now includes account sessions, a landmark measurement workspace, interactive
+brand charts, private scan history, My Closet, and an original/generated photo
+comparison viewer. See [the frontend guide](docs/frontend-studio.md).
+Independent
 MediaPipe body-estimation and exact six-metric sizing APIs use MongoDB; see
 [measurements and sizing](docs/measurements-and-sizing.md). Four verified Nike/Puma
 India product guides cover men and women. The active app

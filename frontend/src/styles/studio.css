@@ -560,7 +560,7 @@ select,
 }
 .segmented button {
   border: 0;
-  color: #637455;
+  color: #475a3e;
   background: transparent;
   border-radius: 4px;
   padding: 7px 12px;
@@ -1574,6 +1574,9 @@ th[scope="row"] {
   font-size: 27px;
   margin-top: 6px;
   font-weight: 400;
+}
+.profile-summary small {
+  color: #475a3e;
 }
 .profile-tabs {
   display: flex;

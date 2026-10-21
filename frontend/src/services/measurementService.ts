@@ -1,13 +1,14 @@
 import { api, jsonBody } from "./api/client";
 import type { Extraction, Measurements, SavedScan } from "../types/studio";
 export const measurementService = {
-  extract: (image: File, height: number) => {
+  extract: (image: File, height: number, signal?: AbortSignal) => {
     const form = new FormData();
     form.append("image", image);
     form.append("height_cm", String(height));
     return api<Extraction>("/api/v1/measurements/extract", {
       method: "POST",
       body: form,
+      signal,
     });
   },
   save: (

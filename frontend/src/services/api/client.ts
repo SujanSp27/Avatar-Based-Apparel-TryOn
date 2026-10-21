@@ -85,7 +85,9 @@ export async function apiResponse(
       ...init,
       headers,
       credentials: "include",
-      signal: init.signal ?? controller.signal,
+      signal: init.signal
+        ? AbortSignal.any([init.signal, controller.signal])
+        : controller.signal,
     });
   } catch (error) {
     if (init.signal?.aborted) throw error;

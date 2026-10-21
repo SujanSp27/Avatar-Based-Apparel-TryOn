@@ -156,6 +156,7 @@ export function AuthForm({
             Your name
             <input
               {...register("name")}
+              aria-label="Your name"
               autoComplete="name"
               aria-invalid={!!errors.name}
             />
@@ -168,6 +169,7 @@ export function AuthForm({
           Email address
           <input
             {...register("email")}
+            aria-label="Email address"
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
@@ -181,6 +183,7 @@ export function AuthForm({
           Password
           <input
             {...register("password")}
+            aria-label="Password"
             type="password"
             autoComplete={signup ? "new-password" : "current-password"}
             aria-invalid={!!errors.password}
@@ -215,6 +218,7 @@ export function AuthForm({
               Confirm password
               <input
                 {...register("confirm")}
+                aria-label="Confirm password"
                 type="password"
                 autoComplete="new-password"
                 aria-invalid={!!errors.confirm}

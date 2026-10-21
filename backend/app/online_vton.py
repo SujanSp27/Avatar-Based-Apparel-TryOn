@@ -94,6 +94,7 @@ class OnlineTryOn:
         self._health_lock = Lock()
         self._checked_at = 0.
         self._checked_url = ""
+        self._checked_token = ""
         self._reachable = False
 
     def refresh_connection(self):
@@ -126,14 +127,18 @@ class OnlineTryOn:
         reachable = configured
         if configured and check_connection:
             with self._health_lock:
-                if url != self._checked_url or time.monotonic() - self._checked_at > 10:
+                if url != self._checked_url or token != self._checked_token or time.monotonic() - self._checked_at > 10:
                     try:
                         with httpx.Client(timeout=4, follow_redirects=False, transport=self.transport) as client:
-                            response = client.get(url + "/gradio_api/info")
-                            self._reachable = response.status_code == 200 and "/generate" in response.json().get("named_endpoints", {})
-                    except (httpx.HTTPError, ValueError, TypeError):
+                            response = client.post(url + "/gradio_api/run/status", json={"data": [token]})
+                            data = response.json().get("data", []) if response.status_code == 200 else []
+                            status = data[0] if data and isinstance(data[0], dict) else {}
+                            self._reachable = (status.get("ready") is True and status.get("device") == "cuda"
+                                and status.get("modelRevision") == "7720683168567eb5a2a4c67f15116c6e29c83ded")
+                    except (httpx.HTTPError, ValueError, TypeError, AttributeError):
                         self._reachable = False
                     self._checked_at, self._checked_url = time.monotonic(), url
+                    self._checked_token = token
                 reachable = self._reachable
         return {
             "available": reachable, "configured": configured, "backend": "FASHN VTON 1.5 / private Colab worker",
