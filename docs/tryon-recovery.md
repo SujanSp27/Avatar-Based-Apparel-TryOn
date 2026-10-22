@@ -33,6 +33,13 @@ does not establish readiness. The app checks with a four-second network timeout
 and a ten-second cache keyed by URL **and** token. Snapshot readiness expires
 after thirty seconds.
 
+During live restoration the Gradio JSON component emitted `root={...}` Python
+representation text instead of a JSON object. The worker now explicitly encodes
+JSON into text outputs for status and generation. Both clients accept JSON text
+or legacy JSON objects, reject malformed values and verify the model revision.
+Python representation text is never evaluated. Notebook exceptions supersede
+preceding progress lines and become a retryable `recovery_failed` state.
+
 - `GET /api/tryon/availability` reads the monitor without requiring PostgreSQL.
 - `POST /api/tryon/retry` wakes the existing monitor; repeated clicks coalesce.
 - New inference submissions validate inputs and model readiness. Idempotent
@@ -68,6 +75,21 @@ An AFTER result is displayed only after successful inference. Selecting a polo
 does not itself prove garment quality: the generated neckline, sleeves, hem,
 identity preservation and artifacts still require full-resolution review.
 
+The real sample job `f773078b-48fc-4283-863b-b26ccf7bd0d4` completed in 24.591
+seconds using the private Colab T4 (16.045 seconds generation, 18.620 seconds
+worker time). Its 800 x 1200 result shows a sage polo with a coherent collar,
+short sleeves and hem. The original face, outer background and lower body remain
+pixel-identical in the measured regions. Fine fabric and button details are
+softened, so commercial detail fidelity is still partial. Evidence and visual
+review are in `experiments/recovery-polo/`; one example does not guarantee the
+same speed or quality for every photo.
+
+`/tryon?job=<UUID>` opens a real retained job through the existing API and stores
+that selection for refresh. It does not submit inference, change the comparison
+layout, or replace another person's uploads with this example. Invalid IDs are
+ignored; unavailable jobs use the existing error handling. Completed results
+remain viewable even while the next Colab runtime is being restored.
+
 ## Verification
 
 Targeted Python tests cover replacement verification, runtime alternation,
@@ -77,3 +99,11 @@ exercise recovery, explicit retry, hanging health requests, upload preservation,
 job restoration, and the unchanged comparison UI. Those tests do not fabricate
 evidence of a new neural result. Current live-inference evidence and limitations
 are recorded in `implementation-status.md`.
+
+On 22 October, a local app restart encountered an expired tunnel and a different
+GPU hostname. The automatic controller verified the replacement, restored the
+worker and returned to Ready without manual notebook setup. The retained polo
+job still returned success. A live Chromium test loads that exact job and its
+images, checks refresh/slider/zoom/download, simulates a health-request outage
+and confirms the generated result remains accessible. The main viewer component
+and its styles are unchanged.

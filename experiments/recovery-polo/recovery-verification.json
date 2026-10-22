@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-22T00:38:47.665265+00:00",
+  "availability": {
+    "available": true,
+    "configured": true,
+    "backend": "FASHN VTON 1.5 / private Colab worker",
+    "device": "online-gpu",
+    "localGpuUsed": false,
+    "supportedCategories": [
+      "t-shirt",
+      "shirt",
+      "blouse",
+      "sweater",
+      "jacket",
+      "trouser",
+      "jeans",
+      "shorts",
+      "skirt",
+      "dress",
+      "jumpsuit"
+    ],
+    "nativeResolution": [
+      576,
+      864
+    ],
+    "inferenceSteps": 10,
+    "reason": null,
+    "availabilityType": "live-worker-check",
+    "connectionState": "ready",
+    "automaticConnection": true,
+    "displayState": "Ready"
+  },
+  "recovery": {
+    "expectedHostname": "73dd851fe103",
+    "previousHostname": "9045f828fb7e",
+    "pinSource": "verified_replacement",
+    "pinChangedAt": 1792629326.4589758,
+    "recoveryProtocol": 7,
+    "lastReplyState": "ready",
+    "lastReplyAt": 1792629464.2823727
+  },
+  "retainedJobStatus": "success",
+  "additionalInferenceSubmitted": false
+}

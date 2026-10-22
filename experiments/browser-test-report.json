@@ -122,12 +122,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6375,
+                  "duration": 5535,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:31.511Z",
+                  "startTime": "2026-10-22T00:38:12.327Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -156,12 +156,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1301,
+                  "duration": 1299,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:38.695Z",
+                  "startTime": "2026-10-22T00:38:18.247Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -190,12 +190,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3193,
+                  "duration": 3054,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:40.017Z",
+                  "startTime": "2026-10-22T00:38:19.570Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -223,46 +223,26 @@
           "tests": [
             {
               "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Requires the user's existing Colab runtime",
-                  "location": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-connection.spec.ts",
-                    "line": 7,
-                    "column": 8
-                  }
-                }
-              ],
-              "expectedStatus": "skipped",
+              "annotations": [],
+              "expectedStatus": "passed",
               "projectId": "",
               "projectName": "",
               "results": [
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 210,
+                  "status": "passed",
+                  "duration": 1766,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:43.246Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Requires the user's existing Colab runtime",
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-connection.spec.ts",
-                        "line": 7,
-                        "column": 8
-                      }
-                    }
-                  ],
+                  "startTime": "2026-10-22T00:38:22.659Z",
+                  "annotations": [],
                   "attachments": []
                 }
               ],
-              "status": "skipped"
+              "status": "expected"
             }
           ],
           "id": "419a5df44beaed8228af-e36199d4f7ef19171346",
@@ -284,47 +264,27 @@
           "tags": [],
           "tests": [
             {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Set VTON_LIVE_JOB_ID to a submitted real inference job.",
-                  "location": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-neural-result.spec.ts",
-                    "line": 10,
-                    "column": 8
-                  }
-                }
-              ],
-              "expectedStatus": "skipped",
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
               "projectId": "",
               "projectName": "",
               "results": [
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 200,
+                  "status": "passed",
+                  "duration": 6603,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:43.498Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Set VTON_LIVE_JOB_ID to a submitted real inference job.",
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-neural-result.spec.ts",
-                        "line": 10,
-                        "column": 8
-                      }
-                    }
-                  ],
+                  "startTime": "2026-10-22T00:38:24.467Z",
+                  "annotations": [],
                   "attachments": []
                 }
               ],
-              "status": "skipped"
+              "status": "expected"
             }
           ],
           "id": "4e0c4ac4b4e90e3fa601-e85f6d996b8d25a185d9",
@@ -366,12 +326,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "skipped",
-                  "duration": 226,
+                  "duration": 190,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:43.728Z",
+                  "startTime": "2026-10-22T00:38:31.104Z",
                   "annotations": [
                     {
                       "type": "skip",
@@ -418,12 +378,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5261,
+                  "duration": 5143,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:44.001Z",
+                  "startTime": "2026-10-22T00:38:31.326Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -452,12 +412,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1460,
+                  "duration": 1511,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:49.279Z",
+                  "startTime": "2026-10-22T00:38:36.486Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -486,12 +446,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1067,
+                  "duration": 1084,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:50.757Z",
+                  "startTime": "2026-10-22T00:38:38.013Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -520,12 +480,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1369,
+                  "duration": 1470,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:51.845Z",
+                  "startTime": "2026-10-22T00:38:39.115Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -554,12 +514,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1206,
+                  "duration": 1354,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:53.235Z",
+                  "startTime": "2026-10-22T00:38:40.604Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -596,12 +556,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6315,
+                  "duration": 5809,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:43:54.493Z",
+                  "startTime": "2026-10-22T00:38:41.996Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -630,12 +590,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4520,
+                  "duration": 4278,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:44:00.837Z",
+                  "startTime": "2026-10-22T00:38:47.822Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -664,12 +624,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 27095,
+                  "duration": 13838,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:44:05.390Z",
+                  "startTime": "2026-10-22T00:38:52.118Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -698,12 +658,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4912,
+                  "duration": 3278,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-21T17:44:32.506Z",
+                  "startTime": "2026-10-22T00:39:05.971Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -721,10 +681,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-21T17:43:28.947Z",
-    "duration": 70346.883,
-    "expected": 12,
-    "skipped": 3,
+    "startTime": "2026-10-22T00:38:09.452Z",
+    "duration": 61325.51,
+    "expected": 14,
+    "skipped": 1,
     "unexpected": 0,
     "flaky": 0
   }

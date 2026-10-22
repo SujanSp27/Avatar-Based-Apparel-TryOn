@@ -1,0 +1,48 @@
+{
+  "reviewedAt": "2026-10-22T00:38:45.477327+00:00",
+  "method": "Full-resolution visual inspection plus pixel comparison; not a calibrated quality metric",
+  "jobId": "f773078b-48fc-4283-863b-b26ccf7bd0d4",
+  "runId": "768aa73e-3195-48e6-8ef5-b855291dbb99",
+  "inputs": {
+    "studio-person.jpg": "1d450d545f08a2945217f76908d229c14381cd59bb3b8c936c1c0e1a938bad8f",
+    "sage-polo.jpg": "32799c250824290795186d4b06016c959c73b0e97387bd397475716387517f26"
+  },
+  "output": {
+    "width": 800,
+    "height": 1200,
+    "sha256": "e07c84a0aa48dda032fd5031b292aa1a43ffeba40da7cb1c9a1c38c5023173a6"
+  },
+  "checks": {
+    "sagePoloVisible": true,
+    "structuredCollarVisible": true,
+    "alignedShortSleeves": true,
+    "beigeShirtFragmentsObserved": false,
+    "blackShirtOrBlueArtifactsObserved": false,
+    "sameFaceAndPoseObserved": true,
+    "backgroundAndLowerBodyPreserved": true
+  },
+  "pixels": {
+    "changed": 75366,
+    "changedBoundingBox": [
+      256,
+      256,
+      539,
+      652
+    ],
+    "headAboveY256Exact": true,
+    "lowerBodyFromY652Exact": true,
+    "outerBackgroundExact": true
+  },
+  "timingSeconds": {
+    "apiPipeline": 24.591,
+    "worker": 18.62,
+    "gpuGeneration": 16.045
+  },
+  "limitations": [
+    "Fine pique texture and button details are softened at 504x756 model resolution.",
+    "Relaxed polo fit is a visual result, not a physical size prediction.",
+    "Small sleeve/hem edge softness remains; this is not perfect commercial garment fidelity.",
+    "One verified example is not a universal sub-30-second guarantee; cold setup and GPU outages take longer."
+  ],
+  "verdict": "Working genuine polo try-on; premium detail fidelity remains partial"
+}

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { apiError, type Result } from "./types";
 
 const KEY = "form-fit-last-job";
+const JOB_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 type Job = {
   jobId: string;
   status: "queued" | "processing" | "success" | "failed";
@@ -29,7 +31,7 @@ const stages: Record<string, string> = {
 function savedJob(): string | undefined {
   try {
     const id = localStorage.getItem(KEY);
-    return id && /^[0-9a-f-]{36}$/i.test(id) ? id : undefined;
+    return id && JOB_ID.test(id) ? id : undefined;
   } catch { return undefined; }
 }
 
@@ -38,12 +40,30 @@ function forgetJob() {
 }
 
 export function useTryOnJob(onResult: (result: Result) => void, onError: (message: string) => void) {
-  const [jobId, setJobId] = useState<string | undefined>(savedJob);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const linkedJob = searchParams.get("job");
+  const [jobId, setJobId] = useState<string | undefined>(() =>
+    linkedJob && JOB_ID.test(linkedJob) ? linkedJob : savedJob(),
+  );
   const [busy, setBusy] = useState(!!jobId);
   const [message, setMessage] = useState(jobId ? "Recovering your previous try-on" : "");
   const submitting = useRef(false);
   const callbacks = useRef({ onResult, onError });
   callbacks.current = { onResult, onError };
+
+  useEffect(() => {
+    if (!linkedJob || !JOB_ID.test(linkedJob) || submitting.current) return;
+    // Open an existing result through its real API job, including during a GPU
+    // outage. Consume the link so a later generation survives page refresh.
+    try { localStorage.setItem(KEY, linkedJob); } catch { /* retain in memory */ }
+    setJobId(linkedJob);
+    setBusy(true);
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.delete("job");
+      return next;
+    }, { replace: true });
+  }, [linkedJob, setSearchParams]);
 
   useEffect(() => {
     if (!jobId) return;

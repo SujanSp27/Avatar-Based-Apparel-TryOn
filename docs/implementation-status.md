@@ -1,4 +1,4 @@
-# Current implementation status - 21 October 2026
+# Current implementation status - 22 October 2026
 
 ## Availability recovery and sage-polo input
 
@@ -10,22 +10,36 @@ and a coalesced Retry action; it keeps uploads and completed comparison results.
 New submissions validate the images and model. Interrupted result streams retry
 the same event with bounded backoff and never repeat generation POST.
 
+The real sage-polo job `f773078b-48fc-4283-863b-b26ccf7bd0d4` completed on the
+private Colab T4 in **24.591 seconds** end-to-end (16.045 seconds GPU generation).
+Its original and AFTER images were recovered and inspected at 800 x 1200.
+Open the retained result at
+`http://127.0.0.1:5173/tryon?job=f773078b-48fc-4283-863b-b26ccf7bd0d4`.
+This uses the real saved API job; no generation or replacement photograph is
+silently substituted. The link becomes the browser's retained job on opening.
+
 | Requirement | Status | Evidence |
 |---|---|---|
-| Automatic replacement-runtime verification and safe setup recovery | PARTIALLY IMPLEMENTED | `scripts/auto_connect_colab.py`, `scripts/colab_worker_recovery.py`; unit tests pass; real replacement identities were adopted and setup launched, but Colab repeatedly restarted before readiness |
+| Automatic replacement-runtime verification and safe setup recovery | IMPLEMENTED | `scripts/auto_connect_colab.py`, `scripts/colab_worker_recovery.py`; runtime `9045f828fb7e` recovered and generated the polo; after app restart the replacement `73dd851fe103` was verified, restored and became Ready automatically; `experiments/recovery-polo/recovery-verification.json` |
 | Real model readiness, stale-cache expiry, Retry and request timeouts | IMPLEMENTED | `tests/test_tryon_availability.py`, `frontend/e2e/online-tryon.spec.ts`; hanging health calls, credential rotation, failed health and retry tested |
 | Retain jobs/results and reconnect without duplicate inference | IMPLEMENTED | `tests/test_jobs.py`, `tests/test_online_vton.py`, `frontend/e2e/job-recovery.spec.ts`; same-event GET retry and completed result reload verified |
 | Sage polo conditioning input and unchanged comparison slider | IMPLEMENTED | `data/raw/sage-polo.jpg`, reproducible `scripts/download_samples.py`, `/api/samples/polo`; sample rail uses the real product photograph; `SplitCompareViewer.tsx` and slider CSS unchanged |
-| Newly generated sage-polo AFTER image and full-resolution visual acceptance | BLOCKED | No successful new inference yet. User confirmed the Colab runtime disconnects/restarts during restoration; do not treat the input photograph or previous black-shirt result as acceptance |
+| Genuine sage-polo AFTER image, identity preservation and unchanged comparison viewer | IMPLEMENTED | `experiments/recovery-polo/after.png`, `live-result.json`, `visual-review.json`; collar/sleeves/hem visually inspected, no obvious beige/black fragments or blue artifacts; original face region, lower body and outer background are pixel-identical; actual-job viewer refresh/slider/zoom/download checked |
+| Premium fabric/button fidelity and universal availability or latency | PARTIALLY IMPLEMENTED | Fine pique texture and button details are softened; relaxed fit and slight edge softness remain. This one run met 30 seconds; shared GPU cold setup, quotas, network delays and arbitrary garments cannot be guaranteed |
 
-Verification: **565 Python tests passed** (three integration tests deselected),
-then **140 targeted tests passed** including the added restart-cooldown test;
-**12 browser tests passed**, three live-GPU opt-ins skipped. Strict TypeScript,
+Verification: **597 Python tests passed** (three integration tests deselected).
+The actual retained-polo viewer and live replacement-GPU connection passed;
+the complete browser report is in `experiments/browser-test-report.json`. Strict TypeScript,
 Vite production build, Ruff and `pip check` passed. Evidence:
 `experiments/recovery-polo-python.xml`, `experiments/browser-test-report.json`.
 Setup now retains Colab's torch/torchvision/NumPy versions and disables parallel
 Xet buffering; this mitigation is not proof of the crash's cause. Runtime
 replacement attempts have a bounded cooldown. See [tryon-recovery.md](tryon-recovery.md).
+
+The final blocker was the worker's Gradio JSON component returning Python
+`root={...}` text under the installed Colab stack. Explicit JSON-text outputs and
+strict client decoding fixed both readiness and result transport. An exception
+after notebook progress now reports `recovery_failed`, not stale `loading`.
 
 The following frontend report is earlier evidence; its old `runtime_changed`
 pause and “no connection button” wording are superseded by the recovery above.

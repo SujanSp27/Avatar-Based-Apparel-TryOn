@@ -16,11 +16,9 @@ test("the live neural job survives refresh and displays its actual generated ima
     if (r.method() === "POST" && r.url().endsWith("/api/tryon")) posts += 1;
   });
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.addInitScript(
-    (id) => localStorage.setItem("form-fit-last-job", id!),
-    jobId,
-  );
-  await page.goto("/tryon");
+  await page.goto(`/tryon?job=${jobId}`);
+  await expect(page).toHaveURL(/\/tryon$/);
+  expect(await page.evaluate(() => localStorage.getItem("form-fit-last-job"))).toBe(jobId);
   await page.reload();
   await expect
     .poll(
@@ -46,7 +44,7 @@ test("the live neural job survives refresh and displays its actual generated ima
     viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }),
   ).toHaveAttribute("src", job.result.previewUrl);
   await page.screenshot({
-    path: "../experiments/anchored-live-browser-20261015.png",
+    path: "../experiments/recovery-polo/live-slider.png",
     fullPage: true,
   });
   await expect(
@@ -57,6 +55,26 @@ test("the live neural job survives refresh and displays its actual generated ima
     .fill("75");
   await page.getByRole("button", { name: "Side by side", exact: true }).click();
   await expect(viewer.locator(".compare-stage")).toHaveClass(/side/);
+  await page.screenshot({ path: "../experiments/recovery-polo/live-side-by-side.png", fullPage: true });
+  await page.getByRole("button", { name: "Inspect details" }).click();
+  await page.getByRole("dialog").getByRole("slider", { name: /Zoom/ }).fill("2");
+  await expect(page.getByRole("dialog").getByRole("img")).toHaveAttribute("src", job.result.previewUrl);
+  await page.keyboard.press("Escape");
+  const download = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Download render" }).click();
+  expect((await download).suggestedFilename()).toBe("formfit-tryon.png");
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  // Simulate only a health-network interruption. The result/job APIs and image
+  // files above and below remain real; no model output is mocked.
+  await page.route("**/api/tryon/availability", (route) => route.abort());
+  await expect(page.getByTestId("model-status")).toContainText("Temporarily unavailable");
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  await expect(viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }))
+    .toHaveAttribute("src", job.result.previewUrl);
+  await page.unroute("**/api/tryon/availability");
+  await page.reload();
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
   expect(posts).toBe(0);
   expect(errors).toEqual([]);
 });
