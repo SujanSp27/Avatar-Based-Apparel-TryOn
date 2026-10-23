@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-23T10:28:50.773116+00:00",
+  "frontendHttpStatus": 200,
+  "retainedJobStatus": "success",
+  "originalAndResultBytesMatchSavedArtifacts": true,
+  "liveInferenceAvailable": false,
+  "connectionState": "connecting",
+  "additionalInferenceSubmitted": false,
+  "recoveryCompleted": {
+    "checkedAt": "2026-10-23T10:34:33.728039+00:00",
+    "available": true,
+    "connectionState": "ready",
+    "localGpuUsed": false,
+    "previousHostname": "73dd851fe103",
+    "verifiedHostname": "0e95c38a5032",
+    "retainedJobStatus": "success",
+    "additionalInferenceSubmitted": false
+  }
+}

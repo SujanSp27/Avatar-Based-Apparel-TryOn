@@ -23,6 +23,7 @@ from backend.app.colab_connection import ColabConnection
 from backend.app.config import ROOT, settings
 from backend.app.db import SessionLocal, engine, get_db
 from backend.app.health import router as health_router
+from backend.app.garments import router as garment_router
 from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
 from backend.app.online_vton import normalized_image
@@ -87,6 +88,7 @@ annotation_root.mkdir(parents=True, exist_ok=True)
 app.mount("/static/annotated", StaticFiles(directory=str(annotation_root)), name="annotated")
 app.include_router(measurement_router)
 app.include_router(health_router)
+app.include_router(garment_router)
 app.include_router(account_router)
 
 

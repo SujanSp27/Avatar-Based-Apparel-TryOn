@@ -1,0 +1,134 @@
+{
+  "jobId": "5a257fc7-c093-45ce-81c7-f3919c003a6f",
+  "status": "success",
+  "createdAt": 1792752573.3883903,
+  "progress": {
+    "stage": "complete"
+  },
+  "statusUrl": "/api/tryon/jobs/5a257fc7-c093-45ce-81c7-f3919c003a6f",
+  "result": {
+    "status": "success",
+    "mode": "2d",
+    "renderingMethod": "pretrained-vton",
+    "runId": "34ea3539-50a9-49de-bd41-4733c4b7bf0c",
+    "brandId": null,
+    "brandName": null,
+    "garmentCategory": "t-shirt",
+    "fit": "regular",
+    "recommendedSize": null,
+    "measurements": null,
+    "score": null,
+    "explanation": {},
+    "candidates": [],
+    "chartVersion": null,
+    "previewUrl": "/assets/34ea3539-50a9-49de-bd41-4733c4b7bf0c/tryon-2d.png",
+    "originalUrl": "/assets/34ea3539-50a9-49de-bd41-4733c4b7bf0c/original-person.png",
+    "provenance": {
+      "backend": "FASHN VTON 1.5",
+      "execution": "online-gpu-only",
+      "localGpuUsed": false,
+      "weights": {
+        "model": "FASHN VTON 1.5",
+        "sourceCommit": "7c0f10af3f91ad4048fe9729c470a13ef905d25a",
+        "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+        "device": "cuda",
+        "gpu": "Tesla T4",
+        "dtype": "torch.float16",
+        "steps": 10,
+        "category": "tops",
+        "modelResolution": [
+          504,
+          756
+        ],
+        "inferenceRegion": [
+          0,
+          0,
+          800,
+          1200
+        ],
+        "environment": {
+          "torch": "2.11.0+cu130",
+          "cuda": "13.0",
+          "gpu": "Tesla T4",
+          "capability": [
+            7,
+            5
+          ],
+          "dtype": "torch.float16",
+          "precisionProfile": "fp16",
+          "resolutionProfile": "balanced",
+          "modelResolution": [
+            504,
+            756
+          ],
+          "guidanceScale": 1.5,
+          "segmentationFree": true,
+          "skipUnusedUnconditional": true,
+          "finitePredictionChecks": true,
+          "finiteSamplerStateChecks": true
+        },
+        "inferenceSeconds": 16.401,
+        "peakGpuAllocatedMB": 2813.3,
+        "workerSeconds": 17.187,
+        "stageSeconds": {
+          "preprocessing": 0.057,
+          "generation": 16.401,
+          "postprocessingAndSaving": 0.729
+        },
+        "cache": "bounded pose/parser cache; every result is a fresh generation",
+        "preservation": {
+          "identityPreservedExactly": true,
+          "changedPixelsOutsideEditMask": 0,
+          "oldClothingMinimumAlpha": 1.0,
+          "editedPixels": 74084,
+          "hemExtensionPixels": 704,
+          "hemExtensionLimitPixels": 42,
+          "shoulderProjectionPixels": 0,
+          "revealedRegionTransitionPixels": 8990,
+          "compositor": "semantic-category-preservation-v7",
+          "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required."
+        },
+        "runPath": "/content/formfit-online/runs/1792752587049154705",
+        "patchBox": [
+          268,
+          247,
+          522,
+          655
+        ],
+        "canvasSize": [
+          800,
+          1200
+        ],
+        "imageFormat": "webp",
+        "remoteRoundTripSeconds": 20.376,
+        "transport": {
+          "inputEncoding": "jpeg95",
+          "normalizedInputBytes": 1199318,
+          "uploadedImageBytes": 373493,
+          "downloadedImageBytes": 59048,
+          "preparationSeconds": 0.317,
+          "encodingSeconds": 0.171,
+          "requestAndStreamSeconds": 20.133,
+          "savingSeconds": 0.072
+        }
+      }
+    },
+    "timingSeconds": 20.754,
+    "timings": {
+      "remoteRoundTrip": 20.376,
+      "gpuGeneration": 16.401
+    },
+    "warnings": [
+      "Generated on your connected Colab GPU. Queue, network and cold model loading affect latency.",
+      "Inspect patterns, neckline, sleeves and hem. Clothing realism is not guaranteed for every outfit.",
+      "Face, hair and unrelated regions are restored using semantic masks; segmentation errors can affect boundaries.",
+      "Image generation does not determine physical fit or size. The separate size engine needs measured dimensions."
+    ],
+    "artifacts": {
+      "tryon-2d.png": "/assets/34ea3539-50a9-49de-bd41-4733c4b7bf0c/tryon-2d.png",
+      "original-person.png": "/assets/34ea3539-50a9-49de-bd41-4733c4b7bf0c/original-person.png",
+      "vton-diagnostics.json": "/assets/34ea3539-50a9-49de-bd41-4733c4b7bf0c/vton-diagnostics.json",
+      "result": "/assets/34ea3539-50a9-49de-bd41-4733c4b7bf0c/result.json"
+    }
+  }
+}

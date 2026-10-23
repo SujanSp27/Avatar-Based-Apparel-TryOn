@@ -39,7 +39,7 @@ function forgetJob() {
   try { localStorage.removeItem(KEY); } catch { /* storage may be disabled */ }
 }
 
-export function useTryOnJob(onResult: (result: Result) => void, onError: (message: string) => void) {
+export function useTryOnJob(onResult: (result: Result | undefined) => void, onError: (message: string) => void) {
   const [searchParams, setSearchParams] = useSearchParams();
   const linkedJob = searchParams.get("job");
   const [jobId, setJobId] = useState<string | undefined>(() =>
@@ -48,6 +48,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
   const [busy, setBusy] = useState(!!jobId);
   const [message, setMessage] = useState(jobId ? "Recovering your previous try-on" : "");
   const submitting = useRef(false);
+  const selection = useRef(0);
   const callbacks = useRef({ onResult, onError });
   callbacks.current = { onResult, onError };
 
@@ -67,6 +68,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
 
   useEffect(() => {
     if (!jobId) return;
+    const version = selection.current;
     let stopped = false;
     let timer: ReturnType<typeof setTimeout>;
     let missing = 0;
@@ -77,7 +79,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
         const response = await fetch(`/api/tryon/jobs/${jobId}`, { signal: controller.signal });
-        if (stopped) return;
+        if (stopped || version !== selection.current) return;
         if (response.status === 404 && (submitting.current || missing++ < 5)) {
           timer = setTimeout(poll, 2000);
           return;
@@ -90,7 +92,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
         }
         const job: Job = await response.json();
         failures = 0;
-        if (stopped) return;
+        if (stopped || version !== selection.current) return;
         if (job.status === "success" || job.status === "failed") {
           setBusy(false); setJobId(undefined); setMessage("");
           if (job.status === "failed") {
@@ -108,7 +110,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
         const elapsed = job.elapsedSeconds ? ` · ${Math.round(job.elapsedSeconds)}s elapsed` : "";
         setMessage(`${stages[progress?.stage ?? "queued"] ?? "Processing your try-on"}${steps}${elapsed}`);
       } catch {
-        if (stopped) return;
+        if (stopped || version !== selection.current) return;
         failures++;
         setMessage("Connection interrupted. Reconnecting to the same job; no duplicate will be started.");
       } finally {
@@ -123,6 +125,7 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
   async function submit(form: FormData) {
     if (busy || submitting.current) return;
     const id = crypto.randomUUID();
+    callbacks.current.onResult(undefined);
     submitting.current = true;
     setBusy(true); setMessage("Uploading your photos"); setJobId(id);
     try { localStorage.setItem(KEY, id); } catch { /* still track the live job */ }
@@ -142,5 +145,13 @@ export function useTryOnJob(onResult: (result: Result) => void, onError: (messag
       setMessage("Checking whether your upload was received. No duplicate request will be sent.");
     } finally { submitting.current = false; }
   }
-  return { busy, message, submit };
+  function reset() {
+    if (submitting.current) return;
+    selection.current++;
+    forgetJob();
+    setJobId(undefined); setBusy(false); setMessage("");
+    callbacks.current.onResult(undefined);
+    callbacks.current.onError("");
+  }
+  return { busy, message, submit, reset };
 }

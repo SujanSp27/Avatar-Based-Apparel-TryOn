@@ -1,4 +1,4 @@
-# Current implementation status - 22 October 2026
+# Current implementation status - 23 October 2026
 
 ## Availability recovery and sage-polo input
 
@@ -27,9 +27,12 @@ silently substituted. The link becomes the browser's retained job on opening.
 | Genuine sage-polo AFTER image, identity preservation and unchanged comparison viewer | IMPLEMENTED | `experiments/recovery-polo/after.png`, `live-result.json`, `visual-review.json`; collar/sleeves/hem visually inspected, no obvious beige/black fragments or blue artifacts; original face region, lower body and outer background are pixel-identical; actual-job viewer refresh/slider/zoom/download checked |
 | Premium fabric/button fidelity and universal availability or latency | PARTIALLY IMPLEMENTED | Fine pique texture and button details are softened; relaxed fit and slight edge softness remain. This one run met 30 seconds; shared GPU cold setup, quotas, network delays and arbitrary garments cannot be guaranteed |
 
-Verification: **597 Python tests passed** (three integration tests deselected).
-The actual retained-polo viewer and live replacement-GPU connection passed;
-the complete browser report is in `experiments/browser-test-report.json`. Strict TypeScript,
+Verification: **597 Python tests passed** (three integration tests deselected),
+and **14 browser tests passed**, with one fresh-upload opt-in skipped to avoid
+duplicating inference. The 22 October browser run included the actual retained
+polo, live replacement-GPU connection, simulated health interruption, refresh,
+slider, zoom, download, mobile layout, accounts, measurements and sizing.
+The complete browser report is in `experiments/browser-test-report.json`. Strict TypeScript,
 Vite production build, Ruff and `pip check` passed. Evidence:
 `experiments/recovery-polo-python.xml`, `experiments/browser-test-report.json`.
 Setup now retains Colab's torch/torchvision/NumPy versions and disables parallel
@@ -40,6 +43,12 @@ The final blocker was the worker's Gradio JSON component returning Python
 `root={...}` text under the installed Colab stack. Explicit JSON-text outputs and
 strict client decoding fixed both readiness and result transport. An exception
 after notebook progress now reports `recovery_failed`, not stale `loading`.
+
+On 23 October the app was started again after the saved tunnel expired. It
+automatically verified replacement runtime `0e95c38a5032`, restored the worker
+and returned to Ready. The retained original and AFTER bytes were unchanged;
+no new inference was submitted. Current-startup evidence is in
+`experiments/recovery-polo/restart-smoke-20261023.json`.
 
 The following frontend report is earlier evidence; its old `runtime_changed`
 pause and “no connection button” wording are superseded by the recovery above.

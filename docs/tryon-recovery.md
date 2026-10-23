@@ -107,3 +107,9 @@ job still returned success. A live Chromium test loads that exact job and its
 images, checks refresh/slider/zoom/download, simulates a health-request outage
 and confirms the generated result remains accessible. The main viewer component
 and its styles are unchanged.
+
+Final saved verification: 597 Python tests passed; 14 Chromium tests passed and
+one fresh-upload test was deliberately skipped. TypeScript, the production Vite
+build and Ruff passed. The complete suite also exercised real measurement,
+brand-size and account APIs. No duplicate polo inference was needed to verify
+the viewer after the API restart.
