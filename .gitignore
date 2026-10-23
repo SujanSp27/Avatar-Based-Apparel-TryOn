@@ -16,3 +16,4 @@ experiments/runs/
 assets/vton/
 frontend/test-results/
 frontend/playwright-report/
+docs/

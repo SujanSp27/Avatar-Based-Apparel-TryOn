@@ -1,0 +1,53 @@
+{
+  "reviewedAt": "2026-10-23",
+  "jobId": "5a257fc7-c093-45ce-81c7-f3919c003a6f",
+  "model": "FASHN VTON 1.5",
+  "execution": "private Colab Tesla T4 only",
+  "totalSeconds": 20.754,
+  "gpuSeconds": 16.401,
+  "dimensions": [
+    800,
+    1200
+  ],
+  "changedPixelBounds": [
+    268,
+    247,
+    522,
+    655
+  ],
+  "checks": {
+    "lowerBodyBelowHemUnchanged": true,
+    "leftBackgroundUnchanged": true,
+    "rightBackgroundUnchanged": true,
+    "faceAndHairCheckRegionUnchanged": true
+  },
+  "visualReview": {
+    "acceptedForComparison": true,
+    "observations": [
+      "Same person, head, pose, arms, hands, jeans, shoes and studio background retained.",
+      "Navy crew-neck, both sleeves and hem follow the torso.",
+      "No obvious old beige or black shirt fragments, blue lines or floating fabric in full-resolution inspection."
+    ],
+    "limitations": [
+      "Fine knit and collar stitching are softened at 504x756 model resolution.",
+      "Hem is slightly longer than the original shirt; physical sizing cannot be inferred from the image.",
+      "This single warm run is not a latency or quality guarantee for every input."
+    ]
+  },
+  "inputs": {
+    "person": "data/raw/studio-person.jpg",
+    "garment": "data/raw/navy-tee.jpg",
+    "photoType": "model",
+    "source": "https://www.uniqlo.com/uk/en/products/E482514-000/00"
+  },
+  "files": {
+    "original.png": "d670b24dd0ede8a6551db82cdb1d017a6a08ab91d536c3bb8cb46d06f901e45f",
+    "after.png": "cdaee9acdbe9523c5b0971cfb5c5136dbb1571fc754d6b0c5d5560ffe2ebb408"
+  },
+  "faceAndHairCheckRegion": [
+    315,
+    100,
+    470,
+    247
+  ]
+}

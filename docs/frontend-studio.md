@@ -61,12 +61,38 @@ delivery configuration the UI reports the real 503; it never claims to send mail
 
 ## Verification and deployment limits
 
-The later availability work adds an outage Retry action, expiring authenticated
-model checks, and safe replacement-runtime recovery. Sample selection now uses
-the sage-polo product image as a real conditioning input. The BEFORE/AFTER slider
-layout is unchanged. See [tryon-recovery.md](tryon-recovery.md) for the current
-behavior and [implementation-status.md](implementation-status.md) for live-GPU
-verification limits.
+The availability work adds an outage Retry action, expiring authenticated
+model checks, and safe replacement-runtime recovery. See
+[tryon-recovery.md](tryon-recovery.md) for that behavior.
+
+The results redesign uses `features/tryon/SplitCompareViewer.tsx` and scoped
+`comparison.css`. “Your New Look” defaults to equal side-by-side panels; Slider
+mode uses pointer capture plus keyboard controls. The frame follows the actual
+photo dimensions. Both images must load with matching dimensions before actions
+are enabled. Failed/stalled loads show Retry after at most 15 seconds. Download
+and Share validate the image response rather than saving an HTTP error page.
+Inspect details provides resolution, category, zoom and a link to the separate
+size engine; visual generation is not represented as a physical fit measurement.
+
+Changing an input/category/photo type clears the retained job identifier and
+invalidates late polling responses. Starting a generation clears the previous
+AFTER image. Only the new successful API result supplies the image/download URL.
+The selected comparison mode survives input/result changes.
+
+`GarmentPicker.tsx` uses the allowlisted `/api/garments` API, which only lists
+files actually present. Samples include a navy tee, sage polo, navy blouse, coral
+dress, evening dress and ivory skirt. Selection loads the actual garment input
+and its correct model category/photo type without replacing the person photo.
+`scripts/download_samples.py` reproduces the public inputs and records source
+URLs/hashes; these research images are not licensed for unrestricted commercial
+redistribution. The sample-photo action uses the navy tee and studio person.
+
+Actual fresh navy-tee job `5a257fc7-c093-45ce-81c7-f3919c003a6f` completed on the
+private Colab T4 in 20.754 seconds (16.401 GPU), with an 800 × 1200 output.
+It was inspected at full resolution: no obvious old-shirt fragments or blue arm
+artifacts; fine fabric detail is soft. Evidence, pixel-region checks and genuine
+viewer screenshots are in `experiments/results-redesign/`. This one warm run does
+not guarantee the same speed or quality for arbitrary garments.
 
 Regression tests live in `tests/test_accounts.py` and `frontend/e2e/studio.spec.ts`.
 The latter exercises the real local account, CPU measurement and sizing APIs;
@@ -83,8 +109,8 @@ and production SMTP provisioning are not included. Cross-browser/device testing
 and physical tape-measure validation remain separate acceptance work.
 
 The Colab runtime must actually be available for new image generation. Prior
-timings and visual reviews remain in `docs/online-performance.md`; this frontend
-work does not establish new inference quality or a guaranteed 30-second latency.
+timings and visual reviews remain in `docs/online-performance.md`. The new navy
+render and current verification limits are recorded in `implementation-status.md`.
 
 ## Run and verify
 

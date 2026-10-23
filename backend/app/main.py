@@ -22,8 +22,8 @@ from backend.app.charts import chart_dict, create_chart, latest_chart, seed_data
 from backend.app.colab_connection import ColabConnection
 from backend.app.config import ROOT, settings
 from backend.app.db import SessionLocal, engine, get_db
-from backend.app.health import router as health_router
 from backend.app.garments import router as garment_router
+from backend.app.health import router as health_router
 from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
 from backend.app.online_vton import normalized_image

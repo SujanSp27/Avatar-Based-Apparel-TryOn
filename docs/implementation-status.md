@@ -1,5 +1,34 @@
 # Current implementation status - 23 October 2026
 
+## Results redesign and fresh navy T-shirt
+
+The current comparison is the existing React try-on page, with equal image
+panels, photo-derived aspect ratio, compact mode controls, responsive footer,
+image-loading/error states and an expanded real garment catalog. The older
+“unchanged comparison” notes below describe the previous recovery milestone.
+
+The fresh FASHN VTON 1.5 job `5a257fc7-c093-45ce-81c7-f3919c003a6f` used the
+original studio person and an actual navy tee garment reference on the private
+Colab T4. It completed in **20.754 seconds** end-to-end, **16.401 seconds** GPU.
+Open the actual saved job at
+`http://127.0.0.1:5173/tryon?job=5a257fc7-c093-45ce-81c7-f3919c003a6f`.
+There is no hardcoded AFTER image or replacement-person photograph in the UI.
+
+| Requirement | Status | Evidence |
+|---|---|---|
+| Balanced responsive comparison and compact Slider/Side-by-side controls | IMPLEMENTED | `SplitCompareViewer.tsx`, `comparison.css`; browser checks equal widths/heights at 1440, 768 and 375 px; pointer and keyboard slider; screenshots in `experiments/results-redesign/` |
+| Latest successful render, stale selection invalidation, bounded image loading and retry | IMPLEMENTED | `useTryOnJob.ts`, `TryOnStudio.tsx`, `results-comparison.spec.ts`; input changes clear persisted job, failed/processing results cannot be downloaded, image failure/timeout/mismatched dimensions tested |
+| Actual navy T-shirt AFTER with original person retained | IMPLEMENTED | `experiments/results-redesign/navy-tee/live-result.json`, `after.png`, `visual-review.json`; full-resolution visual inspection, unchanged face/hair check region, lower body and outer background |
+| Details, zoom, sharing and correct image download | IMPLEMENTED | Browser tests exercise modal/focus, size-page link, share fallback and downloaded-byte SHA256 equality |
+| Additional real garments and safe category/photo-type selection | IMPLEMENTED | `/api/garments`, `GarmentPicker.tsx`, `download_samples.py`; navy tee, sage polo, blouse, two dresses, skirt; API lists available allowlisted files only; dress selection tested |
+| Photographic fine-texture fidelity and universal sub-30-second latency | PARTIALLY IMPLEMENTED | The accepted navy render has softened fabric/stitching and a slightly longer hem. Catalog selection is not a quality certification for every garment. Cold Colab recovery and queues remain variable |
+
+Current targeted backend verification: **45 tests passed**, including catalog,
+job handling and availability; Ruff and strict TypeScript/Vite production build
+passed. Browser evidence is in `experiments/browser-test-report.json`; the normal
+suite never starts fresh GPU inference. The navy inference above was submitted
+once with a persisted idempotency key and inspected independently.
+
 ## Availability recovery and sage-polo input
 
 The permanent runtime-pin pause is removed. Replacement GPUs require two spaced

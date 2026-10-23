@@ -6,6 +6,8 @@ import ImageUploader from "../measurement/ImageUploader";
 import { useMeasurement } from "../measurement/MeasurementProvider";
 import SplitCompareViewer from "./SplitCompareViewer";
 import GenerationProgress from "./GenerationProgress";
+import GarmentPicker, { type Garment } from "./GarmentPicker";
+import "./comparison.css";
 import { ErrorNotice } from "../../components/feedback/Feedback";
 const categories = [
   ["t-shirt", "T-shirt"],
@@ -35,8 +37,8 @@ export default function TryOnStudio() {
   const [preview, setPreview] = useState<string>();
   const [garmentPreview, setGarmentPreview] = useState<string>();
   const [samplesBusy, setSamplesBusy] = useState(false);
-  const [filter, setFilter] = useState("all");
-  const { busy, message, submit } = useTryOnJob(setResult, setError);
+  const [selectedGarment, setSelectedGarment] = useState<string>();
+  const { busy, message, submit, reset } = useTryOnJob(setResult, setError);
   useEffect(() => {
     if (!person) {
       setPreview(undefined);
@@ -63,7 +65,10 @@ export default function TryOnStudio() {
       controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
-        const r = await fetch("/api/tryon/availability", { signal: controller.signal, cache: "no-store" });
+        const r = await fetch("/api/tryon/availability", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
         if (!r.ok) throw new Error();
         const data = await r.json();
         if (!stopped) {
@@ -90,8 +95,14 @@ export default function TryOnStudio() {
   async function retryConnection() {
     setRetryBusy(true);
     try {
-      const response = await fetch("/api/tryon/retry", { method: "POST", signal: AbortSignal.timeout(8000) });
-      if (!response.ok) throw new Error("The app service is not responding. Automatic checks will continue.");
+      const response = await fetch("/api/tryon/retry", {
+        method: "POST",
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!response.ok)
+        throw new Error(
+          "The app service is not responding. Automatic checks will continue.",
+        );
       setAvailability(await response.json());
       setOffline(false);
     } catch {
@@ -103,25 +114,34 @@ export default function TryOnStudio() {
   }
   async function sample(withPerson = true) {
     setSamplesBusy(true);
-    setError("");
+    reset();
     try {
-      if (withPerson) {
-        const r = await fetch("/api/samples/person");
-        if (!r.ok) throw new Error("Person sample unavailable.");
-        setPerson(
-          new File([await r.blob()], "studio-person.jpg", {
-            type: "image/jpeg",
-          }),
-        );
-      }
-      const r = await fetch("/api/samples/polo");
-      if (!r.ok) throw new Error("Garment sample unavailable.");
-      setGarment(
-        new File([await r.blob()], "sage-polo.jpg", { type: "image/jpeg" }),
-      );
+      const [personFile, garmentFile] = await Promise.all([
+        withPerson
+          ? downloadPhoto("/api/samples/person", "studio-person.jpg")
+          : Promise.resolve(person),
+        downloadPhoto("/api/garments/navy-tee/image", "navy-tee.jpg"),
+      ]);
+      setPerson(personFile);
+      setGarment(garmentFile);
       setCategory("t-shirt");
-      setPhotoType("flat-lay");
-      setResult(undefined);
+      setPhotoType("model");
+      setSelectedGarment("navy-tee");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSamplesBusy(false);
+    }
+  }
+  async function selectGarment(item: Garment) {
+    setSamplesBusy(true);
+    reset();
+    try {
+      const file = await downloadPhoto(item.imageUrl, item.id);
+      setGarment(file);
+      setCategory(item.category);
+      setPhotoType(item.photoType);
+      setSelectedGarment(item.id);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -170,19 +190,20 @@ export default function TryOnStudio() {
           <ImageUploader
             label="Your person photo"
             file={person}
-            disabled={busy}
+            disabled={busy || samplesBusy}
             onChange={(file) => {
+              reset();
               setPerson(file);
-              setResult(undefined);
             }}
           />
           <ImageUploader
             label="Your garment"
             file={garment}
-            disabled={busy}
+            disabled={busy || samplesBusy}
             onChange={(file) => {
+              reset();
               setGarment(file);
-              setResult(undefined);
+              setSelectedGarment(undefined);
             }}
           />
           {garmentPreview && (
@@ -196,9 +217,12 @@ export default function TryOnStudio() {
             Garment category
             <select
               aria-label="Garment category"
-              disabled={busy}
+              disabled={busy || samplesBusy}
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => {
+                reset();
+                setCategory(e.target.value);
+              }}
             >
               {categories.map(([value, label]) => (
                 <option value={value} key={value}>
@@ -210,9 +234,13 @@ export default function TryOnStudio() {
           <label className="field">
             Garment photo type
             <select
-              disabled={busy}
+              aria-label="Garment photo type"
+              disabled={busy || samplesBusy}
               value={photoType}
-              onChange={(e) => setPhotoType(e.target.value)}
+              onChange={(e) => {
+                reset();
+                setPhotoType(e.target.value);
+              }}
             >
               <option value="flat-lay">Product / flat lay</option>
               <option value="model">Worn by a person</option>
@@ -233,7 +261,7 @@ export default function TryOnStudio() {
                   ? "Ready to try on"
                   : offline
                     ? "Temporarily unavailable"
-                    : availability?.displayState ?? "Preparing try-on…"}
+                    : (availability?.displayState ?? "Preparing try-on…")}
               </strong>
               <p>
                 {offline
@@ -245,11 +273,24 @@ export default function TryOnStudio() {
               </p>
             </div>
           </div>
-          {!availability?.available && <button className="button secondary" disabled={retryBusy}
-            onClick={() => void retryConnection()}>{retryBusy ? "Checking…" : "Retry connection"}</button>}
+          {!availability?.available && (
+            <button
+              className="button secondary"
+              disabled={retryBusy}
+              onClick={() => void retryConnection()}
+            >
+              {retryBusy ? "Checking…" : "Retry connection"}
+            </button>
+          )}
           <button
             className="button"
-            disabled={!person || !garment || busy || !availability?.available}
+            disabled={
+              !person ||
+              !garment ||
+              busy ||
+              samplesBusy ||
+              !availability?.available
+            }
             onClick={() => void generate()}
           >
             {busy ? (
@@ -267,12 +308,27 @@ export default function TryOnStudio() {
         </aside>
         <div className="tryon-result">
           <SplitCompareViewer
-            key={result?.runId ?? preview ?? "empty"}
             original={result?.originalUrl ?? preview}
             result={result?.previewUrl}
+            busy={busy}
+            message={message}
+            details={result}
           />
           {busy && <GenerationProgress message={message} />}{" "}
-          {error && <ErrorNotice message={error} />}{" "}
+          {error && (
+            <ErrorNotice
+              message={error}
+              retry={
+                person &&
+                garment &&
+                !busy &&
+                !samplesBusy &&
+                availability?.available
+                  ? () => void generate()
+                  : undefined
+              }
+            />
+          )}{" "}
           {result && (
             <div className="card result-caption">
               <div className="row-between">
@@ -293,50 +349,25 @@ export default function TryOnStudio() {
               </details>
             </div>
           )}
-          <div className="card garment-catalog">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">A PLACE TO START</span>
-                <h3>The garment rail.</h3>
-              </div>
-              <select
-                aria-label="Filter garment catalog"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <option value="all">All garments</option>
-                <option value="t-shirt">T-shirts</option>
-                <option value="dress">Dresses</option>
-                <option value="trouser">Trousers</option>
-              </select>
-            </div>
-            {filter === "all" || filter === "t-shirt" ? (
-              <button
-                className="catalog-item"
-                disabled={busy || samplesBusy}
-                onClick={() => void sample(false)}
-              >
-                <img
-                  src="/api/samples/polo"
-                  alt="Sage-green polo with a structured collar"
-                />
-                <div>
-                  <strong>Sage piqué polo</strong>
-                  <span>Short-sleeve polo · product photograph</span>
-                  <small>
-                    Use this garment <ArrowRight size={13} />
-                  </small>
-                </div>
-              </button>
-            ) : (
-              <p className="muted">
-                No sample is available in this category yet. Upload your own
-                garment above.
-              </p>
-            )}
-          </div>
+          <GarmentPicker
+            disabled={busy || samplesBusy}
+            selected={selectedGarment}
+            onSelect={(item) => void selectGarment(item)}
+          />
         </div>
       </div>
     </>
   );
+}
+
+async function downloadPhoto(url: string, name: string): Promise<File> {
+  const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok)
+    throw new Error(
+      "The sample photo is unavailable. Retry or upload your own photo.",
+    );
+  const blob = await response.blob();
+  if (!blob.type.startsWith("image/"))
+    throw new Error("The sample did not return an image.");
+  return new File([blob], name, { type: blob.type });
 }

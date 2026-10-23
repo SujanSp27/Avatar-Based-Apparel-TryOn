@@ -10,10 +10,10 @@ test("refresh resumes the same job and reports its actual failure without anothe
   await page.route("**/api/tryon/availability", (route) =>
     route.fulfill({
       json: {
-          available: true,
-          reason: null,
-          backend: "test transport",
-          nativeResolution: [576, 864],
+        available: true,
+        reason: null,
+        backend: "test transport",
+        nativeResolution: [576, 864],
       },
     }),
   );
@@ -138,6 +138,7 @@ test("a recovered real CatVTON result loads its actual PNG and original comparis
   await expect(
     viewer.getByRole("img", { name: "Original person photo", exact: true }),
   ).toHaveAttribute("src", result.originalUrl);
+  await page.getByRole("button", { name: "Slider", exact: true }).click();
   await page
     .getByRole("slider", { name: "Before and after comparison slider" })
     .fill("75");

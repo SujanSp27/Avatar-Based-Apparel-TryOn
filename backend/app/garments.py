@@ -6,6 +6,7 @@ from backend.app.config import ROOT
 
 router = APIRouter(prefix="/api/garments", tags=["Garment catalog"])
 GARMENTS = [
+    ("navy-tee", "Navy crew-neck T-shirt", "t-shirt", "model", "navy-tee.jpg", "Clean neckline · deep navy"),
     ("sage-polo", "Sage pique polo", "t-shirt", "flat-lay", "sage-polo.jpg", "Structured collar · soft sage"),
     ("navy-blouse", "Navy broderie blouse", "blouse", "flat-lay", "fashn-samples/garment3.jpeg", "Textured cotton · flutter sleeves"),
     ("coral-dress", "Coral ruched dress", "dress", "model", "fashn-samples/garment1.jpeg", "Gathered silhouette · short sleeves"),
