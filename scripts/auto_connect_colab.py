@@ -65,6 +65,14 @@ class ColabRecovery:
         }))
         self._save(state)
 
+    @staticmethod
+    def _pending_state(stage):
+        if stage == 'open':
+            return 'browser_required'
+        if stage == 'probe':
+            return 'restoring_worker'
+        return 'checking_notebook'
+
     def _verify_replacement(self, state, reply, current):
         """Two independent, spaced read-only observations before any mutation.
 
@@ -170,16 +178,24 @@ class ColabRecovery:
                 if time.time() - state.get('submittedAt', 0) > limit:
                     # Keep the pending ID: a delayed mutating call must not be replayed.
                     return 'recovery_delayed'
-                return 'browser_required' if state.get('stage') == 'open' else 'connecting'
+                return self._pending_state(state.get('stage'))
             try:
                 output = result(request)
             except (RuntimeError, ValueError):
                 state.pop('request', None)
+                # Keep only safe diagnostic metadata, never raw notebook output.
+                # A disconnected browser must not look like endless preparation.
+                state['lastFailedStage'] = state.pop('stage', 'unknown')
+                state['consecutiveFailures'] = min(state.get('consecutiveFailures', 0) + 1, 4)
+                failure = ('browser_required' if not bridge.status().get('notebookToolsAvailable')
+                           else 'recovery_failed')
+                state.update(lastReplyState=failure, lastReplyAt=time.time())
                 self._save(state)
-                self.next_attempt = time.monotonic() + 60
-                return 'connecting'
+                self.next_attempt = time.monotonic() + min(60, 5 * 2 ** (state['consecutiveFailures'] - 1))
+                return failure
             stage = state.pop('stage')
             state.pop('request')
+            state.pop('consecutiveFailures', None)
             self._save(state)
             if stage in {'insert', 'updated'} and state.get('recoveryProtocol') != RECOVERY_PROTOCOL:
                 # A pre-upgrade cell may contain unguarded recovery code. Read
@@ -193,8 +209,9 @@ class ColabRecovery:
                     self._save(state)
                     # Allow the successful socket handshake to settle. If the
                     # tab later disconnects, reopen with a bounded cooldown.
-                    self.next_attempt = time.monotonic() + 10
-                return 'connecting'
+                    self.next_attempt = time.monotonic() + 1
+                    return 'checking_notebook'
+                return 'browser_required'
             if stage == 'cells':
                 source = recovery_source(state.get('expectedHostname'))
                 cell = next((c for c in output.get('cells', [])
@@ -259,7 +276,7 @@ class ColabRecovery:
                     from scripts.connect_online_worker import save_connection
                     save_connection(reply['connection'], self.connection_path)
                 return reply['state']
-            return 'connecting'
+            return self._pending_state(state.get('stage'))
         if current.get('status') == 'processing':
             return 'notebook_busy'
         if not current.get('notebookToolsAvailable'):
@@ -282,7 +299,7 @@ class ColabRecovery:
             self._submit(state, 'open', 'open_colab_browser_connection', {})
         else:
             self._submit(state, 'cells', 'get_cells', {'includeOutputs': False})
-        return 'connecting'
+        return self._pending_state(state.get('stage'))
 
 
 if __name__ == '__main__':

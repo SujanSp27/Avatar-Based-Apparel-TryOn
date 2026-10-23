@@ -1,0 +1,68 @@
+{
+  "checkedAtEpoch": 1792770785.569871,
+  "health": {
+    "status": "ok",
+    "components": {
+      "postgresql": {
+        "available": true
+      },
+      "mongodb": {
+        "available": true
+      },
+      "pose_model": {
+        "checkpoint_present": true,
+        "device": "cpu",
+        "inference_validated": false
+      },
+      "colab": {
+        "available": true,
+        "state": "ready",
+        "reason": null
+      }
+    },
+    "capabilities": {
+      "sizing": true,
+      "measurements": true,
+      "tryon": true
+    },
+    "local_gpu_used": false
+  },
+  "availability": {
+    "available": true,
+    "configured": true,
+    "backend": "FASHN VTON 1.5 / private Colab worker",
+    "device": "online-gpu",
+    "localGpuUsed": false,
+    "supportedCategories": [
+      "t-shirt",
+      "shirt",
+      "blouse",
+      "sweater",
+      "jacket",
+      "trouser",
+      "jeans",
+      "shorts",
+      "skirt",
+      "dress",
+      "jumpsuit"
+    ],
+    "nativeResolution": [
+      576,
+      864
+    ],
+    "inferenceSteps": 10,
+    "reason": null,
+    "availabilityType": "live-worker-check",
+    "connectionState": "ready",
+    "automaticConnection": true,
+    "displayState": "Ready",
+    "unavailableSeconds": 0
+  },
+  "runtime": {
+    "expectedHostname": "b623fadf85d6",
+    "previousHostname": "7161d22c261f",
+    "pinSource": "verified_replacement",
+    "lastReplyState": "ready"
+  },
+  "completedResultPreserved": true
+}

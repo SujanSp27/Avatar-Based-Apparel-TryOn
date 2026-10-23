@@ -9,6 +9,9 @@ from scripts.auto_connect_colab import ColabRecovery
 logger = logging.getLogger(__name__)
 REASONS = {
     'connecting': 'Preparing your online try-on service automatically.',
+    'checking_notebook': 'Reconnecting to your existing Colab notebook. Checking its saved worker configuration.',
+    'restoring_worker': 'Checking and restoring the Colab GPU worker. Model setup may take several minutes after a runtime restart; your completed images are safe.',
+    'checking_tunnel': 'The saved Colab address is not responding. Verifying the current worker address before enabling generation.',
     'loading': 'The online model is loading. The app will become ready automatically.',
     'setting_up': 'Restoring the online model after a Colab restart. This first setup can take several minutes; the app will resume automatically.',
     'setup_failed': 'Colab model setup failed repeatedly. Check the worker setup log in the existing notebook.',
@@ -70,7 +73,10 @@ class ColabConnection:
                 'browser_required', 'not_configured', 'bridge_unavailable', 'runtime_unstable'})
             snapshot['displayState'] = ('Ready' if snapshot['available'] else
                 'Temporarily unavailable' if unavailable else
-                'Recovering' if state in {'runtime_changed', 'setting_up', 'loading', 'recovering_tunnel'} else 'Preparing')
+                'Recovering' if state in {'runtime_changed', 'setting_up', 'loading', 'recovering_tunnel',
+                                         'checking_notebook', 'restoring_worker', 'checking_tunnel'} else 'Preparing')
+            snapshot['unavailableSeconds'] = (0 if snapshot['available'] else
+                                              max(0, round(time.monotonic() - self._unavailable_since)))
             return snapshot
 
     def retry(self):
@@ -106,7 +112,7 @@ class ColabConnection:
                 # A URL in a notebook output is not proof the tunnel is reachable.
                 availability = self.worker.availability(check_connection=True)
                 if not availability['available']:
-                    state = 'connecting'
+                    state = 'checking_tunnel'
             availability['reason'] = None if availability['available'] else REASONS.get(state, REASONS['connecting'])
         with self._lock:
             self._updated_at = time.monotonic()
@@ -126,5 +132,11 @@ class ColabConnection:
                     self._updated_at = time.monotonic()
                     self._snapshot.update(available=False, connectionState='recovery_delayed',
                                           reason=REASONS['recovery_delayed'])
-            self._wake.wait(10)
+            # Advancing each local queue stage used to wait ten seconds. A
+            # short-lived browser connection could disappear before run_cell.
+            # Poll the persisted request sooner; tick() still enforces backoff
+            # and never submits a duplicate. Remote health remains cached.
+            state = self.snapshot()['connectionState']
+            interval = 1 if state in {'connecting', 'checking_notebook'} else 3 if state == 'restoring_worker' else 10
+            self._wake.wait(interval)
             self._wake.clear()

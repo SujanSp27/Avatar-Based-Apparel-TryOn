@@ -50,6 +50,7 @@ function forgetJob() {
 export function useTryOnJob(
   onResult: (result: Result | undefined) => void,
   onError: (message: string) => void,
+  onExternalSelection?: () => void,
 ) {
   const [searchParams, setSearchParams] = useSearchParams();
   const linkedJob = searchParams.get("job");
@@ -62,8 +63,29 @@ export function useTryOnJob(
   );
   const submitting = useRef(false);
   const selection = useRef(0);
-  const callbacks = useRef({ onResult, onError });
-  callbacks.current = { onResult, onError };
+  const selectedJob = useRef(jobId);
+  const callbacks = useRef({ onResult, onError, onExternalSelection });
+  callbacks.current = { onResult, onError, onExternalSelection };
+
+  useEffect(() => {
+    function syncSelection(event: StorageEvent) {
+      if (event.storageArea !== localStorage || event.key !== KEY) return;
+      // Read the current value, not an older queued event. Never start inference
+      // here: every tab follows the same selected job through GET only.
+      const next = savedJob();
+      if (next === selectedJob.current) return;
+      selectedJob.current = next;
+      selection.current++;
+      callbacks.current.onResult(undefined);
+      callbacks.current.onError("");
+      callbacks.current.onExternalSelection?.();
+      setJobId(next);
+      setBusy(!!next);
+      setMessage(next ? "Loading your latest try-on" : "");
+    }
+    window.addEventListener("storage", syncSelection);
+    return () => window.removeEventListener("storage", syncSelection);
+  }, []);
 
   useEffect(() => {
     if (!linkedJob || !JOB_ID.test(linkedJob) || submitting.current) return;
@@ -76,6 +98,7 @@ export function useTryOnJob(
     }
     callbacks.current.onResult(undefined);
     callbacks.current.onError("");
+    selectedJob.current = linkedJob;
     setJobId(linkedJob);
     setBusy(true);
     setSearchParams(
@@ -102,6 +125,7 @@ export function useTryOnJob(
       try {
         const response = await fetch(`/api/tryon/jobs/${jobId}`, {
           signal: controller.signal,
+          cache: "no-store",
         });
         if (stopped || version !== selection.current) return;
         if (response.status === 404 && (submitting.current || missing++ < 5)) {
@@ -110,7 +134,9 @@ export function useTryOnJob(
         }
         if (!response.ok) {
           if (response.status >= 500) throw new Error("connection");
-          callbacks.current.onError(await apiError(response));
+          const message = await apiError(response);
+          if (stopped || version !== selection.current) return;
+          callbacks.current.onError(message);
           setBusy(false);
           setJobId(undefined);
           forgetJob();
@@ -174,6 +200,8 @@ export function useTryOnJob(
   async function submit(form: FormData) {
     if (busy || submitting.current) return;
     const id = crypto.randomUUID();
+    const version = ++selection.current;
+    selectedJob.current = id;
     callbacks.current.onResult(undefined);
     submitting.current = true;
     setBusy(true);
@@ -191,14 +219,18 @@ export function useTryOnJob(
         headers: { Prefer: "respond-async", "Idempotency-Key": id },
         signal: AbortSignal.timeout(45000),
       });
+      if (version !== selection.current) return;
       if (!response.ok) {
-        callbacks.current.onError(await apiError(response));
+        const message = await apiError(response);
+        if (version !== selection.current) return;
+        callbacks.current.onError(message);
         setBusy(false);
         setJobId(undefined);
         forgetJob();
       }
       // The response only acknowledges the job. Polling retrieves the real result.
     } catch {
+      if (version !== selection.current) return;
       setMessage(
         "Checking whether your upload was received. No duplicate request will be sent.",
       );
@@ -209,6 +241,7 @@ export function useTryOnJob(
   function reset() {
     if (submitting.current) return;
     selection.current++;
+    selectedJob.current = undefined;
     forgetJob();
     setJobId(undefined);
     setBusy(false);

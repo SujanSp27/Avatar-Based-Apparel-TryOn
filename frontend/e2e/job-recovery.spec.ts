@@ -100,17 +100,17 @@ test("a recovered job cannot present an overlay as a successful neural result", 
   await expect(page.getByTestId("photo-result")).toHaveCount(0);
 });
 
-test("a recovered real CatVTON result loads its actual PNG and original comparison", async ({
+test("a recovered real FASHN result loads its actual PNG and original comparison", async ({
   page,
 }) => {
   const artifact = path.resolve(
-    "../data/processed/04360792-ad1f-4ec2-8ab7-1255eb8cecc0/result.json",
+    "../experiments/results-redesign/navy-tee/live-result.json",
   );
   test.skip(
     !existsSync(artifact),
     "Optional retained local inference artifact is unavailable.",
   );
-  const result = JSON.parse(readFileSync(artifact, "utf8"));
+  const result = JSON.parse(readFileSync(artifact, "utf8")).result;
   expect(result.renderingMethod).toBe("pretrained-vton");
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));

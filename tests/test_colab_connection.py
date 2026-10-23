@@ -41,7 +41,7 @@ def test_adopted_url_still_requires_live_validation():
     manager = ColabConnection(worker, recovery)
     manager.check()
     assert not manager.snapshot()['available']
-    assert manager.snapshot()['connectionState'] == 'connecting'
+    assert manager.snapshot()['connectionState'] == 'checking_tunnel'
 
 
 @pytest.mark.parametrize('state', ['runtime_expired', 'gpu_unavailable', 'browser_required', 'runtime_changed', 'recovery_failed'])
@@ -280,6 +280,77 @@ def test_successful_browser_connection_can_reopen_after_socket_loss(tmp_path, br
     recovery.next_attempt = 0
     recovery.tick()
     assert len(requests) == 1
+
+
+@pytest.mark.parametrize(('stage', 'expected'), [
+    ('open', 'browser_required'), ('cells', 'checking_notebook'),
+    ('insert', 'checking_notebook'), ('updated', 'checking_notebook'),
+    ('probe', 'restoring_worker'),
+])
+def test_pending_stage_is_specific_and_never_replayed(tmp_path, bridge, stage, expected):
+    _, requests, _ = bridge
+    recovery = ColabRecovery(tmp_path, tmp_path / 'worker.json')
+    recovery._submit({}, stage, 'run_code_cell', {'cellId': 'owned'})
+    assert recovery.tick() == expected
+    assert recovery.tick() == expected
+    assert len(requests) == 1
+    assert json.loads(recovery.state_path.read_text())['request'] == '1'
+
+
+@pytest.mark.parametrize('connected', [False, True])
+def test_failed_bridge_step_reports_real_state_and_backs_off(tmp_path, bridge, monkeypatch, connected):
+    current, requests, reply = bridge
+    recovery = ColabRecovery(tmp_path, tmp_path / 'worker.json')
+    recovery._submit({}, 'insert', 'add_code_cell', {})
+    reply({})
+    current['notebookToolsAvailable'] = connected
+    def failed(_):
+        raise RuntimeError('private notebook details must not reach UI or state')
+    monkeypatch.setattr(recovery_module, 'result', failed)
+    expected = 'recovery_failed' if connected else 'browser_required'
+    assert recovery.tick() == expected
+    state = json.loads(recovery.state_path.read_text())
+    assert state['lastFailedStage'] == 'insert'
+    assert state['lastReplyState'] == expected
+    assert 'private notebook details' not in recovery.state_path.read_text()
+    assert 'request' not in state
+    assert recovery.tick() is None
+    assert len(requests) == 1
+    # A completed failure can be safely reconciled by reading the notebook,
+    # instead of blindly replaying the failed insert or execution.
+    current['notebookToolsAvailable'] = True
+    recovery.next_attempt = 0
+    assert recovery.tick() == 'checking_notebook'
+    assert requests[-1]['name'] == 'get_cells'
+
+
+def test_restoring_state_becomes_ready_only_after_live_gpu_check():
+    worker = Mock(availability=Mock(return_value={'available': False}))
+    manager = ColabConnection(worker, Mock(tick=Mock(return_value='restoring_worker')))
+    manager.check()
+    assert manager.snapshot()['displayState'] == 'Recovering'
+    assert 'restoring' in manager.snapshot()['reason']
+    manager._unavailable_since -= 181
+    assert manager.snapshot()['displayState'] == 'Temporarily unavailable'
+    assert manager.snapshot()['unavailableSeconds'] >= 181
+    worker.availability.return_value = {'available': True}
+    manager.check()
+    assert manager.snapshot()['displayState'] == 'Ready'
+    assert manager.snapshot()['unavailableSeconds'] == 0
+
+
+@pytest.mark.parametrize(('state', 'seconds'), [
+    ('checking_notebook', 1), ('restoring_worker', 3), ('ready', 10), ('recovery_failed', 10),
+])
+def test_monitor_advances_staging_quickly_without_busy_polling(state, seconds):
+    manager = ColabConnection(Mock(availability=Mock(return_value={'available': False})), Mock())
+    manager._snapshot['connectionState'] = state
+    manager.check = Mock()
+    manager._wake = Mock()
+    manager._wake.wait.side_effect = lambda _: manager._stop.set()
+    manager._run()
+    manager._wake.wait.assert_called_once_with(seconds)
+    manager.check.assert_called_once()
 
 
 @pytest.mark.parametrize('url', ['http://private.gradio.live', 'https://attacker.test',

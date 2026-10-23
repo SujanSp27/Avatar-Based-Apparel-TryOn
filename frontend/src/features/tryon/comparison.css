@@ -6,6 +6,20 @@
 .tryon-result {
   min-width: 0;
 }
+.tryon-layout.results-focus {
+  grid-template-columns: minmax(0, 1fr);
+}
+.tryon-controls[hidden] {
+  display: none;
+}
+.tryon-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.results-focus .garment-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
 .premium-comparison {
   min-width: 0;
   overflow: hidden;
@@ -29,7 +43,7 @@
   margin: 0 0 7px;
 }
 .comparison-header p {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.6;
   color: #60685d;
   margin: 0;
@@ -80,6 +94,10 @@
 .premium-comparison .compare-stage.side {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0;
+}
+.results-focus .compare-stage.split {
+  max-width: 760px;
+  margin-inline: auto;
 }
 .premium-comparison .compare-stage img {
   display: block;
@@ -204,7 +222,7 @@
   height: 40px;
   border-radius: 8px;
   padding: 0 14px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   gap: 7px;
   white-space: nowrap;
@@ -320,6 +338,9 @@
   margin-top: 12px;
 }
 @media (max-width: 1190px) {
+  .results-focus .garment-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   .comparison-header {
     flex-wrap: wrap;
     gap: 14px;
@@ -396,7 +417,8 @@
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .garment-grid {
+  .garment-grid,
+  .results-focus .garment-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }

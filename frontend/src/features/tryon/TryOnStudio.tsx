@@ -29,6 +29,7 @@ export default function TryOnStudio() {
   const [category, setCategory] = useState("t-shirt");
   const [photoType, setPhotoType] = useState("flat-lay");
   const [result, setResult] = useState<Result>();
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [availability, setAvailability] = useState<VtonAvailability>();
   const [offline, setOffline] = useState(false);
@@ -38,7 +39,23 @@ export default function TryOnStudio() {
   const [garmentPreview, setGarmentPreview] = useState<string>();
   const [samplesBusy, setSamplesBusy] = useState(false);
   const [selectedGarment, setSelectedGarment] = useState<string>();
-  const { busy, message, submit, reset } = useTryOnJob(setResult, setError);
+  const { busy, message, submit, reset } = useTryOnJob(
+    (next) => {
+      setResult(next);
+      if (next) {
+        setEditing(false);
+        setCategory(next.garmentCategory);
+      }
+    },
+    setError,
+    () => {
+      // A result selected in another tab has its own original photo. Do not keep
+      // this tab's old uploads poised for an unrelated generation.
+      setPerson(undefined);
+      setGarment(undefined);
+      setSelectedGarment(undefined);
+    },
+  );
   useEffect(() => {
     if (!person) {
       setPreview(undefined);
@@ -134,10 +151,17 @@ export default function TryOnStudio() {
     }
   }
   async function selectGarment(item: Garment) {
+    const original = result?.originalUrl;
     setSamplesBusy(true);
     reset();
     try {
-      const file = await downloadPhoto(item.imageUrl, item.id);
+      const [file, originalFile] = await Promise.all([
+        downloadPhoto(item.imageUrl, item.id),
+        original
+          ? downloadPhoto(original, "original-person.png")
+          : Promise.resolve(person),
+      ]);
+      setPerson(originalFile);
       setGarment(file);
       setCategory(item.category);
       setPhotoType(item.photoType);
@@ -172,17 +196,36 @@ export default function TryOnStudio() {
             fitting room.
           </p>
         </div>
-        <button
-          className="button secondary"
-          disabled={busy || samplesBusy}
-          onClick={() => void sample()}
-        >
-          <Sparkles size={16} />
-          Try sample photos
-        </button>
+        <div className="tryon-heading-actions">
+          {result && (
+            <button
+              className="button secondary"
+              aria-expanded={editing}
+              aria-controls="tryon-inputs"
+              onClick={() => setEditing((value) => !value)}
+            >
+              <Shirt size={16} />
+              {editing ? "Focus on result" : "Change outfit"}
+            </button>
+          )}
+          <button
+            className="button secondary"
+            disabled={busy || samplesBusy}
+            onClick={() => void sample()}
+          >
+            <Sparkles size={16} />
+            Try sample photos
+          </button>
+        </div>
       </div>
-      <div className="tryon-layout">
-        <aside className="card tryon-controls">
+      <div
+        className={`tryon-layout ${result && !editing ? "results-focus" : ""}`}
+      >
+        <aside
+          id="tryon-inputs"
+          className="card tryon-controls"
+          hidden={!!result && !editing}
+        >
           <div className="section-heading">
             <h2>Style your scene.</h2>
             <Shirt size={22} />

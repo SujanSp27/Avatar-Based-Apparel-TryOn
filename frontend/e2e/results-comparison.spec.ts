@@ -53,7 +53,7 @@ test("equal panels fill the frame on desktop, tablet and mobile; pointer and key
 }) => {
   const viewer = await fixture(page);
   await expect(viewer).toHaveAttribute("data-loaded", "true");
-  for (const width of [1440, 768, 375]) {
+  for (const width of [1920, 1440, 768, 375]) {
     await page.setViewportSize({ width, height: 1000 });
     const boxes = await viewer
       .locator(".compare-original, .compare-result")
@@ -236,6 +236,9 @@ test("changing a garment invalidates the saved result; a new job retains mode an
     viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }),
   ).toHaveAttribute("src", "/comparison-test/new-result.png");
   await page
+    .getByRole("button", { name: "Change outfit", exact: true })
+    .click();
+  await page
     .getByLabel("Garment category", { exact: true })
     .selectOption("shirt");
   await page.reload();
@@ -245,6 +248,123 @@ test("changing a garment invalidates the saved result; a new job retains mode an
   expect(
     await page.evaluate(() => localStorage.getItem("form-fit-last-job")),
   ).toBeNull();
+});
+
+test("completed comparison uses the full results width and editing keeps the selected render", async ({
+  page,
+}) => {
+  const viewer = await fixture(page);
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  await expect(page.locator("#tryon-inputs")).toBeHidden();
+  const layout = (await page.locator(".tryon-layout").boundingBox())!;
+  const comparison = (await viewer.boundingBox())!;
+  expect(Math.abs(layout.width - comparison.width)).toBeLessThan(1);
+  await viewer.getByRole("button", { name: "Slider", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Change outfit", exact: true })
+    .click();
+  await expect(page.locator("#tryon-inputs")).toBeVisible();
+  await expect(viewer.locator(".compare-stage")).toHaveClass(/split/);
+  await expect(
+    viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }),
+  ).toHaveAttribute("src", result.previewUrl);
+  await page
+    .getByRole("button", { name: "Focus on result", exact: true })
+    .click();
+  await expect(page.locator("#tryon-inputs")).toBeHidden();
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  // A restored result has no File input in memory. Choosing another garment
+  // must restore this result's original person instead of using a demo person.
+  await page.getByRole("button", { name: /Sage pique polo/ }).click();
+  await expect(page.locator("#tryon-inputs")).toBeVisible();
+  await expect(
+    page.getByText("original-person.png", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Garment photo type", { exact: true }),
+  ).toHaveValue("flat-lay");
+  await expect(
+    page.getByRole("button", { name: "Generate try-on", exact: true }),
+  ).toBeEnabled();
+  const selectedPhoto = viewer.getByRole("img", {
+    name: "Your selected person photo",
+  });
+  await expect(selectedPhoto).toHaveAttribute("src", /^blob:/);
+  const actualHash = await selectedPhoto.evaluate(async (image) => {
+    const bytes = await (
+      await fetch((image as HTMLImageElement).src)
+    ).arrayBuffer();
+    const hash = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(hash), (byte) =>
+      byte.toString(16).padStart(2, "0"),
+    ).join("");
+  });
+  expect(actualHash).toBe(
+    createHash("sha256")
+      .update(readFileSync(path.join(evidence, "original.png")))
+      .digest("hex"),
+  );
+  await expect(
+    viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }),
+  ).toHaveCount(0);
+});
+
+test("a newer selection in another tab replaces the old render using GET only", async ({
+  page,
+  context,
+}) => {
+  let posts = 0;
+  context.on("request", (request) => {
+    if (request.method() === "POST" && request.url().endsWith("/api/tryon"))
+      posts++;
+  });
+  const viewer = await fixture(page);
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  const nextId = "00000000-0000-4000-8000-000000000066";
+  const second = await context.newPage();
+  await second.goto("/terms");
+  await page.route("**/comparison-test/new-tab-result.png", (route) =>
+    route.fulfill({
+      path: path.join(evidence, "after.png"),
+      contentType: "image/png",
+    }),
+  );
+  await page.route(`**/api/tryon/jobs/${nextId}`, (route) =>
+    route.fulfill({
+      json: {
+        jobId: nextId,
+        status: "success",
+        result: {
+          ...result,
+          previewUrl: "/comparison-test/new-tab-result.png",
+        },
+      },
+    }),
+  );
+  await second.evaluate(
+    (id) => localStorage.setItem("form-fit-last-job", id),
+    nextId,
+  );
+  await expect(
+    viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }),
+  ).toHaveAttribute("src", "/comparison-test/new-tab-result.png");
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  // Rapid older events must not resurrect an intermediate job or stop polling.
+  await second.evaluate((id) => {
+    localStorage.setItem(
+      "form-fit-last-job",
+      "00000000-0000-4000-8000-000000000055",
+    );
+    localStorage.setItem("form-fit-last-job", id);
+  }, nextId);
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  await second.evaluate(() => localStorage.removeItem("form-fit-last-job"));
+  await expect(
+    viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator("#tryon-inputs")).toBeVisible();
+  expect(posts).toBe(0);
+  await second.close();
 });
 
 test("share uses the displayed final image, with a clear local-link fallback", async ({
