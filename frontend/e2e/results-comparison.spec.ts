@@ -111,6 +111,14 @@ test("equal panels fill the frame on desktop, tablet and mobile; pointer and key
   const splitCard = (await viewer.locator(".comparison-frame").boundingBox())!;
   // Slider mode also shrinks to its photograph; no wide empty side gutters.
   expect(splitCard.width - bounds.width).toBeCloseTo(26, 0);
+  const inspect = (await viewer
+    .getByRole("button", { name: "Inspect details" })
+    .boundingBox())!;
+  const download = (await viewer
+    .getByRole("link", { name: "Download render" })
+    .boundingBox())!;
+  expect(inspect.y).toBe(download.y);
+  expect(download.x).toBeGreaterThan(inspect.x + inspect.width);
   await page.mouse.move(bounds.x + bounds.width * 0.5, bounds.y + 120);
   await page.mouse.down();
   await page.mouse.move(bounds.x + bounds.width * 0.75, bounds.y + 120, {
