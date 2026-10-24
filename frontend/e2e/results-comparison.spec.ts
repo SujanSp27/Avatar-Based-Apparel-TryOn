@@ -19,25 +19,36 @@ const result = {
 
 async function fixture(
   page: Page,
-  after: "ok" | "error" | "mismatch" | "pending" = "ok",
+  after: "ok" | "error" | "mismatch" | "pending" | "resized" = "ok",
+  images = evidence,
 ) {
   await page.route("**/api/tryon/availability", (route) =>
     route.fulfill({ json: { available: true, reason: null } }),
   );
   await page.route("**/comparison-test/before.png*", (route) =>
     route.fulfill({
-      path: path.join(evidence, "original.png"),
+      path: path.join(images, "original.png"),
       contentType: "image/png",
     }),
   );
   await page.route("**/comparison-test/after.png*", async (route) => {
     if (after === "error") return route.fulfill({ status: 404 });
     if (after === "pending") return; // Deliberately stalled download; timeout is tested with browser clock.
+    if (after === "resized") {
+      // Same retained neural photograph at half resolution; no generated mock outfit.
+      const image = readFileSync(path.join(images, "after.png")).toString(
+        "base64",
+      );
+      return route.fulfill({
+        contentType: "image/svg+xml",
+        body: `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 800 1200"><image width="800" height="1200" href="data:image/png;base64,${image}"/></svg>`,
+      });
+    }
     return route.fulfill({
       path:
         after === "mismatch"
           ? path.resolve("../data/raw/navy-tee.jpg")
-          : path.join(evidence, "after.png"),
+          : path.join(images, "after.png"),
       contentType: after === "mismatch" ? "image/jpeg" : "image/png",
     });
   });
@@ -53,7 +64,7 @@ test("equal panels fill the frame on desktop, tablet and mobile; pointer and key
 }) => {
   const viewer = await fixture(page);
   await expect(viewer).toHaveAttribute("data-loaded", "true");
-  for (const width of [1920, 1440, 768, 375]) {
+  for (const width of [3840, 1920, 1440, 768, 375]) {
     await page.setViewportSize({ width, height: 1000 });
     const boxes = await viewer
       .locator(".compare-original, .compare-result")
@@ -66,7 +77,20 @@ test("equal panels fill the frame on desktop, tablet and mobile; pointer and key
     expect(Math.abs(boxes[0].width - boxes[1].width)).toBeLessThan(1);
     expect(boxes[0].height).toBe(boxes[1].height);
     expect(boxes[0].top).toBe(boxes[1].top);
+    await expectAlignedImages(page);
     const frame = await viewer.locator(".compare-stage").boundingBox();
+    const card = (await viewer.boundingBox())!;
+    const layout = (await page.locator(".tryon-result").boundingBox())!;
+    expect(card.width).toBeLessThanOrEqual(1100);
+    expect(frame!.height).toBeLessThanOrEqual(width > 900 ? 540 : 500);
+    if (width >= 1440) expect(frame!.height).toBeCloseTo(540, 0);
+    expect(
+      Math.abs(card.x + card.width / 2 - (layout.x + layout.width / 2)),
+    ).toBeLessThan(1);
+    const heading = (await viewer.locator(".comparison-header").boundingBox())!;
+    expect(heading.y + heading.height).toBeLessThanOrEqual(frame!.y);
+    const footer = (await viewer.locator(".comparison-footer").boundingBox())!;
+    expect(footer.y).toBeGreaterThanOrEqual(frame!.y + frame!.height);
     expect(
       Math.abs(boxes[0].width + boxes[1].width - frame!.width),
     ).toBeLessThan(3);
@@ -83,6 +107,10 @@ test("equal panels fill the frame on desktop, tablet and mobile; pointer and key
   });
   await slider.scrollIntoViewIfNeeded();
   const bounds = (await slider.boundingBox())!;
+  expect(bounds.height).toBeCloseTo(540, 0);
+  const splitCard = (await viewer.locator(".comparison-frame").boundingBox())!;
+  // Slider mode also shrinks to its photograph; no wide empty side gutters.
+  expect(splitCard.width - bounds.width).toBeCloseTo(26, 0);
   await page.mouse.move(bounds.x + bounds.width * 0.5, bounds.y + 120);
   await page.mouse.down();
   await page.mouse.move(bounds.x + bounds.width * 0.75, bounds.y + 120, {
@@ -107,6 +135,107 @@ test("equal panels fill the frame on desktop, tablet and mobile; pointer and key
       targets: v.nodes.map((n) => n.target),
     })),
   ).toEqual([]);
+});
+
+async function expectAlignedImages(page: Page) {
+  const geometry = await page.locator(".compare-stage").evaluate((stage) => {
+    const frame = stage.getBoundingClientRect();
+    const images = [...stage.querySelectorAll("img")].map((image) => {
+      const box = image.getBoundingClientRect();
+      // Compare the painted photograph, not just its potentially letterboxed element.
+      const scale = Math.min(
+        box.width / image.naturalWidth,
+        box.height / image.naturalHeight,
+      );
+      return {
+        left: box.left + (box.width - image.naturalWidth * scale) / 2,
+        right: box.right - (box.width - image.naturalWidth * scale) / 2,
+        top: box.top + (box.height - image.naturalHeight * scale) / 2,
+        width: image.naturalWidth * scale,
+        height: image.naturalHeight * scale,
+      };
+    });
+    return {
+      images,
+      frame: { left: frame.left, width: frame.width, height: frame.height },
+    };
+  });
+  const [before, after] = geometry.images;
+  expect(Math.abs(before.width - after.width)).toBeLessThan(0.05);
+  expect(Math.abs(before.height - after.height)).toBeLessThan(0.05);
+  expect(Math.abs(before.top - after.top)).toBeLessThan(0.05);
+  expect(Math.abs(before.height - geometry.frame.height)).toBeLessThan(0.05);
+  expect(Math.abs(before.left - geometry.frame.left)).toBeLessThan(0.05);
+  expect(Math.abs(before.right - after.left)).toBeLessThan(0.05);
+  expect(
+    Math.abs(before.width + after.width - geometry.frame.width),
+  ).toBeLessThan(0.05);
+}
+
+for (const person of ["male", "female"]) {
+  test(`${person} full-body turquoise shorts have no center gap or unequal scaling`, async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    const viewer = await fixture(
+      page,
+      "ok",
+      path.resolve(`../experiments/comparison-alignment/${person}-shorts`),
+    );
+    await expect(viewer).toHaveAttribute("data-loaded", "true");
+    for (const width of [1920, 1440, 768, 375]) {
+      await page.setViewportSize({ width, height: 1050 });
+      await expectAlignedImages(page);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      if (width === 1440 || width === 375)
+        await viewer.screenshot({
+          path: `../experiments/compact-comparison/${person}-shorts-${width}.png`,
+        });
+    }
+    await viewer.getByRole("button", { name: "Slider", exact: true }).click();
+    const slider = viewer.getByRole("slider", {
+      name: "Before and after comparison slider",
+    });
+    for (const value of [0, 25, 50, 75, 100]) {
+      await slider.fill(String(value));
+      const divider = await viewer.locator(".compare-divider").boundingBox();
+      const frame = (await viewer.locator(".compare-stage").boundingBox())!;
+      expect(
+        Math.abs(
+          divider!.x +
+            divider!.width / 2 -
+            (frame.x + (frame.width * value) / 100),
+        ),
+      ).toBeLessThan(0.1);
+      const originals = await viewer
+        .locator(".compare-original img")
+        .boundingBox();
+      const generated = await viewer
+        .locator(".compare-result img")
+        .boundingBox();
+      expect(generated).toEqual(originals);
+    }
+    await viewer.screenshot({
+      path: `../experiments/compact-comparison/${person}-shorts-slider.png`,
+    });
+    expect(errors).toEqual([]);
+  });
+}
+
+test("a lower-resolution render with matching framing aligns without cropping", async ({
+  page,
+}) => {
+  const viewer = await fixture(page, "resized");
+  await expect(viewer).toHaveAttribute("data-loaded", "true");
+  await expectAlignedImages(page);
+  await expect(
+    viewer.getByRole("link", { name: "Download render" }),
+  ).toBeVisible();
 });
 
 test("failed image cannot be downloaded or shared, and retry loads the saved result", async ({
@@ -250,7 +379,7 @@ test("changing a garment invalidates the saved result; a new job retains mode an
   ).toBeNull();
 });
 
-test("completed comparison uses the full results width and editing keeps the selected render", async ({
+test("completed comparison is compact and centered; editing keeps the selected render", async ({
   page,
 }) => {
   const viewer = await fixture(page);
@@ -258,7 +387,13 @@ test("completed comparison uses the full results width and editing keeps the sel
   await expect(page.locator("#tryon-inputs")).toBeHidden();
   const layout = (await page.locator(".tryon-layout").boundingBox())!;
   const comparison = (await viewer.boundingBox())!;
-  expect(Math.abs(layout.width - comparison.width)).toBeLessThan(1);
+  expect(comparison.width).toBeLessThan(layout.width);
+  expect(comparison.width).toBeLessThanOrEqual(1100);
+  expect(
+    Math.abs(
+      layout.x + layout.width / 2 - (comparison.x + comparison.width / 2),
+    ),
+  ).toBeLessThan(1);
   await viewer.getByRole("button", { name: "Slider", exact: true }).click();
   await page
     .getByRole("button", { name: "Change outfit", exact: true })

@@ -21,23 +21,37 @@
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 .premium-comparison {
+  --comparison-height: 540px;
+  width: 100%;
+  /* Shrink portrait comparisons with their photographs instead of introducing
+     letterboxing between panels when the height reaches its limit. */
+  max-width: min(
+    1100px,
+    calc(
+      var(--comparison-height) * var(--photo-ratio) * var(--panel-count) + 26px
+    )
+  );
+  margin-inline: auto;
   min-width: 0;
+}
+.comparison-frame {
   overflow: hidden;
   border: 1px solid #dedfd6;
-  border-radius: 18px;
+  border-radius: 14px;
   background: #fffefa;
-  box-shadow: 0 8px 32px #273b2d08;
+  box-shadow: 0 4px 18px #273b2d08;
 }
 .comparison-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  padding: 24px;
+  gap: 16px;
+  padding: 0 0 14px;
+  flex-wrap: wrap;
 }
 .comparison-header h2 {
   font-family: inherit;
-  font-size: clamp(21px, 2vw, 28px);
+  font-size: clamp(21px, 2vw, 24px);
   font-weight: 600;
   letter-spacing: -0.7px;
   margin: 0 0 7px;
@@ -50,6 +64,7 @@
 }
 .comparison-controls {
   display: flex;
+  margin-left: auto;
   flex-shrink: 0;
   gap: 3px;
   padding: 4px;
@@ -58,7 +73,7 @@
   border: 1px solid #e4e6dc;
 }
 .comparison-controls button {
-  min-height: 36px;
+  min-height: 44px;
   border: 0;
   border-radius: 6px;
   padding: 0 12px;
@@ -82,32 +97,48 @@
   cursor: default;
 }
 .comparison-surface {
-  padding: 0 16px;
+  padding: 12px 12px 0;
 }
 .premium-comparison .compare-stage {
+  position: relative;
   width: 100%;
-  max-height: none;
-  border: 1px solid #e6e7df;
+  max-width: calc(var(--comparison-height) * var(--photo-ratio));
+  margin-inline: auto;
+  overflow: hidden;
   border-radius: 10px;
   background: #f4f4f0;
+  /* A frame must not subtract pixels from either photograph's content box. */
+  outline: 1px solid #e6e7df;
+  outline-offset: -1px;
 }
 .premium-comparison .compare-stage.side {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  max-width: calc(var(--comparison-height) * var(--photo-ratio) * 2);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
   gap: 0;
 }
-.results-focus .compare-stage.split {
-  max-width: 760px;
-  margin-inline: auto;
+.compare-original,
+.compare-result {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.compare-stage.split > .compare-original,
+.compare-stage.split > .compare-result {
+  position: absolute;
+  inset: 0;
 }
 .premium-comparison .compare-stage img {
+  /* Intrinsic image dimensions cannot enlarge a grid row or change its ratio. */
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center;
-}
-.premium-comparison .compare-stage.side > .compare-result {
-  border-left: 1px solid #dedfd6;
 }
 .compare-label {
   position: absolute;
@@ -130,16 +161,33 @@
   right: 14px;
 }
 .premium-comparison .compare-divider {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+  background: #fffefa;
+  box-shadow: 0 0 2px #263e3666;
   z-index: 2;
 }
 .premium-comparison .compare-divider > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 5px;
   font-size: 18px;
   width: 42px;
   height: 42px;
   border: 1px solid #e2e7dc;
+  border-radius: 50%;
+  background: #fffefa;
+  color: #405e36;
+  white-space: pre;
 }
 .compare-divider i {
   display: block;
@@ -148,8 +196,19 @@
   background: #c6cfc0;
 }
 .premium-comparison .compare-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
   z-index: 3;
   touch-action: pan-y;
+}
+.premium-comparison .compare-stage:focus-within {
+  outline: 3px solid #607f3d;
+  outline-offset: -4px;
 }
 .premium-comparison .compare-stage > .comparison-state {
   position: absolute;
@@ -210,7 +269,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 20px 24px;
+  padding: 12px;
 }
 .comparison-actions {
   display: flex;
@@ -218,8 +277,8 @@
   gap: 8px;
 }
 .comparison-footer .button {
-  min-height: 40px;
-  height: 40px;
+  min-height: 44px;
+  height: 44px;
   border-radius: 8px;
   padding: 0 14px;
   font-size: 12px;
@@ -341,32 +400,25 @@
   .results-focus .garment-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .comparison-header {
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-  .comparison-footer {
-    padding: 16px;
-  }
 }
 @media (max-width: 900px) {
   .tryon-layout {
     grid-template-columns: minmax(0, 1fr);
   }
-  .comparison-header {
-    flex-wrap: nowrap;
+  .premium-comparison {
+    --comparison-height: 500px;
   }
 }
 @media (max-width: 540px) {
   .comparison-header {
-    padding: 18px 16px;
-    flex-wrap: wrap;
+    padding: 0 0 12px;
+    gap: 12px;
   }
   .comparison-header p {
     font-size: 11px;
   }
   .comparison-surface {
-    padding: 0 9px;
+    padding: 8px 8px 0;
   }
   .comparison-controls {
     width: 100%;
@@ -376,7 +428,7 @@
   }
   .comparison-footer {
     gap: 10px;
-    padding: 14px 12px;
+    padding: 12px 8px;
   }
   .comparison-footer > .button {
     width: 100%;

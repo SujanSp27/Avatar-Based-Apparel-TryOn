@@ -1,0 +1,22 @@
+{
+  "review": "Full 800x1200 generated output and separate full-resolution parsing recomposition inspected against actual reference",
+  "overall": "improved_sleeve_fidelity_with_remaining_texture_limitations",
+  "changedFactor": "576x864 native model resolution instead of 504x756; same model, seed, steps, guidance, inputs and person conditioning",
+  "unrequestedWhiteLayer": "absent",
+  "sleeves": "Flutter shape and eyelet appearance closer to the reference than the smaller-resolution output",
+  "neckline": "Scoop neckline; a stepped hair boundary in result.png is smoother in full-parse-review.png",
+  "fabric": "Bodice smocking remains substantially smoother than reference",
+  "hem": "Longer on the body than balanced output; crop proportions are not reproduced exactly",
+  "preservation": "Parsed face, hair, hands and bag unchanged. Bounded blending alters neighboring background and jeans at revealed clothing seams.",
+  "fullResolutionParsingProbe": {
+    "executedOn": "existing private Colab T4",
+    "newTryOnGenerated": false,
+    "source": "actual installed FASHN human parser, same checkpoint",
+    "labelMap": "source-full-resolution-labels.png",
+    "reviewImage": "full-parse-review.png",
+    "finding": "Classifying after logits interpolation avoids nearest-neighbor upscaled preservation-mask steps"
+  },
+  "timing": {"endToEndSeconds": 33.987, "gpuSeconds": 23.638, "under30Seconds": false},
+  "acceptedAsExactReferenceReproduction": false,
+  "localGpuUsed": false
+}

@@ -65,8 +65,12 @@ function ComparisonImages({
   const mismatch = !!(
     sourceSize &&
     resultSize &&
-    (sourceSize.width !== resultSize.width ||
-      sourceSize.height !== resultSize.height)
+    // A resized render can share the original framing. Allow one pixel of
+    // rounding, but never stretch or crop a genuinely different aspect ratio.
+    Math.abs(
+      sourceSize.width / sourceSize.height -
+        resultSize.width / resultSize.height,
+    ) > Math.max(1 / sourceSize.height, 1 / resultSize.height)
   );
   const ready = !!(
     original &&
@@ -78,10 +82,10 @@ function ComparisonImages({
   );
   const paired = !!(original && result);
   useEffect(() => {
-    if (!paired || ready || failed) return;
+    if (!paired || ready || failed || mismatch) return;
     const timer = setTimeout(() => setFailed(true), 15000);
     return () => clearTimeout(timer);
-  }, [paired, ready, failed, retry]);
+  }, [paired, ready, failed, mismatch, retry]);
   const imageUrl = (url: string) =>
     retry ? `${url}${url.includes("?") ? "&" : "?"}retry=${retry}` : url;
   function retryImages() {
@@ -160,7 +164,13 @@ function ComparisonImages({
   const ratio = sourceSize ? sourceSize.width / sourceSize.height : 2 / 3;
   return (
     <section
-      className="comparison-card premium-comparison"
+      className="premium-comparison"
+      style={
+        {
+          "--photo-ratio": ratio,
+          "--panel-count": mode === "side" ? 2 : 1,
+        } as CSSProperties
+      }
       data-testid="viewer"
       data-mode="2d"
       data-loaded={ready}
@@ -192,209 +202,210 @@ function ComparisonImages({
           </button>
         </div>
       </header>
-      <div className="comparison-surface">
-        {paired ? (
-          <div
-            ref={stage}
-            className={`compare-stage ${mode}`}
-            style={
-              {
-                "--photo-ratio": ratio,
-                aspectRatio: mode === "side" ? ratio * 2 : ratio,
-              } as CSSProperties
-            }
-          >
+      <div className="comparison-frame">
+        <div className="comparison-surface">
+          {paired ? (
             <div
-              className="compare-original"
-              style={{ visibility: ready ? "visible" : "hidden" }}
+              ref={stage}
+              className={`compare-stage ${mode}`}
+              style={
+                {
+                  aspectRatio: mode === "side" ? ratio * 2 : ratio,
+                } as CSSProperties
+              }
             >
-              <img
-                key={`before-${retry}`}
-                src={imageUrl(original!)}
-                alt="Original person photo"
-                onLoad={(e) =>
-                  setSourceSize({
-                    width: e.currentTarget.naturalWidth,
-                    height: e.currentTarget.naturalHeight,
-                  })
-                }
-                onError={() => setFailed(true)}
-              />
-            </div>
-            <div
-              className="compare-result"
-              style={{
-                visibility: ready && !busy ? "visible" : "hidden",
-                clipPath:
-                  mode === "split" ? `inset(0 0 0 ${position}%)` : undefined,
-              }}
-            >
-              <img
-                key={`after-${retry}`}
-                src={imageUrl(result!)}
-                alt="Generated virtual try-on"
-                onLoad={(e) =>
-                  setResultSize({
-                    width: e.currentTarget.naturalWidth,
-                    height: e.currentTarget.naturalHeight,
-                  })
-                }
-                onError={() => setFailed(true)}
-              />
-            </div>
-            {ready && !busy && (
-              <>
-                <span className="compare-label before">Before</span>
-                <span className="compare-label after">After</span>
-              </>
-            )}
-            {ready && !busy && mode === "split" && (
-              <>
-                <div
-                  className="compare-divider"
-                  style={{ left: `${position}%` }}
-                  aria-hidden="true"
-                >
-                  <span>
-                    &lsaquo; <i /> &rsaquo;
-                  </span>
-                </div>
-                <input
-                  className="compare-range"
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  value={position}
-                  onChange={(e) => setPosition(Number(e.target.value))}
-                  onPointerDown={(e) => {
-                    e.preventDefault();
-                    e.currentTarget.focus();
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                    drag(e);
-                  }}
-                  onPointerMove={(e) => {
-                    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                      e.preventDefault();
-                      drag(e);
-                    }
-                  }}
-                  aria-label="Before and after comparison slider"
-                  aria-valuetext={`${Math.round(position)}% original photo`}
-                />
-              </>
-            )}
-            {(!ready || busy) && (
               <div
-                className="comparison-state"
-                role={failed || mismatch ? "alert" : "status"}
+                className="compare-original"
+                style={{ visibility: ready ? "visible" : "hidden" }}
               >
-                {failed || mismatch ? (
-                  <>
-                    <RotateCw size={25} />
-                    <h3>
-                      {mismatch
-                        ? "These images cannot be aligned"
-                        : "We could not load this comparison"}
-                    </h3>
-                    <p>
-                      {mismatch
-                        ? "The result dimensions differ from the original. Generate a new try-on; the person will not be stretched or cropped."
-                        : "Your result is saved. Check the connection and reload the images."}
-                    </p>
-                    {!mismatch && (
-                      <button
-                        className="button secondary"
-                        onClick={retryImages}
-                      >
-                        Retry images
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <LoaderCircle size={25} className="spin" />
-                    <h3>
-                      {busy
-                        ? "Creating your next look"
-                        : "Loading your comparison"}
-                    </h3>
-                    <p>
-                      {busy
-                        ? message
-                        : "Preparing both images at the same scale."}
-                    </p>
-                  </>
-                )}
+                <img
+                  key={`before-${retry}`}
+                  src={imageUrl(original!)}
+                  alt="Original person photo"
+                  onLoad={(e) =>
+                    setSourceSize({
+                      width: e.currentTarget.naturalWidth,
+                      height: e.currentTarget.naturalHeight,
+                    })
+                  }
+                  onError={() => setFailed(true)}
+                />
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="comparison-empty">
-            {original && (
-              <img src={original} alt="Your selected person photo" />
-            )}
-            <div>
-              {busy ? (
-                <LoaderCircle size={30} className="spin" />
-              ) : (
-                <Shirt size={34} strokeWidth={1.3} />
+              <div
+                className="compare-result"
+                style={{
+                  visibility: ready && !busy ? "visible" : "hidden",
+                  clipPath:
+                    mode === "split" ? `inset(0 0 0 ${position}%)` : undefined,
+                }}
+              >
+                <img
+                  key={`after-${retry}`}
+                  src={imageUrl(result!)}
+                  alt="Generated virtual try-on"
+                  onLoad={(e) =>
+                    setResultSize({
+                      width: e.currentTarget.naturalWidth,
+                      height: e.currentTarget.naturalHeight,
+                    })
+                  }
+                  onError={() => setFailed(true)}
+                />
+              </div>
+              {ready && !busy && (
+                <>
+                  <span className="compare-label before">Before</span>
+                  <span className="compare-label after">After</span>
+                </>
               )}
-              <h3>
-                {busy
-                  ? "Creating your next look"
-                  : original
-                    ? "Ready for a new look"
-                    : "Your fitting room awaits"}
-              </h3>
-              <p>
-                {busy
-                  ? message
-                  : "Choose a garment and generate your try-on. Your new outfit will appear here."}
-              </p>
+              {ready && !busy && mode === "split" && (
+                <>
+                  <div
+                    className="compare-divider"
+                    style={{ left: `${position}%` }}
+                    aria-hidden="true"
+                  >
+                    <span>
+                      &lsaquo; <i /> &rsaquo;
+                    </span>
+                  </div>
+                  <input
+                    className="compare-range"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={position}
+                    onChange={(e) => setPosition(Number(e.target.value))}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.focus();
+                      e.currentTarget.setPointerCapture(e.pointerId);
+                      drag(e);
+                    }}
+                    onPointerMove={(e) => {
+                      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+                        e.preventDefault();
+                        drag(e);
+                      }
+                    }}
+                    aria-label="Before and after comparison slider"
+                    aria-valuetext={`${Math.round(position)}% original photo`}
+                  />
+                </>
+              )}
+              {(!ready || busy) && (
+                <div
+                  className="comparison-state"
+                  role={failed || mismatch ? "alert" : "status"}
+                >
+                  {failed || mismatch ? (
+                    <>
+                      <RotateCw size={25} />
+                      <h3>
+                        {mismatch
+                          ? "These images cannot be aligned"
+                          : "We could not load this comparison"}
+                      </h3>
+                      <p>
+                        {mismatch
+                          ? "The result has different framing from the original. Generate a new try-on; the person will not be stretched or cropped."
+                          : "Your result is saved. Check the connection and reload the images."}
+                      </p>
+                      {!mismatch && (
+                        <button
+                          className="button secondary"
+                          onClick={retryImages}
+                        >
+                          Retry images
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <LoaderCircle size={25} className="spin" />
+                      <h3>
+                        {busy
+                          ? "Creating your next look"
+                          : "Loading your comparison"}
+                      </h3>
+                      <p>
+                        {busy
+                          ? message
+                          : "Preparing both images at the same scale."}
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
-          </div>
-        )}
-      </div>
-      <footer className="comparison-footer">
-        <button
-          className="button secondary"
-          disabled={!ready || busy}
-          onClick={() => setZoom(true)}
-        >
-          <ZoomIn size={17} />
-          Inspect details
-        </button>
-        <div className="comparison-actions">
-          <button
-            className="button secondary"
-            disabled={!ready || busy || sharing}
-            onClick={() => void share()}
-          >
-            {sharing ? "Sharing…" : "Share"}
-          </button>
-          {ready && !busy ? (
-            <a
-              className="button"
-              href={result}
-              download="formfit-tryon.png"
-              aria-disabled={downloading}
-              onClick={(e) => {
-                e.preventDefault();
-                void download();
-              }}
-            >
-              <Download size={17} />
-              {downloading ? "Downloading…" : "Download render"}
-            </a>
           ) : (
-            <button className="button" disabled>
-              <Download size={17} />
-              Download render
-            </button>
+            <div className="comparison-empty">
+              {original && (
+                <img src={original} alt="Your selected person photo" />
+              )}
+              <div>
+                {busy ? (
+                  <LoaderCircle size={30} className="spin" />
+                ) : (
+                  <Shirt size={34} strokeWidth={1.3} />
+                )}
+                <h3>
+                  {busy
+                    ? "Creating your next look"
+                    : original
+                      ? "Ready for a new look"
+                      : "Your fitting room awaits"}
+                </h3>
+                <p>
+                  {busy
+                    ? message
+                    : "Choose a garment and generate your try-on. Your new outfit will appear here."}
+                </p>
+              </div>
+            </div>
           )}
         </div>
-      </footer>
+        <footer className="comparison-footer">
+          <button
+            className="button secondary"
+            disabled={!ready || busy}
+            onClick={() => setZoom(true)}
+          >
+            <ZoomIn size={17} />
+            Inspect details
+          </button>
+          <div className="comparison-actions">
+            <button
+              className="button secondary"
+              disabled={!ready || busy || sharing}
+              onClick={() => void share()}
+            >
+              {sharing ? "Sharing…" : "Share"}
+            </button>
+            {ready && !busy ? (
+              <a
+                className="button"
+                href={result}
+                download="formfit-tryon.png"
+                aria-disabled={downloading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  void download();
+                }}
+              >
+                <Download size={17} />
+                {downloading ? "Downloading…" : "Download render"}
+              </a>
+            ) : (
+              <button className="button" disabled>
+                <Download size={17} />
+                Download render
+              </button>
+            )}
+          </div>
+        </footer>
+      </div>
       <Modal
         wide
         open={zoom && ready && !busy}

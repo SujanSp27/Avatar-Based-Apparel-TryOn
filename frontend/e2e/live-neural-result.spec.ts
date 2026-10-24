@@ -7,6 +7,8 @@ test("the live neural job survives refresh and displays its actual generated ima
   request,
 }) => {
   const jobId = process.env.VTON_LIVE_JOB_ID;
+  const screenshots =
+    process.env.VTON_SCREENSHOT_DIR ?? "../experiments/results-redesign";
   test.skip(!jobId, "Set VTON_LIVE_JOB_ID to a submitted real inference job.");
   test.setTimeout(900000);
   expect(jobId).toMatch(/^[a-f0-9-]{36}$/);
@@ -46,7 +48,7 @@ test("the live neural job survives refresh and displays its actual generated ima
     viewer.getByRole("img", { name: "Generated virtual try-on", exact: true }),
   ).toHaveAttribute("src", job.result.previewUrl);
   await page.screenshot({
-    path: "../experiments/results-redesign/live-initial.png",
+    path: `${screenshots}/live-initial.png`,
     fullPage: true,
   });
   await expect(
@@ -57,12 +59,12 @@ test("the live neural job survives refresh and displays its actual generated ima
     .getByRole("slider", { name: "Before and after comparison slider" })
     .fill("75");
   await viewer.screenshot({
-    path: "../experiments/results-redesign/slider.png",
+    path: `${screenshots}/slider.png`,
   });
   await page.getByRole("button", { name: "Side by side", exact: true }).click();
   await expect(viewer.locator(".compare-stage")).toHaveClass(/side/);
   await page.screenshot({
-    path: "../experiments/results-redesign/live-side-by-side.png",
+    path: `${screenshots}/live-side-by-side.png`,
     fullPage: true,
   });
   await page.getByRole("button", { name: "Inspect details" }).click();
@@ -80,7 +82,7 @@ test("the live neural job survives refresh and displays its actual generated ima
   expect((await download).suggestedFilename()).toBe("formfit-tryon.png");
   await page.setViewportSize({ width: 375, height: 812 });
   await viewer.screenshot({
-    path: "../experiments/results-redesign/mobile-comparison.png",
+    path: `${screenshots}/mobile-comparison.png`,
   });
   expect(
     await page.evaluate(

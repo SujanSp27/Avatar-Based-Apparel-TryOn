@@ -1,0 +1,25 @@
+{
+  "status": "final_app_and_comparison_verified_with_documented_model_limits",
+  "previousAppJob": "4bb32769-3289-428e-bb76-f413dc308df7",
+  "finalExperiment": "app-native-fullparse10",
+  "finalJobSubmitted": true,
+  "finalJobId": "f5b254bc-0660-44e0-a0c1-e2689c67cd28",
+  "finalJobStatus": "success",
+  "finalPipelineSeconds": 31.319,
+  "tests": {
+    "fullBackendPassed": 637,
+    "integrationDeselected": 3,
+    "latestFocusedPassed": 137,
+    "liveBrowserPassed": 1,
+    "comparisonAndLiveBrowserPassed": 12,
+    "productionFrontendBuild": "passed",
+    "ruff": "passed"
+  },
+  "colabPendingRequest": null,
+  "recoveryRule": "Recover the pending cell; do not replay setup or create another notebook. Final verifier resumes a recorded job if one exists.",
+  "limitations": [
+    "Native-resolution reference still has softened smocking; reviewed in native-correction10/visual-review.json",
+    "Final app run 31.319 seconds, not guaranteed under 30",
+    "Exact smocking and hem proportions remain approximate; see app-native-fullparse10/visual-review.json"
+  ]
+}

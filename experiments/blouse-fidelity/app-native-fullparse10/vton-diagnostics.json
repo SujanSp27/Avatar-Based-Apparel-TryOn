@@ -1,0 +1,153 @@
+{
+  "model": "FASHN VTON 1.5",
+  "sourceCommit": "7c0f10af3f91ad4048fe9729c470a13ef905d25a",
+  "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+  "device": "cuda",
+  "gpu": "Tesla T4",
+  "dtype": "torch.float16",
+  "steps": 10,
+  "category": "tops",
+  "inputAudit": {
+    "person": {
+      "size": [
+        800,
+        1200
+      ],
+      "rgbSha256": "10b177c13e94975e369c113e9e40adc99fc88e4ad6813fccc87d65c004545858"
+    },
+    "garment": {
+      "size": [
+        800,
+        1200
+      ],
+      "rgbSha256": "8de8ca578e797878a6186043eedcc62d73900b2f3c7f383d00c542ef6c847ed0"
+    },
+    "category": "tops",
+    "garmentPhotoType": "flat-lay",
+    "seed": 42,
+    "steps": 10,
+    "guidanceScale": 1.5,
+    "segmentationFree": true
+  },
+  "preservationParsing": "logits-interpolated-to-output-resolution",
+  "referencePreparation": {
+    "version": "dark-flat-lay-neutral-background-v1",
+    "applied": true,
+    "category": "tops",
+    "photoType": "flat-lay",
+    "maskValue": 127,
+    "reason": "removed_pale_background_conditioning",
+    "referenceFabricPreservedExactly": true,
+    "foregroundPixels": 136635,
+    "contrastCoverage": 0.9967329384690836
+  },
+  "garmentFidelity": {
+    "version": "dark-reference-pale-layer-v1",
+    "status": "not_rejected",
+    "reason": "no_decision_on_overall_quality",
+    "reference": {
+      "usable": true,
+      "pixels": 131357,
+      "medianRgb": [
+        36.0,
+        38.0,
+        50.0
+      ],
+      "luminanceP90": 59.016,
+      "brightestChannelP90": 74.0,
+      "paleFraction": 0.00633,
+      "largestPaleComponentFraction": 0.00033
+    },
+    "generated": {
+      "usable": true,
+      "pixels": 31140,
+      "medianRgb": [
+        28.0,
+        31.0,
+        46.0
+      ],
+      "luminanceP90": 38.939,
+      "brightestChannelP90": 53.0,
+      "paleFraction": 0.00064,
+      "largestPaleComponentFraction": 0.00013
+    },
+    "limitations": "Uncalibrated catastrophic color-change check; does not validate garment construction or fitting."
+  },
+  "modelResolution": [
+    576,
+    864
+  ],
+  "inferenceRegion": [
+    0,
+    0,
+    800,
+    1200
+  ],
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "gpu": "Tesla T4",
+    "capability": [
+      7,
+      5
+    ],
+    "dtype": "torch.float16",
+    "precisionProfile": "fp16",
+    "resolutionProfile": "native",
+    "modelResolution": [
+      576,
+      864
+    ],
+    "guidanceScale": 1.5,
+    "segmentationFree": true,
+    "skipUnusedUnconditional": true,
+    "finitePredictionChecks": true,
+    "finiteSamplerStateChecks": true
+  },
+  "inferenceSeconds": 22.466,
+  "peakGpuAllocatedMB": 3028.0,
+  "workerSeconds": 26.881,
+  "stageSeconds": {
+    "preprocessing": 2.892,
+    "generation": 22.466,
+    "postprocessingAndSaving": 1.523
+  },
+  "cache": "bounded pose/parser cache; every result is a fresh generation",
+  "preservation": {
+    "identityPreservedExactly": true,
+    "changedPixelsOutsideEditMask": 0,
+    "oldClothingMinimumAlpha": 1.0,
+    "editedPixels": 70393,
+    "hemExtensionPixels": 0,
+    "hemExtensionLimitPixels": 37,
+    "shoulderProjectionPixels": 0,
+    "revealedRegionTransitionPixels": 18519,
+    "referenceCropHemPixels": 1753,
+    "estimatedPreviouslyHiddenSkinPixels": 9956,
+    "compositor": "semantic-category-preservation-v8",
+    "limitations": "Semantic parsing can mislabel seams and skin. Newly exposed skin is generated, not observed anatomy. Visual review is still required."
+  },
+  "runPath": "/content/formfit-online/runs/1792850159967541721",
+  "patchBox": [
+    224,
+    220,
+    585,
+    573
+  ],
+  "canvasSize": [
+    800,
+    1200
+  ],
+  "imageFormat": "webp",
+  "remoteRoundTripSeconds": 30.773,
+  "transport": {
+    "inputEncoding": "jpeg95",
+    "normalizedInputBytes": 1431937,
+    "uploadedImageBytes": 429028,
+    "downloadedImageBytes": 76382,
+    "preparationSeconds": 0.384,
+    "encodingSeconds": 0.416,
+    "requestAndStreamSeconds": 30.203,
+    "savingSeconds": 0.154
+  }
+}

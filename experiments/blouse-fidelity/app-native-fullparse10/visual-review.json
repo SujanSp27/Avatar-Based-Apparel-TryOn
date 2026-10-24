@@ -1,0 +1,16 @@
+{
+  "review": "Actual fresh app output inspected at full 800x1200 resolution and in the browser comparison",
+  "jobId": "f5b254bc-0660-44e0-a0c1-e2689c67cd28",
+  "overall": "white_layer_corrected_with_remaining_fabric_detail_limitations",
+  "unrequestedWhiteLayer": "absent",
+  "sleeves": "Dark short flutter sleeves with visible eyelet-like details; substantially closer to the uploaded blouse than the original white long-sleeve failure",
+  "neckline": "Scoop neckline with smoother hair and arm preservation edges after full-canvas parsing",
+  "fabric": "Smocking remains smoother than the reference; exact stitch and eyelet reproduction is not established",
+  "hem": "Cropped appearance with a narrow generated midriff; reference proportions remain approximate",
+  "preservation": "Zero changed pixels in parsed face, hair, bag and hands. Bounded background and jeans changes occur adjacent to clothing boundaries; semantic masks are imperfect.",
+  "timing": {"endToEndSeconds": 31.319, "gpuSeconds": 22.466, "under30Seconds": false},
+  "model": "FASHN VTON 1.5, native 576x864, 10 steps, seed 42, guidance 1.5, fp16",
+  "localGpuUsed": false,
+  "acceptedAsExactReferenceReproduction": false,
+  "browserVerification": "Passed against this actual job: refresh, exact result URL, slider, side-by-side, zoom, download, mobile and retained image during health-network interruption"
+}

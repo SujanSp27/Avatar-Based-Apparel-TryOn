@@ -31,6 +31,7 @@ evidence for a conditioning problem; it is not proof of general garment fidelity
 | reference-correction20 | steps20: integrated reference-background correction | 40.302 | No white layer; crop coverage gate rejected the run before the later reference-aware compositor change |
 | app-correction10 | Normal app settings, integrated reference and compositor fixes | 31.901 | White layer removed; protected regions exact; fine fabric detail softened and small boundary steps remain |
 | native-correction10 | app-correction10: only resolution profile to 576 × 864 | 33.987 | Better flutter sleeve/eyelet appearance; smocking softened; body/hem length not identical to reference proportions |
+| app-native-fullparse10 | Final native profile plus full-canvas preservation parsing, through the real app | 31.319 | No invented white layer; smoother hair/arm boundaries, dark flutter sleeves; smocking and hem proportions remain approximate |
 
 For masked20, 60.468% of the eroded, unprotected generated clothing region was
 pale, versus 0.710% of the reference fabric. For masked-neutral20 that generated
@@ -92,4 +93,9 @@ Local regression checks (CPU only):
 The actual `app-correction10` job passed a live browser check including refresh,
 both comparison modes, download and a simulated health-network interruption.
 Its `visual-review.json` records remaining detail/edge limitations. Final native
-profile and parsing change are being verified in a new real app job.
+profile and parsing changes were subsequently verified in real app job
+`f5b254bc-0660-44e0-a0c1-e2689c67cd28` after the existing Colab recovered.
+All actual raw output, masks, conditioning and diagnostics were recovered locally.
+`app-native-fullparse10/visual-review.json` records full-resolution review and
+remaining texture limitations. The live browser test passed for this job,
+including refresh, comparison modes, download and a simulated health interruption.
