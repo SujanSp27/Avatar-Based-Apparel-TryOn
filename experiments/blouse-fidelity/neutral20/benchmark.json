@@ -1,0 +1,16 @@
+{
+  "status": "failed",
+  "code": "online_gpu_connection",
+  "message": "Could not retrieve a valid result from the existing Colab worker. Reconnect its GPU runtime; local GPU inference is disabled.",
+  "endToEndSeconds": 4.879,
+  "targetSeconds": 30.0,
+  "timingTargetMet": false,
+  "inputs": {
+    "personSha256": "fd47aaaf6f46ab59ea9df9f2858d624044ce3bc3e745523ff578fd426cdf10fa",
+    "garmentSha256": "efa6487f7614bcbac278cd40318418d7294ee8bb29419856d8bf0b56657e44b8",
+    "category": "blouse",
+    "photoType": "flat-lay",
+    "steps": 20,
+    "inputEncoding": "jpeg95"
+  }
+}

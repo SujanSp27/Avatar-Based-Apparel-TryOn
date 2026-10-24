@@ -1,0 +1,21 @@
+{
+  "jobId": "4bb32769-3289-428e-bb76-f413dc308df7",
+  "runId": "f9502025-f430-44cb-9da2-540ad1edec8a",
+  "review": "Full 800x1200 output inspected against original person and exact garment reference",
+  "overall": "improved_but_not_exact_garment_reproduction",
+  "unrequestedWhiteLayer": "removed",
+  "garmentColor": "dark navy; measured median RGB 34,37,55 versus reference 36,38,50",
+  "sleeves": "short instead of white long sleeves; sleeve detail and flutter shape are softened",
+  "neckline": "scoop neckline follows the reference broadly; visible stepped boundary beside preserved hair",
+  "fabric": "smocked bodice is substantially smoother than the uploaded fabric",
+  "hem": "cropped as in the uploaded blouse; exposed midriff is generated unseen anatomy",
+  "preservation": "Parsed face, hair, bag and hands are exact. Hem and sleeve transition bands change some adjacent jeans/background pixels; distant regions stay unchanged.",
+  "remainingArtifacts": [
+    "small stepped outline at left arm transition",
+    "hard hair/neckline edge",
+    "fine smocking and eyelet detail not reproduced faithfully"
+  ],
+  "timing": {"pipelineSeconds": 31.901, "gpuSeconds": 16.769, "under30Seconds": false},
+  "browser": "Live job test passed: refresh, actual URLs, slider, side-by-side, inspect, download, mobile layout, simulated health outage; no generation submitted by browser test",
+  "localGpuUsed": false
+}

@@ -33,7 +33,8 @@ def recovery_source(expected_hostname: str | None = None, worker_profile: dict |
     names = ['scripts/setup_online_worker.py', 'scripts/online_worker.py',
              'ml/__init__.py', 'ml/vton/__init__.py', 'ml/errors.py',
              'ml/vton/online_composite.py', 'ml/vton/checked_sampler.py', 'ml/vton/region.py',
-             'ml/vton/image_transport.py', 'ml/vton/input_audit.py']
+             'ml/vton/image_transport.py', 'ml/vton/input_audit.py',
+             'ml/vton/garment_reference.py', 'ml/vton/garment_fidelity.py']
     payload = {name: base64.b64encode((bridge.ROOT / name).read_bytes()).decode()
                for name in names}
     source = (bridge.ROOT / 'scripts/colab_worker_recovery.py').read_text(encoding='utf-8')

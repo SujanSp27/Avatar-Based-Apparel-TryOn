@@ -1,0 +1,26 @@
+{
+  "status": "failed",
+  "code": "coverage_change_too_large",
+  "message": "This outfit would expose too much skin hidden by the original clothing. Use a person photo with similar sleeve and hem coverage; the generated result was rejected.",
+  "failureDiagnostics": {
+    "error": "This outfit would expose too much skin hidden by the original clothing. Use a person photo with similar sleeve and hem coverage; the generated result was rejected.",
+    "code": "coverage_change_too_large",
+    "model": "FASHN VTON 1.5",
+    "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+    "runPath": "/content/formfit-online/runs/1792830955831359988",
+    "category": "tops",
+    "steps": 20,
+    "workerSeconds": 34.309
+  },
+  "endToEndSeconds": 40.302,
+  "targetSeconds": 30.0,
+  "timingTargetMet": false,
+  "inputs": {
+    "personSha256": "fd47aaaf6f46ab59ea9df9f2858d624044ce3bc3e745523ff578fd426cdf10fa",
+    "garmentSha256": "182917cd3a6380ffb7994bdac0e7cce8d197af4b2ae344d98657e85dcffff96d",
+    "category": "blouse",
+    "photoType": "flat-lay",
+    "steps": 20,
+    "inputEncoding": "jpeg95"
+  }
+}

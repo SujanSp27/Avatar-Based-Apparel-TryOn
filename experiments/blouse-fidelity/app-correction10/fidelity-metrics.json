@@ -1,0 +1,62 @@
+{
+  "colorDiagnostic": {
+    "version": "dark-reference-pale-layer-v1",
+    "status": "not_rejected",
+    "reason": "no_decision_on_overall_quality",
+    "reference": {
+      "usable": true,
+      "pixels": 131479,
+      "medianRgb": [
+        36.0,
+        38.0,
+        50.0
+      ],
+      "luminanceP90": 59.17,
+      "brightestChannelP90": 74.0,
+      "paleFraction": 0.0071,
+      "largestPaleComponentFraction": 0.00033
+    },
+    "generated": {
+      "usable": true,
+      "pixels": 19113,
+      "medianRgb": [
+        34.0,
+        37.0,
+        55.0
+      ],
+      "luminanceP90": 45.313,
+      "brightestChannelP90": 64.0,
+      "paleFraction": 0.0,
+      "largestPaleComponentFraction": 0.0
+    },
+    "limitations": "Uncalibrated catastrophic color-change check; does not validate garment construction or fitting."
+  },
+  "preservation": {
+    "face": {
+      "pixels": 5612,
+      "changedPixels": 0
+    },
+    "hair": {
+      "pixels": 26543,
+      "changedPixels": 0
+    },
+    "bag": {
+      "pixels": 9157,
+      "changedPixels": 0
+    },
+    "hands": {
+      "pixels": 3856,
+      "changedPixels": 0
+    },
+    "jeans": {
+      "pixels": 100589,
+      "changedPixels": 4433
+    },
+    "background": {
+      "pixels": 736640,
+      "changedPixels": 6745
+    }
+  },
+  "visualAcceptance": "pending full-resolution inspection",
+  "limitations": "Parser errors affect these measurements. Non-rejection is not a garment-fidelity certificate."
+}

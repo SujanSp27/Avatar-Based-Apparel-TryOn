@@ -1,0 +1,11 @@
+{
+  "version": "dark-flat-lay-neutral-background-v1",
+  "applied": true,
+  "category": "tops",
+  "photoType": "flat-lay",
+  "maskValue": 127,
+  "reason": "removed_pale_background_conditioning",
+  "referenceFabricPreservedExactly": true,
+  "foregroundPixels": 136763,
+  "contrastCoverage": 0.9965820349341683
+}

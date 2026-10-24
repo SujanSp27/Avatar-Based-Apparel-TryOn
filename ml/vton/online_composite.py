@@ -112,7 +112,10 @@ def _revealed_region_transitions(alpha, old, source, target, category):
     radius = min(max(4, round(min(source.shape) * .04)),
                  max(4, round((rows.max() - rows.min() + 1) * .10)))
     core = max(1, radius * .16)
-    labels = (12, 14, 16, 5, 6) if category == "tops" else (12, 14, 16)
+    # Shorter sleeves also uncover background. Without a transition into the
+    # adjacent agreeing background, the old sleeve outline remains as a hard
+    # polygon even when all of its fabric has been replaced by model output.
+    labels = (0, 12, 14, 16, 5, 6) if category == "tops" else (0, 12, 14, 16)
     adjusted = np.zeros_like(old)
     for label in labels:
         revealed = old & (target == label)
@@ -131,7 +134,41 @@ def _revealed_region_transitions(alpha, old, source, target, category):
     return adjusted
 
 
-def preserve_regions(original, generated, source, target, category):
+def _cropped_reference_hem(old, target, reference_labels):
+    """Recognize a short flat-lay bodice and bound its newly exposed midriff.
+
+    Callers supply labels only after validating a complete flat-lay reference.
+    Sleeve span alone cannot establish a crop: the central bodice must also be
+    short relative to its hem width. This is a conservative geometric heuristic,
+    not a body measurement or guarantee about hidden anatomy.
+    """
+    empty = np.zeros_like(old)
+    if reference_labels is None:
+        return empty
+    fabric = reference_labels == 3
+    if fabric.ndim != 2 or np.count_nonzero(fabric) < 256:
+        return empty
+    y, x = np.where(fabric)
+    height, width = np.ptp(y) + 1, np.ptp(x) + 1
+    if height / width > .85:
+        return empty
+    center = int((x.min() + x.max()) // 2)
+    half = max(1, round(width * .05))
+    spans = [np.ptp(rows) + 1 for c in range(center - half, center + half + 1)
+             if (rows := np.flatnonzero(fabric[:, c])).size]
+    hem_width = float(np.median(fabric[y.max() - round(height * .25):y.max()].sum(axis=1)))
+    if len(spans) < half or hem_width <= 0 or not .35 <= np.median(spans) / hem_width <= .85:
+        return empty
+    old_rows = np.nonzero(old)[0]
+    old_height = int(np.ptp(old_rows)) + 1
+    # Only torso skin in the lower 40% qualifies. Neck, arms and legs retain
+    # the original exposure limit, regardless of the reference's shape.
+    hem = old & (target == 16)
+    hem[:int(old_rows.min() + old_height * .60)] = False
+    return hem
+
+
+def preserve_regions(original, generated, source, target, category, *, reference_labels=None):
     if category not in LABELS:
         raise ValueError("Unknown garment category")
     if original.shape != generated.shape or source.shape != original.shape[:2] or target.shape != source.shape:
@@ -143,11 +180,15 @@ def preserve_regions(original, generated, source, target, category):
         raise PipelineError("face_not_visible", "Use a clear photo with the person's face and hair visible.")
     if np.count_nonzero(old) < source.size * .003 or np.count_nonzero(new) < source.size * .003:
         raise PipelineError("clothing_not_visible", "The selected clothing region is not clearly visible in the input or generated image.")
-    # A short outfit cannot faithfully reveal a large amount of anatomy hidden
-    # by a long source outfit. Do not present invented limbs/background as an
-    # identity-preserving success. This conservative gate is not a quality score.
+    # Hidden anatomy is estimated, never recovered from the photograph. A
+    # validated cropped reference can reveal a bounded midriff, but cannot
+    # waive the limit for arms, legs or a radically different silhouette.
     revealed_skin = old & np.isin(target, (12, 14, 16))
-    if np.count_nonzero(revealed_skin) > np.count_nonzero(old) * .20:
+    crop_hem = _cropped_reference_hem(old, target, reference_labels) if category == 'tops' else np.zeros_like(old)
+    old_count = np.count_nonzero(old)
+    if (np.count_nonzero(revealed_skin & ~crop_hem) > old_count * .20
+            or np.count_nonzero(crop_hem) > old_count * .30
+            or np.count_nonzero(revealed_skin) > old_count * .40):
         raise PipelineError(
             "coverage_change_too_large",
             "This outfit would expose too much skin hidden by the original clothing. "
@@ -197,6 +238,8 @@ def preserve_regions(original, generated, source, target, category):
         "hemExtensionLimitPixels": hem_limit,
         "shoulderProjectionPixels": int(np.count_nonzero(projected)),
         "revealedRegionTransitionPixels": int(np.count_nonzero(transitions & ~protected)),
-        "compositor": "semantic-category-preservation-v7",
-        "limitations": "Semantic parsing can mislabel seams and skin. Visual review is still required.",
+        "referenceCropHemPixels": int(np.count_nonzero(crop_hem)),
+        "estimatedPreviouslyHiddenSkinPixels": int(np.count_nonzero(revealed_skin & ~protected)),
+        "compositor": "semantic-category-preservation-v8",
+        "limitations": "Semantic parsing can mislabel seams and skin. Newly exposed skin is generated, not observed anatomy. Visual review is still required.",
     }

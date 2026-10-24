@@ -1,0 +1,14 @@
+{
+  "identityPreservedExactly": true,
+  "changedPixelsOutsideEditMask": 0,
+  "oldClothingMinimumAlpha": 1.0,
+  "editedPixels": 73076,
+  "hemExtensionPixels": 0,
+  "hemExtensionLimitPixels": 37,
+  "shoulderProjectionPixels": 0,
+  "revealedRegionTransitionPixels": 22419,
+  "referenceCropHemPixels": 9670,
+  "estimatedPreviouslyHiddenSkinPixels": 18651,
+  "compositor": "semantic-category-preservation-v8",
+  "limitations": "Semantic parsing can mislabel seams and skin. Newly exposed skin is generated, not observed anatomy. Visual review is still required."
+}

@@ -196,19 +196,21 @@ def test_compressed_conditioning_keeps_small_flat_graphics_lossless():
         conditioning_image(source, "unrecognized")
 
 
-def test_rejected_run_keeps_artifact_address_without_an_image_or_credentials(tmp_path):
+@pytest.mark.parametrize('code', ['garment_length_changed', 'garment_reference_mismatch',
+                                 'coverage_change_too_large'])
+def test_rejected_run_keeps_artifact_address_without_an_image_or_credentials(tmp_path, code):
     run_path = "/content/formfit-online/runs/123456789"
     def handle(request):
         if request.method == "POST":
             return httpx.Response(200, json={"event_id": "f"})
-        payload = {"error": "The generated top is distorted", "code": "garment_length_changed",
+        payload = {"error": "The generated top is distorted", "code": code,
                    "runPath": run_path, "workerSeconds": 13.2,
                    "token": "must-not-be-persisted", "image": base64.b64encode(png()).decode()}
         return httpx.Response(200, text="event: complete\ndata: " + json.dumps([payload]) + "\n\n")
     worker = OnlineTryOn("https://private.gradio.live", "x" * 32, transport=httpx.MockTransport(handle))
     with pytest.raises(PipelineError) as failure:
         worker.render(png(), png(), "t-shirt", "flat-lay", tmp_path)
-    assert failure.value.code == "garment_length_changed"
+    assert failure.value.code == code
     recorded = json.loads((tmp_path / "remote-failure.json").read_text())
     assert recorded["runPath"] == run_path
     assert recorded["workerSeconds"] == 13.2

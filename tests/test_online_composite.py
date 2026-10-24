@@ -171,7 +171,7 @@ def test_projection_does_not_hide_a_broad_shrunken_arm(person):
     np.testing.assert_array_equal(image, generated)
 
 
-@pytest.mark.parametrize("label", [12, 16, 6])
+@pytest.mark.parametrize("label", [0, 12, 16, 6])
 def test_newly_exposed_material_has_a_bounded_same_material_transition(person, label):
     original, generated, source = person
     source[35:45, 65:95] = label
@@ -226,3 +226,54 @@ def test_large_newly_exposed_skin_is_rejected_instead_of_returned_as_success(per
     with pytest.raises(PipelineError) as failure:
         preserve_regions(original, generated, source, target, category)
     assert failure.value.code == "coverage_change_too_large"
+
+
+def cropped_reference():
+    labels = np.zeros((200, 240), dtype=np.uint8)
+    labels[40:90, 30:210] = 3  # Short sleeves.
+    labels[65:135, 60:180] = 3  # Short central bodice.
+    labels[40:65, 100:140] = 0  # Neckline.
+    return labels
+
+
+def test_verified_cropped_reference_allows_only_bounded_midriff(person):
+    original, generated, source = person
+    target = source.copy()
+    target[105:125, 45:115] = 16  # 25% of original shirt, below cropped hem.
+    with pytest.raises(PipelineError, match='expose too much skin'):
+        preserve_regions(original, generated, source, target, 'tops')
+    image, alpha, report = preserve_regions(
+        original, generated, source, target, 'tops', reference_labels=cropped_reference(),
+    )
+    assert report['referenceCropHemPixels'] == 1400
+    assert report['estimatedPreviouslyHiddenSkinPixels'] == 1400
+    assert np.all(alpha[105:125, 45:115] == 1)
+    np.testing.assert_array_equal(image[source == 1], original[source == 1])
+    np.testing.assert_array_equal(image[source == 6], original[source == 6])
+    np.testing.assert_array_equal(image[source == 13], original[source == 13])
+
+
+@pytest.mark.parametrize('label,start,end', [(12, 105, 125), (14, 105, 125),
+                                          (16, 45, 70), (16, 90, 125)])
+def test_crop_reference_cannot_waive_limb_neck_or_excessive_exposure(person, label, start, end):
+    original, generated, source = person
+    target = source.copy()
+    target[start:end, 45:115] = label
+    with pytest.raises(PipelineError, match='expose too much skin'):
+        preserve_regions(original, generated, source, target, 'tops', reference_labels=cropped_reference())
+
+
+def test_long_reference_and_other_categories_do_not_get_crop_exception(person):
+    original, generated, source = person
+    target = source.copy()
+    target[105:125, 45:115] = 16
+    long_reference = cropped_reference()
+    long_reference[100:195, 60:180] = 3
+    with pytest.raises(PipelineError, match='expose too much skin'):
+        preserve_regions(original, generated, source, target, 'tops', reference_labels=long_reference)
+    source[source == 3] = 4
+    target[target == 3] = 4
+    source[source == 6] = 0
+    target[target == 6] = 0
+    with pytest.raises(PipelineError, match='expose too much skin'):
+        preserve_regions(original, generated, source, target, 'one-pieces', reference_labels=cropped_reference())

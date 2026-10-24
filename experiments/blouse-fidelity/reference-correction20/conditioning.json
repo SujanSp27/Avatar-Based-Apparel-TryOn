@@ -1,0 +1,34 @@
+{
+  "ca_images": {
+    "shape": [
+      756,
+      504,
+      3
+    ],
+    "float32Sha256": "613b95fb6a441b0b10027000a8cb277308916d4c26cfcba7e02d5061a9405033"
+  },
+  "garment_images": {
+    "shape": [
+      756,
+      504,
+      3
+    ],
+    "float32Sha256": "5eef1f615332f941f9e22cdca4470e64ae71a0ba66e2e6059dd59607ca1ff9e0"
+  },
+  "person_poses": {
+    "shape": [
+      756,
+      504,
+      1
+    ],
+    "float32Sha256": "834f6d202dbeac4de7e4ef00754a2f04b0e8d0f8123eb43b8facfb7c55c5be76"
+  },
+  "garment_poses": {
+    "shape": [
+      756,
+      504,
+      1
+    ],
+    "float32Sha256": "a85a8690b07dcb15d0b9e6ba2d04718dff498d6c66d7e11a0b364064d7e1ac66"
+  }
+}

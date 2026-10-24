@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from ml.errors import PipelineError
 from ml.vton.checked_sampler import CheckedSamplerMixin
+from ml.vton.garment_fidelity import assess_dark_reference
+from ml.vton.garment_reference import prepare_reference
 from ml.vton.image_transport import encode_changed_pixels
 from ml.vton.input_audit import image_record, save_conditioning
 from ml.vton.online_composite import preserve_regions
@@ -150,9 +152,11 @@ def main():
                 (run / "inputs.json").write_text(json.dumps(input_audit, indent=2))
                 pipeline.audit_folder = run
                 original = np.asarray(person)
-                prepared_person = pipeline.pre_resize(person, allow_upsampling=False)
-                labels = pipeline.hp_model.predict(np.asarray(prepared_person))
-                labels = cv2.resize(labels, person.size, interpolation=cv2.INTER_NEAREST)
+                # Classify after the parser interpolates its logits to the final
+                # canvas. Resizing an already-classified smaller label map with
+                # nearest-neighbour produces stepped hair/arm preservation edges.
+                # Official inference preprocessing remains inside pipeline().
+                labels = pipeline.hp_model.predict(original)
                 Image.fromarray(labels.astype(np.uint8)).save(run / "source-labels.png")
                 # Reuse the same deterministic parser input as official reference
                 # preprocessing; ArrayCache avoids a second model call there.
@@ -160,6 +164,9 @@ def main():
                 garment_labels = pipeline.hp_model.predict(np.asarray(prepared_garment))
                 garment_labels = cv2.resize(garment_labels, garment.size, interpolation=cv2.INTER_NEAREST)
                 Image.fromarray(garment_labels.astype(np.uint8)).save(run / "garment-labels.png")
+                conditioned_garment, reference_preparation = prepare_reference(garment, garment_labels, category, photo_type)
+                conditioned_garment.save(run / "garment-prepared.png")
+                (run / "reference-preparation.json").write_text(json.dumps(reference_preparation, indent=2))
                 if category != "tops" and not lower_body_visible(labels):
                     raise PipelineError("lower_body_not_visible", "Show the full lower body for trousers, skirts, dresses and jumpsuits.")
                 torch.cuda.synchronize()
@@ -168,7 +175,7 @@ def main():
                 cropped_person = person.crop(crop)
                 tick = time.perf_counter()
                 preprocessing_seconds = tick - start
-                generated_crop = pipeline(person_image=cropped_person, garment_image=garment, category=category,
+                generated_crop = pipeline(person_image=cropped_person, garment_image=conditioned_garment, category=category,
                                      garment_photo_type=photo_type, num_samples=1, num_timesteps=int(steps),
                                      guidance_scale=guidance, seed=42, segmentation_free=segmentation_free).images[0]
                 torch.cuda.synchronize()
@@ -181,7 +188,19 @@ def main():
                 Image.fromarray(generated).save(run / "raw.png")
                 target = pipeline.hp_model.predict(generated)
                 Image.fromarray(target.astype(np.uint8)).save(run / "target-labels.png")
-                composite, alpha, review = preserve_regions(original, generated, labels, target, category)
+                protected = np.isin(labels, (1, 2, 8, 9, 11, 13, 15, 17))
+                fidelity = assess_dark_reference(np.asarray(garment), garment_labels == 3,
+                                                 generated, (target == 3) & ~protected) if category == 'tops' else None
+                (run / 'fidelity.json').write_text(json.dumps(fidelity, indent=2))
+                if fidelity and fidelity['status'] == 'rejected':
+                    raise PipelineError('garment_reference_mismatch',
+                                        'The model added a pale clothing layer absent from your dark garment. '
+                                        'This result was rejected; no substitute outfit is shown. '
+                                        'Try a clearer product reference or a person photo with similar clothing coverage.')
+                composite, alpha, review = preserve_regions(
+                    original, generated, labels, target, category,
+                    reference_labels=garment_labels if reference_preparation['applied'] else None,
+                )
                 encoded, patch_metadata = encode_changed_pixels(person, Image.fromarray(composite))
                 # Persist artifacts in Colab for actual visual review and recovery.
                 Image.fromarray(composite).save(run / "result.png")
@@ -190,6 +209,8 @@ def main():
                                "modelRevision": MODEL, "device": "cuda", "gpu": torch.cuda.get_device_name(),
                                "dtype": str(pipeline.inference_dtype), "steps": int(steps), "category": category,
                                "inputAudit": input_audit,
+                               "preservationParsing": "logits-interpolated-to-output-resolution",
+                               "referencePreparation": reference_preparation, "garmentFidelity": fidelity,
                                "modelResolution": list(input_shape[::-1]),
                                "inferenceRegion": list(crop),
                                "environment": environment,
