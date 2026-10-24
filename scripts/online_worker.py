@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 from ml.errors import PipelineError
 from ml.vton.checked_sampler import CheckedSamplerMixin
 from ml.vton.image_transport import encode_changed_pixels
+from ml.vton.input_audit import image_record, save_conditioning
 from ml.vton.online_composite import preserve_regions
 from ml.vton.region import inference_region, lower_body_visible
 
@@ -88,6 +89,13 @@ def main():
     segmentation_free = profile_data.get("segmentationFree", True)
 
     class PinnedPipeline(CheckedSamplerMixin, TryOnPipeline):
+        audit_folder = None
+
+        def _sample(self, **kwargs):
+            if self.audit_folder is not None:
+                save_conditioning(self.audit_folder, kwargs)
+            return super()._sample(**kwargs)
+
         def _setup_tryon_model(self):
             if use_fp16:
                 self.inference_dtype = torch.float16
@@ -133,11 +141,25 @@ def main():
                             raise PipelineError("image_size", "Image dimensions are outside the worker limits.")
                         return image.convert("RGB")
                 person, garment = decode(person_b64), decode(garment_b64)
+                person.save(run / "person-input.png")
+                garment.save(run / "garment-input.png")
+                input_audit = {"person": image_record(person), "garment": image_record(garment),
+                               "category": category, "garmentPhotoType": photo_type, "seed": 42,
+                               "steps": int(steps), "guidanceScale": guidance,
+                               "segmentationFree": segmentation_free}
+                (run / "inputs.json").write_text(json.dumps(input_audit, indent=2))
+                pipeline.audit_folder = run
                 original = np.asarray(person)
                 prepared_person = pipeline.pre_resize(person, allow_upsampling=False)
                 labels = pipeline.hp_model.predict(np.asarray(prepared_person))
                 labels = cv2.resize(labels, person.size, interpolation=cv2.INTER_NEAREST)
                 Image.fromarray(labels.astype(np.uint8)).save(run / "source-labels.png")
+                # Reuse the same deterministic parser input as official reference
+                # preprocessing; ArrayCache avoids a second model call there.
+                prepared_garment = pipeline.pre_resize(garment, allow_upsampling=False)
+                garment_labels = pipeline.hp_model.predict(np.asarray(prepared_garment))
+                garment_labels = cv2.resize(garment_labels, garment.size, interpolation=cv2.INTER_NEAREST)
+                Image.fromarray(garment_labels.astype(np.uint8)).save(run / "garment-labels.png")
                 if category != "tops" and not lower_body_visible(labels):
                     raise PipelineError("lower_body_not_visible", "Show the full lower body for trousers, skirts, dresses and jumpsuits.")
                 torch.cuda.synchronize()
@@ -167,6 +189,7 @@ def main():
                 diagnostics = {"model": "FASHN VTON 1.5", "sourceCommit": SOURCE,
                                "modelRevision": MODEL, "device": "cuda", "gpu": torch.cuda.get_device_name(),
                                "dtype": str(pipeline.inference_dtype), "steps": int(steps), "category": category,
+                               "inputAudit": input_audit,
                                "modelResolution": list(input_shape[::-1]),
                                "inferenceRegion": list(crop),
                                "environment": environment,
@@ -197,6 +220,7 @@ def main():
                 (run / "failure.json").write_text(json.dumps(failure, indent=2))
                 return {**failure, "error": "The online model could not process this image. See the Colab worker log."}
             finally:
+                pipeline.audit_folder = None
                 active.unlink(missing_ok=True)
 
     def status(supplied_token):

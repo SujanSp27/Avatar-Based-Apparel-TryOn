@@ -1,0 +1,10 @@
+{
+  "error": "This outfit would expose too much skin hidden by the original clothing. Use a person photo with similar sleeve and hem coverage; the generated result was rejected.",
+  "code": "coverage_change_too_large",
+  "model": "FASHN VTON 1.5",
+  "modelRevision": "7720683168567eb5a2a4c67f15116c6e29c83ded",
+  "runPath": "/content/formfit-online/runs/1792801217122005017",
+  "category": "tops",
+  "steps": 20,
+  "workerSeconds": 29.472
+}

@@ -1,0 +1,22 @@
+{
+  "person": {
+    "size": [
+      800,
+      1200
+    ],
+    "rgbSha256": "10b177c13e94975e369c113e9e40adc99fc88e4ad6813fccc87d65c004545858"
+  },
+  "garment": {
+    "size": [
+      1200,
+      826
+    ],
+    "rgbSha256": "48000d8a9188ef0521c9a4ec00a18e6562961c071e12604582219e353f2cf0bd"
+  },
+  "category": "tops",
+  "garmentPhotoType": "flat-lay",
+  "seed": 42,
+  "steps": 20,
+  "guidanceScale": 1.5,
+  "segmentationFree": true
+}

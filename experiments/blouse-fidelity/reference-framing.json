@@ -1,0 +1,19 @@
+{
+  "version": "plain-flat-lay-framing-v1",
+  "applied": true,
+  "inputSize": [
+    1536,
+    2304
+  ],
+  "cropBox": [
+    0,
+    624,
+    1508,
+    1662
+  ],
+  "reason": "removed_plain_background_margin",
+  "outputSize": [
+    1508,
+    1038
+  ]
+}

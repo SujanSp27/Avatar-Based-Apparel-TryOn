@@ -1,0 +1,32 @@
+{
+  "version": "dark-reference-pale-layer-v1",
+  "status": "rejected",
+  "reason": "unrequested_pale_fabric",
+  "reference": {
+    "usable": true,
+    "pixels": 131479,
+    "medianRgb": [
+      36.0,
+      38.0,
+      50.0
+    ],
+    "luminanceP90": 59.17,
+    "brightestChannelP90": 74.0,
+    "paleFraction": 0.0071,
+    "largestPaleComponentFraction": 0.00033
+  },
+  "generated": {
+    "usable": true,
+    "pixels": 48784,
+    "medianRgb": [
+      236.0,
+      237.0,
+      241.0
+    ],
+    "luminanceP90": 245.864,
+    "brightestChannelP90": 250.0,
+    "paleFraction": 0.64339,
+    "largestPaleComponentFraction": 0.48889
+  },
+  "limitations": "Uncalibrated catastrophic color-change check; does not validate garment construction or fitting."
+}
