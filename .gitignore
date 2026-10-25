@@ -16,4 +16,9 @@ experiments/runs/
 assets/vton/
 frontend/test-results/
 frontend/playwright-report/
-docs/
+experiments/
+.env.*
+!.env.example
+!.env.production.example
+*.tsbuildinfo
+*.log

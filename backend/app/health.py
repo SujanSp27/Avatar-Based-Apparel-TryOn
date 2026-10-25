@@ -42,7 +42,7 @@ def component_status(request: Request, db: Session, repo) -> dict:
                       "reason": remote.get("reason")},
         },
         "capabilities": {"sizing": mongo, "measurements": mongo and checkpoint,
-                         "tryon": postgres and bool(remote.get("available"))},
+                         "tryon": postgres and mongo and bool(remote.get("available"))},
         "local_gpu_used": False,
     }
 

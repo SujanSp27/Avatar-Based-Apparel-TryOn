@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { apiError, type Result } from "./types";
+import { sessionFetch } from "./services/api/client";
 
 const KEY = "form-fit-last-job";
 const JOB_ID =
@@ -66,6 +67,21 @@ export function useTryOnJob(
   const selectedJob = useRef(jobId);
   const callbacks = useRef({ onResult, onError, onExternalSelection });
   callbacks.current = { onResult, onError, onExternalSelection };
+  useEffect(() => {
+    const clear = () => {
+      selection.current++;
+      selectedJob.current = undefined;
+      forgetJob();
+      setJobId(undefined);
+      setBusy(false);
+      setMessage("");
+      callbacks.current.onResult(undefined);
+      callbacks.current.onError("");
+      callbacks.current.onExternalSelection?.();
+    };
+    window.addEventListener("formfit:clear-private", clear);
+    return () => window.removeEventListener("formfit:clear-private", clear);
+  }, []);
 
   useEffect(() => {
     function syncSelection(event: StorageEvent) {
@@ -123,7 +139,7 @@ export function useTryOnJob(
       controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
-        const response = await fetch(`/api/tryon/jobs/${jobId}`, {
+        const response = await sessionFetch(`/api/tryon/jobs/${jobId}`, {
           signal: controller.signal,
           cache: "no-store",
         });
@@ -213,7 +229,7 @@ export function useTryOnJob(
       /* still track the live job */
     }
     try {
-      const response = await fetch("/api/tryon", {
+      const response = await sessionFetch("/api/tryon", {
         method: "POST",
         body: form,
         headers: { Prefer: "respond-async", "Idempotency-Key": id },

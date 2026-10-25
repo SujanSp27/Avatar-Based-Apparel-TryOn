@@ -1,11 +1,12 @@
-import secrets
 from functools import lru_cache
 from pathlib import Path
 from threading import BoundedSemaphore
 
-from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Header, Query, Request, UploadFile
 from fastapi.responses import FileResponse
+from pymongo.errors import PyMongoError
 
+from backend.app.accounts.security import now, require_admin, throttle
 from backend.app.anthropometry.constants import CATEGORY_METRICS, WEIGHTS
 from backend.app.anthropometry.measurement_service import MeasurementService
 from backend.app.anthropometry.pose_adapter import MediaPipePose
@@ -28,6 +29,7 @@ from backend.app.anthropometry.schemas import (
 )
 from backend.app.anthropometry.sizing_engine import recommend
 from backend.app.config import settings
+from backend.app.private_data import check_measurement, principal
 from ml.errors import PipelineError
 from ml.vton.categories import GarmentCategory
 
@@ -50,12 +52,11 @@ def get_measurement_service() -> MeasurementService:
 
 
 def chart_admin(x_admin_token: str = Header(default="")):
-    if settings.admin_token and not secrets.compare_digest(settings.admin_token, x_admin_token):
-        raise HTTPException(403, "Admin token required")
+    require_admin(x_admin_token)
 
 
 def extract_and_save(image: UploadFile, height_cm: float, repo: MeasurementRepository,
-                     service: MeasurementService) -> ExtractionResponse:
+                     service: MeasurementService, owner: str | None = None) -> ExtractionResponse:
     if not measurement_capacity.acquire(blocking=False):
         raise PipelineError("measurement_busy", "Another measurement is running; retry shortly.", 429)
     try:
@@ -68,8 +69,12 @@ def extract_and_save(image: UploadFile, height_cm: float, repo: MeasurementRepos
         response.measurement_id = measurement_id
         try:
             repo.save_measurement(measurement_id, response)
-        except PipelineError:
+            if owner:
+                repo.db.private_resources.insert_one({"_id": "measurement:" + measurement_id,
+                    "owner": owner, "kind": "measurement", "resource_id": measurement_id, "created_at": now()})
+        except (PipelineError, PyMongoError):
             service.remove_artifacts(measurement_id)
+            repo.measurements.delete_one({"measurement_id": measurement_id})
             raise
         return response
     finally:
@@ -78,26 +83,32 @@ def extract_and_save(image: UploadFile, height_cm: float, repo: MeasurementRepos
 
 @router.post("/measurements/extract", response_model=ExtractionResponse)
 def extract_measurements(
+    request: Request,
     image: UploadFile = File(),
     height_cm: float = Form(ge=80, le=250, allow_inf_nan=False),
     repo: MeasurementRepository = Depends(get_repository),
     service: MeasurementService = Depends(get_measurement_service),
+    owner: str = Depends(principal),
 ):
-    return extract_and_save(image, height_cm, repo, service)
+    throttle(repo.db, request, "measurement-extraction", owner, maximum=12)
+    return extract_and_save(image, height_cm, repo, service, owner)
 
 
 @router.post("/measurements/extract-and-recommend", response_model=ExtractAndRecommendResponse)
 def extract_and_recommend(
+    request: Request,
     image: UploadFile = File(), height_cm: float = Form(ge=80, le=250, allow_inf_nan=False),
     brand_id: Identifier = Form(), apparel_id: Identifier = Form(),
     chart_version: int | None = Form(default=None, ge=1),
     repo: MeasurementRepository = Depends(get_repository),
     service: MeasurementService = Depends(get_measurement_service),
+    owner: str = Depends(principal),
 ):
+    throttle(repo.db, request, "measurement-extraction", owner, maximum=12)
     chart = repo.get_chart(brand_id, apparel_id, chart_version)
     if chart.measurement_basis != "body":
         raise PipelineError("chart_basis_unsupported", "A body-size chart is required; garment dimensions cannot score body measurements.")
-    extraction = extract_and_save(image, height_cm, repo, service)
+    extraction = extract_and_save(image, height_cm, repo, service, owner)
     result = recommend(extraction.measurements.model_dump(), chart)
     result.measurement_id = extraction.measurement_id
     result.warnings.extend(extraction.warnings)
@@ -111,13 +122,15 @@ def list_measurements(limit: int = Query(20, ge=1, le=100), offset: int = Query(
 
 
 @router.get("/measurements/{measurement_id}", response_model=StoredMeasurement)
-def get_measurement(measurement_id: MeasurementId, repo: MeasurementRepository = Depends(get_repository)):
+def get_measurement(measurement_id: MeasurementId, repo: MeasurementRepository = Depends(get_repository), owner=Depends(principal)):
+    check_measurement(repo.db, measurement_id, owner)
     return repo.get_measurement(measurement_id)
 
 
 @router.get("/measurements/{measurement_id}/annotation", response_class=FileResponse)
 def annotation(measurement_id: MeasurementId, repo: MeasurementRepository = Depends(get_repository),
-               service: MeasurementService = Depends(get_measurement_service)):
+               service: MeasurementService = Depends(get_measurement_service), owner=Depends(principal)):
+    check_measurement(repo.db, measurement_id, owner)
     repo.get_measurement(measurement_id)
     path = service.artifact_path(measurement_id)
     if not path.is_file():
@@ -125,17 +138,21 @@ def annotation(measurement_id: MeasurementId, repo: MeasurementRepository = Depe
     return FileResponse(path, media_type="image/png")
 
 
-@router.delete("/measurements/{measurement_id}", status_code=204, dependencies=[Depends(chart_admin)])
+@router.delete("/measurements/{measurement_id}", status_code=204)
 def delete_measurement(measurement_id: MeasurementId, repo: MeasurementRepository = Depends(get_repository),
-                       service: MeasurementService = Depends(get_measurement_service)):
+                       service: MeasurementService = Depends(get_measurement_service), owner=Depends(principal)):
+    check_measurement(repo.db, measurement_id, owner)
     repo.get_measurement(measurement_id)
     # Keep metadata if filesystem cleanup fails, so deletion can be retried.
     service.remove_artifacts(measurement_id)
     repo.delete_measurement(measurement_id)
+    repo.db.private_resources.delete_one({"_id": "measurement:" + measurement_id, "owner": owner})
 
 
 @router.post("/sizing/recommend", response_model=SizingResponse)
-def recommend_size(data: SizingRequest, repo: MeasurementRepository = Depends(get_repository)):
+def recommend_size(data: SizingRequest, request: Request, repo: MeasurementRepository = Depends(get_repository)):
+    if data.measurement_id:
+        check_measurement(repo.db, data.measurement_id, principal(request, repo.db))
     chart = repo.get_chart(data.brand_id, data.apparel_id, data.chart_version)
     record = repo.get_measurement(data.measurement_id) if data.measurement_id else None
     measurements = record.measurements.model_dump() if record else data.measurements

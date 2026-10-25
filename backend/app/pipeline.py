@@ -21,11 +21,12 @@ class TryOnPipeline:
 
     def run(self, db: Session, person_data: bytes, garment_data: bytes,
             brand_id: int | None, category: str, fit: str = "regular",
-            photo_type: str = "flat-lay") -> dict:
+            photo_type: str = "flat-lay", owner: str | None = None) -> dict:
         run_id = str(uuid4())
         folder = self.store.create(run_id)
         start = time.perf_counter()
         metadata = {
+            "owner": owner,
             "modelVersion": "FASHN VTON 1.5", "execution": "online-gpu-only",
             "inputSha256": {"person": hashlib.sha256(person_data).hexdigest(),
                             "garment": hashlib.sha256(garment_data).hexdigest()},
@@ -60,7 +61,7 @@ class TryOnPipeline:
                     "Image generation does not determine physical fit or size. The separate size engine needs measured dimensions.",
                 ],
                 "artifacts": {name: self.store.url(run_id, name) for name in
-                              ("tryon-2d.png", "original-person.png", "vton-diagnostics.json")},
+                              ("tryon-2d.png", "original-person.png")},
             }
             result["artifacts"]["result"] = f"/assets/{run_id}/result.json"
             self.store.write_json(run_id, "result.json", result)
@@ -78,9 +79,9 @@ class TryOnPipeline:
             self.store.write_json(run_id, "failure.json", failure)
             record = db.get(Run, run_id)
             record.status = "failed"
-            record.metadata_json = failure
+            record.metadata_json = {**failure, "owner": owner}
             db.commit()
-            logger.exception("Online try-on %s failed", run_id)
+            logger.error("Online try-on %s failed (%s)", run_id, type(exc).__name__)
             if isinstance(exc, PipelineError):
                 raise PipelineError(exc.code, f"{exc} (Run {run_id})", exc.status_code) from exc
             raise PipelineError("internal_error", f"Try-on failed. Run {run_id}; inspect server logs.", 500) from exc

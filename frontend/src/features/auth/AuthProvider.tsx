@@ -51,6 +51,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(session.user);
     setError("");
   };
+  useEffect(() => {
+    if (!user) return;
+    // Refresh before the short-lived image-access cookie expires, using the
+    // same cross-tab rotation lock as API requests.
+    const timer = window.setInterval(
+      () => {
+        void refreshSession()
+          .then((s) => {
+            if (s) accept(s);
+          })
+          .catch(() => {});
+      },
+      10 * 60 * 1000,
+    );
+    return () => window.clearInterval(timer);
+  }, [user?.id]);
   async function logout() {
     await authService.logout();
     setAccessToken(null);

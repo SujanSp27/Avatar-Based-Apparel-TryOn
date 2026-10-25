@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from "react";
 import { ArrowRight, RotateCw } from "../../icons";
+import BrandLogo from "../ui/BrandLogo";
 export function ErrorNotice({
   message,
   retry,
@@ -26,6 +27,7 @@ export function Skeleton({
 }) {
   return (
     <div className="skeleton-wrap" role="status">
+      <BrandLogo compact />
       <span>{label}</span>
       <div className="skeleton" />
       <div className="skeleton" />
@@ -43,7 +45,7 @@ export function EmptyState({
 }) {
   return (
     <div className="empty-state">
-      <div className="empty-symbol">＋</div>
+      <BrandLogo compact />
       <h3>{title}</h3>
       <p>{children}</p>
       {action && (

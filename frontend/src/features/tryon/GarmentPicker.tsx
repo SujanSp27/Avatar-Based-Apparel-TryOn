@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "../../icons";
 export type Garment = {
   id: string;
@@ -28,7 +29,9 @@ export default function GarmentPicker({
     let active = true;
     setLoading(true);
     setError(false);
-    fetch("/api/garments", { signal: controller.signal })
+    fetch("/api/v1/products?limit=12&sort=newest", {
+      signal: controller.signal,
+    })
       .then(async (r) => {
         if (!r.ok) throw new Error();
         const data = await r.json();
@@ -53,6 +56,9 @@ export default function GarmentPicker({
         <div>
           <h3>Discover another look</h3>
           <p className="muted">Select a real garment, or upload your own.</p>
+          <Link className="text-button" to="/catalog">
+            Browse the full collection
+          </Link>
         </div>
         <select
           aria-label="Filter garment catalog"
@@ -80,6 +86,12 @@ export default function GarmentPicker({
       )}
       {!loading && !error && (
         <div className="garment-grid">
+          {!items.length && (
+            <p>
+              No published garments yet. Upload a supported garment photo to
+              continue.
+            </p>
+          )}
           {items
             .filter((item) => filter === "all" || item.category === filter)
             .map((item) => (

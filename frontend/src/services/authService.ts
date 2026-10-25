@@ -4,13 +4,20 @@ export const authService = {
   login: (email: string, password: string, remember: boolean) =>
     api<Session>("/api/v1/auth/login", jsonBody({ email, password, remember })),
   signup: (name: string, email: string, password: string) =>
-    api<Session>(
+    api<Session | { verification_required: true; message: string }>(
       "/api/v1/auth/signup",
       jsonBody({ name, email, password, terms_accepted: true }),
     ),
   logout: () => api<void>("/api/v1/auth/logout", { method: "POST" }),
-  update: (name: string, height_cm: number | null) =>
-    api<User>("/api/v1/profile", jsonBody({ name, height_cm }, "PATCH")),
+  update: (
+    name: string,
+    height_cm: number | null,
+    measurement_unit: "cm" | "in" = "cm",
+  ) =>
+    api<User>(
+      "/api/v1/profile",
+      jsonBody({ name, height_cm, measurement_unit }, "PATCH"),
+    ),
   forgot: (email: string) =>
     api<{ message: string }>(
       "/api/v1/auth/forgot-password",

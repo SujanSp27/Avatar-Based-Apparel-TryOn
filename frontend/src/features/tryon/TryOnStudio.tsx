@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { api } from "../../services/api/client";
+import { usePublicConfig } from "../../services/usePublicConfig";
 import { ArrowRight, LoaderCircle, Shirt, Sparkles } from "../../icons";
 import { useTryOnJob } from "../../useTryOnJob";
 import type { Result, VtonAvailability } from "../../types";
@@ -23,6 +26,9 @@ const categories = [
   ["jumpsuit", "Jumpsuit"],
 ];
 export default function TryOnStudio() {
+  const configuration = usePublicConfig();
+  const [params, setParams] = useSearchParams();
+  const productId = params.get("product");
   const active = useMeasurement();
   const [person, setPerson] = useState<File | undefined>(active.file);
   const [garment, setGarment] = useState<File>();
@@ -172,6 +178,30 @@ export default function TryOnStudio() {
       setSamplesBusy(false);
     }
   }
+  useEffect(() => {
+    if (!productId) return;
+    let stopped = false;
+    api<Garment>(`/api/v1/products/${encodeURIComponent(productId)}`)
+      .then((item) => {
+        if (!stopped) {
+          void selectGarment(item);
+          setParams(
+            (current) => {
+              const next = new URLSearchParams(current);
+              next.delete("product");
+              return next;
+            },
+            { replace: true },
+          );
+        }
+      })
+      .catch((e) => {
+        if (!stopped) setError(e.message);
+      });
+    return () => {
+      stopped = true;
+    };
+  }, [productId]);
   async function generate() {
     if (!person || !garment || !availability?.available) return;
     setError("");
@@ -208,14 +238,16 @@ export default function TryOnStudio() {
               {editing ? "Focus on result" : "Change outfit"}
             </button>
           )}
-          <button
-            className="button secondary"
-            disabled={busy || samplesBusy}
-            onClick={() => void sample()}
-          >
-            <Sparkles size={16} />
-            Try sample photos
-          </button>
+          {configuration?.sample_photos && (
+            <button
+              className="button secondary"
+              disabled={busy || samplesBusy}
+              onClick={() => void sample()}
+            >
+              <Sparkles size={16} />
+              Try sample photos
+            </button>
+          )}
         </div>
       </div>
       <div

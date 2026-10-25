@@ -222,7 +222,8 @@ def test_immutable_mongodb_versions_and_exact_apparel_selection(repository, char
 
 
 @pytest.fixture
-def api(repository, observation, tmp_path):
+def api(repository, observation, tmp_path, monkeypatch):
+    monkeypatch.setattr(settings, "admin_token", "measurement-test-admin")
     class Detector:
         model_sha256 = "test-double"
 
@@ -395,6 +396,7 @@ def extract_fixture(client, endpoint="/api/v1/measurements/extract", **data):
 
 def test_saved_measurement_lifecycle_and_reference_sizing(api):
     client, service = api
+    client.headers["X-Admin-Token"] = "measurement-test-admin"
     result = extract_fixture(client)
     identifier = result["measurement_id"]
     fetched = client.get(f"/api/v1/measurements/{identifier}")
@@ -452,6 +454,8 @@ def test_combined_rejects_missing_or_garment_chart_before_inference(api, reposit
 
 def test_measurement_reference_and_pagination_validation(api):
     client, _ = api
+    client.headers["X-Admin-Token"] = "measurement-test-admin"
+    extract_fixture(client)  # Establish the owner session before private-path validation.
     base = {"brand_id": "brand_b", "apparel_id": "apparel_all"}
     for extra in ({}, {"measurements": dict.fromkeys(METRICS, 100), "measurement_id": "pose_" + "a" * 32},
                   {"measurement_id": "../../secrets"}, {"measurements": {"unknown": 100}}):
@@ -467,12 +471,13 @@ def test_admin_protects_record_list_delete_and_brand_mutations(api, monkeypatch)
     monkeypatch.setattr(settings, "admin_token", "admin-fixture")
     for method, url, kwargs in (
         ("get", "/api/v1/measurements", {}),
-        ("delete", f"/api/v1/measurements/{identifier}", {}),
         ("post", "/api/v1/sizing/brands", {"json": {"brand_id": "example", "brand_name": "Example"}}),
         ("patch", "/api/v1/sizing/brands/nike", {"json": {"description": "fixture"}}),
     ):
         assert getattr(client, method)(url, **kwargs).status_code == 403
         assert getattr(client, method)(url, headers={"X-Admin-Token": "admin-fixture"}, **kwargs).status_code in (200, 201, 204)
+    # Owners may delete their own data without an administrative credential.
+    assert client.delete(f"/api/v1/measurements/{identifier}").status_code == 204
 
 
 def test_storage_cleanup_on_mongo_failure_and_retry_after_header(api, repository, monkeypatch):
@@ -513,6 +518,7 @@ def test_artifact_paths_reject_traversal_and_missing_annotation(api):
 
 def test_brand_creation_immutable_history_and_chart_discovery(api, chart):
     client, _ = api
+    client.headers["X-Admin-Token"] = "measurement-test-admin"
     created = client.post("/api/v1/sizing/brands", json={
         "brand_id": "fixture", "brand_name": "Fixture", "official_url": "https://example.com/",
     })
@@ -559,8 +565,9 @@ def test_categories_expose_normalized_weights_and_explicit_subsets(api):
 
 def test_corrupt_record_reports_typed_error(api, repository):
     client, _ = api
-    identifier = "pose_" + "e" * 32
-    repository.measurements.insert_one({"measurement_id": identifier, "private_field": "do-not-expose"})
+    client.headers["X-Admin-Token"] = "measurement-test-admin"
+    identifier = extract_fixture(client)["measurement_id"]
+    repository.measurements.replace_one({"measurement_id": identifier}, {"measurement_id": identifier, "private_field": "do-not-expose"})
     response = client.get(f"/api/v1/measurements/{identifier}")
     assert response.status_code == 500
     assert response.json()["error"]["code"] == "measurement_record_invalid"

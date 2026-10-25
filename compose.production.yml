@@ -1,0 +1,75 @@
+# Separate deployment; never overwrites local database volumes.
+services:
+  edge:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST:?Set your public DNS hostname}
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - tls_data:/data
+      - tls_config:/config
+    depends_on: [web]
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    restart: unless-stopped
+    depends_on: [api]
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      ENVIRONMENT: production
+      ONLINE_AUTO_CONNECT: "false"
+      ASSET_ROOT: /app/data/processed
+      MEASUREMENT_OUTPUT_ROOT: /app/data/processed/measurements
+      MEASUREMENT_MODEL_PATH: /app/assets/pose/pose_landmarker_full.task
+    volumes:
+      - results:/app/data/processed
+      - runtime:/app/.runtime
+      - ./data/raw:/app/data/raw:ro
+      - ./assets/pose:/app/assets/pose:ro
+    depends_on:
+      db: {condition: service_healthy}
+      mongo: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/live',timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  db:
+    image: postgres:17.11
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vastra
+      POSTGRES_DB: vastra
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a strong PostgreSQL password}
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vastra -d vastra"]
+      interval: 5s
+      retries: 10
+  mongo:
+    image: mongo:8.2.2
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: vastra_operator
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set a strong MongoDB administrator password}
+    volumes: ["mongo_data:/data/db"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+volumes:
+  results:
+  runtime:
+  postgres_data:
+  mongo_data:
+  tls_data:
+  tls_config:

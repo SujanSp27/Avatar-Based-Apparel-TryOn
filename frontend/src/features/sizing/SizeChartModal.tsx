@@ -1,4 +1,6 @@
 import Modal from "../../components/ui/Modal";
+import { useState } from "react";
+import { useAuth } from "../auth/AuthProvider";
 import { metricLabels, type Chart, type Metric } from "../../types/studio";
 export default function SizeChartModal({
   chart,
@@ -13,6 +15,9 @@ export default function SizeChartModal({
   selected?: string;
   onSelect: (size: string) => void;
 }) {
+  const { user } = useAuth();
+  const [unit, setUnit] = useState<"cm" | "in">(user?.measurement_unit ?? "cm");
+  const display = (n: number) => (unit === "in" ? n / 2.54 : n).toFixed(1);
   const metrics = Object.keys(chart.sizes[0].bounds) as Metric[];
   return (
     <Modal
@@ -23,8 +28,18 @@ export default function SizeChartModal({
     >
       <p className="muted">
         {chart.gender} · {chart.category} · India · version {chart.version} ·
-        body ranges in cm
+        body ranges in {unit}
       </p>
+      <label className="field">
+        Display units
+        <select
+          value={unit}
+          onChange={(e) => setUnit(e.target.value as "cm" | "in")}
+        >
+          <option value="cm">Centimetres</option>
+          <option value="in">Inches</option>
+        </select>
+      </label>
       <div className="table-scroll">
         <table>
           <caption className="visually-hidden">
@@ -58,7 +73,7 @@ export default function SizeChartModal({
                 {metrics.map((key) => (
                   <td key={key}>
                     {size.bounds[key]
-                      ? `${size.bounds[key]!.lower.toFixed(1)} – ${size.bounds[key]!.upper.toFixed(1)}`
+                      ? `${display(size.bounds[key]!.lower)} – ${display(size.bounds[key]!.upper)}`
                       : "Not provided"}
                   </td>
                 ))}

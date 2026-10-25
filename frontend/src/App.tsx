@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider, ProtectedLayout } from "./features/auth/AuthProvider";
 import { MeasurementProvider } from "./features/measurement/MeasurementProvider";
 import { ToastProvider } from "./components/ui/Toast";
@@ -18,6 +18,9 @@ const AuthPage = lazy(() =>
 );
 const ResetPassword = lazy(() => import("./features/auth/ResetPassword"));
 const Terms = lazy(() => import("./components/layout/Terms"));
+const HomePage = lazy(() => import("./components/layout/HomePage"));
+const CatalogPage = lazy(() => import("./features/catalog/CatalogPage"));
+const VerifyEmail = lazy(() => import("./features/auth/VerifyEmail"));
 export default function App() {
   return (
     <ErrorBoundary>
@@ -34,7 +37,9 @@ export default function App() {
               >
                 <Routes>
                   <Route element={<AppShell />}>
-                    <Route index element={<Navigate to="/measure" replace />} />
+                    <Route index element={<HomePage />} />
+                    <Route path="catalog" element={<CatalogPage />} />
+                    <Route path="verify-email" element={<VerifyEmail />} />
                     <Route path="measure" element={<MeasurementWorkspace />} />
                     <Route path="sizing" element={<SizeEngineView />} />
                     <Route path="tryon" element={<TryOnStudio />} />

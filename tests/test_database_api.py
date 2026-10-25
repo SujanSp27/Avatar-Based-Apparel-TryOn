@@ -10,7 +10,15 @@ from backend.app.main import app
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
+    import mongomock
+
+    from backend.app.anthropometry.repository import MeasurementRepository, get_repository
+    from backend.app.config import settings
+    repo = MeasurementRepository(mongomock.MongoClient(tz_aware=True), "sql_api_test")
+    repo.db.command = lambda *a, **kw: {"ok": 1}
+    app.dependency_overrides[get_repository] = lambda: repo
+    monkeypatch.setattr(settings, "admin_token", "sql-api-admin")
     engine = create_engine(
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
@@ -24,7 +32,7 @@ def client():
 
     app.dependency_overrides[get_db] = session
     # No lifespan here: tests use an isolated database, not the running development database.
-    client = TestClient(app)
+    client = TestClient(app, headers={"X-Admin-Token": "sql-api-admin"})
     yield client
     client.close()
     app.dependency_overrides.clear()

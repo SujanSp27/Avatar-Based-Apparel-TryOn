@@ -62,7 +62,7 @@ def test_signup_real_hash_cookie_profile_and_logout(accounts):
     user = repo.db.users.find_one({"email": "owner@example.com"})
     assert user["password_hash"].startswith("$argon2id$") and PASSWORD not in user["password_hash"]
     assert "password_hash" not in response.text
-    cookie = response.headers["set-cookie"]
+    cookie = next(c for c in response.headers.get_list("set-cookie") if c.startswith(COOKIE + "="))
     assert "HttpOnly" in cookie and "SameSite=strict" in cookie and "Max-Age" not in cookie
     assert response.headers["cache-control"] == "no-store"
     profile = client.get("/api/v1/profile", headers=auth(response))
@@ -196,7 +196,9 @@ def test_private_scans_and_sizes_cannot_be_read_or_deleted_by_other_account(acco
     assert saved.status_code == 201
     scan_id = saved.json()["id"]
     png = f"/api/v1/profile/scans/{scan_id}/thumbnail"
-    assert client.get(png).status_code == 401
+    anonymous = TestClient(app)
+    assert anonymous.get(png).status_code == 401
+    anonymous.close()
     assert client.get(png, headers=auth(owner)).headers["content-type"] == "image/jpeg"
     payload = {"brand_id": "nike", "apparel_id": "nike-in-hv4188-013", "measurements": MEASUREMENTS}
     size = client.post("/api/v1/profile/sizes", headers=auth(owner), json=payload)

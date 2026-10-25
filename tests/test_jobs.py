@@ -113,9 +113,14 @@ def test_corrupt_job_is_preserved_without_blocking_startup(worker, content):
 
 
 def test_async_api_acknowledges_and_returns_saved_result(worker, monkeypatch):
+    import mongomock
     from fastapi.testclient import TestClient
 
     from backend.app import main
+    from backend.app.anthropometry.repository import MeasurementRepository, get_repository
+    repo = MeasurementRepository(mongomock.MongoClient(tz_aware=True), "job_api_test")
+    repo.db.command = lambda *a, **kw: {"ok": 1}
+    main.app.dependency_overrides[get_repository] = lambda: repo
 
     monkeypatch.setattr(main, "jobs", worker)
     monkeypatch.setattr(main, "latest_chart", lambda *args: None)
@@ -142,6 +147,7 @@ def test_async_api_acknowledges_and_returns_saved_result(worker, monkeypatch):
         assert client.post("/api/tryon", **options).status_code == 202
     finally:
         client.close()
+        main.app.dependency_overrides.clear()
     assert len(calls) == 1
 
 

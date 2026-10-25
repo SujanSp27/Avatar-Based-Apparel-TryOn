@@ -14,6 +14,8 @@ export type User = {
   email: string;
   height_cm: number | null;
   created_at: string;
+  email_verified?: boolean;
+  measurement_unit?: "cm" | "in";
 };
 export type Session = { access_token: string; expires_in: number; user: User };
 export type Extraction = {

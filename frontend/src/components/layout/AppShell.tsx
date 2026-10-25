@@ -9,6 +9,7 @@ import {
 import { ArrowRight, Layers3, Ruler, Shirt, UserRound } from "../../icons";
 import { useAuth } from "../../features/auth/AuthProvider";
 import { useToast } from "../ui/Toast";
+import BrandLogo from "../ui/BrandLogo";
 const nav = [
   {
     to: "/measure",
@@ -52,20 +53,15 @@ export default function AppShell() {
         Skip to content
       </a>
       <aside className="sidebar">
-        <Link
-          className="wordmark"
-          to="/measure"
-          aria-label="FormFit Studio home"
-        >
-          <span className="logo-mark">
-            f<span>f</span>
-          </span>
-          <span>
-            FormFit<small>STUDIO</small>
-          </span>
+        <Link className="wordmark" to="/" aria-label="VastraView home">
+          <BrandLogo />
         </Link>
         <div className="sidebar-section-label">YOUR FIT JOURNEY</div>
         <nav className="main-nav" aria-label="Main navigation">
+          <NavLink to="/catalog">
+            <Shirt size={19} />
+            <span>Discover apparel</span>
+          </NavLink>
           {nav.map(({ to, label, short, icon: Icon, step }) => (
             <NavLink to={to} key={to}>
               <Icon size={19} />
@@ -90,7 +86,7 @@ export default function AppShell() {
           </div>
           <Link to="/terms">Privacy & studio notes ↗</Link>
           <span className="version-label">
-            FORMFIT STUDIO · RESEARCH EDITION
+            VASTRAVIEW · PERSONAL FIT STUDIO
           </span>
         </div>
       </aside>
@@ -101,7 +97,11 @@ export default function AppShell() {
             <span>/</span>
             <strong>
               {nav.find((item) => item.to === location.pathname)?.label ??
-                (location.pathname === "/profile" ? "Your profile" : "Welcome")}
+                (location.pathname === "/profile"
+                  ? "Your profile"
+                  : location.pathname === "/catalog"
+                    ? "Apparel catalog"
+                    : "Welcome")}
             </strong>
           </div>
           <div className="topbar-actions">
@@ -153,7 +153,7 @@ export default function AppShell() {
         </main>
         <footer className="footer">
           <span>
-            Designed around you. <strong>FormFit Studio.</strong>
+            <BrandLogo compact />
           </span>
           <span>Photo estimates · Thoughtful size advice</span>
           <Link to="/terms">Terms & privacy</Link>

@@ -74,12 +74,13 @@ def test_sql_failure_leaves_mongo_capabilities_usable(health_client, rollback_fa
     assert "secret" not in response.text
 
 
-def test_mongo_and_checkpoint_failures_do_not_mask_live_colab(health_client):
+def test_mongo_ownership_store_is_required_even_with_live_colab(health_client):
     client, state, checkpoint = health_client
     state.update(mongo=False, remote=True)
     response = client.get("/api/v1/health/ready", params={"capability": "tryon"})
-    assert response.status_code == 200
-    assert response.json()["capabilities"] == {"sizing": False, "measurements": False, "tryon": True}
+    assert response.status_code == 503
+    assert response.json()["components"]["colab"]["available"] is True
+    assert response.json()["capabilities"] == {"sizing": False, "measurements": False, "tryon": False}
     state["mongo"] = True
     checkpoint.unlink()
     state = client.get("/api/v1/health").json()

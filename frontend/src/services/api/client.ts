@@ -67,6 +67,20 @@ export function refreshSession(): Promise<Session | null> {
   }
   return refreshing;
 }
+/** Raw response for the persisted-job poller, preserving its 404/retry handling. */
+export async function sessionFetch(
+  path: string,
+  init: RequestInit = {},
+): Promise<Response> {
+  const send = () => {
+    const headers = new Headers(init.headers);
+    if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+    return fetch(path, { ...init, headers, credentials: "include" });
+  };
+  const response = await send();
+  if (response.status === 401 && (await refreshSession())) return send();
+  return response;
+}
 export async function apiResponse(
   path: string,
   init: RequestInit = {},

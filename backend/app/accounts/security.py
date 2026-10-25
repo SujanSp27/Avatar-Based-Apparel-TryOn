@@ -13,6 +13,7 @@ from backend.app.config import ROOT, settings
 
 hasher = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=2)
 COOKIE = "formfit_refresh"
+ACCESS_COOKIE = "vastraview_access"
 ACCESS_SECONDS = 900
 
 
@@ -107,3 +108,8 @@ def read_token(token: str):
         )
     except jwt.InvalidTokenError as exc:
         raise HTTPException(401, "Your session has expired. Please sign in again.") from exc
+
+
+def require_admin(x_admin_token: str = ""):
+    if not settings.admin_token or not secrets.compare_digest(settings.admin_token, x_admin_token):
+        raise HTTPException(403, "Administrative access is not configured or not authorized.")

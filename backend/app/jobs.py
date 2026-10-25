@@ -55,10 +55,13 @@ class TryOnJobs:
         except (OSError, ValueError) as exc:
             raise PipelineError("job_record_unavailable", "The saved job record cannot be read. Its artifacts have been retained; inference was not restarted.", 503) from exc
 
-    def get(self, job_id):
+    def get(self, job_id, *, owner=None):
         with self.lock:
             data = self._read(job_id)
+            if owner is not None and data.get("owner") != owner:
+                raise PipelineError("job_not_found", "This try-on job was not found in your session.", 404)
             data.pop("requestHash", None)
+            data.pop("owner", None)
             if data["status"] in {"queued", "processing"}:
                 data["elapsedSeconds"] = round(time.time() - data["createdAt"], 1)
             return data
@@ -101,6 +104,7 @@ class TryOnJobs:
                 raise PipelineError("busy", "Another try-on is running. Wait for the active job to finish.", 429)
             data = {
                 "jobId": job_id, "status": "queued", "requestHash": signature,
+                "owner": parameters.get("owner"),
                 "createdAt": time.time(), "progress": {"stage": "queued"},
                 "statusUrl": f"/api/tryon/jobs/{job_id}",
             }

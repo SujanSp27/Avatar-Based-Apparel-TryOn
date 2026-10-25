@@ -116,18 +116,18 @@ function ComparisonImages({
       const blob = await response.blob();
       if (!blob.type.startsWith("image/"))
         throw new Error("The server did not return an image. Please retry.");
-      const file = new File([blob], "formfit-tryon.png", {
+      const file = new File([blob], "vastraview-tryon.png", {
         type: "image/png",
       });
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: "My FormFit look" });
+        await navigator.share({ files: [file], title: "My VastraView look" });
       } else {
         const link = new URL(result!, window.location.origin).href;
         if (!navigator.clipboard)
           throw new Error("Use Download render to share this image.");
         await navigator.clipboard.writeText(link);
         toast(
-          "Image link copied. This local link works where your studio is accessible.",
+          "Private image link copied. It requires your session; use Download render to share the image with someone else.",
         );
       }
     } catch (error) {

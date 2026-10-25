@@ -256,6 +256,12 @@ test("real account, photo extraction, private history, closet, session rotation 
     return route.continue();
   });
   await page.getByRole("button", { name: "New measurement" }).click();
+  // Wait for the lazy route to commit before navigating back. Otherwise React
+  // may coalesce both navigations without remounting the profile or fetching.
+  await expect(page).toHaveURL(/\/measure$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "A fit that starts",
+  );
   await page.getByRole("link", { name: "My profile & closet" }).click();
   await expect(page.locator(".scan-history-card")).toHaveCount(1);
   expect(rejected).toBe(true);

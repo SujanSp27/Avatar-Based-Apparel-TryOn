@@ -46,6 +46,7 @@ class ResetPassword(StrictSchema):
 class ProfileUpdate(StrictSchema):
     name: str = Field(min_length=2, max_length=80)
     height_cm: float | None = Field(default=None, ge=80, le=250)
+    measurement_unit: Literal["cm", "in"] = "cm"
 
 
 class SaveScan(StrictSchema):

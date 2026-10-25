@@ -111,6 +111,20 @@ test("a recovered real FASHN result loads its actual PNG and original comparison
     "Optional retained local inference artifact is unavailable.",
   );
   const result = JSON.parse(readFileSync(artifact, "utf8")).result;
+  // Historical production URLs are now owner-protected. Replay retained bytes
+  // only inside this test; do not reopen public access to old private images.
+  await page.route(`**${result.previewUrl}*`, (route) =>
+    route.fulfill({
+      path: path.join(path.dirname(artifact), "after.png"),
+      contentType: "image/png",
+    }),
+  );
+  await page.route(`**${result.originalUrl}*`, (route) =>
+    route.fulfill({
+      path: path.join(path.dirname(artifact), "original.png"),
+      contentType: "image/png",
+    }),
+  );
   expect(result.renderingMethod).toBe("pretrained-vton");
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));

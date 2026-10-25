@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -37,6 +37,23 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from: str = ""
+    environment: Literal["development", "production", "test"] = "development"
+    auth_require_verification: bool = False
+    private_retention_days: int = Field(30, ge=1, le=365)
+    guest_retention_hours: int = Field(24, ge=1, le=168)
+
+    @model_validator(mode="after")
+    def production_security(self):
+        if self.environment == "production":
+            if len(self.auth_secret) < 32 or not self.auth_cookie_secure:
+                raise ValueError("Production requires AUTH_SECRET (32+ chars) and AUTH_COOKIE_SECURE=true")
+            if not self.app_public_url.startswith("https://") or not self.auth_require_verification:
+                raise ValueError("Production requires HTTPS APP_PUBLIC_URL and AUTH_REQUIRE_VERIFICATION=true")
+            if not self.cors_origins or any(not x.startswith("https://") or '*' in x for x in self.cors_origins):
+                raise ValueError("Production CORS origins must be explicit HTTPS origins")
+            if not self.smtp_host or not self.smtp_from:
+                raise ValueError("Production requires verification/reset SMTP configuration")
+        return self
 
     @field_validator("online_vton_steps")
     @classmethod

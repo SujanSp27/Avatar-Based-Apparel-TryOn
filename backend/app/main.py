@@ -1,23 +1,26 @@
 import logging
-import secrets
 import time
 from contextlib import asynccontextmanager
 from threading import BoundedSemaphore
 from uuid import UUID, uuid4
 
-from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, UploadFile
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
 from pymongo.errors import PyMongoError
 from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from backend.app.accounts.lifecycle import router as lifecycle_router
+from backend.app.accounts.locks import account_operation
+from backend.app.accounts.router import account_db
 from backend.app.accounts.router import router as account_router
+from backend.app.accounts.security import csrf_guard, require_admin, throttle
 from backend.app.anthropometry.repository import repository as measurement_repository
 from backend.app.anthropometry.router import get_measurement_service
 from backend.app.anthropometry.router import router as measurement_router
+from backend.app.catalog import router as catalog_router
 from backend.app.charts import chart_dict, create_chart, latest_chart, seed_database
 from backend.app.colab_connection import ColabConnection
 from backend.app.config import ROOT, settings
@@ -28,6 +31,8 @@ from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
 from backend.app.online_vton import normalized_image
 from backend.app.pipeline import TryOnPipeline
+from backend.app.private_data import GUEST_COOKIE, owned_run, principal
+from backend.app.private_data import router as private_router
 from backend.app.schemas import (
     BrandCreate,
     ChartCreate,
@@ -71,7 +76,7 @@ async def lifespan(app: FastAPI):
         measurement_repository.close()
 
 
-app = FastAPI(title="Form / Fit research API", version="0.2.0", lifespan=lifespan,
+app = FastAPI(title="VastraView API", version="0.3.0", lifespan=lifespan,
               description="Private Colab 2D try-on, CPU body estimates, and MongoDB-backed brand sizing. Single-process local prototype.")
 app.state.tryon_connection = connection
 app.add_middleware(
@@ -82,19 +87,35 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "X-Admin-Token", "Prefer", "Idempotency-Key"],
     expose_headers=["Location", "X-Request-ID", "Retry-After"],
 )
-app.mount("/assets", StaticFiles(directory=str(store.root)), name="assets")
 annotation_root = settings.measurement_output_root / "annotated"
 annotation_root.mkdir(parents=True, exist_ok=True)
-app.mount("/static/annotated", StaticFiles(directory=str(annotation_root)), name="annotated")
 app.include_router(measurement_router)
 app.include_router(health_router)
 app.include_router(garment_router)
 app.include_router(account_router)
+app.include_router(lifecycle_router)
+app.include_router(catalog_router)
+app.include_router(private_router)
 
 
 @app.middleware("http")
 async def limit_request(request, call_next):
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        try:
+            csrf_guard(request)
+        except HTTPException as exc:
+            return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
     length = request.headers.get("content-length")
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"} and "application/json" in request.headers.get("content-type", ""):
+        limit = 1024 * 1024
+        payload = bytearray()
+        async for chunk in request.stream():
+            if len(payload) + len(chunk) > limit:
+                return JSONResponse(status_code=413, content={"detail": "JSON requests must be smaller than 1 MB."})
+            payload.extend(chunk)
+        # CachedRequest replays the bounded bytes to downstream parsers, including
+        # requests streamed without Content-Length.
+        request._body = bytes(payload)
     if request.url.path.startswith(("/api/v1/auth/", "/api/v1/profile")) and request.method in {"POST", "PATCH"}:
         if length and (not length.isdigit() or int(length) > 1024 * 1024):
             return JSONResponse(status_code=413, content={"error": {"code": "request_too_large", "message": "Account requests must be smaller than 1 MB."}})
@@ -130,10 +151,20 @@ async def limit_request(request, call_next):
 async def request_metadata(request, call_next):
     request.state.request_id = uuid4().hex
     start = time.perf_counter()
-    response = await call_next(request)
+    async with account_operation(request):
+        response = await call_next(request)
+    if getattr(request.state, "guest_token", None):
+        response.set_cookie(GUEST_COOKIE, request.state.guest_token, httponly=True,
+                            secure=settings.auth_cookie_secure, samesite="strict", path="/",
+                            max_age=settings.guest_retention_hours * 3600)
     response.headers["X-Request-ID"] = request.state.request_id
     response.headers["X-Content-Type-Options"] = "nosniff"
-    if request.url.path.startswith(("/api/v1/auth", "/api/v1/profile")):
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "same-origin"
+    if settings.environment == "production":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    if request.url.path.startswith(("/api/v1/auth", "/api/v1/profile", "/api/v1/history", "/api/v1/favorites",
+                                    "/api/v1/measurements", "/api/tryon", "/api/runs", "/assets", "/static/annotated")):
         response.headers["Cache-Control"] = "no-store"
     if response.status_code in (429, 503):
         response.headers["Retry-After"] = "5"
@@ -187,8 +218,7 @@ async def unexpected_error(request, exc):
 
 
 def admin(x_admin_token: str = Header(default="")):
-    if settings.admin_token and not secrets.compare_digest(x_admin_token, settings.admin_token):
-        raise HTTPException(403, "Admin token required")
+    require_admin(x_admin_token)
 
 
 @app.get("/api/health")
@@ -295,6 +325,7 @@ def require_tryon_ready():
 
 @app.post("/api/tryon")
 def tryon(
+    request: Request,
     personImage: UploadFile = File(),
     garmentImage: UploadFile = File(),
     brandId: int | None = Form(default=None, gt=0),
@@ -305,7 +336,10 @@ def tryon(
     prefer: str = Header(default=""),
     idempotency_key: str | None = Header(default=None),
     db: Session = Depends(get_db),
+    owner: str = Depends(principal),
+    accounts=Depends(account_db),
 ):
+    throttle(accounts, request, "tryon", owner, maximum=12)
     if brandId is not None and db.get(Brand, brandId) is None:
         raise PipelineError("brand_missing", "The selected brand does not exist.", 404)
     if prefer == "respond-async":
@@ -314,6 +348,7 @@ def tryon(
         parameters = {
             "brand_id": brandId, "category": garmentCategory.value, "fit": fitPreference.value,
             "photo_type": garmentPhotoType,
+            "owner": owner,
         }
 
         def work():
@@ -340,14 +375,15 @@ def tryon(
             garmentCategory.value,
             fitPreference.value,
             photo_type=garmentPhotoType,
+            owner=owner,
         )
     finally:
         capacity.release()
 
 
 @app.get("/api/tryon/jobs/{job_id}")
-def job_status(job_id: UUID):
-    return jobs.get(job_id)
+def job_status(job_id: UUID, owner=Depends(principal)):
+    return jobs.get(job_id, owner=owner)
 
 
 @app.get("/api/runs", response_model=RunPage, dependencies=[Depends(admin)])
@@ -364,11 +400,9 @@ def list_runs(limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0)
 
 
 @app.get("/api/runs/{run_id}")
-def get_run(run_id: UUID, db: Session = Depends(get_db)):
-    run = db.get(Run, str(run_id))
-    if not run:
-        raise HTTPException(404, "Run not found")
-    return {"id": run.id, "status": run.status, "metadata": run.metadata_json}
+def get_run(run_id: UUID, db: Session = Depends(get_db), owner=Depends(principal)):
+    run = owned_run(db, run_id, owner)
+    return {"id": run.id, "status": run.status, "metadata": {k: v for k, v in run.metadata_json.items() if k != "owner"}}
 
 
 @app.delete("/api/runs/{run_id}", status_code=204, dependencies=[Depends(admin)])
@@ -385,6 +419,8 @@ def delete_run(run_id: UUID, db: Session = Depends(get_db)):
 
 @app.get("/api/samples/{kind}")
 def sample(kind: str):
+    if settings.environment == "production":
+        raise HTTPException(404, "Research samples are not published in production.")
     files = {"person": "studio-person.jpg", "garment": "garment-demo.png", "polo": "sage-polo.jpg"}
     if kind not in files or not (ROOT / "data/raw" / files[kind]).is_file():
         raise HTTPException(404, "Sample not available")
@@ -392,3 +428,11 @@ def sample(kind: str):
         ROOT / "data/raw" / files[kind],
         media_type="image/png" if kind == "garment" else "image/jpeg",
     )
+
+
+@app.get("/api/v1/public-config")
+def public_config():
+    return {"sample_photos": settings.environment != "production" and (ROOT / "data/raw/studio-person.jpg").is_file(),
+            "email_verification_required": settings.auth_require_verification,
+            "guest_retention_hours": settings.guest_retention_hours,
+            "generated_retention_days": settings.private_retention_days}

@@ -13,8 +13,10 @@ import AuthModal from "../auth/AuthModal";
 import { useToast } from "../../components/ui/Toast";
 import { ErrorNotice } from "../../components/feedback/Feedback";
 import { thumbnail } from "../../utils/images";
+import { usePublicConfig } from "../../services/usePublicConfig";
 export default function MeasurementWorkspace() {
   const state = useMeasurement();
+  const configuration = usePublicConfig();
   const auth = useAuth();
   const notify = useToast();
   const [busy, setBusy] = useState(false);
@@ -142,10 +144,12 @@ export default function MeasurementWorkspace() {
               />
             ) : (
               <div className="photo-demo">
-                <img
-                  src="/api/samples/person"
-                  alt="Example of a front-facing full-body photo on a plain background"
-                />
+                {configuration?.sample_photos && (
+                  <img
+                    src="/api/samples/person"
+                    alt="Example of a front-facing full-body photo on a plain background"
+                  />
+                )}
                 <div className="demo-label">
                   A little space. A clear view. A better scan.
                 </div>
@@ -201,14 +205,18 @@ export default function MeasurementWorkspace() {
             >
               Use your camera
             </button>
-            <span>or</span>
-            <button
-              className="text-button"
-              disabled={busy}
-              onClick={() => void sample()}
-            >
-              Try a sample
-            </button>
+            {configuration?.sample_photos && (
+              <>
+                <span>or</span>
+                <button
+                  className="text-button"
+                  disabled={busy}
+                  onClick={() => void sample()}
+                >
+                  Try a sample
+                </button>
+              </>
+            )}
           </div>
           <div className="divider" />
           <HeightInput

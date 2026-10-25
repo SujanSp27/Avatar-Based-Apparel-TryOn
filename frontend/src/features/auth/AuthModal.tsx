@@ -9,6 +9,7 @@ import { useAuth } from "./AuthProvider";
 import Modal from "../../components/ui/Modal";
 import { ErrorNotice } from "../../components/feedback/Feedback";
 import { ArrowRight, Check, LoaderCircle } from "../../icons";
+import BrandLogo from "../../components/ui/BrandLogo";
 export const passwordRules = [
   { label: "12 characters", test: (s: string) => s.length >= 12 },
   {
@@ -73,6 +74,7 @@ export function AuthForm({
   onDone?: () => void;
 }) {
   const signup = mode === "signup";
+  const [verification, setVerification] = useState("");
   const auth = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -130,19 +132,22 @@ export function AuthForm({
         onSubmit={handleSubmit(async (data) => {
           setError("");
           try {
-            auth.accept(
-              signup
-                ? await authService.signup(
-                    data.name!.trim(),
-                    data.email,
-                    data.password,
-                  )
-                : await authService.login(
-                    data.email,
-                    data.password,
-                    !!data.remember,
-                  ),
-            );
+            const session = signup
+              ? await authService.signup(
+                  data.name!.trim(),
+                  data.email,
+                  data.password,
+                )
+              : await authService.login(
+                  data.email,
+                  data.password,
+                  !!data.remember,
+                );
+            if ("verification_required" in session) {
+              setVerification(session.message);
+              return;
+            }
+            auth.accept(session);
             if (onDone) onDone();
             else
               navigate(safeReturn(params.get("returnTo")), { replace: true });
@@ -151,6 +156,11 @@ export function AuthForm({
           }
         })}
       >
+        {verification && (
+          <div className="notice" role="status">
+            {verification} <Link to="/verify-email">Request another link</Link>
+          </div>
+        )}
         {signup && (
           <label className="field">
             Your name
@@ -317,14 +327,14 @@ export function AuthPage({ mode }: { mode: "login" | "signup" }) {
           One personal profile. Thoughtful size advice.
           <br />A little more confidence in every choice.
         </p>
-        <div className="auth-orbit">
-          <span>F</span>
-          <span>F</span>
+        <div className="auth-brand-art">
+          <BrandLogo />
         </div>
         <small>Your measurements stay in your private profile.</small>
       </div>
       <section className="auth-panel">
-        <span className="eyebrow">FORMFIT MEMBERSHIP</span>
+        <BrandLogo />
+        <span className="eyebrow">VASTRAVIEW MEMBERSHIP</span>
         <h2>
           {mode === "login"
             ? "Good to see you again."

@@ -19,6 +19,7 @@ import {
 import { useToast } from "../../components/ui/Toast";
 import Modal from "../../components/ui/Modal";
 import { ArrowRight, Ruler, UserRound } from "../../icons";
+import AccountPrivacy from "./AccountPrivacy";
 function PrivateThumbnail({ url }: { url: string | null }) {
   const [src, setSrc] = useState<string>();
   useEffect(() => {
@@ -51,6 +52,7 @@ function AccountSettings() {
   const toast = useToast();
   const [error, setError] = useState("");
   const schema = z.object({
+    unit: z.enum(["cm", "in"]),
     name: z.string().trim().min(2).max(80),
     height: z
       .string()
@@ -66,6 +68,7 @@ function AccountSettings() {
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
+      unit: auth.user!.measurement_unit ?? "cm",
       name: auth.user!.name,
       height: auth.user!.height_cm ? String(auth.user!.height_cm) : "",
     },
@@ -80,6 +83,7 @@ function AccountSettings() {
             await authService.update(
               value.name,
               value.height ? Number(value.height) : null,
+              value.unit,
             ),
           );
           toast("Profile updated.");
@@ -89,6 +93,13 @@ function AccountSettings() {
       })}
     >
       <span className="eyebrow">THE BASICS</span>
+      <label className="field">
+        Preferred measurement units
+        <select {...register("unit")}>
+          <option value="cm">Centimetres</option>
+          <option value="in">Inches</option>
+        </select>
+      </label>
       <h2>Account details.</h2>
       <label className="field">
         Your name
@@ -250,7 +261,10 @@ export default function ProfilePage() {
         aria-labelledby={`tab-${tab}`}
       >
         {tab === "settings" ? (
-          <AccountSettings />
+          <>
+            <AccountSettings />
+            <AccountPrivacy />
+          </>
         ) : loading ? (
           <Skeleton label="Opening your private profile…" />
         ) : tab === "scans" ? (

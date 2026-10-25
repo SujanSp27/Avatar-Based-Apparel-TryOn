@@ -532,7 +532,7 @@ test("share uses the displayed final image, with a clear local-link fallback", a
   await viewer.getByRole("button", { name: "Share", exact: true }).click();
   await expect(
     page.getByText(
-      "Image link copied. This local link works where your studio is accessible.",
+      "Private image link copied. It requires your session; use Download render to share the image with someone else.",
     ),
   ).toBeVisible();
   expect(

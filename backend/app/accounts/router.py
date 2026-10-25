@@ -21,6 +21,7 @@ from backend.app.accounts.schemas import (
     Signup,
 )
 from backend.app.accounts.security import (
+    ACCESS_COOKIE,
     ACCESS_SECONDS,
     COOKIE,
     access_token,
@@ -43,6 +44,8 @@ router = APIRouter(prefix="/api/v1", tags=["Accounts and private profile"])
 
 def account_db(repo=Depends(get_repository)):
     db = repo.db
+    if db.account_schema.find_one({"_id": 2}):
+        return db
     db.users.create_index("email", unique=True)
     db.auth_sessions.create_index("expires_at", expireAfterSeconds=0)
     db.auth_sessions.create_index("refresh_hash", unique=True)
@@ -50,6 +53,13 @@ def account_db(repo=Depends(get_repository)):
     db.password_resets.create_index("expires_at", expireAfterSeconds=0)
     db.saved_scans.create_index([("user_id", 1), ("created_at", -1)])
     db.saved_sizes.create_index([("user_id", 1), ("brand_id", 1), ("apparel_id", 1)], unique=True)
+    db.email_verifications.create_index("expires_at", expireAfterSeconds=0)
+    db.auth_sessions.create_index("user_id")
+    db.auth_sessions.create_index("used_hashes")
+    db.private_resources.create_index([("owner", 1), ("kind", 1)])
+    db.private_resources.create_index("created_at")
+    db.audit_events.create_index("expires_at", expireAfterSeconds=0)
+    db.account_schema.update_one({"_id": 2}, {"$set": {"installed_at": now()}}, upsert=True)
     return db
 
 
@@ -60,13 +70,20 @@ def public_user(user):
         "email": user["email"],
         "height_cm": user.get("height_cm"),
         "created_at": user["created_at"],
+        "email_verified": user.get("email_verified", False),
+        "measurement_unit": user.get("measurement_unit", "cm"),
     }
 
 
-def current_user(authorization: str = Header(default=""), db=Depends(account_db)):
-    if not authorization.startswith("Bearer "):
+def current_user(request: Request, authorization: str = Header(default=""), db=Depends(account_db)):
+    token = (
+        authorization[7:]
+        if authorization.startswith("Bearer ")
+        else request.cookies.get(ACCESS_COOKIE)
+    )
+    if not token:
         raise HTTPException(401, "Sign in to access your saved results.")
-    claims = read_token(authorization[7:])
+    claims = read_token(token)
     session = db.auth_sessions.find_one(
         {
             "_id": claims["sid"],
@@ -76,9 +93,21 @@ def current_user(authorization: str = Header(default=""), db=Depends(account_db)
         }
     )
     user = db.users.find_one({"_id": claims["sub"]})
-    if not session or not user:
+    if not session or not user or user.get("deleting"):
         raise HTTPException(401, "Your session has ended. Please sign in again.")
     return user
+
+
+def set_access_cookie(response, token):
+    response.set_cookie(
+        ACCESS_COOKIE,
+        token,
+        httponly=True,
+        secure=settings.auth_cookie_secure,
+        samesite="strict",
+        path="/",
+        max_age=ACCESS_SECONDS,
+    )
 
 
 def set_cookie(response: Response, raw: str, remember: bool, expires):
@@ -106,11 +135,14 @@ def session_response(response, db, user, remember=False):
             "expires_at": expires,
             "revoked": False,
             "remember": remember,
+            "created_at": now(),
         }
     )
     set_cookie(response, raw, remember, expires)
+    token = access_token(user["_id"], sid)
+    set_access_cookie(response, token)
     return {
-        "access_token": access_token(user["_id"], sid),
+        "access_token": token,
         "expires_in": ACCESS_SECONDS,
         "user": public_user(user),
     }
@@ -119,6 +151,8 @@ def session_response(response, db, user, remember=False):
 @router.post("/auth/signup", status_code=201, dependencies=[Depends(csrf_guard)])
 def signup(data: Signup, request: Request, response: Response, db=Depends(account_db)):
     throttle(db, request, "signup", str(data.email), maximum=5)
+    if len(data.name.strip()) < 2:
+        raise HTTPException(422, "Enter your name.")
     user = {
         "_id": uuid4().hex,
         "email": str(data.email).lower(),
@@ -126,9 +160,26 @@ def signup(data: Signup, request: Request, response: Response, db=Depends(accoun
         "password_hash": hasher.hash(data.password),
         "created_at": now(),
         "height_cm": None,
+        "email_verified": False,
         "terms_version": "2026-10-21",
         "terms_accepted_at": now(),
     }
+    if settings.auth_require_verification:
+        from backend.app.accounts.lifecycle import send_verification
+
+        # Same response for existing accounts; never reveal registration state.
+        existing = db.users.find_one({"email": user["email"]})
+        if not existing:
+            try:
+                db.users.insert_one(user)
+            except DuplicateKeyError:
+                pass
+            else:
+                send_verification(db, user)
+        return {
+            "message": "Check your email to verify your account. If you already registered, sign in or request a new verification link.",
+            "verification_required": True,
+        }
     if len(user["name"]) < 2:
         raise HTTPException(422, "Enter your name.")
     try:
@@ -147,6 +198,16 @@ def login(data: Login, request: Request, response: Response, db=Depends(account_
     valid = verify_password(user["password_hash"] if user else dummy_hash(), data.password)
     if not user or not valid:
         raise HTTPException(401, "Email or password is incorrect.")
+    if user.get("deleting"):
+        raise HTTPException(401, "Account is unavailable.")
+    if settings.auth_require_verification and not user.get("email_verified"):
+        raise HTTPException(
+            403, "Verify your email before signing in. Request a new verification link if needed."
+        )
+    if hasher.check_needs_rehash(user["password_hash"]):
+        db.users.update_one(
+            {"_id": user["_id"]}, {"$set": {"password_hash": hasher.hash(data.password)}}
+        )
     return session_response(response, db, user, data.remember)
 
 
@@ -165,11 +226,17 @@ def refresh(request: Request, response: Response, db=Depends(account_db)):
         db.auth_sessions.update_many({"used_hashes": old_hash}, {"$set": {"revoked": True}})
         raise HTTPException(401, "Your saved session has expired. Please sign in again.")
     user = db.users.find_one({"_id": session["user_id"]})
-    if not user:
+    if (
+        not user
+        or user.get("deleting")
+        or (settings.auth_require_verification and not user.get("email_verified"))
+    ):
         raise HTTPException(401, "Account unavailable.")
     set_cookie(response, next_raw, session["remember"], session["expires_at"])
+    token = access_token(user["_id"], session["_id"])
+    set_access_cookie(response, token)
     return {
-        "access_token": access_token(user["_id"], session["_id"]),
+        "access_token": token,
         "expires_in": ACCESS_SECONDS,
         "user": public_user(user),
     }
@@ -177,7 +244,25 @@ def refresh(request: Request, response: Response, db=Depends(account_db)):
 
 @router.post("/auth/logout", status_code=204, dependencies=[Depends(csrf_guard)])
 def logout(request: Request, response: Response, db=Depends(account_db)):
+    response.delete_cookie(
+        ACCESS_COOKIE,
+        path="/",
+        secure=settings.auth_cookie_secure,
+        httponly=True,
+        samesite="strict",
+    )
     raw = request.cookies.get(COOKIE)
+    access = request.headers.get("authorization", "").removeprefix(
+        "Bearer "
+    ) or request.cookies.get(ACCESS_COOKIE)
+    if access:
+        try:
+            claims = read_token(access)
+            db.auth_sessions.update_one(
+                {"_id": claims["sid"], "user_id": claims["sub"]}, {"$set": {"revoked": True}}
+            )
+        except HTTPException:
+            pass  # Logout is idempotent even after an expired access token.
     if raw:
         db.auth_sessions.update_many(
             {"$or": [{"refresh_hash": digest(raw)}, {"used_hashes": digest(raw)}]},
@@ -213,7 +298,7 @@ def forgot_password(data: ForgotPassword, request: Request, db=Depends(account_d
         email["From"], email["To"], email["Subject"] = (
             settings.smtp_from,
             user["email"],
-            "Reset your FormFit Studio password",
+            "Reset your VastraView password",
         )
         email.set_content(
             f"Reset your password within 20 minutes:\n{settings.app_public_url.rstrip('/')}/reset-password#token={raw}\n\nIf you did not request this, ignore this email."
@@ -294,6 +379,8 @@ def save_scan(data: SaveScan, user=Depends(current_user), db=Depends(account_db)
         "_id": str(uuid4()),
         "user_id": user["_id"],
         "created_at": now(),
+        "consented_at": now(),
+        "consent_method": "explicit-save-action",
         "thumbnail": thumbnail,
     }
     db.saved_scans.insert_one(row)

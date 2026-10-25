@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
-from backend.app.config import ROOT
+from backend.app.config import ROOT, settings
 
 router = APIRouter(prefix="/api/garments", tags=["Garment catalog"])
 GARMENTS = [
@@ -17,6 +17,8 @@ GARMENTS = [
 
 @router.get("")
 def list_garments():
+    if settings.environment == "production":
+        return {"items": []}  # Only the licensed, database-backed catalog is published.
     return {"items": [
         {"id": key, "name": name, "category": category, "photoType": photo_type,
          "imageUrl": f"/api/garments/{key}/image", "description": description}
@@ -27,6 +29,8 @@ def list_garments():
 
 @router.get("/{garment_id}/image")
 def garment_image(garment_id: str):
+    if settings.environment == "production":
+        raise HTTPException(404, "Research garment references are not published in production.")
     row = next((item for item in GARMENTS if item[0] == garment_id), None)
     if row is None or not (ROOT / "data/raw" / row[4]).is_file():
         raise HTTPException(404, "This garment is not available. Upload a garment photo instead.")
