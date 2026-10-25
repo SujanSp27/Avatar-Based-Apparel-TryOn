@@ -92,7 +92,8 @@ test("real six-metric sizing API, chart comparison, unsupported guide and mobile
 }) => {
   await page.goto("/sizing");
   for (const [label, value] of Object.entries(metrics))
-    await page.getByLabel(label, { exact: true }).fill(value);
+    if (await page.getByLabel(label, { exact: true }).count())
+      await page.getByLabel(label, { exact: true }).fill(value);
   const response = page.waitForResponse(
     (r) =>
       r.url().endsWith("/api/v1/sizing/recommend") &&
@@ -128,7 +129,7 @@ test("real six-metric sizing API, chart comparison, unsupported guide and mobile
   });
   await page
     .getByRole("combobox", { name: "Brand", exact: true })
-    .selectOption("adidas");
+    .selectOption("allen-solly");
   await expect(
     page.getByText("No verified body chart", { exact: false }),
   ).toBeVisible();

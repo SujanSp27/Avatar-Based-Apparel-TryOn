@@ -20,6 +20,11 @@ router = APIRouter(tags=["Private images and history"])
 GUEST_COOKIE = "vastraview_guest"
 
 
+def authenticated_owner(user=Depends(current_user)):
+    """New try-on jobs require an account; historical assets retain ownership."""
+    return user["_id"]
+
+
 def principal(request: Request, db=Depends(account_db)):
     authorization = request.headers.get("authorization", "")
     if authorization or request.cookies.get(ACCESS_COOKIE):
@@ -40,7 +45,6 @@ def principal(request: Request, db=Depends(account_db)):
             pass
     # Only creation requests may establish a guest. UUID knowledge never grants access.
     if request.method == "POST" and request.url.path in {
-        "/api/tryon",
         "/api/v1/measurements/extract",
         "/api/v1/measurements/extract-and-recommend",
     }:

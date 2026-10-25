@@ -69,7 +69,7 @@ class MeasurementRepository:
                 )
                 self.measurements.create_index("measurement_id", unique=True)
                 self.measurements.create_index([("created_at", DESCENDING), ("measurement_id", 1)])
-                for seed in ("anthropometry-demo-v1.json", "india-body-charts-v1.json"):
+                for seed in ("anthropometry-demo-v1.json", "india-body-charts-v1.json", "sourced-body-charts-v2.json"):
                     for payload in json.loads((ROOT / "data/brandCharts" / seed).read_text(encoding="utf-8")):
                         chart = ChartCreate.model_validate(payload)
                         document = chart.model_dump(mode="json")
@@ -77,6 +77,8 @@ class MeasurementRepository:
                         self.charts.update_one(key, {"$setOnInsert": document}, upsert=True)
                 self.brands.create_index("brand_id", unique=True)
                 for brand in json.loads((ROOT / "data/brandCharts/india-brand-catalog-v1.json").read_text(encoding="utf-8")):
+                    self.brands.update_one({"brand_id": brand["brand_id"]}, {"$setOnInsert": brand}, upsert=True)
+                for brand in json.loads((ROOT / "data/brandCharts/brand-directory-v2.json").read_text(encoding="utf-8")):
                     self.brands.update_one({"brand_id": brand["brand_id"]}, {"$setOnInsert": brand}, upsert=True)
                 # Demo and admin-created chart brands are discoverable too.
                 for chart in self.charts.find({}, {"brand_id": 1, "brand_name": 1, "market": 1, "is_demo": 1}):

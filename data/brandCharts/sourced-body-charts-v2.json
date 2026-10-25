@@ -1,0 +1,4125 @@
+[
+  {
+    "brand_id": "nike",
+    "brand_name": "Nike",
+    "apparel_id": "nike-in-hv4188-013",
+    "category": "t-shirt",
+    "version": 2,
+    "source": "Nike Men's Dri-FIT T-Shirt HV4188-013 / India body size guide",
+    "is_demo": false,
+    "gender": "men",
+    "market": "IN",
+    "source_url": "https://www.nike.in/nike-men-s-dri-fit-t-shirt/p/27753405",
+    "checked_on": "2026-10-20",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "notes": [
+      "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+      "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+      "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "S",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 85.09,
+            "upper": 91.44
+          },
+          "waist_circumference": {
+            "lower": 72.39,
+            "upper": 78.74
+          },
+          "hip_circumference": {
+            "lower": 86.36,
+            "upper": 91.44
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 91.44,
+            "upper": 96.52
+          },
+          "waist_circumference": {
+            "lower": 78.74,
+            "upper": 85.09
+          },
+          "hip_circumference": {
+            "lower": 91.44,
+            "upper": 96.52
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 96.52,
+            "upper": 102.87
+          },
+          "waist_circumference": {
+            "lower": 85.09,
+            "upper": 91.44
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 102.87,
+            "upper": 109.22
+          },
+          "waist_circumference": {
+            "lower": 91.44,
+            "upper": 96.52
+          },
+          "hip_circumference": {
+            "lower": 101.6,
+            "upper": 106.68
+          }
+        }
+      },
+      {
+        "size_label": "2XL",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 109.22,
+            "upper": 115.57
+          },
+          "waist_circumference": {
+            "lower": 96.52,
+            "upper": 104.14
+          },
+          "hip_circumference": {
+            "lower": 106.68,
+            "upper": 111.76
+          }
+        }
+      }
+    ],
+    "source_type": "official",
+    "verification_status": "verified",
+    "sizing_system": "India product-specific label"
+  },
+  {
+    "brand_id": "nike",
+    "brand_name": "Nike",
+    "apparel_id": "nike-in-im6415-133",
+    "category": "t-shirt",
+    "version": 2,
+    "source": "Nike Sportswear Chill Knit IM6415-133 / India body size guide",
+    "is_demo": false,
+    "gender": "women",
+    "market": "IN",
+    "source_url": "https://www.nike.in/nike-sportswear-chill-knit-women-s-slim-mod-cropped-t-shirt/p/27753683",
+    "checked_on": "2026-10-20",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "notes": [
+      "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+      "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+      "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one.",
+      "chest_circumference corresponds to the published bust/chest measurement."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 76.2,
+            "upper": 81.28
+          },
+          "waist_circumference": {
+            "lower": 66.04,
+            "upper": 68.58
+          },
+          "hip_circumference": {
+            "lower": 86.36,
+            "upper": 88.9
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 81.28,
+            "upper": 85.09
+          },
+          "waist_circumference": {
+            "lower": 68.58,
+            "upper": 71.12
+          },
+          "hip_circumference": {
+            "lower": 88.9,
+            "upper": 92.71
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 85.09,
+            "upper": 88.9
+          },
+          "waist_circumference": {
+            "lower": 71.12,
+            "upper": 74.93
+          },
+          "hip_circumference": {
+            "lower": 92.71,
+            "upper": 96.52
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88.9,
+            "upper": 95.25
+          },
+          "waist_circumference": {
+            "lower": 74.93,
+            "upper": 80.01
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 95.25,
+            "upper": 101.6
+          },
+          "waist_circumference": {
+            "lower": 80.01,
+            "upper": 85.09
+          },
+          "hip_circumference": {
+            "lower": 101.6,
+            "upper": 106.68
+          }
+        }
+      }
+    ],
+    "source_type": "official",
+    "verification_status": "verified",
+    "sizing_system": "India product-specific label"
+  },
+  {
+    "brand_id": "puma",
+    "brand_name": "Puma",
+    "apparel_id": "puma-in-634184",
+    "category": "t-shirt",
+    "version": 2,
+    "source": "Puma Premium Essentials Graphic T-shirt 634184 / India body size guide",
+    "is_demo": false,
+    "gender": "men",
+    "market": "IN",
+    "source_url": "https://in.puma.com/in/en/pd/premium-essentials-mens-graphic-t-shirt/634184",
+    "checked_on": "2026-10-20",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "notes": [
+      "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+      "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+      "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one.",
+      "The guide identifies regular height 172-185 cm and tall height 186-195 cm; inseam is not used for this T-shirt."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XXS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 73.66,
+            "upper": 81.28
+          },
+          "waist_circumference": {
+            "lower": 60.96,
+            "upper": 66.04
+          },
+          "hip_circumference": {
+            "lower": 71.12,
+            "upper": 78.74
+          }
+        }
+      },
+      {
+        "size_label": "XS",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 81.28,
+            "upper": 88.9
+          },
+          "waist_circumference": {
+            "lower": 68.58,
+            "upper": 76.2
+          },
+          "hip_circumference": {
+            "lower": 81.28,
+            "upper": 86.36
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88.9,
+            "upper": 96.52
+          },
+          "waist_circumference": {
+            "lower": 76.2,
+            "upper": 83.82
+          },
+          "hip_circumference": {
+            "lower": 88.9,
+            "upper": 93.98
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 96.52,
+            "upper": 104.14
+          },
+          "waist_circumference": {
+            "lower": 83.82,
+            "upper": 91.44
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 104.14,
+            "upper": 114.3
+          },
+          "waist_circumference": {
+            "lower": 91.44,
+            "upper": 99.06
+          },
+          "hip_circumference": {
+            "lower": 104.14,
+            "upper": 111.76
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 114.3,
+            "upper": 121.92
+          },
+          "waist_circumference": {
+            "lower": 101.6,
+            "upper": 109.22
+          },
+          "hip_circumference": {
+            "lower": 111.76,
+            "upper": 121.92
+          }
+        }
+      },
+      {
+        "size_label": "XXL",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 124.46,
+            "upper": 132.08
+          },
+          "waist_circumference": {
+            "lower": 111.76,
+            "upper": 121.92
+          },
+          "hip_circumference": {
+            "lower": 121.92,
+            "upper": 132.08
+          }
+        }
+      }
+    ],
+    "source_type": "official",
+    "verification_status": "verified",
+    "sizing_system": "India product-specific label"
+  },
+  {
+    "brand_id": "puma",
+    "brand_name": "Puma",
+    "apparel_id": "puma-in-691419",
+    "category": "t-shirt",
+    "version": 2,
+    "source": "Puma Essentials Elevated Logo Polo T-shirt 691419 / India body size guide",
+    "is_demo": false,
+    "gender": "women",
+    "market": "IN",
+    "source_url": "https://in.puma.com/in/en/pd/essentials-elevated-womens-logo-polo-t-shirt/691419?swatch=65",
+    "checked_on": "2026-10-20",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "notes": [
+      "Applies to the body guide displayed for this specific India product; not a universal chart for this brand.",
+      "Published inch bounds converted exactly with 1 inch = 2.54 cm. No missing bounds were inferred.",
+      "Only published chest/bust, waist and hip ranges are scored. Active weights are normalized to sum to one.",
+      "chest_circumference corresponds to the published bust/chest measurement."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XXS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 76.2,
+            "upper": 78.74
+          },
+          "waist_circumference": {
+            "lower": 58.42,
+            "upper": 63.5
+          },
+          "hip_circumference": {
+            "lower": 83.82,
+            "upper": 86.36
+          }
+        }
+      },
+      {
+        "size_label": "XS",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 81.28,
+            "upper": 83.82
+          },
+          "waist_circumference": {
+            "lower": 63.5,
+            "upper": 68.58
+          },
+          "hip_circumference": {
+            "lower": 88.9,
+            "upper": 91.44
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 86.36,
+            "upper": 88.9
+          },
+          "waist_circumference": {
+            "lower": 68.58,
+            "upper": 73.66
+          },
+          "hip_circumference": {
+            "lower": 93.98,
+            "upper": 99.06
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 91.44,
+            "upper": 99.06
+          },
+          "waist_circumference": {
+            "lower": 76.2,
+            "upper": 81.28
+          },
+          "hip_circumference": {
+            "lower": 99.06,
+            "upper": 106.68
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 99.06,
+            "upper": 106.68
+          },
+          "waist_circumference": {
+            "lower": 83.82,
+            "upper": 88.9
+          },
+          "hip_circumference": {
+            "lower": 106.68,
+            "upper": 114.3
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 106.68,
+            "upper": 114.3
+          },
+          "waist_circumference": {
+            "lower": 91.44,
+            "upper": 99.06
+          },
+          "hip_circumference": {
+            "lower": 114.3,
+            "upper": 121.92
+          }
+        }
+      },
+      {
+        "size_label": "2XL",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 114.3,
+            "upper": 121.92
+          },
+          "waist_circumference": {
+            "lower": 99.06,
+            "upper": 106.68
+          },
+          "hip_circumference": {
+            "lower": 121.92,
+            "upper": 129.54
+          }
+        }
+      },
+      {
+        "size_label": "3XL",
+        "sort_order": 7,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 121.92,
+            "upper": 129.54
+          },
+          "waist_circumference": {
+            "lower": 109.22,
+            "upper": 116.84
+          },
+          "hip_circumference": {
+            "lower": 132.08,
+            "upper": 139.7
+          }
+        }
+      }
+    ],
+    "source_type": "official",
+    "verification_status": "verified",
+    "sizing_system": "India product-specific label"
+  },
+  {
+    "brand_id": "manyavar",
+    "brand_name": "Manyavar",
+    "apparel_id": "manyavar-in-M218838-kurta",
+    "category": "kurta",
+    "version": 1,
+    "source": "Manyavar / men kurta / IN",
+    "is_demo": false,
+    "gender": "men",
+    "market": "IN",
+    "source_url": "https://www.manyavar.com/en-in/full-length-kurta-pajama/basic-cream-kurta-set/M218838.html",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "India kurta numeric / alpha label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Uses the published centimetre BODY MEASUREMENTS table, not the larger garment chest values beside the size selector. Upper garment only; pajama inseam is not inferred.",
+      "Manyavar advises choosing the smaller neighboring size for a closer fit or the larger for a looser fit when between sizes."
+    ],
+    "active_metrics": [
+      "shoulder_width",
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "36/S",
+        "sort_order": 0,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 43,
+            "upper": 43
+          },
+          "chest_circumference": {
+            "lower": 91,
+            "upper": 91
+          },
+          "waist_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "hip_circumference": {
+            "lower": 94,
+            "upper": 94
+          }
+        }
+      },
+      {
+        "size_label": "38/M",
+        "sort_order": 1,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 44,
+            "upper": 44
+          },
+          "chest_circumference": {
+            "lower": 97,
+            "upper": 97
+          },
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 89
+          },
+          "hip_circumference": {
+            "lower": 99,
+            "upper": 99
+          }
+        }
+      },
+      {
+        "size_label": "40/L",
+        "sort_order": 2,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 46,
+            "upper": 46
+          },
+          "chest_circumference": {
+            "lower": 102,
+            "upper": 102
+          },
+          "waist_circumference": {
+            "lower": 94,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 104
+          }
+        }
+      },
+      {
+        "size_label": "42/XL",
+        "sort_order": 3,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 47,
+            "upper": 47
+          },
+          "chest_circumference": {
+            "lower": 107,
+            "upper": 107
+          },
+          "waist_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "hip_circumference": {
+            "lower": 109,
+            "upper": 109
+          }
+        }
+      },
+      {
+        "size_label": "44/XXL",
+        "sort_order": 4,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 48,
+            "upper": 48
+          },
+          "chest_circumference": {
+            "lower": 112,
+            "upper": 112
+          },
+          "waist_circumference": {
+            "lower": 105,
+            "upper": 105
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 112
+          }
+        }
+      },
+      {
+        "size_label": "46/XXXL",
+        "sort_order": 5,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 51,
+            "upper": 51
+          },
+          "chest_circumference": {
+            "lower": 117,
+            "upper": 117
+          },
+          "waist_circumference": {
+            "lower": 110,
+            "upper": 110
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 117
+          }
+        }
+      },
+      {
+        "size_label": "48/4XL",
+        "sort_order": 6,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 53,
+            "upper": 53
+          },
+          "chest_circumference": {
+            "lower": 122,
+            "upper": 122
+          },
+          "waist_circumference": {
+            "lower": 118,
+            "upper": 118
+          },
+          "hip_circumference": {
+            "lower": 122,
+            "upper": 122
+          }
+        }
+      },
+      {
+        "size_label": "50/5XL",
+        "sort_order": 7,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 55,
+            "upper": 55
+          },
+          "chest_circumference": {
+            "lower": 127,
+            "upper": 127
+          },
+          "waist_circumference": {
+            "lower": 123,
+            "upper": 123
+          },
+          "hip_circumference": {
+            "lower": 127,
+            "upper": 127
+          }
+        }
+      },
+      {
+        "size_label": "52/6XL",
+        "sort_order": 8,
+        "bounds": {
+          "shoulder_width": {
+            "lower": 56,
+            "upper": 56
+          },
+          "chest_circumference": {
+            "lower": 132,
+            "upper": 132
+          },
+          "waist_circumference": {
+            "lower": 128,
+            "upper": 128
+          },
+          "hip_circumference": {
+            "lower": 135,
+            "upper": 135
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "levi-s",
+    "brand_name": "Levi's",
+    "apparel_id": "levis-us-men-shirt",
+    "category": "shirt",
+    "version": 1,
+    "source": "Levi's / men shirt / US",
+    "is_demo": false,
+    "gender": "men",
+    "market": "US",
+    "source_url": "https://www.levi.com/US/en_US/info/sizeguide",
+    "checked_on": "2026-10-25",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "sizing_system": "US alpha label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 81.28,
+            "upper": 86.36
+          },
+          "waist_circumference": {
+            "lower": 66.04,
+            "upper": 71.12
+          },
+          "hip_circumference": {
+            "lower": 81.28,
+            "upper": 86.36
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88.9,
+            "upper": 93.98
+          },
+          "waist_circumference": {
+            "lower": 73.66,
+            "upper": 78.74
+          },
+          "hip_circumference": {
+            "lower": 88.9,
+            "upper": 93.98
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          },
+          "waist_circumference": {
+            "lower": 81.28,
+            "upper": 86.36
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 104.14,
+            "upper": 109.22
+          },
+          "waist_circumference": {
+            "lower": 88.9,
+            "upper": 93.98
+          },
+          "hip_circumference": {
+            "lower": 104.14,
+            "upper": 109.22
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 111.76,
+            "upper": 116.84
+          },
+          "waist_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          },
+          "hip_circumference": {
+            "lower": 111.76,
+            "upper": 116.84
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "levi-s",
+    "brand_name": "Levi's",
+    "apparel_id": "levis-us-women-shirt",
+    "category": "shirt",
+    "version": 1,
+    "source": "Levi's / women shirt / US",
+    "is_demo": false,
+    "gender": "women",
+    "market": "US",
+    "source_url": "https://www.levi.com/US/en_US/info/sizeguide",
+    "checked_on": "2026-10-25",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "sizing_system": "US alpha label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XXS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 78.74,
+            "upper": 78.74
+          },
+          "waist_circumference": {
+            "lower": 61.595,
+            "upper": 61.595
+          },
+          "hip_circumference": {
+            "lower": 86.36,
+            "upper": 86.36
+          }
+        }
+      },
+      {
+        "size_label": "XS",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 83.82,
+            "upper": 83.82
+          },
+          "waist_circumference": {
+            "lower": 66.675,
+            "upper": 66.675
+          },
+          "hip_circumference": {
+            "lower": 91.44,
+            "upper": 91.44
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88.9,
+            "upper": 88.9
+          },
+          "waist_circumference": {
+            "lower": 71.755,
+            "upper": 71.755
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 96.52
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 93.98,
+            "upper": 93.98
+          },
+          "waist_circumference": {
+            "lower": 76.835,
+            "upper": 76.835
+          },
+          "hip_circumference": {
+            "lower": 101.6,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 100.33,
+            "upper": 100.33
+          },
+          "waist_circumference": {
+            "lower": 83.185,
+            "upper": 83.185
+          },
+          "hip_circumference": {
+            "lower": 107.95,
+            "upper": 107.95
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 107.95,
+            "upper": 107.95
+          },
+          "waist_circumference": {
+            "lower": 90.805,
+            "upper": 90.805
+          },
+          "hip_circumference": {
+            "lower": 115.57,
+            "upper": 115.57
+          }
+        }
+      },
+      {
+        "size_label": "XXL",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 115.57,
+            "upper": 115.57
+          },
+          "waist_circumference": {
+            "lower": 98.425,
+            "upper": 98.425
+          },
+          "hip_circumference": {
+            "lower": 123.19,
+            "upper": 123.19
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "levi-s",
+    "brand_name": "Levi's",
+    "apparel_id": "levis-us-men-t-shirt",
+    "category": "t-shirt",
+    "version": 1,
+    "source": "Levi's / men t-shirt / US",
+    "is_demo": false,
+    "gender": "men",
+    "market": "US",
+    "source_url": "https://www.levi.com/US/en_US/info/sizeguide",
+    "checked_on": "2026-10-25",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "sizing_system": "US alpha label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 81.28,
+            "upper": 86.36
+          },
+          "waist_circumference": {
+            "lower": 66.04,
+            "upper": 71.12
+          },
+          "hip_circumference": {
+            "lower": 81.28,
+            "upper": 86.36
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88.9,
+            "upper": 93.98
+          },
+          "waist_circumference": {
+            "lower": 73.66,
+            "upper": 78.74
+          },
+          "hip_circumference": {
+            "lower": 88.9,
+            "upper": 93.98
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          },
+          "waist_circumference": {
+            "lower": 81.28,
+            "upper": 86.36
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 104.14,
+            "upper": 109.22
+          },
+          "waist_circumference": {
+            "lower": 88.9,
+            "upper": 93.98
+          },
+          "hip_circumference": {
+            "lower": 104.14,
+            "upper": 109.22
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 111.76,
+            "upper": 116.84
+          },
+          "waist_circumference": {
+            "lower": 96.52,
+            "upper": 101.6
+          },
+          "hip_circumference": {
+            "lower": 111.76,
+            "upper": 116.84
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "levi-s",
+    "brand_name": "Levi's",
+    "apparel_id": "levis-us-women-t-shirt",
+    "category": "t-shirt",
+    "version": 1,
+    "source": "Levi's / women t-shirt / US",
+    "is_demo": false,
+    "gender": "women",
+    "market": "US",
+    "source_url": "https://www.levi.com/US/en_US/info/sizeguide",
+    "checked_on": "2026-10-25",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "sizing_system": "US alpha label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XXS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 78.74,
+            "upper": 78.74
+          },
+          "waist_circumference": {
+            "lower": 61.595,
+            "upper": 61.595
+          },
+          "hip_circumference": {
+            "lower": 86.36,
+            "upper": 86.36
+          }
+        }
+      },
+      {
+        "size_label": "XS",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 83.82,
+            "upper": 83.82
+          },
+          "waist_circumference": {
+            "lower": 66.675,
+            "upper": 66.675
+          },
+          "hip_circumference": {
+            "lower": 91.44,
+            "upper": 91.44
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88.9,
+            "upper": 88.9
+          },
+          "waist_circumference": {
+            "lower": 71.755,
+            "upper": 71.755
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 96.52
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 93.98,
+            "upper": 93.98
+          },
+          "waist_circumference": {
+            "lower": 76.835,
+            "upper": 76.835
+          },
+          "hip_circumference": {
+            "lower": 101.6,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 100.33,
+            "upper": 100.33
+          },
+          "waist_circumference": {
+            "lower": 83.185,
+            "upper": 83.185
+          },
+          "hip_circumference": {
+            "lower": 107.95,
+            "upper": 107.95
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 107.95,
+            "upper": 107.95
+          },
+          "waist_circumference": {
+            "lower": 90.805,
+            "upper": 90.805
+          },
+          "hip_circumference": {
+            "lower": 115.57,
+            "upper": 115.57
+          }
+        }
+      },
+      {
+        "size_label": "XXL",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 115.57,
+            "upper": 115.57
+          },
+          "waist_circumference": {
+            "lower": 98.425,
+            "upper": 98.425
+          },
+          "hip_circumference": {
+            "lower": 123.19,
+            "upper": 123.19
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "levi-s",
+    "brand_name": "Levi's",
+    "apparel_id": "levis-us-women-jeans",
+    "category": "jeans",
+    "version": 1,
+    "source": "Levi's / women jeans / US",
+    "is_demo": false,
+    "gender": "women",
+    "market": "US",
+    "source_url": "https://www.levi.com/US/en_US/info/sizeguide",
+    "checked_on": "2026-10-25",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "sizing_system": "US denim waist label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Denim waist labels are not literal body waist measurements. Select the inseam separately from the product."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "24",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 64.135,
+            "upper": 64.135
+          },
+          "hip_circumference": {
+            "lower": 86.36,
+            "upper": 86.36
+          }
+        }
+      },
+      {
+        "size_label": "25",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 66.675,
+            "upper": 66.675
+          },
+          "hip_circumference": {
+            "lower": 88.9,
+            "upper": 88.9
+          }
+        }
+      },
+      {
+        "size_label": "26",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 69.215,
+            "upper": 69.215
+          },
+          "hip_circumference": {
+            "lower": 91.44,
+            "upper": 91.44
+          }
+        }
+      },
+      {
+        "size_label": "27",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 71.755,
+            "upper": 71.755
+          },
+          "hip_circumference": {
+            "lower": 93.98,
+            "upper": 93.98
+          }
+        }
+      },
+      {
+        "size_label": "28",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 74.295,
+            "upper": 74.295
+          },
+          "hip_circumference": {
+            "lower": 96.52,
+            "upper": 96.52
+          }
+        }
+      },
+      {
+        "size_label": "29",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 76.835,
+            "upper": 76.835
+          },
+          "hip_circumference": {
+            "lower": 99.06,
+            "upper": 99.06
+          }
+        }
+      },
+      {
+        "size_label": "30",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 79.375,
+            "upper": 79.375
+          },
+          "hip_circumference": {
+            "lower": 101.6,
+            "upper": 101.6
+          }
+        }
+      },
+      {
+        "size_label": "31",
+        "sort_order": 7,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 83.185,
+            "upper": 83.185
+          },
+          "hip_circumference": {
+            "lower": 105.41,
+            "upper": 105.41
+          }
+        }
+      },
+      {
+        "size_label": "32",
+        "sort_order": 8,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 86.995,
+            "upper": 86.995
+          },
+          "hip_circumference": {
+            "lower": 109.22,
+            "upper": 109.22
+          }
+        }
+      },
+      {
+        "size_label": "33",
+        "sort_order": 9,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 90.805,
+            "upper": 90.805
+          },
+          "hip_circumference": {
+            "lower": 113.03,
+            "upper": 113.03
+          }
+        }
+      },
+      {
+        "size_label": "34",
+        "sort_order": 10,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 95.885,
+            "upper": 95.885
+          },
+          "hip_circumference": {
+            "lower": 118.11,
+            "upper": 118.11
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "levi-s",
+    "brand_name": "Levi's",
+    "apparel_id": "levis-us-men-jeans",
+    "category": "jeans",
+    "version": 1,
+    "source": "Levi's / men jeans / US",
+    "is_demo": false,
+    "gender": "men",
+    "market": "US",
+    "source_url": "https://www.levi.com/US/en_US/info/sizeguide",
+    "checked_on": "2026-10-25",
+    "source_unit": "in",
+    "measurement_basis": "body",
+    "sizing_system": "US denim waist label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Selected published waist labels only; inseam is a separate product selection."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference",
+      "thigh_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "28",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 72.39,
+            "upper": 73.66
+          },
+          "hip_circumference": {
+            "lower": 87.63,
+            "upper": 88.9
+          },
+          "thigh_circumference": {
+            "lower": 54.61,
+            "upper": 55.88
+          }
+        }
+      },
+      {
+        "size_label": "29",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 74.93,
+            "upper": 76.2
+          },
+          "hip_circumference": {
+            "lower": 90.17,
+            "upper": 91.44
+          },
+          "thigh_circumference": {
+            "lower": 55.88,
+            "upper": 57.15
+          }
+        }
+      },
+      {
+        "size_label": "30",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 77.47,
+            "upper": 78.74
+          },
+          "hip_circumference": {
+            "lower": 92.71,
+            "upper": 93.98
+          },
+          "thigh_circumference": {
+            "lower": 57.15,
+            "upper": 58.42
+          }
+        }
+      },
+      {
+        "size_label": "31",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 80.01,
+            "upper": 81.28
+          },
+          "hip_circumference": {
+            "lower": 95.25,
+            "upper": 96.52
+          },
+          "thigh_circumference": {
+            "lower": 58.42,
+            "upper": 59.69
+          }
+        }
+      },
+      {
+        "size_label": "32",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 82.55,
+            "upper": 83.82
+          },
+          "hip_circumference": {
+            "lower": 97.79,
+            "upper": 99.06
+          },
+          "thigh_circumference": {
+            "lower": 59.69,
+            "upper": 60.96
+          }
+        }
+      },
+      {
+        "size_label": "34",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 87.63,
+            "upper": 88.9
+          },
+          "hip_circumference": {
+            "lower": 102.87,
+            "upper": 104.14
+          },
+          "thigh_circumference": {
+            "lower": 60.96,
+            "upper": 63.5
+          }
+        }
+      },
+      {
+        "size_label": "36",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 92.71,
+            "upper": 95.25
+          },
+          "hip_circumference": {
+            "lower": 107.95,
+            "upper": 110.49
+          },
+          "thigh_circumference": {
+            "lower": 66.04,
+            "upper": 68.58
+          }
+        }
+      },
+      {
+        "size_label": "38",
+        "sort_order": 7,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 97.79,
+            "upper": 100.33
+          },
+          "hip_circumference": {
+            "lower": 113.03,
+            "upper": 115.57
+          },
+          "thigh_circumference": {
+            "lower": 68.58,
+            "upper": 71.12
+          }
+        }
+      },
+      {
+        "size_label": "40",
+        "sort_order": 8,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 102.87,
+            "upper": 105.41
+          },
+          "hip_circumference": {
+            "lower": 118.11,
+            "upper": 120.65
+          },
+          "thigh_circumference": {
+            "lower": 69.215,
+            "upper": 71.755
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-men-t-shirt",
+    "category": "t-shirt",
+    "version": 1,
+    "source": "Adidas / men t-shirt / GB",
+    "is_demo": false,
+    "gender": "men",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/men-shirts_tops",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 83,
+            "upper": 86
+          },
+          "waist_circumference": {
+            "lower": 71,
+            "upper": 74
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 87,
+            "upper": 92
+          },
+          "waist_circumference": {
+            "lower": 75,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 93,
+            "upper": 100
+          },
+          "waist_circumference": {
+            "lower": 81,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 99
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 101,
+            "upper": 108
+          },
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 96
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 107
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 109,
+            "upper": 118
+          },
+          "waist_circumference": {
+            "lower": 97,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 116
+          }
+        }
+      },
+      {
+        "size_label": "2XL",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 119,
+            "upper": 130
+          },
+          "waist_circumference": {
+            "lower": 107,
+            "upper": 119
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 125
+          }
+        }
+      },
+      {
+        "size_label": "3XL",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 131,
+            "upper": 142
+          },
+          "waist_circumference": {
+            "lower": 120,
+            "upper": 132
+          },
+          "hip_circumference": {
+            "lower": 126,
+            "upper": 135
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-men-shirt",
+    "category": "shirt",
+    "version": 1,
+    "source": "Adidas / men shirt / GB",
+    "is_demo": false,
+    "gender": "men",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/men-shirts_tops",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XS",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 83,
+            "upper": 86
+          },
+          "waist_circumference": {
+            "lower": 71,
+            "upper": 74
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 87,
+            "upper": 92
+          },
+          "waist_circumference": {
+            "lower": 75,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 93,
+            "upper": 100
+          },
+          "waist_circumference": {
+            "lower": 81,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 99
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 101,
+            "upper": 108
+          },
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 96
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 107
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 109,
+            "upper": 118
+          },
+          "waist_circumference": {
+            "lower": 97,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 116
+          }
+        }
+      },
+      {
+        "size_label": "2XL",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 119,
+            "upper": 130
+          },
+          "waist_circumference": {
+            "lower": 107,
+            "upper": 119
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 125
+          }
+        }
+      },
+      {
+        "size_label": "3XL",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 131,
+            "upper": 142
+          },
+          "waist_circumference": {
+            "lower": 120,
+            "upper": 132
+          },
+          "hip_circumference": {
+            "lower": 126,
+            "upper": 135
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-men-trouser",
+    "category": "trouser",
+    "version": 1,
+    "source": "Adidas / men trouser / GB",
+    "is_demo": false,
+    "gender": "men",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/men-pants_shorts",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Standard length only; tall/petite tables are separate. Source inseam instruction is crotch to floor; confirm with a tape measurement."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference",
+      "inseam_length"
+    ],
+    "sizes": [
+      {
+        "size_label": "XS",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 71,
+            "upper": 74
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          },
+          "inseam_length": {
+            "lower": 81,
+            "upper": 81
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 75,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          },
+          "inseam_length": {
+            "lower": 81.5,
+            "upper": 81.5
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 81,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 99
+          },
+          "inseam_length": {
+            "lower": 82,
+            "upper": 82
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 96
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 107
+          },
+          "inseam_length": {
+            "lower": 82.5,
+            "upper": 82.5
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 97,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 116
+          },
+          "inseam_length": {
+            "lower": 83,
+            "upper": 83
+          }
+        }
+      },
+      {
+        "size_label": "2XL",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 107,
+            "upper": 119
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 125
+          },
+          "inseam_length": {
+            "lower": 82.5,
+            "upper": 82.5
+          }
+        }
+      },
+      {
+        "size_label": "3XL",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 120,
+            "upper": 132
+          },
+          "hip_circumference": {
+            "lower": 126,
+            "upper": 135
+          },
+          "inseam_length": {
+            "lower": 82,
+            "upper": 82
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-men-shorts",
+    "category": "shorts",
+    "version": 1,
+    "source": "Adidas / men shorts / GB",
+    "is_demo": false,
+    "gender": "men",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/men-pants_shorts",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Standard length only; tall/petite tables are separate. Source inseam instruction is crotch to floor; confirm with a tape measurement."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "XS",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 71,
+            "upper": 74
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          }
+        }
+      },
+      {
+        "size_label": "S",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 75,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          }
+        }
+      },
+      {
+        "size_label": "M",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 81,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 99
+          }
+        }
+      },
+      {
+        "size_label": "L",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 89,
+            "upper": 96
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 107
+          }
+        }
+      },
+      {
+        "size_label": "XL",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 97,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 116
+          }
+        }
+      },
+      {
+        "size_label": "2XL",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 107,
+            "upper": 119
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 125
+          }
+        }
+      },
+      {
+        "size_label": "3XL",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 120,
+            "upper": 132
+          },
+          "hip_circumference": {
+            "lower": 126,
+            "upper": 135
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-women-t-shirt",
+    "category": "t-shirt",
+    "version": 1,
+    "source": "Adidas / women t-shirt / GB",
+    "is_demo": false,
+    "gender": "women",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/women-shirts_tops",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "2XS (0-2)",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 73,
+            "upper": 76
+          },
+          "waist_circumference": {
+            "lower": 57,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          }
+        }
+      },
+      {
+        "size_label": "XS (4-6)",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 77,
+            "upper": 82
+          },
+          "waist_circumference": {
+            "lower": 61,
+            "upper": 66
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          }
+        }
+      },
+      {
+        "size_label": "S (8-10)",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 83,
+            "upper": 88
+          },
+          "waist_circumference": {
+            "lower": 67,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 97
+          }
+        }
+      },
+      {
+        "size_label": "M (12-14)",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 89,
+            "upper": 94
+          },
+          "waist_circumference": {
+            "lower": 73,
+            "upper": 78
+          },
+          "hip_circumference": {
+            "lower": 98,
+            "upper": 103
+          }
+        }
+      },
+      {
+        "size_label": "L (16-18)",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 95,
+            "upper": 101
+          },
+          "waist_circumference": {
+            "lower": 79,
+            "upper": 85
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 110
+          }
+        }
+      },
+      {
+        "size_label": "XL (20-22)",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 102,
+            "upper": 109
+          },
+          "waist_circumference": {
+            "lower": 86,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 111,
+            "upper": 117
+          }
+        }
+      },
+      {
+        "size_label": "2XL (24-26)",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 110,
+            "upper": 118
+          },
+          "waist_circumference": {
+            "lower": 95,
+            "upper": 104
+          },
+          "hip_circumference": {
+            "lower": 118,
+            "upper": 125
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-women-shirt",
+    "category": "shirt",
+    "version": 1,
+    "source": "Adidas / women shirt / GB",
+    "is_demo": false,
+    "gender": "women",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/women-shirts_tops",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "2XS (0-2)",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 73,
+            "upper": 76
+          },
+          "waist_circumference": {
+            "lower": 57,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          }
+        }
+      },
+      {
+        "size_label": "XS (4-6)",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 77,
+            "upper": 82
+          },
+          "waist_circumference": {
+            "lower": 61,
+            "upper": 66
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          }
+        }
+      },
+      {
+        "size_label": "S (8-10)",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 83,
+            "upper": 88
+          },
+          "waist_circumference": {
+            "lower": 67,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 97
+          }
+        }
+      },
+      {
+        "size_label": "M (12-14)",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 89,
+            "upper": 94
+          },
+          "waist_circumference": {
+            "lower": 73,
+            "upper": 78
+          },
+          "hip_circumference": {
+            "lower": 98,
+            "upper": 103
+          }
+        }
+      },
+      {
+        "size_label": "L (16-18)",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 95,
+            "upper": 101
+          },
+          "waist_circumference": {
+            "lower": 79,
+            "upper": 85
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 110
+          }
+        }
+      },
+      {
+        "size_label": "XL (20-22)",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 102,
+            "upper": 109
+          },
+          "waist_circumference": {
+            "lower": 86,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 111,
+            "upper": 117
+          }
+        }
+      },
+      {
+        "size_label": "2XL (24-26)",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 110,
+            "upper": 118
+          },
+          "waist_circumference": {
+            "lower": 95,
+            "upper": 104
+          },
+          "hip_circumference": {
+            "lower": 118,
+            "upper": 125
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-women-trouser",
+    "category": "trouser",
+    "version": 1,
+    "source": "Adidas / women trouser / GB",
+    "is_demo": false,
+    "gender": "women",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/women-pants_shorts",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Standard length only; tall/petite tables are separate. Source inseam instruction is crotch to floor; confirm with a tape measurement."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference",
+      "inseam_length"
+    ],
+    "sizes": [
+      {
+        "size_label": "2XS (0-2)",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 57,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          },
+          "inseam_length": {
+            "lower": 77.5,
+            "upper": 77.5
+          }
+        }
+      },
+      {
+        "size_label": "XS (4-6)",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 61,
+            "upper": 66
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          },
+          "inseam_length": {
+            "lower": 78,
+            "upper": 78
+          }
+        }
+      },
+      {
+        "size_label": "S (8-10)",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 67,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 97
+          },
+          "inseam_length": {
+            "lower": 78.5,
+            "upper": 78.5
+          }
+        }
+      },
+      {
+        "size_label": "M (12-14)",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 73,
+            "upper": 78
+          },
+          "hip_circumference": {
+            "lower": 98,
+            "upper": 103
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "L (16-18)",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 79,
+            "upper": 85
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 110
+          },
+          "inseam_length": {
+            "lower": 79.5,
+            "upper": 79.5
+          }
+        }
+      },
+      {
+        "size_label": "XL (20-22)",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 86,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 111,
+            "upper": 117
+          },
+          "inseam_length": {
+            "lower": 80,
+            "upper": 80
+          }
+        }
+      },
+      {
+        "size_label": "XXL (24-26)",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 95,
+            "upper": 104
+          },
+          "hip_circumference": {
+            "lower": 118,
+            "upper": 125
+          },
+          "inseam_length": {
+            "lower": 80.5,
+            "upper": 80.5
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "apparel_id": "adidas-gb-women-shorts",
+    "category": "shorts",
+    "version": 1,
+    "source": "Adidas / women shorts / GB",
+    "is_demo": false,
+    "gender": "women",
+    "market": "GB",
+    "source_url": "https://www.adidas.co.uk/help/size_charts/women-pants_shorts",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "UK standard alpha / numeric label",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Standard length only; tall/petite tables are separate. Source inseam instruction is crotch to floor; confirm with a tape measurement."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "2XS (0-2)",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 57,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 82,
+            "upper": 85
+          }
+        }
+      },
+      {
+        "size_label": "XS (4-6)",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 61,
+            "upper": 66
+          },
+          "hip_circumference": {
+            "lower": 86,
+            "upper": 91
+          }
+        }
+      },
+      {
+        "size_label": "S (8-10)",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 67,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 97
+          }
+        }
+      },
+      {
+        "size_label": "M (12-14)",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 73,
+            "upper": 78
+          },
+          "hip_circumference": {
+            "lower": 98,
+            "upper": 103
+          }
+        }
+      },
+      {
+        "size_label": "L (16-18)",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 79,
+            "upper": 85
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 110
+          }
+        }
+      },
+      {
+        "size_label": "XL (20-22)",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 86,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 111,
+            "upper": 117
+          }
+        }
+      },
+      {
+        "size_label": "XXL (24-26)",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 95,
+            "upper": 104
+          },
+          "hip_circumference": {
+            "lower": 118,
+            "upper": 125
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "h-m",
+    "brand_name": "H&M",
+    "apparel_id": "hm-xk-women-eur-blouse",
+    "category": "blouse",
+    "version": 1,
+    "source": "H&M / women blouse / XK",
+    "is_demo": false,
+    "gender": "women",
+    "market": "XK",
+    "source_url": "https://www.hm.com/xk/customer-service/sizeguide/ladies/",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "EUR numeric / Kosovo market",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Official Kosovo-market guide in EUR numeric sizes; not verified for India-market products. Point measurements remain exact; alpha grouping is not inferred.",
+      "Source measures inner leg down to the floor."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "32",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 76,
+            "upper": 76
+          },
+          "waist_circumference": {
+            "lower": 60,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 84,
+            "upper": 84
+          }
+        }
+      },
+      {
+        "size_label": "34",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 80,
+            "upper": 80
+          },
+          "waist_circumference": {
+            "lower": 64,
+            "upper": 64
+          },
+          "hip_circumference": {
+            "lower": 88,
+            "upper": 88
+          }
+        }
+      },
+      {
+        "size_label": "36",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "waist_circumference": {
+            "lower": 68,
+            "upper": 68
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 92
+          }
+        }
+      },
+      {
+        "size_label": "38",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88,
+            "upper": 88
+          },
+          "waist_circumference": {
+            "lower": 72,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 96,
+            "upper": 96
+          }
+        }
+      },
+      {
+        "size_label": "40",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 92,
+            "upper": 92
+          },
+          "waist_circumference": {
+            "lower": 76,
+            "upper": 76
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 100
+          }
+        }
+      },
+      {
+        "size_label": "42",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 96,
+            "upper": 96
+          },
+          "waist_circumference": {
+            "lower": 80,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 104
+          }
+        }
+      },
+      {
+        "size_label": "44",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "waist_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 108
+          }
+        }
+      },
+      {
+        "size_label": "46",
+        "sort_order": 7,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 104,
+            "upper": 104
+          },
+          "waist_circumference": {
+            "lower": 88,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 112
+          }
+        }
+      },
+      {
+        "size_label": "48",
+        "sort_order": 8,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 110,
+            "upper": 110
+          },
+          "waist_circumference": {
+            "lower": 94,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 117
+          }
+        }
+      },
+      {
+        "size_label": "50",
+        "sort_order": 9,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 116,
+            "upper": 116
+          },
+          "waist_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "hip_circumference": {
+            "lower": 122,
+            "upper": 122
+          }
+        }
+      },
+      {
+        "size_label": "52",
+        "sort_order": 10,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 122,
+            "upper": 122
+          },
+          "waist_circumference": {
+            "lower": 106,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 127,
+            "upper": 127
+          }
+        }
+      },
+      {
+        "size_label": "54",
+        "sort_order": 11,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 128,
+            "upper": 128
+          },
+          "waist_circumference": {
+            "lower": 112,
+            "upper": 112
+          },
+          "hip_circumference": {
+            "lower": 132,
+            "upper": 132
+          }
+        }
+      },
+      {
+        "size_label": "56",
+        "sort_order": 12,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 134,
+            "upper": 134
+          },
+          "waist_circumference": {
+            "lower": 118,
+            "upper": 118
+          },
+          "hip_circumference": {
+            "lower": 137,
+            "upper": 137
+          }
+        }
+      },
+      {
+        "size_label": "58",
+        "sort_order": 13,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 140,
+            "upper": 140
+          },
+          "waist_circumference": {
+            "lower": 124,
+            "upper": 124
+          },
+          "hip_circumference": {
+            "lower": 142,
+            "upper": 142
+          }
+        }
+      },
+      {
+        "size_label": "60",
+        "sort_order": 14,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 146,
+            "upper": 146
+          },
+          "waist_circumference": {
+            "lower": 130,
+            "upper": 130
+          },
+          "hip_circumference": {
+            "lower": 147,
+            "upper": 147
+          }
+        }
+      },
+      {
+        "size_label": "62",
+        "sort_order": 15,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 152,
+            "upper": 152
+          },
+          "waist_circumference": {
+            "lower": 136,
+            "upper": 136
+          },
+          "hip_circumference": {
+            "lower": 152,
+            "upper": 152
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "h-m",
+    "brand_name": "H&M",
+    "apparel_id": "hm-xk-women-eur-dress",
+    "category": "dress",
+    "version": 1,
+    "source": "H&M / women dress / XK",
+    "is_demo": false,
+    "gender": "women",
+    "market": "XK",
+    "source_url": "https://www.hm.com/xk/customer-service/sizeguide/ladies/",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "EUR numeric / Kosovo market",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Official Kosovo-market guide in EUR numeric sizes; not verified for India-market products. Point measurements remain exact; alpha grouping is not inferred.",
+      "Source measures inner leg down to the floor."
+    ],
+    "active_metrics": [
+      "chest_circumference",
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "32",
+        "sort_order": 0,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 76,
+            "upper": 76
+          },
+          "waist_circumference": {
+            "lower": 60,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 84,
+            "upper": 84
+          }
+        }
+      },
+      {
+        "size_label": "34",
+        "sort_order": 1,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 80,
+            "upper": 80
+          },
+          "waist_circumference": {
+            "lower": 64,
+            "upper": 64
+          },
+          "hip_circumference": {
+            "lower": 88,
+            "upper": 88
+          }
+        }
+      },
+      {
+        "size_label": "36",
+        "sort_order": 2,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "waist_circumference": {
+            "lower": 68,
+            "upper": 68
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 92
+          }
+        }
+      },
+      {
+        "size_label": "38",
+        "sort_order": 3,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 88,
+            "upper": 88
+          },
+          "waist_circumference": {
+            "lower": 72,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 96,
+            "upper": 96
+          }
+        }
+      },
+      {
+        "size_label": "40",
+        "sort_order": 4,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 92,
+            "upper": 92
+          },
+          "waist_circumference": {
+            "lower": 76,
+            "upper": 76
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 100
+          }
+        }
+      },
+      {
+        "size_label": "42",
+        "sort_order": 5,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 96,
+            "upper": 96
+          },
+          "waist_circumference": {
+            "lower": 80,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 104
+          }
+        }
+      },
+      {
+        "size_label": "44",
+        "sort_order": 6,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "waist_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 108
+          }
+        }
+      },
+      {
+        "size_label": "46",
+        "sort_order": 7,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 104,
+            "upper": 104
+          },
+          "waist_circumference": {
+            "lower": 88,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 112
+          }
+        }
+      },
+      {
+        "size_label": "48",
+        "sort_order": 8,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 110,
+            "upper": 110
+          },
+          "waist_circumference": {
+            "lower": 94,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 117
+          }
+        }
+      },
+      {
+        "size_label": "50",
+        "sort_order": 9,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 116,
+            "upper": 116
+          },
+          "waist_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "hip_circumference": {
+            "lower": 122,
+            "upper": 122
+          }
+        }
+      },
+      {
+        "size_label": "52",
+        "sort_order": 10,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 122,
+            "upper": 122
+          },
+          "waist_circumference": {
+            "lower": 106,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 127,
+            "upper": 127
+          }
+        }
+      },
+      {
+        "size_label": "54",
+        "sort_order": 11,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 128,
+            "upper": 128
+          },
+          "waist_circumference": {
+            "lower": 112,
+            "upper": 112
+          },
+          "hip_circumference": {
+            "lower": 132,
+            "upper": 132
+          }
+        }
+      },
+      {
+        "size_label": "56",
+        "sort_order": 12,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 134,
+            "upper": 134
+          },
+          "waist_circumference": {
+            "lower": 118,
+            "upper": 118
+          },
+          "hip_circumference": {
+            "lower": 137,
+            "upper": 137
+          }
+        }
+      },
+      {
+        "size_label": "58",
+        "sort_order": 13,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 140,
+            "upper": 140
+          },
+          "waist_circumference": {
+            "lower": 124,
+            "upper": 124
+          },
+          "hip_circumference": {
+            "lower": 142,
+            "upper": 142
+          }
+        }
+      },
+      {
+        "size_label": "60",
+        "sort_order": 14,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 146,
+            "upper": 146
+          },
+          "waist_circumference": {
+            "lower": 130,
+            "upper": 130
+          },
+          "hip_circumference": {
+            "lower": 147,
+            "upper": 147
+          }
+        }
+      },
+      {
+        "size_label": "62",
+        "sort_order": 15,
+        "bounds": {
+          "chest_circumference": {
+            "lower": 152,
+            "upper": 152
+          },
+          "waist_circumference": {
+            "lower": 136,
+            "upper": 136
+          },
+          "hip_circumference": {
+            "lower": 152,
+            "upper": 152
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "h-m",
+    "brand_name": "H&M",
+    "apparel_id": "hm-xk-women-eur-trouser",
+    "category": "trouser",
+    "version": 1,
+    "source": "H&M / women trouser / XK",
+    "is_demo": false,
+    "gender": "women",
+    "market": "XK",
+    "source_url": "https://www.hm.com/xk/customer-service/sizeguide/ladies/",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "EUR numeric / Kosovo market",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Official Kosovo-market guide in EUR numeric sizes; not verified for India-market products. Point measurements remain exact; alpha grouping is not inferred.",
+      "Source measures inner leg down to the floor."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference",
+      "inseam_length"
+    ],
+    "sizes": [
+      {
+        "size_label": "32",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 60,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "34",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 64,
+            "upper": 64
+          },
+          "hip_circumference": {
+            "lower": 88,
+            "upper": 88
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "36",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 68,
+            "upper": 68
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 92
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "38",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 72,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 96,
+            "upper": 96
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "40",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 76,
+            "upper": 76
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "42",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 80,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 104
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "44",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 108
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "46",
+        "sort_order": 7,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 88,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 112
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "48",
+        "sort_order": 8,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 94,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 117
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "50",
+        "sort_order": 9,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "hip_circumference": {
+            "lower": 122,
+            "upper": 122
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "52",
+        "sort_order": 10,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 106,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 127,
+            "upper": 127
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "54",
+        "sort_order": 11,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 112,
+            "upper": 112
+          },
+          "hip_circumference": {
+            "lower": 132,
+            "upper": 132
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "56",
+        "sort_order": 12,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 118,
+            "upper": 118
+          },
+          "hip_circumference": {
+            "lower": 137,
+            "upper": 137
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "58",
+        "sort_order": 13,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 124,
+            "upper": 124
+          },
+          "hip_circumference": {
+            "lower": 142,
+            "upper": 142
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "60",
+        "sort_order": 14,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 130,
+            "upper": 130
+          },
+          "hip_circumference": {
+            "lower": 147,
+            "upper": 147
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      },
+      {
+        "size_label": "62",
+        "sort_order": 15,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 136,
+            "upper": 136
+          },
+          "hip_circumference": {
+            "lower": 152,
+            "upper": 152
+          },
+          "inseam_length": {
+            "lower": 79,
+            "upper": 79
+          }
+        }
+      }
+    ]
+  },
+  {
+    "brand_id": "h-m",
+    "brand_name": "H&M",
+    "apparel_id": "hm-xk-women-eur-skirt",
+    "category": "skirt",
+    "version": 1,
+    "source": "H&M / women skirt / XK",
+    "is_demo": false,
+    "gender": "women",
+    "market": "XK",
+    "source_url": "https://www.hm.com/xk/customer-service/sizeguide/ladies/",
+    "checked_on": "2026-10-25",
+    "source_unit": "cm",
+    "measurement_basis": "body",
+    "sizing_system": "EUR numeric / Kosovo market",
+    "source_type": "official",
+    "verification_status": "verified",
+    "notes": [
+      "Chart-based comparison, not an AI fit prediction or guarantee. Regional labels are not converted to Indian sizing.",
+      "Single published values remain point measurements; no fit ranges are inferred.",
+      "Official Kosovo-market guide in EUR numeric sizes; not verified for India-market products. Point measurements remain exact; alpha grouping is not inferred.",
+      "Source measures inner leg down to the floor."
+    ],
+    "active_metrics": [
+      "waist_circumference",
+      "hip_circumference"
+    ],
+    "sizes": [
+      {
+        "size_label": "32",
+        "sort_order": 0,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 60,
+            "upper": 60
+          },
+          "hip_circumference": {
+            "lower": 84,
+            "upper": 84
+          }
+        }
+      },
+      {
+        "size_label": "34",
+        "sort_order": 1,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 64,
+            "upper": 64
+          },
+          "hip_circumference": {
+            "lower": 88,
+            "upper": 88
+          }
+        }
+      },
+      {
+        "size_label": "36",
+        "sort_order": 2,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 68,
+            "upper": 68
+          },
+          "hip_circumference": {
+            "lower": 92,
+            "upper": 92
+          }
+        }
+      },
+      {
+        "size_label": "38",
+        "sort_order": 3,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 72,
+            "upper": 72
+          },
+          "hip_circumference": {
+            "lower": 96,
+            "upper": 96
+          }
+        }
+      },
+      {
+        "size_label": "40",
+        "sort_order": 4,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 76,
+            "upper": 76
+          },
+          "hip_circumference": {
+            "lower": 100,
+            "upper": 100
+          }
+        }
+      },
+      {
+        "size_label": "42",
+        "sort_order": 5,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 80,
+            "upper": 80
+          },
+          "hip_circumference": {
+            "lower": 104,
+            "upper": 104
+          }
+        }
+      },
+      {
+        "size_label": "44",
+        "sort_order": 6,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 84,
+            "upper": 84
+          },
+          "hip_circumference": {
+            "lower": 108,
+            "upper": 108
+          }
+        }
+      },
+      {
+        "size_label": "46",
+        "sort_order": 7,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 88,
+            "upper": 88
+          },
+          "hip_circumference": {
+            "lower": 112,
+            "upper": 112
+          }
+        }
+      },
+      {
+        "size_label": "48",
+        "sort_order": 8,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 94,
+            "upper": 94
+          },
+          "hip_circumference": {
+            "lower": 117,
+            "upper": 117
+          }
+        }
+      },
+      {
+        "size_label": "50",
+        "sort_order": 9,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 100,
+            "upper": 100
+          },
+          "hip_circumference": {
+            "lower": 122,
+            "upper": 122
+          }
+        }
+      },
+      {
+        "size_label": "52",
+        "sort_order": 10,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 106,
+            "upper": 106
+          },
+          "hip_circumference": {
+            "lower": 127,
+            "upper": 127
+          }
+        }
+      },
+      {
+        "size_label": "54",
+        "sort_order": 11,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 112,
+            "upper": 112
+          },
+          "hip_circumference": {
+            "lower": 132,
+            "upper": 132
+          }
+        }
+      },
+      {
+        "size_label": "56",
+        "sort_order": 12,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 118,
+            "upper": 118
+          },
+          "hip_circumference": {
+            "lower": 137,
+            "upper": 137
+          }
+        }
+      },
+      {
+        "size_label": "58",
+        "sort_order": 13,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 124,
+            "upper": 124
+          },
+          "hip_circumference": {
+            "lower": 142,
+            "upper": 142
+          }
+        }
+      },
+      {
+        "size_label": "60",
+        "sort_order": 14,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 130,
+            "upper": 130
+          },
+          "hip_circumference": {
+            "lower": 147,
+            "upper": 147
+          }
+        }
+      },
+      {
+        "size_label": "62",
+        "sort_order": 15,
+        "bounds": {
+          "waist_circumference": {
+            "lower": 136,
+            "upper": 136
+          },
+          "hip_circumference": {
+            "lower": 152,
+            "upper": 152
+          }
+        }
+      }
+    ]
+  }
+]

@@ -2,6 +2,7 @@ import Modal from "../../components/ui/Modal";
 import { useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
 import { metricLabels, type Chart, type Metric } from "../../types/studio";
+import ChartProvenance, { marketName } from "./ChartProvenance";
 export default function SizeChartModal({
   chart,
   open,
@@ -27,8 +28,9 @@ export default function SizeChartModal({
       title={`${chart.brand_name} · Size guide`}
     >
       <p className="muted">
-        {chart.gender} · {chart.category} · India · version {chart.version} ·
-        body ranges in {unit}
+        {chart.gender} · {chart.category} · {marketName(chart.market)} · version{" "}
+        {chart.version} ·{chart.measurement_basis ?? "body"} measurements in{" "}
+        {unit}
       </p>
       <label className="field">
         Display units
@@ -73,7 +75,9 @@ export default function SizeChartModal({
                 {metrics.map((key) => (
                   <td key={key}>
                     {size.bounds[key]
-                      ? `${display(size.bounds[key]!.lower)} – ${display(size.bounds[key]!.upper)}`
+                      ? size.bounds[key]!.lower === size.bounds[key]!.upper
+                        ? display(size.bounds[key]!.lower)
+                        : `${display(size.bounds[key]!.lower)} – ${display(size.bounds[key]!.upper)}`
                       : "Not provided"}
                   </td>
                 ))}
@@ -82,6 +86,12 @@ export default function SizeChartModal({
           </tbody>
         </table>
       </div>
+      <ChartProvenance chart={chart} />
+      {chart.notes.map((note) => (
+        <p className="fine-print" key={note}>
+          {note}
+        </p>
+      ))}
       <p className="fine-print">
         {chart.is_demo
           ? "Fictional demonstration chart. Do not use it as retailer sizing advice."

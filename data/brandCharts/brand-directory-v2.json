@@ -1,0 +1,226 @@
+[
+  {
+    "brand_id": "nike",
+    "brand_name": "Nike",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "adidas",
+    "brand_name": "Adidas",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "puma",
+    "brand_name": "Puma",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "levi-s",
+    "brand_name": "Levi's",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "h-m",
+    "brand_name": "H&M",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "zara",
+    "brand_name": "Zara",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "uniqlo",
+    "brand_name": "Uniqlo",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "us-polo-assn",
+    "brand_name": "US Polo Assn.",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "tommy-hilfiger",
+    "brand_name": "Tommy Hilfiger",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "calvin-klein",
+    "brand_name": "Calvin Klein",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "ralph-lauren",
+    "brand_name": "Ralph Lauren",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "under-armour",
+    "brand_name": "Under Armour",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "reebok",
+    "brand_name": "Reebok",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "new-balance",
+    "brand_name": "New Balance",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "decathlon",
+    "brand_name": "Decathlon",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "allen-solly",
+    "brand_name": "Allen Solly",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "peter-england",
+    "brand_name": "Peter England",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "van-heusen",
+    "brand_name": "Van Heusen",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "louis-philippe",
+    "brand_name": "Louis Philippe",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "fabindia",
+    "brand_name": "Fabindia",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "biba",
+    "brand_name": "Biba",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "w",
+    "brand_name": "W",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "aurelia",
+    "brand_name": "Aurelia",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "raymond",
+    "brand_name": "Raymond",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "manyavar",
+    "brand_name": "Manyavar",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "libas",
+    "brand_name": "Libas",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "max-fashion-india",
+    "brand_name": "Max Fashion India",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  },
+  {
+    "brand_id": "zudio",
+    "brand_name": "Zudio",
+    "market": "IN",
+    "is_demo": false,
+    "coverage": [],
+    "description": "Discovery target. Only explicitly sourced category and market charts are eligible for recommendations."
+  }
+]

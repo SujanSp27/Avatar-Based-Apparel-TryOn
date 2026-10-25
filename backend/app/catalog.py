@@ -1,5 +1,6 @@
 """Database-backed discovery. Brand names are a directory, never invented inventory."""
 
+import json
 import re
 from datetime import datetime, timezone
 from typing import Literal
@@ -38,6 +39,7 @@ BRANDS = [
     "Biba",
     "W",
     "Aurelia",
+    "Raymond", "Manyavar", "Libas", "Max Fashion India", "Zudio",
 ]
 TAXONOMY = [
     ("t-shirt", "T-shirts", "tops", "t-shirt"),
@@ -64,6 +66,12 @@ TAXONOMY = [
     ("saree", "Sarees", "ethnic", None),
     ("traditional", "Traditional outfits", "ethnic", None),
     ("co-ord", "Co-ord sets", "sets", None),
+    ("blazer", "Blazers", "layers", "jacket"),
+    ("crop-top", "Crop tops", "tops", "blouse"),
+    ("leggings", "Leggings", "bottoms", "trouser"),
+    ("kurti", "Kurtis", "ethnic", None),
+    ("casual-dress", "Casual dresses", "one-pieces", "dress"),
+    ("formal-dress", "Formal dresses", "one-pieces", "dress"),
 ]
 
 
@@ -74,6 +82,7 @@ def slug(name):
 def initialize_catalog(db):
     db.products.create_index([("brand_id", 1), ("audience", 1), ("category", 1), ("name", 1)])
     db.products.create_index([("created_at", -1), ("_id", 1)])
+    db.products.create_index([("subcategory", 1), ("colors", 1)])
     db.favorites.create_index([("user_id", 1), ("product_id", 1)], unique=True)
     for name in BRANDS:
         db.catalog_brands.update_one(
@@ -145,12 +154,26 @@ def initialize_catalog(db):
             upsert=True,
         )
 
+    manifest = ROOT / "data/catalog/garments-v2.json"
+    assets_ready = True
+    for entry in json.loads(manifest.read_text(encoding="utf-8")):
+        row = {k: v for k, v in entry.items() if k != "id"}
+        if not (ROOT / "data/raw" / row["filename"]).is_file():
+            # A clean install may start before public assets are restored.
+            # Retry this seed later; do not create permanently inactive records.
+            assets_ready = False
+            continue
+        row.update(created_at=datetime(2026, 10, 25, tzinfo=timezone.utc), seed_version=2,
+                   active=(ROOT / "data/raw" / row["filename"]).is_file())
+        db.products.update_one({"_id": entry["id"]}, {"$setOnInsert": row}, upsert=True)
+    return assets_ready
+
 
 def catalog_db(db=Depends(account_db)):
     # Seed uses setOnInsert: never overwrite operator-curated product metadata.
-    if not db.catalog_versions.find_one({"_id": 1}):
-        initialize_catalog(db)
-        db.catalog_versions.update_one({"_id": 1}, {"$set": {"installed": True}}, upsert=True)
+    if not db.catalog_versions.find_one({"_id": 2}):
+        if initialize_catalog(db):
+            db.catalog_versions.update_one({"_id": 2}, {"$set": {"installed": True}}, upsert=True)
     return db
 
 
@@ -176,6 +199,8 @@ def public_product(row, db):
         "id": row["_id"],
         "brand_name": brand["name"] if brand else "Independent reference",
         "imageUrl": f"/api/v1/products/{row['_id']}/image",
+        "tryon_supported": bool(row.get("category")),
+        "availability": "reference-only",
     }
 
 
@@ -186,6 +211,9 @@ def products(
     subcategory: str | None = None,
     audience: Literal["men", "women", "unisex"] | None = None,
     brand_id: str | None = None,
+    color: str | None = Query(None, max_length=40),
+    occasion: str | None = Query(None, max_length=40),
+    tryon_supported: bool | None = None,
     sort: Literal["name", "newest", "relevance"] = "relevance",
     limit: int = Query(12, ge=1, le=48),
     offset: int = Query(0, ge=0, le=10000),
@@ -197,9 +225,15 @@ def products(
         "subcategory": subcategory,
         "audience": audience,
         "brand_id": brand_id,
+        "colors": color,
+        "occasions": occasion,
     }.items():
         if value:
             query[key] = value
+    if tryon_supported is not None:
+        query["category"] = {"$ne": None} if tryon_supported else None
+        if category and tryon_supported:
+            query["category"] = category
     if q.strip():
         pattern = re.escape(q.strip())
         brand_ids = [
@@ -270,7 +304,12 @@ def product_image(product_id: str, db=Depends(catalog_db)):
     row = db.products.find_one({"_id": product_id, **visible_query()})
     if not row:
         raise HTTPException(404, "Product is unavailable.")
-    return FileResponse(image_path(row), headers={"Cache-Control": "public, max-age=3600"})
+    path = image_path(row)
+    # Windows MIME registry may not know WebP; nosniff requires an explicit type.
+    media_type = {".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}.get(path.suffix.lower())
+    if not media_type:
+        raise HTTPException(404, "Unsupported catalog image.")
+    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "public, max-age=3600"})
 
 
 @router.get("/categories")
@@ -280,16 +319,28 @@ def categories(db=Depends(catalog_db)):
 
 @router.get("/brands")
 def brands(db=Depends(catalog_db)):
+    counts = {r["_id"]: r["count"] for r in db.products.aggregate([
+        {"$match": visible_query()}, {"$group": {"_id": "$brand_id", "count": {"$sum": 1}}},
+    ])}
+    charts = {r["_id"]: r["count"] for r in db.brand_size_charts.aggregate([
+        {"$group": {"_id": {"brand": "$brand_id", "apparel": "$apparel_id"}}},
+        {"$group": {"_id": "$_id.brand", "count": {"$sum": 1}}},
+    ])}
     return [
         {
             "id": r["_id"],
             "name": r["name"],
             "partnership": False,
-            "product_count": db.products.count_documents({"brand_id": r["_id"], **visible_query()}),
-            "chart_count": db.brand_size_charts.count_documents({"brand_id": r["_id"]}),
+            "product_count": counts.get(r["_id"], 0),
+            "chart_count": charts.get(r["_id"], 0),
         }
         for r in db.catalog_brands.find().sort("name", 1)
     ]
+
+
+@router.get("/catalog/facets")
+def facets(db=Depends(catalog_db)):
+    return {field: sorted(db.products.distinct(field, visible_query())) for field in ("colors", "occasions")}
 
 
 @router.put("/favorites/{product_id}", status_code=204)
@@ -369,8 +420,8 @@ def publish_product(
     if product_id != data.id:
         raise HTTPException(422, "Product ID does not match its path.")
     category = db.categories.find_one({"_id": data.subcategory})
-    if not category or not category["model_category"]:
-        raise HTTPException(422, "This garment type is not supported for try-on.")
+    if not category:
+        raise HTTPException(422, "Unknown garment type.")
     if data.brand_id and not db.catalog_brands.find_one({"_id": data.brand_id}):
         raise HTTPException(422, "Unknown catalog brand.")
     row = data.model_dump(mode="json", exclude={"id"})

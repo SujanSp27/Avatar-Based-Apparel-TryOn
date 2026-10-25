@@ -181,15 +181,17 @@ def test_health_timeout_is_bounded_and_unavailable():
     assert not worker.availability(check_connection=True)['available']
 
 
-def test_retry_and_availability_do_not_require_database(monkeypatch):
+def test_public_availability_and_authenticated_retry(monkeypatch):
     manager = ColabConnection(Mock(availability=Mock(return_value={'available': False})), Mock())
     monkeypatch.setattr(main, 'connection', manager)
     client = TestClient(main.app)
     try:
         assert client.get('/api/tryon/availability').status_code == 200
+        main.app.dependency_overrides[main.authenticated_owner] = lambda: "isolated-test-user"
         assert client.post('/api/tryon/retry').status_code == 202
         assert not client.get('/api/tryon/availability').json()['available']
     finally:
+        main.app.dependency_overrides.pop(main.authenticated_owner, None)
         client.close()
 
 

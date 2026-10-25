@@ -31,7 +31,7 @@ from backend.app.jobs import TryOnJobs
 from backend.app.models import Brand, ChartVersion, Run
 from backend.app.online_vton import normalized_image
 from backend.app.pipeline import TryOnPipeline
-from backend.app.private_data import GUEST_COOKIE, owned_run, principal
+from backend.app.private_data import GUEST_COOKIE, authenticated_owner, owned_run, principal
 from backend.app.private_data import router as private_router
 from backend.app.schemas import (
     BrandCreate,
@@ -247,7 +247,7 @@ def tryon_availability():
     return connection.snapshot()
 
 
-@app.post("/api/tryon/retry", status_code=202)
+@app.post("/api/tryon/retry", status_code=202, dependencies=[Depends(authenticated_owner)])
 def retry_tryon_connection():
     return connection.retry()
 
@@ -336,7 +336,7 @@ def tryon(
     prefer: str = Header(default=""),
     idempotency_key: str | None = Header(default=None),
     db: Session = Depends(get_db),
-    owner: str = Depends(principal),
+    owner: str = Depends(authenticated_owner),
     accounts=Depends(account_db),
 ):
     throttle(accounts, request, "tryon", owner, maximum=12)

@@ -11,7 +11,14 @@ const payload = (chart: ChartSummary, measurements: Measurements) => ({
   brand_id: chart.brand_id,
   apparel_id: chart.apparel_id,
   chart_version: chart.version,
-  measurements,
+  measurements: Object.fromEntries(
+    Object.entries(measurements).filter(
+      ([key, value]) =>
+        value > 0 &&
+        (!chart.active_metrics ||
+          chart.active_metrics.includes(key as keyof Measurements)),
+    ),
+  ),
 });
 export const sizingService = {
   brands: () => api<Brand[]>("/api/v1/sizing/brands?include_demo=true"),

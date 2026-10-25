@@ -5,6 +5,7 @@ from datetime import timedelta
 from threading import BoundedSemaphore
 from uuid import uuid4
 
+import jwt
 import mongomock
 import pytest
 from fastapi.testclient import TestClient
@@ -77,13 +78,14 @@ def test_catalog_filters_actual_assets_and_idempotent_favorites(studio):
     (owner, stranger, _), db, *_ = studio
     assert register(owner).status_code == 201
     brands = owner.get("/api/v1/brands").json()
-    assert len(brands) == 23 and all(not b["partnership"] for b in brands)
+    assert len(brands) == 28 and all(not b["partnership"] for b in brands)
     page = owner.get("/api/v1/products?q=navy&sort=relevance&limit=2").json()
     assert len(page["items"]) == 2 and all("navy" in p["name"].lower() for p in page["items"])
     item = page["items"][0]
     assert owner.get(item["imageUrl"]).headers["content-type"].startswith("image/")
     assert owner.get("/api/v1/products?brand_id=nike").json()["total"] == 0
-    assert owner.get("/api/v1/products?subcategory=saree").json()["total"] == 0
+    sarees = owner.get("/api/v1/products?subcategory=saree").json()
+    assert sarees["total"] == 1 and not sarees["items"][0]["tryon_supported"]
     assert owner.get("/api/v1/products?limit=1000").status_code == 422
     path = "/api/v1/favorites/" + item["id"]
     assert stranger.put(path).status_code == 401
@@ -100,7 +102,8 @@ def test_production_hides_unlicensed_catalog(studio, monkeypatch):
     client = studio[0][0]
     assert client.get("/api/v1/products").json()["total"] > 0
     monkeypatch.setattr(settings, "environment", "production")
-    assert client.get("/api/v1/products").json()["items"] == []
+    published = client.get("/api/v1/products").json()
+    assert published["total"] == 51 and all(p["commercial_use"] for p in published["items"])
     assert client.get("/api/v1/products/navy-tee/image").status_code == 404
 
 
@@ -141,7 +144,7 @@ def test_private_images_job_metadata_and_history_cannot_cross_accounts(studio):
     assert not folder.exists() and not jobs._path(jid).exists()
 
 
-def test_guest_submission_cookie_owns_only_its_job(studio, monkeypatch):
+def test_new_submission_requires_account_and_retains_job_ownership(studio, monkeypatch):
     (guest, stranger, _), _, _, _, jobs = studio
     monkeypatch.setattr(main, "require_tryon_ready", lambda: None)
     monkeypatch.setattr(
@@ -149,7 +152,8 @@ def test_guest_submission_cookie_owns_only_its_job(studio, monkeypatch):
     )
     image = io.BytesIO()
     Image.new("RGB", (512, 768), "white").save(image, format="PNG")
-    response = guest.post(
+    def submit():
+        return guest.post(
         "/api/tryon",
         headers={"Prefer": "respond-async"},
         data={"garmentCategory": "blouse"},
@@ -158,13 +162,32 @@ def test_guest_submission_cookie_owns_only_its_job(studio, monkeypatch):
             "garmentImage": ("g.png", image.getvalue()),
         },
     )
+    assert submit().status_code == 401
+    assert register(guest).status_code == 201
+    response = submit()
     assert response.status_code == 202, response.text
-    assert "HttpOnly" in response.headers["set-cookie"]
     path = response.json()["statusUrl"]
     assert guest.get(path).status_code == 200
     assert stranger.get(path).status_code == 401
-    register(stranger)
+    register(stranger, "second@example.com")
     assert stranger.get(path).status_code == 404
+
+
+def test_inference_rejects_invalid_expired_and_revoked_tokens(studio, monkeypatch):
+    (client, _, _), *_ = studio
+    monkeypatch.setattr(main, "require_tryon_ready", lambda: pytest.fail("Unauthorized inference reached model"))
+    token = register(client).json()["access_token"]
+    claims = jwt.decode(token, options={"verify_signature": False})
+    expired = jwt.encode({**claims, "exp": now() - timedelta(seconds=1)}, signing_key(), algorithm="HS256")
+    for candidate in ("invalid.jwt.value", expired):
+        response = client.post("/api/tryon", headers={"Authorization": f"Bearer {candidate}"},
+            data={"garmentCategory": "t-shirt"}, files={"personImage": ("p.png", b"p"), "garmentImage": ("g.png", b"g")})
+        assert response.status_code == 401
+    assert client.post("/api/v1/auth/logout").status_code in (200, 204)
+    response = client.post("/api/tryon", headers={"Authorization": f"Bearer {token}"},
+        data={"garmentCategory": "t-shirt"}, files={"personImage": ("p.png", b"p"), "garmentImage": ("g.png", b"g")})
+    assert response.status_code == 401
+    assert client.post("/api/tryon/retry").status_code == 401
 
 
 def test_admin_fail_closed_and_cookie_csrf(studio):

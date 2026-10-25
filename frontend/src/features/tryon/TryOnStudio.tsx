@@ -157,6 +157,12 @@ export default function TryOnStudio() {
     }
   }
   async function selectGarment(item: Garment) {
+    if (item.tryon_supported === false || !item.category) {
+      setError(
+        "This editorial outfit is not supported by the try-on model. Choose a supported single garment.",
+      );
+      return;
+    }
     const original = result?.originalUrl;
     setSamplesBusy(true);
     reset();

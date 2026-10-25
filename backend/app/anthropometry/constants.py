@@ -10,8 +10,8 @@ METRICS = tuple(WEIGHTS)
 TOP_METRICS = METRICS[:4]
 BOTTOM_METRICS = METRICS[2:]
 CATEGORY_METRICS = {
-    **dict.fromkeys(("t-shirt", "shirt", "blouse", "sweater", "jacket", "dress"), TOP_METRICS),
-    **dict.fromkeys(("trouser", "jeans", "shorts", "skirt"), BOTTOM_METRICS),
+    **dict.fromkeys(("t-shirt", "shirt", "blouse", "sweater", "jacket", "dress", "kurta", "kurti", "salwar-suit", "blazer"), TOP_METRICS),
+    **dict.fromkeys(("trouser", "jeans", "shorts", "skirt", "leggings"), BOTTOM_METRICS),
     "jumpsuit": METRICS,
 }
 # Skirts do not depend on leg length or individual thigh circumference.

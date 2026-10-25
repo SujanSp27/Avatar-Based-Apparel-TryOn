@@ -1,4 +1,15 @@
+import { signInForTest } from "./session-fixture";
 import { test, expect } from "@playwright/test";
+
+let accountPassword = "";
+test.beforeEach(async ({ page }) => {
+  accountPassword = await signInForTest(page);
+});
+test.afterEach(async ({ page }) => {
+  await page.request.delete("/api/v1/profile", {
+    data: { password: accountPassword },
+  });
+});
 
 test("recovers automatically and offers retry without a page reload", async ({
   page,
@@ -9,12 +20,12 @@ test("recovers automatically and offers retry without a page reload", async ({
     requests++;
     return route.fulfill({
       json: {
-          available: ready,
-          reason: ready
-            ? null
-            : "Preparing your online try-on service automatically.",
-          connectionState: ready ? "ready" : "connecting",
-          automaticConnection: true,
+        available: ready,
+        reason: ready
+          ? null
+          : "Preparing your online try-on service automatically.",
+        connectionState: ready ? "ready" : "connecting",
+        automaticConnection: true,
       },
     });
   });
@@ -22,7 +33,9 @@ test("recovers automatically and offers retry without a page reload", async ({
   await expect(page.getByTestId("model-status")).toContainText(
     "Preparing try-on",
   );
-  await expect(page.getByRole("button", { name: "Retry connection" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Retry connection" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Try sample photos" }).click();
   await expect(
     page.getByRole("button", { name: "Generate try-on", exact: true }),
@@ -47,7 +60,8 @@ test("losing the API clears readiness and retries automatically", async ({
       ? route.abort()
       : route.fulfill({
           json: {
-            available: true, reason: null,
+            available: true,
+            reason: null,
           },
         }),
   );
@@ -99,40 +113,70 @@ test("photo-only app offers model categories and never exposes avatar controls",
 
 // Six-metric real sizing is covered in studio.spec.ts.
 
-test("failed recovery exposes retry and recovers without losing uploads", async ({ page }) => {
+test("failed recovery exposes retry and recovers without losing uploads", async ({
+  page,
+}) => {
   let ready = false;
   let retries = 0;
-  const status = () => ({ available: ready, connectionState: ready ? "ready" : "recovery_delayed",
+  const status = () => ({
+    available: ready,
+    connectionState: ready ? "ready" : "recovery_delayed",
     displayState: ready ? "Ready" : "Temporarily unavailable",
-    reason: ready ? null : "Colab has not answered its runtime check. The existing request is preserved." });
-  await page.route("**/api/tryon/availability", route => route.fulfill({ json: status() }));
-  await page.route("**/api/tryon/retry", route => {
-    retries++; ready = true;
+    reason: ready
+      ? null
+      : "Colab has not answered its runtime check. The existing request is preserved.",
+  });
+  await page.route("**/api/tryon/availability", (route) =>
+    route.fulfill({ json: status() }),
+  );
+  await page.route("**/api/tryon/retry", (route) => {
+    retries++;
+    ready = true;
     return route.fulfill({ status: 202, json: status() });
   });
   await page.goto("/tryon");
   await page.getByRole("button", { name: "Try sample photos" }).click();
-  await expect(page.getByTestId("model-status")).toContainText("Temporarily unavailable");
-  await expect(page.getByRole("button", { name: "Generate try-on", exact: true })).toBeDisabled();
+  await expect(page.getByTestId("model-status")).toContainText(
+    "Temporarily unavailable",
+  );
+  await expect(
+    page.getByRole("button", { name: "Generate try-on", exact: true }),
+  ).toBeDisabled();
   await page.getByRole("button", { name: "Retry connection" }).click();
-  await expect(page.getByRole("button", { name: "Generate try-on", exact: true })).toBeEnabled();
-  await expect(page.getByAltText("Selected garment conditioning image")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Generate try-on", exact: true }),
+  ).toBeEnabled();
+  await expect(
+    page.getByAltText("Selected garment conditioning image"),
+  ).toBeVisible();
   expect(retries).toBe(1);
 });
 
-test("a hanging health request expires instead of leaving stale readiness", async ({ page }) => {
+test("a hanging health request expires instead of leaving stale readiness", async ({
+  page,
+}) => {
   await page.clock.install();
   let hang = false;
-  await page.route("**/api/tryon/availability", async route => {
+  await page.route("**/api/tryon/availability", async (route) => {
     if (hang) return; // No response: exercise the real eight-second timeout.
     await route.fulfill({ json: { available: true, reason: null } });
   });
   await page.goto("/tryon");
-  await expect(page.getByTestId("model-status")).toHaveAttribute("data-ready", "true");
+  await expect(page.getByTestId("model-status")).toHaveAttribute(
+    "data-ready",
+    "true",
+  );
   hang = true;
   await page.clock.fastForward(4000);
   await page.clock.fastForward(9000);
-  await expect(page.getByTestId("model-status")).toContainText("Temporarily unavailable");
-  await expect(page.getByTestId("model-status")).toHaveAttribute("data-ready", "false");
-  await expect(page.getByRole("button", { name: "Retry connection" })).toBeEnabled();
+  await expect(page.getByTestId("model-status")).toContainText(
+    "Temporarily unavailable",
+  );
+  await expect(page.getByTestId("model-status")).toHaveAttribute(
+    "data-ready",
+    "false",
+  );
+  await expect(
+    page.getByRole("button", { name: "Retry connection" }),
+  ).toBeEnabled();
 });

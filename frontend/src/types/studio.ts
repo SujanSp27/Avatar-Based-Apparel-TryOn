@@ -39,6 +39,12 @@ export type ChartSummary = {
   is_demo: boolean;
   source: string;
   source_url: string | null;
+  source_type?: "official" | "retailer" | "user-supplied" | "demo";
+  verification_status?: "verified" | "unverified" | "user-supplied" | "demo";
+  checked_on?: string | null;
+  sizing_system?: string;
+  measurement_basis?: "body" | "garment";
+  source_unit?: "cm" | "in";
   active_metrics: Metric[] | null;
   notes: string[];
 };

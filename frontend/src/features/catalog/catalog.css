@@ -39,17 +39,47 @@
   max-width: 1080px;
   margin: 24px auto;
 }
-.home-intro > .brand-logo {
-  width: 280px;
-  margin-bottom: 32px;
+.editorial-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
 }
-.home-intro > h1 {
-  font-size: clamp(42px, 5.5vw, 74px);
+.editorial-copy > .brand-logo {
+  width: 220px;
+  margin-bottom: 28px;
+}
+.editorial-copy > h1 {
+  font-size: clamp(40px, 4.1vw, 66px);
   line-height: 1.08;
   margin: 20px 0;
 }
-.home-intro > p {
-  max-width: 640px;
+.editorial-copy > p {
+  max-width: 500px;
+}
+.hero-feature-line {
+  font-size: 12px;
+  margin-top: 24px;
+  color: var(--muted);
+}
+.editorial-photo {
+  margin: 0;
+  min-width: 0;
+}
+.editorial-photo img {
+  display: block;
+  width: 100%;
+  height: min(570px, 60vw);
+  object-fit: contain;
+  background: #e9e7e6;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.editorial-photo figcaption {
+  font-size: 10px;
+  line-height: 1.5;
+  margin-top: 8px;
+  color: var(--muted);
 }
 .home-steps {
   display: grid;
@@ -63,7 +93,7 @@
 }
 .catalog-filters {
   display: grid;
-  grid-template-columns: 2fr repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   padding: 20px;
 }
@@ -104,6 +134,28 @@
 }
 .product-image:hover img {
   transform: scale(1.025);
+}
+.image-unavailable {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  padding: 24px;
+  color: var(--muted);
+}
+.catalog-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.chart-provenance {
+  margin: 14px 0;
+  padding: 14px;
+  background: var(--cream, #f8f7f2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
 }
 .product-info {
   padding: 20px;
@@ -163,6 +215,12 @@
   }
 }
 @media (max-width: 700px) {
+  .editorial-hero {
+    grid-template-columns: 1fr;
+  }
+  .editorial-photo img {
+    height: 440px;
+  }
   .sidebar .brand-logo {
     width: 138px;
   }

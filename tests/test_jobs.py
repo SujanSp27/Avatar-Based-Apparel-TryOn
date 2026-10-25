@@ -134,6 +134,11 @@ def test_async_api_acknowledges_and_returns_saved_result(worker, monkeypatch):
     key = str(uuid4())
     client = TestClient(main.app, raise_server_exceptions=True)
     try:
+        response = client.post("/api/v1/auth/signup", json={
+            "name": "Job Test", "email": "job@example.com", "password": "Job!Secure2026",
+            "terms_accepted": True,
+        })
+        assert response.status_code == 201, response.text
         options = {
             "data": {"garmentCategory": "t-shirt", "tryonMode": "2d"},
             "files": {"personImage": ("p.png", b"p"), "garmentImage": ("g.png", b"g")},

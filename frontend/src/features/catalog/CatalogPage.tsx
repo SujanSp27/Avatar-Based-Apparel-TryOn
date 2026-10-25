@@ -10,6 +10,7 @@ import {
 import Modal from "../../components/ui/Modal";
 import { useToast } from "../../components/ui/Toast";
 import type { Garment } from "../tryon/GarmentPicker";
+import ProductImage from "./ProductImage";
 
 export type Product = Garment & {
   brand_name: string;
@@ -20,6 +21,7 @@ export type Product = Garment & {
   license: string;
   source_url: string;
   commercial_use: boolean;
+  attribution?: string;
 };
 type Page = { items: Product[]; total: number; limit: number; offset: number };
 type Category = {
@@ -34,6 +36,8 @@ export default function CatalogPage() {
   const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
   const [audience, setAudience] = useState("");
+  const [color, setColor] = useState("");
+  const [occasion, setOccasion] = useState("");
   const [sort, setSort] = useState("relevance");
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState<Page>();
@@ -41,6 +45,10 @@ export default function CatalogPage() {
     { id: string; name: string; product_count: number }[]
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [facets, setFacets] = useState<{
+    colors: string[];
+    occasions: string[];
+  }>({ colors: [], occasions: [] });
   const [selected, setSelected] = useState<Product>();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -54,10 +62,14 @@ export default function CatalogPage() {
     Promise.all([
       api<typeof brands>("/api/v1/brands", { signal: controller.signal }),
       api<Category[]>("/api/v1/categories", { signal: controller.signal }),
+      api<typeof facets>("/api/v1/catalog/facets", {
+        signal: controller.signal,
+      }),
     ])
-      .then(([b, c]) => {
+      .then(([b, c, f]) => {
         setBrands(b);
         setCategories(c);
+        setFacets(f);
       })
       .catch((e) => {
         if (!controller.signal.aborted) setError(e.message);
@@ -78,6 +90,8 @@ export default function CatalogPage() {
       if (brand) params.set("brand_id", brand);
       if (category) params.set("subcategory", category);
       if (audience) params.set("audience", audience);
+      if (color) params.set("color", color);
+      if (occasion) params.set("occasion", occasion);
       api<Page>(`/api/v1/products?${params}`, { signal: controller.signal })
         .then(setPage)
         .catch((e) => {
@@ -91,7 +105,7 @@ export default function CatalogPage() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, brand, category, audience, sort, offset, retry]);
+  }, [query, brand, category, audience, color, occasion, sort, offset, retry]);
   const filter = (set: (v: string) => void, value: string) => {
     set(value);
     setOffset(0);
@@ -163,6 +177,36 @@ export default function CatalogPage() {
           </select>
         </label>
         <label className="field">
+          Color
+          <select
+            aria-label="Color"
+            value={color}
+            onChange={(e) => filter(setColor, e.target.value)}
+          >
+            <option value="">All colors</option>
+            {facets.colors.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          Occasion
+          <select
+            aria-label="Occasion"
+            value={occasion}
+            onChange={(e) => filter(setOccasion, e.target.value)}
+          >
+            <option value="">All occasions</option>
+            {facets.occasions.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
           Sort by
           <select
             aria-label="Sort by"
@@ -175,6 +219,27 @@ export default function CatalogPage() {
           </select>
         </label>
       </section>
+      <div className="catalog-summary">
+        <p className="fine-print">
+          Reference collection · no stock or size availability implied.
+        </p>
+        {(query || brand || category || audience || color || occasion) && (
+          <button
+            className="text-button"
+            onClick={() => {
+              setQuery("");
+              setBrand("");
+              setCategory("");
+              setAudience("");
+              setColor("");
+              setOccasion("");
+              setOffset(0);
+            }}
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
       <p className="fine-print">
         Brand names are a discovery directory, not partnerships or a promise of
         stock. Reference images carry their source and usage information.
@@ -207,7 +272,7 @@ export default function CatalogPage() {
                       onClick={() => setSelected(p)}
                       aria-label={`View ${p.name}`}
                     >
-                      <img src={p.imageUrl} alt={p.name} loading="lazy" />
+                      <ProductImage src={p.imageUrl} alt={p.name} />
                     </button>
                     <div className="product-info">
                       <span className="eyebrow">{p.brand_name}</span>
@@ -256,7 +321,7 @@ export default function CatalogPage() {
       >
         {selected && (
           <div className="stack">
-            <img
+            <ProductImage
               className="product-detail-photo"
               src={selected.imageUrl}
               alt={selected.name}
@@ -272,6 +337,16 @@ export default function CatalogPage() {
                 : selected.size_note}
             </p>
             <small>{selected.license}</small>
+            {selected.attribution && (
+              <small>Photography: {selected.attribution}</small>
+            )}
+            {selected.tryon_supported === false && (
+              <p className="notice">
+                Editorial inspiration only. The current try-on model has not
+                been validated for this layered or draped outfit. You can save
+                it or explore the size guides.
+              </p>
+            )}
             <a
               className="text-button"
               href={selected.source_url}
@@ -283,6 +358,7 @@ export default function CatalogPage() {
             <div className="actions">
               <button
                 className="button"
+                disabled={selected.tryon_supported === false}
                 onClick={() =>
                   navigate(`/tryon?product=${encodeURIComponent(selected.id)}`)
                 }

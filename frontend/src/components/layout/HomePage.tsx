@@ -3,24 +3,56 @@ import BrandLogo from "../ui/BrandLogo";
 export default function HomePage() {
   return (
     <section className="home-intro">
-      <BrandLogo />
-      <span className="eyebrow">PERSONAL STYLE. CONSIDERED FIT.</span>
-      <h1>
-        See the look.
-        <br />
-        Find your fit.
-      </h1>
-      <p>
-        Explore your wardrobe with photo-based try-on and brand-specific size
-        guidance. A more personal way to choose what feels like you.
-      </p>
-      <div className="actions">
-        <Link className="button" to="/catalog">
-          Discover apparel
-        </Link>
-        <Link className="button secondary" to="/tryon">
-          Try your own garment
-        </Link>
+      <div className="editorial-hero">
+        <div className="editorial-copy">
+          <BrandLogo />
+          <span className="eyebrow">STYLE, WITH A PERSONAL PERSPECTIVE</span>
+          <h1>
+            Your Style.
+            <br />
+            Your Fit.
+            <br />
+            <em>Your Confidence.</em>
+          </h1>
+          <p>
+            Discover new styles, explore brand-specific size recommendations,
+            and preview outfits with personalized virtual try-on.
+          </p>
+          <div className="actions">
+            <Link className="button" to="/catalog">
+              Explore Collection
+            </Link>
+            <Link className="button secondary" to="/tryon">
+              Try Your Own Outfit
+            </Link>
+          </div>
+          <p className="hero-feature-line">
+            Virtual Try-On · Personalized Fit · Brand-Specific Sizing
+          </p>
+        </div>
+        <figure className="editorial-photo">
+          <img
+            src="/editorial/beige-dress-1200.webp"
+            srcSet="/editorial/beige-dress-640.webp 640w, /editorial/beige-dress-1200.webp 1200w"
+            sizes="(max-width: 760px) 90vw, 40vw"
+            width="1200"
+            height="1996"
+            fetchPriority="high"
+            alt="Full-length editorial portrait in a belted beige dress"
+          />
+          <figcaption>
+            Style inspiration ·{" "}
+            <a
+              href="https://www.pexels.com/photo/a-woman-wearing-a-beige-dress-13816068/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              rehman yousaf / Pexels
+            </a>
+            <br />
+            Editorial photograph, not a try-on result.
+          </figcaption>
+        </figure>
       </div>
       <div className="home-steps">
         {[

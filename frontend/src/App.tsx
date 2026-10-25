@@ -42,7 +42,14 @@ export default function App() {
                     <Route path="verify-email" element={<VerifyEmail />} />
                     <Route path="measure" element={<MeasurementWorkspace />} />
                     <Route path="sizing" element={<SizeEngineView />} />
-                    <Route path="tryon" element={<TryOnStudio />} />
+                    <Route
+                      path="tryon"
+                      element={
+                        <ProtectedLayout>
+                          <TryOnStudio />
+                        </ProtectedLayout>
+                      }
+                    />
                     <Route
                       path="profile"
                       element={

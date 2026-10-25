@@ -1,10 +1,13 @@
 from datetime import date, datetime
+from enum import Enum
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
 from backend.app.anthropometry.constants import CATEGORY_METRICS
-from ml.vton.categories import GarmentCategory
+
+# Size-chart coverage is independent of the image model's supported categories.
+SizingCategory = Enum("SizingCategory", {key.replace("-", "_"): key for key in CATEGORY_METRICS}, type=str)
 
 Metric = Literal[
     "shoulder_width", "chest_circumference", "waist_circumference",
@@ -30,7 +33,7 @@ class ErrorResponse(StrictSchema):
 
 
 class CategoryMetrics(StrictSchema):
-    category: GarmentCategory
+    category: SizingCategory
     default_metrics: list[Metric]
     default_weights: dict[Metric, float]
 
@@ -109,7 +112,7 @@ class ChartCreate(StrictSchema):
     brand_id: Identifier
     brand_name: str = Field(min_length=1, max_length=120)
     apparel_id: Identifier
-    category: GarmentCategory
+    category: SizingCategory
     version: int = Field(ge=1)
     source: str = Field(min_length=3, max_length=500)
     is_demo: bool = False
@@ -119,6 +122,9 @@ class ChartCreate(StrictSchema):
     checked_on: date | None = None
     source_unit: Literal["cm", "in"] = "cm"
     measurement_basis: Literal["body", "garment"] = "body"
+    sizing_system: str = Field(default="Brand label (no regional conversion)", max_length=150)
+    source_type: Literal["official", "retailer", "user-supplied", "demo"] = "user-supplied"
+    verification_status: Literal["verified", "unverified", "user-supplied", "demo"] = "unverified"
     notes: list[str] = Field(default_factory=list, max_length=20)
     # Explicit subsets are needed for official charts that do not publish all
     # category dimensions. Never fabricate shoulder/thigh ranges to fill gaps.
@@ -131,6 +137,8 @@ class ChartCreate(StrictSchema):
 
     @model_validator(mode="after")
     def consistent_sizes(self):
+        if self.verification_status == "verified" and (not self.source_url or not self.checked_on or self.is_demo):
+            raise ValueError("Verified charts require a source URL, verification date and non-demo data")
         if len({r.size_label for r in self.sizes}) != len(self.sizes):
             raise ValueError("Size labels must be unique")
         if len({r.sort_order for r in self.sizes}) != len(self.sizes):

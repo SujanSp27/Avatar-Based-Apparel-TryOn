@@ -23,6 +23,7 @@ from backend.app.anthropometry.schemas import (
     Identifier,
     MeasurementId,
     MeasurementPage,
+    SizingCategory,
     SizingRequest,
     SizingResponse,
     StoredMeasurement,
@@ -31,7 +32,6 @@ from backend.app.anthropometry.sizing_engine import recommend
 from backend.app.config import settings
 from backend.app.private_data import check_measurement, principal
 from ml.errors import PipelineError
-from ml.vton.categories import GarmentCategory
 
 router = APIRouter(prefix="/api/v1", tags=["Body measurements and brand sizing"], responses={
     404: {"model": ErrorResponse, "description": "Requested record or chart does not exist"},
@@ -176,7 +176,7 @@ def list_charts(
     gender: Gender | None = None,
     market: str | None = Query(default=None, pattern=r"^(?:[A-Z]{2}|UNSPECIFIED)$"),
     brand_id: Identifier | None = None,
-    category: GarmentCategory | None = None,
+    category: SizingCategory | None = None,
     limit: int = Query(100, ge=1, le=500), offset: int = Query(0, ge=0),
     latest_only: bool = False,
     repo: MeasurementRepository = Depends(get_repository),

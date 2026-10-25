@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "../../icons";
+import ProductImage from "../catalog/ProductImage";
 export type Garment = {
   id: string;
   name: string;
@@ -8,6 +9,7 @@ export type Garment = {
   photoType: string;
   imageUrl: string;
   description: string;
+  tryon_supported?: boolean;
 };
 export default function GarmentPicker({
   disabled,
@@ -29,9 +31,12 @@ export default function GarmentPicker({
     let active = true;
     setLoading(true);
     setError(false);
-    fetch("/api/v1/products?limit=12&sort=newest", {
-      signal: controller.signal,
-    })
+    fetch(
+      `/api/v1/products?limit=12&sort=newest&tryon_supported=true${filter === "all" ? "" : `&category=${encodeURIComponent(filter)}`}`,
+      {
+        signal: controller.signal,
+      },
+    )
       .then(async (r) => {
         if (!r.ok) throw new Error();
         const data = await r.json();
@@ -49,7 +54,7 @@ export default function GarmentPicker({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [retry]);
+  }, [retry, filter]);
   return (
     <section className="card garment-catalog">
       <div className="section-heading">
@@ -70,6 +75,12 @@ export default function GarmentPicker({
           <option value="blouse">Blouses</option>
           <option value="dress">Dresses</option>
           <option value="skirt">Skirts</option>
+          <option value="shirt">Shirts</option>
+          <option value="jeans">Jeans</option>
+          <option value="trouser">Trousers</option>
+          <option value="shorts">Shorts</option>
+          <option value="sweater">Sweaters & hoodies</option>
+          <option value="jacket">Jackets</option>
         </select>
       </div>
       {loading && <p role="status">Loading the collection…</p>}
@@ -103,7 +114,7 @@ export default function GarmentPicker({
                 onClick={() => onSelect(item)}
               >
                 <div className="catalog-photo">
-                  <img src={item.imageUrl} alt={item.name} loading="lazy" />
+                  <ProductImage src={item.imageUrl} alt={item.name} />
                   {selected === item.id && (
                     <span>
                       <Check size={15} />

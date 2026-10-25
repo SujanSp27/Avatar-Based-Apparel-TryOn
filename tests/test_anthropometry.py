@@ -351,16 +351,18 @@ def test_garment_dimensions_cannot_be_used_as_body_bounds(chart):
 def test_brand_api_exposes_verified_coverage_and_filters(api):
     client, _ = api
     brands = client.get("/api/v1/sizing/brands").json()
-    assert {b["brand_id"] for b in brands} == {"nike", "puma", "adidas", "allen-solly", "us-polo-assn"}
+    assert {"nike", "puma", "adidas", "allen-solly", "us-polo-assn", "manyavar", "levi-s", "h-m", "libas", "biba", "raymond"} <= {b["brand_id"] for b in brands}
     for brand in brands:
-        assert {c["gender"] for c in brand["coverage"]} == {"men", "women"}
+        if brand["coverage"]:
+            assert {c["gender"] for c in brand["coverage"]} == {"men", "women"}
         if brand["brand_id"] not in ("nike", "puma"):
             assert all(not c["apparel_ids"] for c in brand["coverage"])
     for gender in ("men", "women"):
         charts = client.get("/api/v1/sizing/charts", params={"market": "IN", "gender": gender}).json()
-        assert {c["brand_id"] for c in charts} == {"nike", "puma"}
+        assert {c["brand_id"] for c in charts} == ({"nike", "puma", "manyavar"} if gender == "men" else {"nike", "puma"})
         assert all(c["gender"] == gender and not c["is_demo"] for c in charts)
-    assert client.get("/api/v1/sizing/charts", params={"market": "US"}).json() == []
+    us = client.get("/api/v1/sizing/charts", params={"market": "US"}).json()
+    assert us and all(c["brand_id"] == "levi-s" and c["market"] == "US" for c in us)
 
 
 def test_chart_versions_cannot_change_gender_or_market(repository):
