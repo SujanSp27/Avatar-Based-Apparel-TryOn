@@ -11,6 +11,10 @@ from PIL import Image, ImageCms, ImageOps, UnidentifiedImageError
 
 from ml.errors import PipelineError
 
+from .diagnostics import diagnostic
+
+_refinement_lock = Lock()
+
 
 @dataclass
 class PoseObservation:
@@ -18,16 +22,32 @@ class PoseObservation:
     landmarks: np.ndarray  # 33 normalized x, y, z, visibility
     world_landmarks: np.ndarray  # 33 xyz in model-estimated metres, not used for scale
     mask: np.ndarray
+    probabilities: np.ndarray | None = None
 
 
-def refine_mask(image: np.ndarray, probabilities: np.ndarray) -> np.ndarray:
+def normalize_probabilities(probabilities: np.ndarray, shape: tuple[int, int]) -> np.ndarray:
+    import cv2
+
+    prior = np.asarray(probabilities)
+    if prior.ndim == 3 and prior.shape[-1] == 1:
+        prior = prior[..., 0]
+    if prior.ndim != 2 or min(prior.shape) < 2 or not np.isfinite(prior).all():
+        raise PipelineError("invalid_mask", "The person segmentation map is invalid. Retry with another clear photo.")
+    # MediaPipe provides likelihoods in [0,1], not uint8 intensities or logits.
+    if prior.min() < 0 or prior.max() > 1:
+        raise PipelineError("invalid_mask", "The person segmentation probabilities are outside their expected range.")
+    return cv2.resize(prior.astype(np.float32), (shape[1], shape[0]), interpolation=cv2.INTER_LINEAR)
+
+
+def refine_mask(image: np.ndarray, probabilities: np.ndarray, *, max_edge: int = 800) -> np.ndarray:
     """Image-guided CPU refinement recovers gaps blurred by the pose mask."""
     import cv2
 
     # Pose probability maps alone bridge narrow arm/torso gaps. GrabCut uses
     # image colours within the pose prior; it is not an anatomical body parser.
     height, width = image.shape[:2]
-    ratio = min(1.0, 800 / max(height, width))
+    probabilities = normalize_probabilities(probabilities, (height, width))
+    ratio = min(1.0, max_edge / max(height, width))
     dimensions = (round(width * ratio), round(height * ratio))
     small = cv2.resize(image, dimensions, interpolation=cv2.INTER_AREA)
     prior = cv2.resize(probabilities, dimensions, interpolation=cv2.INTER_LINEAR)
@@ -37,19 +57,24 @@ def refine_mask(image: np.ndarray, probabilities: np.ndarray) -> np.ndarray:
     labels[core > 0] = cv2.GC_FGD
     if not np.any(labels == cv2.GC_FGD) or not np.any(labels == cv2.GC_BGD):
         raise PipelineError("segmentation_missing", "A clear person outline and background are required.")
-    # Called under the detector lock; a fixed seed also fixes GrabCut's GMM initialization.
-    cv2.setRNGSeed(0)
     try:
-        cv2.grabCut(small, labels, None, np.zeros((1, 65)), np.zeros((1, 65)), 3, cv2.GC_INIT_WITH_MASK)
+        # Also serialize the optional native-resolution retry outside detect().
+        with _refinement_lock:
+            cv2.setRNGSeed(0)
+            cv2.grabCut(small, labels, None, np.zeros((1, 65)), np.zeros((1, 65)), 3, cv2.GC_INIT_WITH_MASK)
     except cv2.error as exc:
         raise PipelineError("segmentation_failed", "The person outline could not be refined. Use a clear, contrasting background.") from exc
     mask = np.isin(labels, (cv2.GC_FGD, cv2.GC_PR_FGD)).astype(np.uint8)
+    diagnostic("segmentation", image_size=[width, height], processing_size=list(dimensions),
+               foreground_fraction=round(float(mask.mean()), 4),
+               uncertain_prior_fraction=round(float(((prior > .1) & (prior < .9)).mean()), 4))
     return cv2.resize(mask, (width, height), interpolation=cv2.INTER_NEAREST).astype(bool)
 
 
 def decode_person(data: bytes) -> np.ndarray:
     try:
         with Image.open(io.BytesIO(data)) as source:
+            original_size = list(source.size)
             if source.format not in {"JPEG", "PNG"}:
                 raise PipelineError("image_format", "Measurement extraction accepts JPEG or PNG.")
             if source.width * source.height > 20_000_000:
@@ -68,6 +93,9 @@ def decode_person(data: bytes) -> np.ndarray:
             background = Image.new("RGB", image.size, "white")
             background.paste(image, mask=alpha)
             background.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
+            diagnostic("image_preprocessing", original_size=original_size,
+                       oriented_size=list(image.size), processed_size=list(background.size),
+                       scale_x=background.width / image.width, scale_y=background.height / image.height)
             return np.ascontiguousarray(background, dtype=np.uint8)
     except (UnidentifiedImageError, OSError, ValueError, ImageCms.PyCMSError,
             Image.DecompressionBombError) as exc:
@@ -116,15 +144,19 @@ class MediaPipePose:
             except (RuntimeError, ValueError) as exc:
                 raise PipelineError("pose_inference_failed", "The pose estimator could not process this image.", 422) from exc
             if len(result.pose_landmarks) != 1:
+                diagnostic("pose_detection", person_count=len(result.pose_landmarks))
                 raise PipelineError("person_count", f"Expected one person; detected {len(result.pose_landmarks)}.")
             if not result.segmentation_masks:
                 raise PipelineError("segmentation_missing", "MediaPipe could not segment this person.")
             # Copy while serialized: MediaPipe owns the mask's underlying buffer.
+            prior = normalize_probabilities(result.segmentation_masks[0].numpy_view().copy(), image.shape[:2])
+            diagnostic("pose_detection", person_count=1, image_size=list(image.shape[1::-1]),
+                       minimum_visibility=min(float(p.visibility) for p in result.pose_landmarks[0]))
             return PoseObservation(
                 image=image,
                 landmarks=np.array([[p.x, p.y, p.z, p.visibility] for p in result.pose_landmarks[0]]),
                 world_landmarks=np.array([[p.x, p.y, p.z] for p in result.pose_world_landmarks[0]]),
-                mask=refine_mask(image, result.segmentation_masks[0].numpy_view().copy()),
+                mask=refine_mask(image, prior), probabilities=prior,
             )
 
     def close(self):

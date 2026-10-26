@@ -1,5 +1,19 @@
 # Current implementation status - 26 October 2026
 
+## Torso validation and measurement uncertainty
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Separate detected pose from usable torso silhouette | IMPLEMENTED | Candidate spans and arm visibility/overlap checks; per-metric quality instead of blanket torso rejection |
+| Preserve partial results without invented contours | IMPLEMENTED | Nullable chest/waist, original landmarks and other valid dimensions; wide/asymmetric silhouettes require tape review |
+| Block uncertain estimates from sizing and saved recommendations | IMPLEMENTED | Owned scan references, explicit per-metric overrides, server quality gate and 422 regression tests |
+| Retain image/height on retry; clear stale results | IMPLEMENTED | Three new browser regressions, mobile warning/accessibility checks; existing design preserved |
+| Logging, validation and regression verification | IMPLEMENTED | 678 Python tests and 31 browser tests passed; structured numeric diagnostics without photos/tokens |
+| Accurate anatomy beneath loose/overlapping clothing | PARTIALLY IMPLEMENTED | No hidden contour inferred; manual correction remains necessary; existing thigh/framing constraints unchanged |
+
+See [torso-validation-fix.md](torso-validation-fix.md) for root cause, schema changes,
+file list, exact checks and known limitations.
+
 ## Fashion discovery and sizing upgrade
 
 This section supersedes older catalog counts and guest try-on behavior below.

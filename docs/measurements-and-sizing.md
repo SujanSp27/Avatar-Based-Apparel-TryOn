@@ -2,8 +2,10 @@
 
 Implemented on 20 October 2026. These are independent backend APIs; they do not
 change the existing try-on model or infer dimensions from a generated outfit.
-The existing browser's manual sizing form still uses the legacy PostgreSQL API.
-The new APIs are usable at http://127.0.0.1:8000/docs.
+The current React sizing workspace uses these MongoDB APIs. Legacy PostgreSQL
+endpoints remain separate. OpenAPI is available at http://127.0.0.1:8000/docs.
+See the [26 October torso-validation fix](torso-validation-fix.md) for quality
+flags, partial scans, regression evidence and limitations.
 
 ## Runtime and storage
 
@@ -49,8 +51,10 @@ admitted; overlapping measurement requests receive 429, independently of VTON.
 Use a front-facing, upright full-body photograph with straight uncrossed legs,
 level shoulders, arms apart, close-fitting clothing and a contrasting background.
 Nose, both shoulders, hips, knees, ankles and heels must have visibility **>0.65**.
-Multiple detected people, missing landmarks, side views, crossed/bent legs,
-ambiguous torso/arm boundaries and merged thigh outlines are rejected with 422.
+Multiple detected people, missing key landmarks, side views, crossed/bent legs,
+invalid segmentation and merged thigh outlines are rejected with 422. Unresolvable
+torso/arm boundaries now leave the affected chest/waist values null while preserving
+other valid values. Wide clothing outlines require explicit review before sizing.
 Landmark visibility is not calibrated measurement confidence.
 
 Calculation:
@@ -65,12 +69,15 @@ Calculation:
 
 Image-guided GrabCut refines the coarse pose mask on CPU with a fixed seed.
 Torso sections intersecting arm centerlines are excluded. Chest uses the first
-clear section between 25% and 45% down the shoulder-to-hip axis; waist uses 50%.
+clear section between 25% and 45% down the shoulder-to-hip axis; waist prefers 50%,
+with nearby 48% and 52% candidates. A bounded native-resolution refinement can
+recover a real image-supported gap; it does not draw a guessed body edge.
 Thigh sections are at 40% down each hip-to-knee axis, perpendicular to the leg.
 Five nearby sections are median-filtered. The selected positions are returned.
 These choices are documented heuristics, not anatomical landmark ground truth.
 
-The response contains a persistent `measurement_id`, `scale_factor`, all six `measurements` in cm,
+The response contains a persistent `measurement_id`, `scale_factor`, six measurement
+fields in cm (chest/waist can be null when unavailable),
 `annotated_image_url`, geometry, quality, model/input hashes and warnings.
 The annotation, refined mask and diagnostic JSON are stored under
 `data/processed/measurements/annotated/`; metadata is saved in MongoDB. If the
@@ -79,14 +86,18 @@ database write fails, new artifacts are cleaned up and the endpoint returns 503.
 Saved results are available at `GET /api/v1/measurements/{measurement_id}` with a
 UTC `created_at`; `/annotation` returns its PNG. `GET /api/v1/measurements` pages
 through records with `limit`/`offset`. `DELETE /api/v1/measurements/{measurement_id}`
-removes the record and its three artifacts. Listing/deletion require the admin
-token when configured. Returned static URLs remain supported.
+removes the record and its three artifacts. Listing requires configured admin
+authorization; individual records, annotations and deletion require the original
+owner session. Returned image URLs are private, not public static storage.
 
 `POST /api/v1/measurements/extract-and-recommend` accepts the same multipart input
 plus `brand_id`, `apparel_id` and optional `chart_version`. It validates that the
 chart exists and uses body measurements before starting inference. It returns
 `{extraction,recommendation}`, persists the estimates once and carries their
-uncertainty warnings into the recommendation.
+uncertainty warnings into the recommendation. When required measurements need
+review, the scan is retained with recommendation null and recommendation_error.
+Sizing by measurement_id requires explicit measurement_overrides for flagged
+dimensions. Correcting one value does not implicitly approve the other values.
 
 **Accuracy limits:** MediaPipe has no crown or crotch point. Face-to-ankle height
 scaling and hip-midpoint inseam are biased. Hip *joint spacing* is substantially

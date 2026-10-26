@@ -21,7 +21,7 @@ export default function MeasurementGrid({
   onChange,
 }: {
   values?: Measurements;
-  onChange: (values: Measurements) => void;
+  onChange: (values: Measurements, changed: Metric) => void;
 }) {
   const { user } = useAuth();
   const [unit, setUnit] = useState<"cm" | "in">(user?.measurement_unit ?? "cm");
@@ -88,7 +88,7 @@ export default function MeasurementGrid({
                     );
                     return;
                   }
-                  onChange(updated);
+                  onChange(updated, key);
                   setEdit(null);
                 }}
               >

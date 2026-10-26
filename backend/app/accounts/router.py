@@ -34,6 +34,7 @@ from backend.app.accounts.security import (
     throttle,
     verify_password,
 )
+from backend.app.anthropometry.measurement_quality import reviewed_measurements
 from backend.app.anthropometry.repository import get_repository
 from backend.app.anthropometry.schemas import SizingRequest
 from backend.app.anthropometry.sizing_engine import recommend
@@ -429,10 +430,18 @@ def save_size(
     db=Depends(account_db),
     repo=Depends(get_repository),
 ):
-    if data.measurements is None:
-        raise HTTPException(422, "Supply your measurements to save a recommendation.")
     chart = repo.get_chart(data.brand_id, data.apparel_id, data.chart_version)
-    result = recommend(data.measurements, chart)
+    if data.measurement_id:
+        from backend.app.private_data import check_measurement
+        check_measurement(db, data.measurement_id, user["_id"])
+        record = repo.get_measurement(data.measurement_id)
+        values = reviewed_measurements(record, chart, data.measurement_overrides)
+    else:
+        record, values = None, data.measurements
+    result = recommend(values, chart)
+    if record:
+        result.measurement_id = record.measurement_id
+        result.warnings.extend(record.warnings)
     row = {"brand_id": data.brand_id, "apparel_id": data.apparel_id, "user_id": user["_id"]}
     saved = db.saved_sizes.find_one_and_update(
         row,

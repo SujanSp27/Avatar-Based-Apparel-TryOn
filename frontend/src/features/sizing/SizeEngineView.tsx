@@ -2,13 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, LoaderCircle, Ruler } from "../../icons";
 import { sizingService } from "../../services/sizingService";
-import type {
-  Brand,
-  Chart,
-  Measurements,
-  Metric,
-  Recommendation,
-} from "../../types/studio";
+import type { Brand, Chart, Metric, Recommendation } from "../../types/studio";
 import { metricLabels } from "../../types/studio";
 import { useMeasurement } from "../measurement/MeasurementProvider";
 import { useAuth } from "../auth/AuthProvider";
@@ -71,9 +65,15 @@ export default function SizeEngineView() {
     ) ?? [];
   const metrics = chart
     ? (chart.active_metrics ?? (Object.keys(chart.sizes[0].bounds) as Metric[]))
-    : (Object.keys(metricLabels) as Metric[]);
+    : [];
+  const needsReview = (
+    active.extraction?.quality.requires_manual_review ?? []
+  ).filter(
+    (key) => metrics.includes(key) && !active.reviewedMetrics.includes(key),
+  );
   const valid =
     !!active.measurements &&
+    !needsReview.length &&
     metrics.every((key) => {
       const n = active.measurements![key];
       return (
@@ -123,11 +123,16 @@ export default function SizeEngineView() {
     setResult(undefined);
   }, [active.measurements]);
   async function run() {
-    if (!chart || !active.measurements) return;
+    if (!chart || !active.measurements || !valid) return;
     setBusy(true);
     setError("");
     try {
-      const next = await sizingService.recommend(chart, active.measurements);
+      const next = await sizingService.recommend(
+        chart,
+        active.measurements,
+        active.extraction,
+        active.reviewedMetrics,
+      );
       setResult(next);
       setSelected(next.recommended_size);
     } catch (e) {
@@ -141,10 +146,15 @@ export default function SizeEngineView() {
       setLogin(true);
       return;
     }
-    if (!chart || !active.measurements) return;
+    if (!chart || !active.measurements || !valid) return;
     setSaving(true);
     try {
-      await sizingService.save(chart, active.measurements);
+      await sizingService.save(
+        chart,
+        active.measurements,
+        active.extraction,
+        active.reviewedMetrics,
+      );
       toast("Size saved to My Closet.");
     } catch (e) {
       setError((e as Error).message);
@@ -322,7 +332,9 @@ export default function SizeEngineView() {
                   {manual ? "Collapse" : "Edit values"}
                 </button>
               </div>
-              {manual ? (
+              {manual && !chart && options.length > 0 ? (
+                <Skeleton label="Loading chart measurements…" />
+              ) : manual ? (
                 <div className="manual-grid">
                   {metrics.map((key) => (
                     <label className="field" key={key}>
@@ -351,15 +363,10 @@ export default function SizeEngineView() {
                               : ""
                           }
                           onChange={(e) => {
-                            const empty = Object.fromEntries(
-                              Object.keys(metricLabels).map((k) => [k, 0]),
-                            ) as Measurements;
-                            active.setMeasurements({
-                              ...empty,
-                              ...active.measurements,
-                              [key]: Number(e.target.value) * factor,
-                            });
-                            active.setEdited(true);
+                            active.correctMeasurement(
+                              key,
+                              Number(e.target.value) * factor,
+                            );
                           }}
                         />
                         <span>{unit}</span>
@@ -384,6 +391,13 @@ export default function SizeEngineView() {
                     <p>Extract measurements or enter tape measurements here.</p>
                   )}
                 </div>
+              )}
+              {needsReview.length > 0 && (
+                <p role="status" className="fine-print">
+                  Photo measurements need review:{" "}
+                  {needsReview.map((key) => metricLabels[key]).join(", ")}.
+                  Enter tape measurements before comparing sizes.
+                </p>
               )}
               <button
                 className="button"

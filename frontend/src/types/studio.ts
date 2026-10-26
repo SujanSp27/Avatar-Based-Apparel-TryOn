@@ -21,11 +21,27 @@ export type Session = { access_token: string; expires_in: number; user: User };
 export type Extraction = {
   measurement_id: string;
   scale_factor: number;
-  measurements: Measurements;
+  measurements: Record<Metric, number | null>;
   annotated_image_url: string;
   landmarks_normalized: number[][];
   warnings: string[];
-  quality: { estimates_only: boolean; minimum_key_landmark_visibility: number };
+  quality: {
+    estimates_only: boolean;
+    minimum_key_landmark_visibility: number;
+    status?: "estimated" | "review_required";
+    requires_manual_review?: Metric[];
+    metrics?: Partial<
+      Record<
+        Metric,
+        {
+          status: "estimated" | "unavailable" | "review_required";
+          reason: string;
+          message?: string;
+          requires_manual_review: boolean;
+        }
+      >
+    >;
+  };
   geometry: { image_size: [number, number]; height_cm: number };
 };
 export type ChartSummary = {

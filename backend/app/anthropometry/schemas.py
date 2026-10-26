@@ -47,10 +47,17 @@ class Measurements(StrictSchema):
     inseam_length: float = Field(gt=0, le=200)
 
 
+class PhotoMeasurements(Measurements):
+    # Missing torso boundaries are unknown, never zero or an arm-inclusive width.
+    # Manual/saved complete Measurements remain strictly positive and non-null.
+    chest_circumference: Centimeters | None = None
+    waist_circumference: Centimeters | None = None
+
+
 class ExtractionResponse(StrictSchema):
     measurement_id: MeasurementId | None = None
     scale_factor: float
-    measurements: Measurements
+    measurements: PhotoMeasurements
     annotated_image_url: str
     quality: dict
     geometry: dict
@@ -160,11 +167,14 @@ class SizingRequest(StrictSchema):
     measurements: dict[Metric, Centimeters] | None = Field(default=None, min_length=1)
     measurement_id: MeasurementId | None = None
     chart_version: int | None = Field(default=None, ge=1)
+    measurement_overrides: dict[Metric, Centimeters] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def one_measurement_source(self):
         if (self.measurements is None) == (self.measurement_id is None):
             raise ValueError("Provide exactly one of measurements or measurement_id")
+        if self.measurement_overrides and not self.measurement_id:
+            raise ValueError("Tape overrides require a measurement_id")
         return self
 
 
@@ -189,4 +199,5 @@ class SizingResponse(StrictSchema):
 
 class ExtractAndRecommendResponse(StrictSchema):
     extraction: ExtractionResponse
-    recommendation: SizingResponse
+    recommendation: SizingResponse | None
+    recommendation_error: APIError | None = None

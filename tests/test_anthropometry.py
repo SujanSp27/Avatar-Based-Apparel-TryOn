@@ -115,8 +115,10 @@ def test_connected_arm_is_not_included_in_chest_measurement(observation):
     assert result["geometry"]["chest_torso_fraction"] == .30
     assert result["measurements"]["chest_circumference"] == 98
     observation.mask[300:500, 150:450] = True
-    with pytest.raises(PipelineError, match="includes arms"):
-        estimate(observation, 160)
+    uncertain, _ = estimate(observation, 160)
+    assert uncertain["measurements"]["chest_circumference"] is None
+    assert uncertain["measurements"]["waist_circumference"] is None
+    assert uncertain["quality"]["metrics"]["chest_circumference"]["reason"] == "arms_overlap_torso"
 
 
 def test_mask_refinement_is_deterministic_and_uses_image_edges():

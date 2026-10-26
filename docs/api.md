@@ -20,26 +20,26 @@ measurement estimation uses CPU MediaPipe. No local GPU or public GPU demo is us
 | `GET /api/v1/profile/scans` | Own paginated scans, `limit` 1–100 and `offset`; `{items,total,limit,offset}` |
 | `GET /api/v1/profile/scans/{id}/thumbnail` | Own authenticated JPEG thumbnail; private/no-store cache policy |
 | `DELETE /api/v1/profile/scans/{id}` | Delete own scan and thumbnail; 204, unknown/other-account ID returns 404 |
-| `POST /api/v1/profile/sizes` | Bearer JWT; sizing request with actual measurements; engine recomputes and saves by brand/apparel, 201 |
+| `POST /api/v1/profile/sizes` | Active account; manual measurements or owned measurement_id with optional per-metric measurement_overrides; quality gate and engine recomputation, 201 |
 | `GET /api/v1/profile/sizes` | Own most recent 100 saved brand/apparel recommendations |
 | `DELETE /api/v1/profile/sizes/{id}` | Delete own saved size; 204 |
 
 Profile endpoints require an active server session as well as a valid JWT. Auth
 endpoints validate origins and rate-limit attempts. See [frontend-studio.md](frontend-studio.md)
 for cookie lifetimes, password policy, SMTP configuration and deployment limits.
-Legacy guest assets are not protected by the new profile session boundaries.
+Historical guest assets remain protected by their original signed guest session.
 
 ## Measurement and exact sizing APIs
 
 | Endpoint | Contract |
 |---|---|
-| `POST /api/v1/measurements/extract` | Multipart `image` (JPEG/PNG), `height_cm`; saved `measurement_id`, six approximate dimensions, scale, annotated PNG URL, `landmarks_normalized` (33 `[x,y,z,visibility]` arrays), quality/provenance/warnings |
-| `POST /api/v1/measurements/extract-and-recommend` | Same upload plus `brand_id`, `apparel_id`, optional `chart_version`; `{extraction,recommendation}` from one CPU inference |
+| `POST /api/v1/measurements/extract` | Multipart `image` (JPEG/PNG), `height_cm`; owned measurement_id, approximate dimensions (unknown chest/waist may be null), scale, annotation, 33 normalized landmarks and per-metric quality/warnings |
+| `POST /api/v1/measurements/extract-and-recommend` | Same upload plus brand_id, apparel_id, optional chart_version; returns extraction and recommendation; when review is required, recommendation is null with recommendation_error and the scan is retained |
 | `GET /api/v1/measurements` | Admin-protected history; `limit` 1–100, `offset` >=0; `{items,total,limit,offset}` |
 | `GET /api/v1/measurements/{measurement_id}` | Saved estimates, provenance, UTC creation time; no new inference |
 | `GET /api/v1/measurements/{measurement_id}/annotation` | Actual annotated PNG; missing record/file returns 404 |
-| `DELETE /api/v1/measurements/{measurement_id}` | Admin; removes MongoDB record, annotation, mask and diagnostic JSON; 204 |
-| `POST /api/v1/sizing/recommend` | JSON `brand_id`, `apparel_id`, exactly one of `measurements` or saved `measurement_id`, optional `chart_version`; exact midpoint-relative error, rankings, `100/(1+E)` heuristic score |
+| `DELETE /api/v1/measurements/{measurement_id}` | Original owner; removes MongoDB record, annotation, mask and diagnostic JSON; 204 |
+| `POST /api/v1/sizing/recommend` | brand_id, apparel_id, exactly one of manual measurements or owned measurement_id, optional chart_version; optional measurement_overrides for the stored-scan path; 422 measurement_review_required for unresolved required dimensions; exact midpoint-error rankings and 100/(1+E) heuristic score |
 | `GET /api/v1/sizing/categories` | Eleven sizing categories, default dimensions and normalized weights; independent of chart availability or visual VTON quality |
 | `GET /api/v1/sizing/brands` | Requested India brands, actual available charts, source limitations; `include_demo=true` adds fictional fixtures |
 | `POST /api/v1/sizing/brands` | Admin; `{brand_id,brand_name,market,official_url?,description?}`; new brand, 201 |
@@ -48,7 +48,7 @@ Legacy guest assets are not protected by the new profile session boundaries.
 | `GET /api/v1/sizing/charts` | Summaries; `gender`, `market`, `brand_id`, `category`, `latest_only`; `limit` 1–500 and `offset` >=0 |
 | `GET /api/v1/sizing/charts/{brand_id}/{apparel_id}` | Full chart; optional `version` |
 | `GET /api/v1/sizing/charts/{brand_id}/{apparel_id}/versions` | Immutable version history, newest first |
-| `POST /api/v1/sizing/charts` | New immutable chart version; optional configured admin token |
+| `POST /api/v1/sizing/charts` | New immutable chart version; configured admin token required |
 
 These endpoints use MongoDB. See [measurements and sizing](measurements-and-sizing.md)
 for exact schemas, mathematical rules, supported poses, source limitations and
@@ -132,12 +132,12 @@ these headers and asynchronous `Location` to the browser. Unexpected failures
 return a sanitized 500 and request ID; driver credentials and tracebacks are not
 sent to clients. Field-validation errors retain FastAPI's standard 422 format.
 
-Set `ADMIN_TOKEN` and supply `X-Admin-Token` for chart/brand mutations and run
-deletion, measurement deletion, and measurement/run history listings. When unset,
-these operations are permitted for local development. The app
-does not implement public multi-user authentication or asset isolation.
-Uploads, intermediate outputs, annotations and diagnostic records persist
-locally until deleted; do not expose private runtime credentials or data publicly.
+Set `ADMIN_TOKEN` and supply `X-Admin-Token` for administrative chart/brand mutations
+and aggregate measurement/run history operations. Missing admin configuration
+fails closed. Individual measurements, annotations and deletion require their
+original owner; account sessions protect profile records and try-on results.
+Uploads, intermediate outputs, annotations and diagnostic records use private
+storage and the configured retention policy; never expose that storage directly.
 
 Measurement deletion removes files before the MongoDB document. If filesystem
 cleanup fails, metadata remains for retry. There is no distributed transaction

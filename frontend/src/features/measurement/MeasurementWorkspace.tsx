@@ -14,6 +14,7 @@ import { useToast } from "../../components/ui/Toast";
 import { ErrorNotice } from "../../components/feedback/Feedback";
 import { thumbnail } from "../../utils/images";
 import { usePublicConfig } from "../../services/usePublicConfig";
+import { metricLabels, type Measurements } from "../../types/studio";
 export default function MeasurementWorkspace() {
   const state = useMeasurement();
   const configuration = usePublicConfig();
@@ -26,6 +27,12 @@ export default function MeasurementWorkspace() {
   const [camera, setCamera] = useState(false);
   const [login, setLogin] = useState(false);
   const pending = useRef<AbortController | null>(null);
+  const needsReview = (
+    state.extraction?.quality.requires_manual_review ?? []
+  ).filter((key) => !state.reviewedMetrics.includes(key));
+  useEffect(() => {
+    setError("");
+  }, [state.file, state.height]);
   useEffect(() => {
     const cancel = () => {
       pending.current?.abort();
@@ -66,6 +73,10 @@ export default function MeasurementWorkspace() {
     pending.current = controller;
     setBusy(true);
     setError("");
+    // Keep the uploaded photo and height, but never reuse stale values after a failed retry.
+    state.setExtraction(undefined);
+    state.setMeasurements(undefined);
+    state.setEdited(false);
     try {
       const result = await measurementService.extract(
         state.file,
@@ -74,10 +85,20 @@ export default function MeasurementWorkspace() {
       );
       if (controller.signal.aborted) return;
       state.setExtraction(result);
-      state.setMeasurements(result.measurements);
+      // Zero is an empty editable field in this UI; it is never sent as a measurement.
+      state.setMeasurements(
+        Object.fromEntries(
+          Object.entries(result.measurements).map(([key, value]) => [
+            key,
+            value ?? 0,
+          ]),
+        ) as Measurements,
+      );
       state.setEdited(false);
       notify(
-        "Your six estimates are ready. Review and correct them before choosing a size.",
+        result.quality.requires_manual_review?.length
+          ? "Pose found. Review flagged measurements."
+          : "Your six estimates are ready. Review and correct them before choosing a size.",
       );
     } catch (e) {
       if (!controller.signal.aborted) setError((e as Error).message);
@@ -90,7 +111,7 @@ export default function MeasurementWorkspace() {
       setLogin(true);
       return;
     }
-    if (!state.measurements) return;
+    if (!state.measurements || needsReview.length) return;
     setSaving(true);
     setError("");
     try {
@@ -279,12 +300,35 @@ export default function MeasurementWorkspace() {
               : "6 dimensions · centimeters"}
         </span>
       </div>
+      {needsReview.length > 0 && (
+        <section
+          className="estimate-details"
+          role="status"
+          aria-label="Measurement quality"
+        >
+          <strong>Some measurements need review</strong>
+          <p>
+            Your pose was detected, but the clothing outline cannot provide all
+            body dimensions reliably. Edit the flagged dimensions using a tape
+            measure, or retry with arms slightly apart and close-fitting
+            clothing.
+          </p>
+          {needsReview.map((key) => (
+            <p key={key}>
+              <strong>{metricLabels[key]}:</strong>{" "}
+              {state.extraction?.quality.metrics?.[key]?.message ??
+                "Confirm this dimension with a tape measure before sizing."}
+            </p>
+          ))}
+          <p>
+            Landmark visibility is not measurement accuracy. Unavailable
+            dimensions are left blank.
+          </p>
+        </section>
+      )}
       <MeasurementGrid
         values={state.measurements}
-        onChange={(values) => {
-          state.setMeasurements(values);
-          state.setEdited(true);
-        }}
+        onChange={(values, key) => state.correctMeasurement(key, values[key])}
       />
       {state.extraction && (
         <details className="estimate-details">
@@ -302,17 +346,24 @@ export default function MeasurementWorkspace() {
         <div className="actions">
           <button
             className="button secondary"
-            disabled={!validMeasurements(state.measurements) || saving}
+            disabled={
+              !validMeasurements(state.measurements) ||
+              !!needsReview.length ||
+              saving
+            }
             onClick={() => void save()}
           >
             {saving ? "Saving…" : "Save measurements"}
           </button>
           <Link
-            className={`button ${!validMeasurements(state.measurements) ? "disabled-link" : ""}`}
-            aria-disabled={!validMeasurements(state.measurements)}
+            className={`button ${!validMeasurements(state.measurements) || needsReview.length ? "disabled-link" : ""}`}
+            aria-disabled={
+              !validMeasurements(state.measurements) || !!needsReview.length
+            }
             to="/sizing"
             onClick={(e) => {
-              if (!validMeasurements(state.measurements)) e.preventDefault();
+              if (!validMeasurements(state.measurements) || needsReview.length)
+                e.preventDefault();
             }}
           >
             Find my size <ArrowRight size={17} />

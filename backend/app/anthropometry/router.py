@@ -8,6 +8,7 @@ from pymongo.errors import PyMongoError
 
 from backend.app.accounts.security import now, require_admin, throttle
 from backend.app.anthropometry.constants import CATEGORY_METRICS, WEIGHTS
+from backend.app.anthropometry.measurement_quality import reviewed_measurements
 from backend.app.anthropometry.measurement_service import MeasurementService
 from backend.app.anthropometry.pose_adapter import MediaPipePose
 from backend.app.anthropometry.repository import MeasurementRepository, get_repository
@@ -109,7 +110,14 @@ def extract_and_recommend(
     if chart.measurement_basis != "body":
         raise PipelineError("chart_basis_unsupported", "A body-size chart is required; garment dimensions cannot score body measurements.")
     extraction = extract_and_save(image, height_cm, repo, service, owner)
-    result = recommend(extraction.measurements.model_dump(), chart)
+    try:
+        values = reviewed_measurements(extraction, chart)
+    except PipelineError as exc:
+        if exc.code != "measurement_review_required":
+            raise
+        return ExtractAndRecommendResponse(extraction=extraction, recommendation=None,
+                                           recommendation_error={"code": exc.code, "message": str(exc)})
+    result = recommend(values, chart)
     result.measurement_id = extraction.measurement_id
     result.warnings.extend(extraction.warnings)
     return ExtractAndRecommendResponse(extraction=extraction, recommendation=result)
@@ -155,7 +163,7 @@ def recommend_size(data: SizingRequest, request: Request, repo: MeasurementRepos
         check_measurement(repo.db, data.measurement_id, principal(request, repo.db))
     chart = repo.get_chart(data.brand_id, data.apparel_id, data.chart_version)
     record = repo.get_measurement(data.measurement_id) if data.measurement_id else None
-    measurements = record.measurements.model_dump() if record else data.measurements
+    measurements = reviewed_measurements(record, chart, data.measurement_overrides) if record else data.measurements
     result = recommend(measurements, chart)
     if record:
         result.measurement_id = record.measurement_id
