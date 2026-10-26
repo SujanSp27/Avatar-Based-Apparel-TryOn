@@ -187,7 +187,7 @@ async def serve() -> None:
                                     raise ValueError("Unknown tool. Read tools.json for the current schema.")
                                 if not isinstance(arguments, dict):
                                     raise ValueError("Tool arguments must be a JSON object")
-                                result = as_json(await session.call_tool(name, arguments=arguments))
+                                result = as_json(await asyncio.wait_for(session.call_tool(name, arguments=arguments), timeout=75))
                                 await list_tools()
                             else:
                                 raise ValueError("Only list_tools and call_tool methods are supported")
