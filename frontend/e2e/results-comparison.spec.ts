@@ -1,15 +1,7 @@
-import { signInForTest } from "./session-fixture";
+import { authenticatedSuite } from "./session-fixture";
 import { test, expect, type Page } from "@playwright/test";
 
-let accountPassword = "";
-test.beforeEach(async ({ page }) => {
-  accountPassword = await signInForTest(page);
-});
-test.afterEach(async ({ page }) => {
-  await page.request.delete("/api/v1/profile", {
-    data: { password: accountPassword },
-  });
-});
+authenticatedSuite(test);
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
@@ -429,6 +421,7 @@ test("completed comparison is compact and centered; editing keeps the selected r
   await expect(viewer).toHaveAttribute("data-loaded", "true");
   // A restored result has no File input in memory. Choosing another garment
   // must restore this result's original person instead of using a demo person.
+  await page.getByLabel("Filter garment catalog").selectOption("t-shirt");
   await page.getByRole("button", { name: /Sage pique polo/ }).click();
   await expect(page.locator("#tryon-inputs")).toBeVisible();
   await expect(

@@ -87,10 +87,12 @@ test("guest measurement screen works from mobile to ultrawide, validates uploads
   expect(errors).toEqual([]);
 });
 
-test("real six-metric sizing API, chart comparison, unsupported guide and mobile results", async ({
+test("real published-metric sizing API, chart comparison, unsupported guide and mobile results", async ({
   page,
 }) => {
   await page.goto("/sizing");
+  // Wait for the selected chart: asynchronous loading changes the active inputs.
+  await expect(page.locator(".chart-provenance")).toBeVisible();
   for (const [label, value] of Object.entries(metrics))
     if (await page.getByLabel(label, { exact: true }).count())
       await page.getByLabel(label, { exact: true }).fill(value);

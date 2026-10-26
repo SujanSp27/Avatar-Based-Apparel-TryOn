@@ -8,6 +8,7 @@ COPY backend backend
 COPY ml ml
 COPY scripts scripts
 COPY data/brandCharts data/brandCharts
+COPY data/catalog data/catalog
 COPY alembic.ini ./
 RUN useradd --uid 10001 --create-home app && mkdir -p .runtime data/processed data/raw assets/pose && chown -R app:app /app
 USER app

@@ -5,12 +5,13 @@ import json
 
 import pytest
 from PIL import Image
-from test_vastraview import studio  # noqa: F401 -- shared isolated API fixture
 
 from backend.app.anthropometry.schemas import ChartCreate
 from backend.app.anthropometry.sizing_engine import recommend
 from backend.app.catalog import TAXONOMY, initialize_catalog
 from backend.app.config import ROOT
+
+pytest_plugins = ["test_vastraview"]
 
 
 def test_catalog_manifest_distinct_images_and_model_support():

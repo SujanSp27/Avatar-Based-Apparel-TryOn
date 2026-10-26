@@ -148,3 +148,13 @@ npx playwright test
 The normal browser suite never launches GPU inference. Live Colab tests require
 their existing explicit environment opt-ins. The local app is at
 `http://127.0.0.1:5173`; OpenAPI is at `http://127.0.0.1:8000/docs`.
+
+
+## October 26 discovery update
+
+New try-on jobs now require sign-in on both the route and API. Guest browsing,
+manual sizing and measurement workflows stay available. Discovery includes 57
+local references (51 licensed new images), data-driven filters and editorial
+unsupported outfits. Chart selectors now include explicit markets and cm/in
+inputs, preserving only the published active metrics. See
+[fashion-platform-upgrade.md](fashion-platform-upgrade.md) for provenance and limits.

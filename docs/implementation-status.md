@@ -1,4 +1,24 @@
-# Current implementation status - 25 October 2026
+# Current implementation status - 26 October 2026
+
+## Fashion discovery and sizing upgrade
+
+This section supersedes older catalog counts and guest try-on behavior below.
+See [fashion-platform-upgrade.md](fashion-platform-upgrade.md) for sources, exact
+coverage, assets, audit findings and deployment limitations.
+
+| Phase | Requirement | Status | Evidence |
+| --- | --- | --- | --- |
+| Discovery | Editorial hero, supplied logo and responsive design | IMPLEMENTED | HomePage, local responsive Pexels photograph, desktop/mobile browser evidence |
+| Catalog | Distinct real data, filters, pagination and saved favorites | IMPLEMENTED | 51 new references / 57 total locally; manifest, MongoDB APIs, asset checksum and filtering tests |
+| Catalog scope | High-resolution commercial inventory in every category | PARTIALLY IMPLEMENTED | 46 community reference photos plus 5 editorial outfits; no stock claims, unsupported layered outfits browse-only |
+| Sizing | Explicit source, market, basis, units and published-metric matching | IMPLEMENTED | 23 official scopes across Nike, Puma, Manyavar, Adidas, Levi's and H&M; source/mapping/point/weight tests |
+| Sizing coverage | All target Indian brands/categories verified | PARTIALLY IMPLEMENTED | Missing charts remain explicit; UK/US/Kosovo charts are not relabeled India |
+| Security | Account required before new inference and recovery POST | IMPLEMENTED | Protected route plus server dependency; invalid/expired/revoked tokens and ownership tests |
+| Regression | Backend and real CPU measurement checks | IMPLEMENTED | 652 regression + 3 checkpoint tests passed on 26 October |
+| Browser | Catalog, charts, authentication, responsive comparison and recovery | IMPLEMENTED | Final combined 28-case browser suite passed; 57 image URLs checked, desktop/mobile/accessibility verified |
+| Live inference | Fresh authenticated private Colab result, authorization and download | IMPLEMENTED | Job 51c51dad-e812-4545-83ea-3c0d8986c6f1; one live browser test passed; retained result survives reload/outage, identical download bytes |
+| Fidelity and speed | Exact reference construction and consistent sub-30-second output | PARTIALLY IMPLEMENTED | New sage-polo test 34.837 s total / 22.696 s generation; face/background unchanged in checked regions; placket/texture softened and relaxed sleeves/hem |
+| Deployment | Catalog manifest and restorable local images | IMPLEMENTED | API Dockerfile COPY, source/checksum manifest and repeatable downloader; container runtime still pending |
 
 ## VastraView upgrade — current application
 

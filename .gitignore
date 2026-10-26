@@ -15,6 +15,7 @@ assets/pose/*.task
 experiments/runs/
 assets/vton/
 frontend/test-results/
+frontend/test-results-live/
 frontend/playwright-report/
 experiments/
 .env.*

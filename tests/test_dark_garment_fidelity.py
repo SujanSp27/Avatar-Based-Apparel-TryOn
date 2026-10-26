@@ -1,6 +1,7 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 from PIL import Image
 
 from ml.vton.garment_fidelity import assess_dark_reference, fabric_statistics

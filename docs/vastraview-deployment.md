@@ -41,8 +41,10 @@ AI-edited wordmark is used.
    database using an authenticated operator shell. Enter the password at the
    prompt, not in shell history. Use its URL-encoded credential in MONGODB_URI.
    The API must not use the MongoDB root account.
-4. Put the existing licensed pose checkpoint in `assets/pose` and authorized
-   catalog images in `data/raw`. These are read-only mounts, never built into the
+4. Put the existing licensed pose checkpoint in `assets/pose`. Run
+   `python -m scripts.download_catalog` to restore the 51 licensed catalog photos
+   from pinned sources; add other authorized catalog images in `data/raw`.
+   These are read-only mounts, never built into the
    image. Review ownership/permissions for UID 10001 on Linux bind mounts.
 5. Build/start:
    `docker compose --env-file .env.production -f compose.production.yml up -d --build`.
@@ -73,8 +75,9 @@ fragments, single-use hashed tokens and expiry. SMTP tests use a local test doub
 deliverability and HTTPS links must be tested with the actual email provider.
 No default production admin or OAuth integration is created.
 
-New jobs, run images, annotations and measurements have an owner. Guests use a
-signed HttpOnly browser cookie. UUIDs and URLs are not authorization. Existing
+New try-on jobs require an account. Run images, annotations and measurements have
+an owner. Guest measurement and historical guest-result access use a signed
+HttpOnly browser cookie. UUIDs and URLs are not authorization. Existing
 unowned runs are retained but inaccessible through public routes; do not assign
 them to the first visitor or expose the old static directory. An operator must
 verify ownership offline before a deliberate metadata migration.
@@ -88,10 +91,12 @@ testing and independent security review remain release gates.
 ## Catalog and sizing provenance
 
 `/api/v1/brands`, `/categories`, `/products`, `/products/{id}` and image routes
-are data-driven. Twenty-three brands are a directory, not invented inventory.
-Seeded research references retain source URLs and explicit commercial-rights
-limitations; production excludes them. Sarees, layered ethnic outfits and co-ord
-sets are discoverable taxonomy only, not claimed model-supported inventory.
+are data-driven. Twenty-eight brands are a directory, not invented inventory.
+There are 51 newly sourced CC0/Pexels references plus six historical research
+references in development. Production excludes those six restricted references.
+The five editorial ethnic/co-ord outfits are browse-only; none claim model support
+or available stock. Full source manifests and chart coverage are documented in
+[the fashion upgrade report](fashion-platform-upgrade.md).
 
 Publish real authorized assets with `PUT /api/v1/products/{id}` plus X-Admin-Token.
 The schema requires a stable ID, source, license statement, audience, colors,
@@ -131,6 +136,11 @@ private artifacts from being added; it cannot purge already tracked files or Git
 history. Review those separately before publishing this repository.
 
 ## Verification and release gates
+
+The 26 October [fashion upgrade report](fashion-platform-upgrade.md) supersedes
+the counts below: 655 backend/CPU checks and a fresh private Colab run have been
+verified. Browser results, measured latency, source coverage and remaining limits
+are recorded there. No new deployment or inference SLA is implied.
 
 On 25 October 2026, 647 backend tests and all three local-checkpoint CPU
 integration tests passed. Strict TypeScript/Vite build, Ruff and `pip check`

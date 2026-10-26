@@ -1,15 +1,7 @@
-import { signInForTest } from "./session-fixture";
+import { authenticatedSuite } from "./session-fixture";
 import { test, expect } from "@playwright/test";
 
-let accountPassword = "";
-test.beforeEach(async ({ page }) => {
-  accountPassword = await signInForTest(page);
-});
-test.afterEach(async ({ page }) => {
-  await page.request.delete("/api/v1/profile", {
-    data: { password: accountPassword },
-  });
-});
+authenticatedSuite(test);
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
@@ -82,6 +74,11 @@ test("refresh resumes the same job and reports its actual failure without anothe
     await page.evaluate(() => localStorage.getItem("form-fit-last-job")),
   ).toBeNull();
   await page.reload();
+  // A missing progress node also matches the initial auth skeleton. Wait until
+  // cookie rotation finishes before asserting recovery or saving this session.
+  await expect(
+    page.getByRole("button", { name: "Sign out", exact: true }),
+  ).toBeVisible();
   await expect(page.getByTestId("job-progress")).toHaveCount(0);
   expect(posts).toBe(1);
 });

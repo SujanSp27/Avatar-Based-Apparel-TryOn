@@ -6,10 +6,14 @@ import {
 export default function DeviationHeatmap({
   result,
   size,
+  unit = "cm",
 }: {
   result: Recommendation;
   size: string;
+  unit?: "cm" | "in";
 }) {
+  const display = (value: number) =>
+    (value / (unit === "in" ? 2.54 : 1)).toFixed(1);
   const rows = result.chart_comparison[size];
   if (!rows) return null;
   return (
@@ -39,10 +43,10 @@ export default function DeviationHeatmap({
             </div>
             <div>
               <strong>
-                {value.measurement.toFixed(1)} <small>cm</small>
+                {display(value.measurement)} <small>{unit}</small>
               </strong>
               <small>
-                {value.lower.toFixed(1)} – {value.upper.toFixed(1)} cm
+                {display(value.lower)} – {display(value.upper)} {unit}
               </small>
             </div>
             <span className={`fit-tag ${state}`}>

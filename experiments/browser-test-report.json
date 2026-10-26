@@ -4,11 +4,13 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "e2e/vastraview.spec.ts",
-      "e2e/studio.spec.ts",
-      "e2e/results-comparison.spec.ts",
-      "e2e/job-recovery.spec.ts",
-      "e2e/private-tryon-live.spec.ts"
+      "vastraview.spec.ts",
+      "fashion-platform.spec.ts",
+      "studio.spec.ts",
+      "online-tryon.spec.ts",
+      "job-recovery.spec.ts",
+      "results-comparison.spec.ts",
+      "--max-failures=3"
     ],
     "configFile": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\playwright.config.ts",
     "rootDir": "C:/Users/Sujan/OneDrive/Desktop/Avatar_Virtual_try_on/frontend/e2e",
@@ -20,7 +22,7 @@
     "globalTimeout": 0,
     "grep": {},
     "grepInvert": null,
-    "maxFailures": 0,
+    "maxFailures": 3,
     "metadata": {
       "actualWorkers": 1
     },
@@ -106,6 +108,116 @@
   },
   "suites": [
     {
+      "title": "fashion-platform.spec.ts",
+      "file": "fashion-platform.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "editorial hero and catalog images load across desktop and mobile",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6325,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-26T00:59:58.302Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "926a99a5e120085c5ac9-980e96836e9bc914f183",
+          "file": "fashion-platform.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "chart country, source, subset measurements and unit switching stay correct",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2783,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-26T01:00:04.887Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "926a99a5e120085c5ac9-1aa5a40a7be87f308c0b",
+          "file": "fashion-platform.spec.ts",
+          "line": 71,
+          "column": 1
+        },
+        {
+          "title": "guest return URL survives sign-in and logout blocks new uploads",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2853,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-26T01:00:07.687Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "926a99a5e120085c5ac9-5cb6b33317acb1695acf",
+          "file": "fashion-platform.spec.ts",
+          "line": 127,
+          "column": 1
+        }
+      ]
+    },
+    {
       "title": "job-recovery.spec.ts",
       "file": "job-recovery.spec.ts",
       "column": 0,
@@ -127,12 +239,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 7582,
+                  "duration": 5855,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:38:33.473Z",
+                  "startTime": "2026-10-26T01:00:10.576Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -142,7 +254,7 @@
           ],
           "id": "682f82d051ae41147e04-dca59e1af23cdd930d3a",
           "file": "job-recovery.spec.ts",
-          "line": 7,
+          "line": 10,
           "column": 1
         },
         {
@@ -161,12 +273,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1536,
+                  "duration": 1664,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:38:41.456Z",
+                  "startTime": "2026-10-26T01:00:16.452Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -176,7 +288,7 @@
           ],
           "id": "682f82d051ae41147e04-6fe5be84e597266a1bf4",
           "file": "job-recovery.spec.ts",
-          "line": 78,
+          "line": 86,
           "column": 1
         },
         {
@@ -195,12 +307,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3372,
+                  "duration": 3784,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:38:43.030Z",
+                  "startTime": "2026-10-26T01:00:18.141Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -210,24 +322,24 @@
           ],
           "id": "682f82d051ae41147e04-8b1e495188b029b35095",
           "file": "job-recovery.spec.ts",
-          "line": 103,
+          "line": 111,
           "column": 1
         }
       ]
     },
     {
-      "title": "private-tryon-live.spec.ts",
-      "file": "private-tryon-live.spec.ts",
+      "title": "online-tryon.spec.ts",
+      "file": "online-tryon.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "real private Colab result survives refresh, denies strangers and downloads correctly",
+          "title": "recovers automatically and offers retry without a page reload",
           "ok": true,
           "tags": [],
           "tests": [
             {
-              "timeout": 300000,
+              "timeout": 240000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "",
@@ -237,12 +349,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 8853,
+                  "duration": 5397,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:38:46.439Z",
+                  "startTime": "2026-10-26T01:00:22.175Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -250,9 +362,145 @@
               "status": "expected"
             }
           ],
-          "id": "35b8bdc05461512b0b74-afc859130ab30f21f1d8",
-          "file": "private-tryon-live.spec.ts",
-          "line": 14,
+          "id": "0645dc1c5c136cd89699-f7689ec775df1abbf7e8",
+          "file": "online-tryon.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "losing the API clears readiness and retries automatically",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1898,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-26T01:00:27.586Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0645dc1c5c136cd89699-5c394d876e7e87e10bea",
+          "file": "online-tryon.spec.ts",
+          "line": 45,
+          "column": 1
+        },
+        {
+          "title": "photo-only app offers model categories and never exposes avatar controls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1187,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-26T01:00:29.504Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0645dc1c5c136cd89699-ab44de69c17235d31d59",
+          "file": "online-tryon.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "failed recovery exposes retry and recovers without losing uploads",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1880,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-26T01:00:30.713Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0645dc1c5c136cd89699-5a014aab0e984204f774",
+          "file": "online-tryon.spec.ts",
+          "line": 108,
+          "column": 1
+        },
+        {
+          "title": "a hanging health request expires instead of leaving stale readiness",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1557,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-26T01:00:32.615Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0645dc1c5c136cd89699-6b0f5eae4c740626e6a9",
+          "file": "online-tryon.spec.ts",
+          "line": 147,
           "column": 1
         }
       ]
@@ -279,12 +527,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6332,
+                  "duration": 4292,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:38:55.404Z",
+                  "startTime": "2026-10-26T01:00:34.387Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -294,7 +542,7 @@
           ],
           "id": "723e605dbfb315118fa3-84da9419708b7d3fa248",
           "file": "results-comparison.spec.ts",
-          "line": 62,
+          "line": 65,
           "column": 1
         },
         {
@@ -313,12 +561,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4515,
+                  "duration": 2777,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:01.791Z",
+                  "startTime": "2026-10-26T01:00:38.694Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -328,7 +576,7 @@
           ],
           "id": "723e605dbfb315118fa3-eb1bdfdc9567bb9712e2",
           "file": "results-comparison.spec.ts",
-          "line": 184,
+          "line": 187,
           "column": 3
         },
         {
@@ -347,12 +595,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4646,
+                  "duration": 2687,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:06.355Z",
+                  "startTime": "2026-10-26T01:00:41.485Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -362,7 +610,7 @@
           ],
           "id": "723e605dbfb315118fa3-c50b659e51350fb997c9",
           "file": "results-comparison.spec.ts",
-          "line": 184,
+          "line": 187,
           "column": 3
         },
         {
@@ -381,12 +629,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2135,
+                  "duration": 1579,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:11.049Z",
+                  "startTime": "2026-10-26T01:00:44.190Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -396,7 +644,7 @@
           ],
           "id": "723e605dbfb315118fa3-37a97e602d39da6abffb",
           "file": "results-comparison.spec.ts",
-          "line": 238,
+          "line": 241,
           "column": 1
         },
         {
@@ -415,12 +663,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2250,
+                  "duration": 1888,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:13.231Z",
+                  "startTime": "2026-10-26T01:00:45.785Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -430,7 +678,7 @@
           ],
           "id": "723e605dbfb315118fa3-f88e68b1d7a7c8d4e50b",
           "file": "results-comparison.spec.ts",
-          "line": 249,
+          "line": 252,
           "column": 1
         },
         {
@@ -449,12 +697,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1688,
+                  "duration": 1617,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:15.532Z",
+                  "startTime": "2026-10-26T01:00:47.691Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -464,7 +712,7 @@
           ],
           "id": "723e605dbfb315118fa3-d2086a8b5cbfd5aa6ac4",
           "file": "results-comparison.spec.ts",
-          "line": 279,
+          "line": 282,
           "column": 1
         },
         {
@@ -483,12 +731,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1593,
+                  "duration": 1512,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:17.271Z",
+                  "startTime": "2026-10-26T01:00:49.328Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -498,7 +746,7 @@
           ],
           "id": "723e605dbfb315118fa3-4ced8e00b8197bbd9781",
           "file": "results-comparison.spec.ts",
-          "line": 294,
+          "line": 297,
           "column": 1
         },
         {
@@ -517,12 +765,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6316,
+                  "duration": 4929,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:18.906Z",
+                  "startTime": "2026-10-26T01:00:50.862Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -532,7 +780,7 @@
           ],
           "id": "723e605dbfb315118fa3-ad7f6f32dabf559be55b",
           "file": "results-comparison.spec.ts",
-          "line": 304,
+          "line": 307,
           "column": 1
         },
         {
@@ -551,12 +799,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2654,
+                  "duration": 2505,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:25.261Z",
+                  "startTime": "2026-10-26T01:00:55.807Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -566,7 +814,7 @@
           ],
           "id": "723e605dbfb315118fa3-9cbc8af75cfcf1d9f3da",
           "file": "results-comparison.spec.ts",
-          "line": 390,
+          "line": 393,
           "column": 1
         },
         {
@@ -585,12 +833,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2486,
+                  "duration": 2318,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:27.965Z",
+                  "startTime": "2026-10-26T01:00:58.328Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -600,7 +848,7 @@
           ],
           "id": "723e605dbfb315118fa3-af182dcb5f648e35eb6c",
           "file": "results-comparison.spec.ts",
-          "line": 455,
+          "line": 459,
           "column": 1
         },
         {
@@ -619,12 +867,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2700,
+                  "duration": 1989,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:30.502Z",
+                  "startTime": "2026-10-26T01:01:00.663Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -634,7 +882,7 @@
           ],
           "id": "723e605dbfb315118fa3-01cdbc578297000551c5",
           "file": "results-comparison.spec.ts",
-          "line": 513,
+          "line": 517,
           "column": 1
         }
       ]
@@ -661,12 +909,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6928,
+                  "duration": 4346,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:33.294Z",
+                  "startTime": "2026-10-26T01:01:02.897Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -680,7 +928,7 @@
           "column": 1
         },
         {
-          "title": "real six-metric sizing API, chart comparison, unsupported guide and mobile results",
+          "title": "real published-metric sizing API, chart comparison, unsupported guide and mobile results",
           "ok": true,
           "tags": [],
           "tests": [
@@ -695,12 +943,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4337,
+                  "duration": 3976,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:40.254Z",
+                  "startTime": "2026-10-26T01:01:07.259Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -708,7 +956,7 @@
               "status": "expected"
             }
           ],
-          "id": "64bdea7002f9c9cea9f4-fa72035497b555174f9b",
+          "id": "64bdea7002f9c9cea9f4-d859340c0e8f007ac6fe",
           "file": "studio.spec.ts",
           "line": 90,
           "column": 1
@@ -729,12 +977,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 11440,
+                  "duration": 9560,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:44.610Z",
+                  "startTime": "2026-10-26T01:01:11.253Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -744,7 +992,7 @@
           ],
           "id": "64bdea7002f9c9cea9f4-1efdf4e032d1405d7615",
           "file": "studio.spec.ts",
-          "line": 141,
+          "line": 144,
           "column": 1
         },
         {
@@ -763,12 +1011,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4527,
+                  "duration": 3138,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:39:56.081Z",
+                  "startTime": "2026-10-26T01:01:20.830Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -778,7 +1026,7 @@
           ],
           "id": "64bdea7002f9c9cea9f4-d017fe40983268232d2d",
           "file": "studio.spec.ts",
-          "line": 290,
+          "line": 293,
           "column": 1
         }
       ]
@@ -805,12 +1053,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6802,
+                  "duration": 7052,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:40:00.666Z",
+                  "startTime": "2026-10-26T01:01:24.000Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -839,12 +1087,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4459,
+                  "duration": 4152,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T02:40:07.487Z",
+                  "startTime": "2026-10-26T01:01:31.070Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -854,7 +1102,7 @@
           ],
           "id": "e431c1ef2860847830e5-3de1ecc0bdd20d0fbe2e",
           "file": "vastraview.spec.ts",
-          "line": 69,
+          "line": 73,
           "column": 1
         }
       ]
@@ -862,9 +1110,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-25T02:38:31.073Z",
-    "duration": 102882.522,
-    "expected": 21,
+    "startTime": "2026-10-26T00:59:56.193Z",
+    "duration": 100758.561,
+    "expected": 28,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

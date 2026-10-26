@@ -200,6 +200,7 @@ export default function SizeEngineView() {
                 <label className="field">
                   Collection
                   <select
+                    aria-label="Collection"
                     disabled={busy}
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
@@ -211,6 +212,7 @@ export default function SizeEngineView() {
                 <label className="field">
                   Category
                   <select
+                    aria-label="Category"
                     disabled={busy}
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
@@ -462,7 +464,7 @@ export default function SizeEngineView() {
                     </button>
                   ))}
                 </div>
-                <DeviationHeatmap result={result} size={selected} />
+                <DeviationHeatmap result={result} size={selected} unit={unit} />
                 <details className="estimate-details">
                   <summary>How this recommendation is calculated</summary>
                   <p>

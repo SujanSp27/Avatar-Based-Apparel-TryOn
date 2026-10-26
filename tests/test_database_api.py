@@ -33,6 +33,11 @@ def client(monkeypatch):
     app.dependency_overrides[get_db] = session
     # No lifespan here: tests use an isolated database, not the running development database.
     client = TestClient(app, headers={"X-Admin-Token": "sql-api-admin"})
+    registered = client.post("/api/v1/auth/signup", json={
+        "name": "API Test", "email": "api@example.com", "password": "Api!Secure2026",
+        "terms_accepted": True,
+    })
+    assert registered.status_code == 201, registered.text
     yield client
     client.close()
     app.dependency_overrides.clear()

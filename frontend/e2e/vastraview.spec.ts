@@ -16,8 +16,14 @@ test("VastraView branding, real catalog filters, product selection and mobile ac
     .last()
     .click();
   await expect(page.locator(".product-card")).toHaveCount(12);
+  const navyCatalog = await (
+    await page.request.get("/api/v1/products?q=navy")
+  ).json();
+  expect(navyCatalog.items.length).toBeGreaterThan(1);
   await page.getByLabel("Search apparel").fill("navy");
-  await expect(page.locator(".product-card")).toHaveCount(5);
+  await expect(page.locator(".product-card")).toHaveCount(
+    navyCatalog.items.length,
+  );
   await page.getByLabel("Brand", { exact: true }).selectOption("nike");
   await expect(
     page.getByText("No published garments match these filters."),

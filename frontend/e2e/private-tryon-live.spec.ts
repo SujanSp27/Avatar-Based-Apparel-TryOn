@@ -6,9 +6,19 @@ import path from "node:path";
 // Opt-in, real private Colab inference. Persist the same idempotency key, browser
 // session, and job ID so an interrupted test can resume without another render.
 const root = path.resolve("..");
-const stateFile = path.join(root, ".runtime/vastraview-live-job.json");
-const sessionFile = path.join(root, ".runtime/vastraview-live-session.json");
-const evidence = path.join(root, "experiments/vastraview/private-tryon");
+const caseName = process.env.VASTRAVIEW_LIVE_CASE ?? "";
+if (caseName && !/^[a-z0-9-]{1,40}$/.test(caseName))
+  throw new Error("Invalid live verification case");
+const suffix = caseName ? `-${caseName}` : "";
+const stateFile = path.join(root, `.runtime/vastraview-live${suffix}-job.json`);
+const sessionFile = path.join(
+  root,
+  `.runtime/vastraview-live${suffix}-session.json`,
+);
+const evidence = path.join(
+  root,
+  `experiments/vastraview/private-tryon${suffix}`,
+);
 type State = { idempotencyKey: string; jobId?: string };
 
 test("real private Colab result survives refresh, denies strangers and downloads correctly", async ({

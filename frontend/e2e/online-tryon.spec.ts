@@ -1,15 +1,7 @@
-import { signInForTest } from "./session-fixture";
+import { authenticatedSuite } from "./session-fixture";
 import { test, expect } from "@playwright/test";
 
-let accountPassword = "";
-test.beforeEach(async ({ page }) => {
-  accountPassword = await signInForTest(page);
-});
-test.afterEach(async ({ page }) => {
-  await page.request.delete("/api/v1/profile", {
-    data: { password: accountPassword },
-  });
-});
+authenticatedSuite(test);
 
 test("recovers automatically and offers retry without a page reload", async ({
   page,
