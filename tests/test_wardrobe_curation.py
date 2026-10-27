@@ -165,6 +165,40 @@ def test_published_catalog_filters_favorites_and_invalidated_sources(studio, mon
     assert client.get("/api/v1/products?category=t-shirt&tryon_supported=false").json()["total"] == 0
 
 
+def test_catalog_collar_correction_is_repeatable_and_preserves_operator_edits(studio):
+    client, db = studio[0][0], studio[1]
+    client.get("/api/v1/products")
+    key = "edit-4758e641"
+    db.catalog_versions.delete_one({"_id": 3})
+    db.products.update_one({"_id": key}, {"$set": {"name": "Olive mandarin-collar shirt", "description": "Operator description"}})
+    catalog.catalog_db(db)
+    row = db.products.find_one({"_id": key})
+    assert row["name"] == "Olive short-sleeve shirt" and row["description"] == "Operator description"
+    db.products.update_one({"_id": key}, {"$set": {"name": "Operator name"}})
+    catalog.catalog_db(db)
+    assert db.products.find_one({"_id": key})["name"] == "Operator name"
+
+
+def test_background_experiment_preserves_fabric_and_rejects_clipped_mask(tmp_path):
+    from scripts.prepare_wardrobe_reference import prepare
+    pixels = np.full((240, 180, 3), [160, 40, 50], dtype=np.uint8)
+    mask = np.zeros((240, 180), dtype=np.uint8)
+    mask[40:200, 35:145] = 3
+    pixels[mask == 3] = [20, 100, 60]
+    (tmp_path / "garment-input.png").write_bytes(png(pixels))
+    (tmp_path / "garment-labels.png").write_bytes(png(mask))
+    save(tmp_path / "trial.json", {"productId": "test", "inputs": {"photoType": "flat-lay", "garmentSha256": "a" * 64},
+                                    "diagnostics": {"category": "tops"}})
+    prepare(tmp_path, tmp_path / "prepared")
+    result = np.asarray(Image.open(tmp_path / "prepared/test.png"))
+    np.testing.assert_array_equal(result[mask == 3], pixels[mask == 3])
+    assert (result[mask == 0] == 127).all()
+    mask[:40, 35:145] = 3
+    (tmp_path / "garment-labels.png").write_bytes(png(mask))
+    with pytest.raises(ValueError, match="border"):
+        prepare(tmp_path, tmp_path / "clipped")
+
+
 def test_reference_mask_uses_actual_parser_label_numbers(tmp_path):
     image = np.zeros((128, 128, 3), dtype=np.uint8)
     for name in ("person-input.png", "garment-input.png"):

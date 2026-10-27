@@ -99,6 +99,7 @@ def assess_trial(folder: Path, source: dict, person_id: str):
                              and review.get("fullResolutionInspected") is True
                              and review.get("decision") == "failed")
     return {"status": "failed" if visual_failed else "approved" if not errors else "needs_review", "reasons": errors,
+            "visualNotes": review.get("notes") if review_file.is_file() else None,
             "runId": trial.get("runId"), "jobId": trial["jobId"], "seconds": trial.get("observedEndToEndSeconds"),
             "workerStages": diagnostic.get("stageSeconds"), "output": str(folder / "after.png")}
 
@@ -114,6 +115,15 @@ def report(folder: Path):
     result = {"version": 1, "generatedAt": datetime.now(timezone.utc).isoformat(), "target": 20,
               "approvedCount": sum(r["status"] == "approved" for r in entries), "garments": entries}
     save(folder / "report.json", result)
+    lines = ["# Wardrobe evaluation", "", f"Approved: {result['approvedCount']} / 20. No publication implied.", "",
+             "| Garment | Category | Person | Status | End-to-end seconds | Review / remaining gates |",
+             "| --- | --- | --- | --- | --- | --- |"]
+    for entry in entries:
+        for person, trial in entry["trials"].items():
+            notes = "; ".join(filter(None, [trial.get("visualNotes"), *trial["reasons"]])).replace("|", "/").replace("\n", " ")
+            lines.append(f"| {entry['id']} — {entry['name']} | {entry['category'] or 'unsupported'} | {person} | "
+                         f"{trial['status']} | {trial.get('seconds', '—')} | {notes} |")
+    (folder / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return result
 
 

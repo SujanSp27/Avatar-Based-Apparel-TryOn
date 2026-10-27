@@ -5,6 +5,8 @@ records and assets are never deleted. Changed images/metadata invalidate approva
 """
 import hashlib
 import json
+import math
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -26,7 +28,11 @@ def _read_policy(path: str, stamp: int):
     for row in entries:
         if (row.get("status") != "approved" or row.get("category") not in MODEL_CATEGORIES
                 or row.get("photoType") not in {"model", "flat-lay"}
-                or len(row.get("imageSha256", "")) != 64 or len(row.get("testedPeople", [])) < 2):
+                or not re.fullmatch(r"[a-f0-9]{64}", row.get("imageSha256", ""))
+                or not isinstance(row.get("testedPeople"), list)
+                or len(set(row["testedPeople"])) < 2
+                or not isinstance(row.get("maximumSeconds"), (float, int))
+                or not math.isfinite(row["maximumSeconds"]) or not 0 < row["maximumSeconds"] < 30):
             raise ValueError("Incomplete garment approval")
     return policy
 

@@ -176,6 +176,14 @@ def catalog_db(db=Depends(account_db)):
     if not db.catalog_versions.find_one({"_id": 2}):
         if initialize_catalog(db):
             db.catalog_versions.update_one({"_id": 2}, {"$set": {"installed": True}}, upsert=True)
+    if not db.catalog_versions.find_one({"_id": 3}):
+        # Correct a source-photo transcription, preserving any operator edits.
+        old_name, new_name = "Olive mandarin-collar shirt", "Olive short-sleeve shirt"
+        tail = ". A photographed garment reference. Shape and details come from the supplied image."
+        for field, old, new in (("name", old_name, new_name),
+                                ("description", old_name + tail, new_name + " with a turn-down collar" + tail)):
+            db.products.update_one({"_id": "edit-4758e641", field: old}, {"$set": {field: new}})
+        db.catalog_versions.update_one({"_id": 3}, {"$set": {"installed": True}}, upsert=True)
     return db
 
 

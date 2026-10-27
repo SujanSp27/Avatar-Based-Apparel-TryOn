@@ -188,6 +188,13 @@ def run(folder, ids, session_path, people, prepared_dir=None):
                 person = (ROOT / PEOPLE[person_id]).read_bytes()
                 garment_path = prepared_dir / (product_id + ".png") if prepared_dir else ROOT / "data/raw" / row["filename"]
                 garment = garment_path.read_bytes()
+                if prepared_dir:
+                    review = json.loads((prepared_dir / (product_id + "-review.json")).read_text())
+                    if (review.get("decision") != "accepted_for_experiment"
+                            or review.get("preparedSha256") != digest(garment)
+                            or review.get("sourceSha256") != digest((ROOT / "data/raw" / row["filename"]).read_bytes())
+                            or not review.get("reviewer") or not review.get("notes")):
+                        raise ValueError("Prepared reference must pass a current, explicit boundary review")
                 case = folder / "cases" / product_id / person_id
                 case.mkdir(parents=True, exist_ok=True)
                 state_path = case / "trial.json"

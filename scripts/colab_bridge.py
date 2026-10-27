@@ -129,7 +129,9 @@ async def serve() -> None:
                     all_tools = []
                     cursor = None
                     while True:
-                        page = await session.list_tools(cursor=cursor)
+                        # A dropped browser socket can leave proxy discovery
+                        # waiting for the 15-minute transport deadline.
+                        page = await asyncio.wait_for(session.list_tools(cursor=cursor), timeout=20)
                         all_tools.extend(page.tools)
                         cursor = page.nextCursor
                         if not cursor:
@@ -187,8 +189,15 @@ async def serve() -> None:
                                     raise ValueError("Unknown tool. Read tools.json for the current schema.")
                                 if not isinstance(arguments, dict):
                                     raise ValueError("Tool arguments must be a JSON object")
-                                result = as_json(await asyncio.wait_for(session.call_tool(name, arguments=arguments), timeout=75))
-                                await list_tools()
+                                # Recovery supervises setup for up to 180 seconds.
+                                # Browser consent/discovery stays short; cancelling
+                                # a healthy recovery at 75 s loses its final reply.
+                                timeout = 240 if name == "run_code_cell" else 75
+                                result = as_json(await asyncio.wait_for(session.call_tool(name, arguments=arguments), timeout=timeout))
+                                # Persist the completed operation before refreshing
+                                # discovery. A discovery failure must not discard a
+                                # successful cell result or make it look replayable.
+                                changed.set()
                             else:
                                 raise ValueError("Only list_tools and call_tool methods are supported")
                             outcome.update(
