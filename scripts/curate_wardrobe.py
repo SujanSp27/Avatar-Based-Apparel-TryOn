@@ -57,7 +57,9 @@ def assess_trial(folder: Path, source: dict, person_id: str):
     errors = []
     visual_failed = False
     if trial["status"] != "generated":
-        return {"status": trial["status"], "reasons": [trial.get("error", "Inference incomplete")]}
+        error = trial.get("error", "Inference incomplete")
+        reason = error.get("message", error.get("code", "Inference failed")) if isinstance(error, dict) else str(error)
+        return {"status": trial["status"], "reasons": [reason], "jobId": trial.get("jobId")}
     if trial["inputs"]["garmentSha256"] != source["sha256"]:
         errors.append("Garment bytes changed after inference")
     if trial["inputs"]["personSha256"] != digest((ROOT / PEOPLE[person_id]).read_bytes()):
@@ -90,9 +92,10 @@ def assess_trial(folder: Path, source: dict, person_id: str):
         review = json.loads(review_file.read_text())
         if (review.get("outputSha256") != trial.get("outputSha256") or not review.get("reviewer")
                 or not review.get("reviewedAt") or not review.get("notes")
+                or review.get("decision") != "visual_pass"
                 or review.get("fullResolutionInspected") is not True
                 or review.get("majorArtifacts") is not False
-                or any(not isinstance(review.get("ratings", {}).get(k), int)
+                or any(type(review.get("ratings", {}).get(k)) is not int
                        or not 4 <= review["ratings"][k] <= 5 for k in RATINGS)):
             errors.append("Visual acceptance failed or review is incomplete/stale")
             visual_failed = (review.get("outputSha256") == trial.get("outputSha256")

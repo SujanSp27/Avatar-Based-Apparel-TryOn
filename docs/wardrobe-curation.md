@@ -35,7 +35,8 @@ plain backgrounds. Several community catalog photographs instead show colored
 bedding/floors or hangers. Actual raw output transfers background colors into
 unrequested fabric: red bedding becomes a red garment and pale backgrounds become
 extra sleeves/underlayers. This occurs before final compositing. Correct category,
-reference bytes and tensors were confirmed for the first four retrieved trials.
+reference bytes and tensors are checked against retrieved trial artifacts;
+missing artifacts never count as a pass.
 
 The controlled green-polo experiment removes only the observed background using
 its actual saved FASHN mask, retaining all foreground pixel values and dimensions.
@@ -44,6 +45,21 @@ end to end (24.597 server, model/transport stages saved in its trial). The same
 experiment on the black polo still retains hanger-like stripes at the neckline
 and changes the jeans: rejected. Neither experiment is a blanket preprocessing
 change or an approval of every background mask.
+
+The complete first-person baseline now covers all 28 candidates: 27 generated
+images and one connection failure before a remote event was acknowledged.
+Fifteen controlled background-only trials produced additional images, including
+two second-person tests. All 42 generated images were inspected at full resolution.
+Two single studio cases look plausible (green polo and teal shirt), but both fail
+on the mirror person with sleeve/shoulder artifacts and altered hems. Therefore
+**zero garments currently pass the complete two-person approval contract**.
+
+Measured end-to-end times span **26.426–36.560 seconds**; 18 of the 42 generated
+cases were strictly below 30 seconds. Faster generation is not a quality pass.
+Shorts/skirt trials can retain jeans or invent split garments even after the
+reference background is removed. Fine prints, lettering, cuffs and buttons are
+often lost. These are observed model/reference limitations, not reasons to lower
+the acceptance threshold or label every supported category reliable.
 
 ## Acceptance contract
 
@@ -82,6 +98,7 @@ From the repository root, using the existing private Colab worker:
 .venv/Scripts/python.exe -m scripts.evaluate_wardrobe run --candidates data/catalog/wardrobe-candidates-v1.json
 .venv/Scripts/python.exe -m scripts.retrieve_wardrobe_audits
 .venv/Scripts/python.exe -m scripts.curate_wardrobe report
+.venv/Scripts/python.exe -m scripts.report_wardrobe_trials
 .venv/Scripts/python.exe -m scripts.curate_wardrobe publish
 ```
 
@@ -93,6 +110,14 @@ The app's 12-per-15-minute account limit remains enforced. The evaluator pauses
 on rate limits; resume in the next window. It never starts local GPU inference.
 The notebook helper can require Google's browser permission even while the GPU
 worker remains usable; pending calls must be recovered, not replayed blindly.
+Artifact retrieval now journals pending cell replies per trial, resumes those
+same reads, validates returned filenames/base64 and reports actual recovered and
+missing file counts. `--ids` and `--people` restrict retrieval to saved cases.
+The bridge saves a completed reply before refreshing tool discovery, and allows
+240 seconds for a recovery cell that supervises setup for up to 180 seconds.
+Discovery and browser-connection calls retain short bounded timeouts.
+Discovery timeout no longer terminates a live helper and rotates its socket token;
+it keeps the existing browser connection and retries discovery with backoff.
 
 Experiment inputs/results stay in ignored `experiments/wardrobe-curation/` and
 `experiments/wardrobe-neutral/`. Original catalog metadata remains in
@@ -100,6 +125,17 @@ Experiment inputs/results stay in ignored `experiments/wardrobe-curation/` and
 separate versioned manifests. `publish` refuses a shortfall and writes an archival
 snapshot before selecting the twenty passing items. Source or metadata changes
 invalidate approval; there is no manual "approve HTTP 200" switch.
+
+Private review outputs:
+
+- `experiments/wardrobe-curation/report.md`: all 57 catalog records, individual
+  baseline status, failure reasons and remaining acceptance gates.
+- `experiments/wardrobe-review/summary.json`: all 43 trials, input/output hashes,
+  source/model versions, stage timings and current visual decisions.
+- `experiments/wardrobe-review/comparisons.html`: local original/reference/output
+  triptychs and concrete review notes, without external scripts or image hosting.
+- `experiments/wardrobe-neutral/inputs/*-review.json`: explicit background-mask
+  review. Hanger/tag-contaminated and clipped masks are rejected before retesting.
 
 ## Result UI and security
 
@@ -115,16 +151,33 @@ the actual uploaded bytes, category and photo type against that record.
 ## Verification status
 
 Reports, images, ratings and exact current counts are in the generated evaluation
-report, not inferred from this document. The initial 12 real garment cases produced
-readable output but many failed appearance review. Twenty approvals have **not**
-been reached. The publication manifest stays staged and existing discovery records
-remain visible with accurate unreviewed status until the acceptance gate is met.
+report, not inferred from this document. Twenty approvals have **not** been reached.
+The publication manifest stays staged and existing discovery records remain visible
+with accurate unreviewed status until the acceptance gate is met. No garment source
+or user data was deleted. Publishing refuses the shortfall. Existing favorites and
+source records remain intact; approved-image hashes are rechecked before use.
 
-Frontend production build passed; 18 browser tests passed including source-review
-labels, private result inspection layout, mobile/desktop, slider, favorites, source
-selection, missing images, timing out, sharing and downloads. The first backend
-run passed 689 cases with one outdated worker fixture failing after the new garment
-asset was introduced; the fixture was corrected and a full rerun is in progress.
+Frontend production build passed. The earlier verification passed 691 Python tests,
+18 browser regressions and a separate live browser test of two saved real results.
+The live check verified exact private download hashes, anonymous denial, image
+refresh, garment references, slider interaction and mobile/desktop layout without
+submitting duplicate inference. An additional final regression run includes the
+artifact-resume, failed-job-report and stale-review checks; its result is recorded
+in the implementation status once it completes.
+
+Final local verification on 27 October: **701 Python tests passed**, followed by
+**25 focused tests passed** after the final helper changes. Ruff, Prettier and the
+183-module production frontend build passed. A combined browser run exposed two
+test-session races; after waiting for real refresh rotation and second-tab
+bootstrap, all **11 comparison tests passed**. Catalog/private-result checks also
+passed (including the opt-in live saved-output browser check). No session security
+or inference quality threshold was weakened to obtain these results.
+
+The current Colab tab was reattached through the updated helper. It reports a new
+T4 runtime with no previous project directory; safe automatic restoration is in
+progress. All 42 completed images remain local. The last two mirror-case parser
+audits were not retrieved before the old runtime disappeared and cannot be claimed
+as verified. Another inference is not a substitute for those missing old artifacts.
 
 Suggested commit once verification is complete:
 `Add evidence-gated wardrobe curation and private garment comparison details`

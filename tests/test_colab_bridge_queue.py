@@ -13,7 +13,8 @@ from backend.app.config import ROOT
 
 
 @pytest.mark.parametrize("tool,minimum,maximum", [("run_code_cell", 180, 300), ("open_colab_browser_connection", 60, 90)])
-def test_completed_call_survives_broken_discovery_and_has_appropriate_deadline(tmp_path, monkeypatch, tool, minimum, maximum):
+@pytest.mark.parametrize("discovery_timeout", [False, True])
+def test_completed_call_survives_broken_discovery_and_has_appropriate_deadline(tmp_path, monkeypatch, tool, minimum, maximum, discovery_timeout):
     calls = []
     stopped = tmp_path / "stop.request"
 
@@ -33,11 +34,15 @@ def test_completed_call_survives_broken_discovery_and_has_appropriate_deadline(t
         async def list_tools(self, **kwargs):
             self.list_count += 1
             if self.list_count > 2:
+                stopped.touch()
                 raise TimeoutError("Browser disappeared after the successful cell")
             return SimpleNamespace(tools=[SimpleNamespace(name=tool)], nextCursor=None)
 
         async def call_tool(self, name, arguments):
-            stopped.touch()
+            running = json.loads((tmp_path / "readiness.json").read_text())
+            assert running["status"] == "processing" and running["currentRequest"] == "trial"
+            if not discovery_timeout:
+                stopped.touch()
             return {"structuredContent": {"result": "completed cell evidence"}}
 
     @asynccontextmanager
@@ -69,6 +74,6 @@ def test_completed_call_survives_broken_discovery_and_has_appropriate_deadline(t
     reply = json.loads((tmp_path / "responses/trial.json").read_text())
     assert reply["status"] == "completed"
     assert reply["result"]["structuredContent"]["result"] == "completed cell evidence"
-    assert minimum <= calls[-1] <= maximum
+    assert any(minimum <= deadline <= maximum for deadline in calls)
     assert (tmp_path / "processed/trial.json").exists()
     assert not list((tmp_path / "inflight").iterdir())

@@ -469,7 +469,20 @@ test("a newer selection in another tab replaces the old render using GET only", 
   await expect(viewer).toHaveAttribute("data-loaded", "true");
   const nextId = "00000000-0000-4000-8000-000000000066";
   const second = await context.newPage();
+  const restored = second.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      response.url().endsWith("/api/v1/auth/refresh"),
+  );
   await second.goto("/terms");
+  const refreshed = await restored;
+  expect(refreshed.status()).toBe(200);
+  await refreshed.finished();
+  // Do not close the tab while its real session bootstrap is rotating the
+  // cookie; that intentionally aborted response would invalidate the next test.
+  await second.evaluate(async () => {
+    await navigator.locks.request("formfit-session-refresh", () => {});
+  });
   await page.route("**/comparison-test/new-tab-result.png", (route) =>
     route.fulfill({
       path: path.join(evidence, "after.png"),

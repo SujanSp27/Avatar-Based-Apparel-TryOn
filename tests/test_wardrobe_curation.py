@@ -70,6 +70,16 @@ def test_missing_inference_cannot_be_approved_or_published(tmp_path):
     assert not destination.exists()
 
 
+def test_failed_api_job_keeps_structured_error_readable_in_report(tmp_path):
+    case = tmp_path / "cases/edit-a59f077d/studio"
+    save(case / "trial.json", {"status": "failed", "jobId": "saved-failure",
+        "error": {"code": "online_gpu_connection", "message": "The GPU connection expired."}})
+    report = curate.report(tmp_path)
+    entry = next(row for row in report["garments"] if row["id"] == "edit-a59f077d")
+    assert entry["trials"]["studio"]["reasons"] == ["The GPU connection expired."]
+    assert "The GPU connection expired." in (tmp_path / "report.md").read_text(encoding="utf-8")
+
+
 def test_completed_image_alone_never_passes_visual_or_mask_review(tmp_path):
     row = next(r for r in catalog_rows() if r["id"] == "edit-a59f077d")
     source = inspect_source(row)
@@ -88,6 +98,14 @@ def test_completed_image_alone_never_passes_visual_or_mask_review(tmp_path):
     assert review["status"] == "needs_review"
     assert "Full-resolution visual review pending" in review["reasons"]
     assert "Worker masks/conditioning not retrieved for inspection" in review["reasons"]
+    # A rejected review never becomes an approval merely because all numeric
+    # scores were entered as four. Explicit visual acceptance is mandatory.
+    save(tmp_path / "visual-review.json", {
+        "outputSha256": digest(output), "reviewer": "test reviewer", "reviewedAt": "2026-10-27",
+        "fullResolutionInspected": True, "majorArtifacts": False, "decision": "failed",
+        "ratings": dict.fromkeys(curate.RATINGS, 4), "notes": "Wrong garment construction",
+    })
+    assert curate.assess_trial(tmp_path, source, "studio")["status"] == "failed"
 
 
 def test_policy_malformed_fails_closed(tmp_path, monkeypatch):

@@ -152,14 +152,30 @@ async def serve() -> None:
                         **extra,
                     })
 
-                await list_tools()
-                readiness()
+                discovery_retry_at = 0.0
+
+                async def discover() -> bool:
+                    nonlocal tool_names, discovery_retry_at
+                    try:
+                        await list_tools()
+                    except TimeoutError:
+                        # A browser handshake may outlive this individual read.
+                        # Killing the helper here rotates its socket token and
+                        # strands the already-open Colab tab on the old token.
+                        tool_names &= {"open_colab_browser_connection"}
+                        discovery_retry_at = time.monotonic() + 10
+                        readiness("connecting", discoveryTimedOut=True)
+                        return False
+                    discovery_retry_at = 0.0
+                    readiness()
+                    return True
+
+                await discover()
                 heartbeat = time.monotonic()
                 while not (STATE / "stop.request").exists():
-                    if changed.is_set():
+                    if changed.is_set() or (discovery_retry_at and time.monotonic() >= discovery_retry_at):
                         changed.clear()
-                        await list_tools()
-                        readiness()
+                        await discover()
                     for request in sorted((STATE / "requests").glob("*.json")):
                         if not IDENTIFIER.fullmatch(request.stem):
                             continue
@@ -182,7 +198,9 @@ async def serve() -> None:
                                 result = await list_tools()
                             elif payload.get("method") == "call_tool":
                                 # A browser can connect after the previous snapshot was written.
-                                await list_tools()
+                                if not await discover():
+                                    raise TimeoutError("Notebook discovery timed out; existing browser connection preserved")
+                                readiness("processing", currentRequest=request.stem)
                                 name = payload.get("name")
                                 arguments = payload.get("arguments", {})
                                 if name not in tool_names:
@@ -209,9 +227,9 @@ async def serve() -> None:
                         outcome["finishedAt"] = now()
                         write_json(response_path, outcome)
                         inflight.replace(STATE / "processed" / request.name)
-                        readiness()
+                        readiness("connecting" if discovery_retry_at else "ready")
                     if time.monotonic() - heartbeat >= 10:
-                        readiness()
+                        readiness("connecting" if discovery_retry_at else "ready")
                         heartbeat = time.monotonic()
                     await asyncio.sleep(0.5)
                 readiness("stopped")

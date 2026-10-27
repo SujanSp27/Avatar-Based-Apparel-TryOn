@@ -1,4 +1,30 @@
-# Current implementation status - 26 October 2026
+# Current implementation status - 27 October 2026
+
+## Wardrobe curation and result verification
+
+This section supersedes earlier catalog-quality claims. Category support is not
+individual garment approval. See [wardrobe-curation.md](wardrobe-curation.md).
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Audit all source records, category mappings and image bytes | IMPLEMENTED | 57 decoded catalog images; source manifest, visual source sheets and pinned FASHN VTON 1.5 provenance |
+| Reproducible real inference and individual appearance review | PARTIALLY IMPLEMENTED | 43 trials across 28 garments: 42 generated images inspected, one connection failure; 15 controlled background-only trials included |
+| Correct reference-background contamination | PARTIALLY IMPLEMENTED | Actual parser-mask experiment improves two studio shirts, but second-person results still fail; default pipeline not replaced by unverified masks |
+| Exactly 20 approved garments and archive-backed publication | PARTIALLY IMPLEMENTED | Strict two-person, mask/provenance, visual and under-30-second gate implemented; zero complete approvals, so publication is refused and source records remain intact |
+| Honest timing and before/reference/after evidence | IMPLEMENTED | Private trial ledger and local HTML comparisons; 26.426–36.560 s observed end to end, 18 of 42 below 30 s; per-stage timings retained |
+| Catalog integrity and favorites after publication | IMPLEMENTED | Source-hash invalidation, actual submission-byte/category checks, filtering and favorites regression tests; archived references retained |
+| Compact comparison and private reference inspection | IMPLEMENTED | 1100 px / 540 px limits retained; aligned actual images, slider, private garment reference, share and byte-identical saved-result downloads |
+| Resume artifact reads without duplicate inference | IMPLEMENTED | Per-case pending-request journals, saved replies, filename/base64 validation, true recovered/missing counts; targeted tests |
+| Helper recovery without unnecessary runtime reset | PARTIALLY IMPLEMENTED | Successful cell replies saved before discovery; discovery timeouts preserve helper connection; replacement T4 independently verified, worker restoration currently required |
+| Local regression verification | IMPLEMENTED | 701-test full Python suite passed, then 25 focused checks passed after helper changes; Ruff, Prettier and TypeScript/Vite production build passed; final comparison rerun 11/11 passed |
+| Stable deployment and universal garment fidelity | BLOCKED | Free Colab sessions expire; clothing construction/occlusion failures remain. No claim of twenty approved products or production-ready image quality |
+
+The combined browser run initially had two sign-in failures caused by the test
+fixture capturing a rotating refresh cookie too early. The fixture now awaits the
+real session lock, and the second-tab test waits for bootstrap before closing.
+Server refresh-token reuse rejection remains intact. The saved-real-result browser
+check passed independently, including anonymous image denial and exact download
+hashes; it does not certify garment appearance.
 
 ## Torso validation and measurement uncertainty
 

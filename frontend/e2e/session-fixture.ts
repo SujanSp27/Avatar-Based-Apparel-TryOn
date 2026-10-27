@@ -34,6 +34,19 @@ export function authenticatedSuite(test: typeof base) {
     else password = await signInForTest(page);
   });
   test.afterEach(async ({ context }) => {
+    // A test can finish just after navigation or opening a second tab while
+    // AuthProvider is still rotating the HttpOnly cookie. Capture only after
+    // the app's real rotation lock completes; otherwise the next context
+    // reuses a revoked token and correctly gets redirected to sign-in.
+    await Promise.all(
+      context.pages().map(async (page) => {
+        if (page.isClosed()) return;
+        await page.evaluate(async () => {
+          if (navigator.locks)
+            await navigator.locks.request("formfit-session-refresh", () => {});
+        });
+      }),
+    );
     cookies = await context.cookies();
   });
   test.afterAll(async () => {
