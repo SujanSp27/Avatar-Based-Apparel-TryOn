@@ -41,6 +41,41 @@
   background: #fffefa;
   box-shadow: 0 4px 18px #273b2d08;
 }
+.comparison-caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 12px 16px 0;
+  color: #56614f;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.reference-inspection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 20px;
+  padding: 14px;
+  background: #f5f5ef;
+  border: 1px solid #dedfd6;
+  border-radius: 10px;
+}
+.reference-inspection img {
+  width: 100px;
+  height: 130px;
+  flex: 0 0 100px;
+  object-fit: contain;
+}
+.reference-inspection figcaption {
+  min-width: 0;
+  font-size: 13px;
+}
+.reference-inspection p {
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
 .comparison-header {
   display: flex;
   justify-content: space-between;

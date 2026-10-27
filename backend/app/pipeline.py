@@ -49,6 +49,7 @@ class TryOnPipeline:
                 "measurements": None, "score": None, "explanation": {}, "candidates": [],
                 "chartVersion": None, "previewUrl": self.store.url(run_id, "tryon-2d.png"),
                 "originalUrl": self.store.url(run_id, "original-person.png"),
+                "garmentUrl": self.store.url(run_id, "garment-reference.png"),
                 "provenance": {"backend": "FASHN VTON 1.5", "execution": "online-gpu-only",
                                "localGpuUsed": False, "weights": diagnostics},
                 "timingSeconds": round(time.perf_counter() - start, 3),
@@ -61,7 +62,7 @@ class TryOnPipeline:
                     "Image generation does not determine physical fit or size. The separate size engine needs measured dimensions.",
                 ],
                 "artifacts": {name: self.store.url(run_id, name) for name in
-                              ("tryon-2d.png", "original-person.png")},
+                              ("tryon-2d.png", "original-person.png", "garment-reference.png")},
             }
             result["artifacts"]["result"] = f"/assets/{run_id}/result.json"
             self.store.write_json(run_id, "result.json", result)

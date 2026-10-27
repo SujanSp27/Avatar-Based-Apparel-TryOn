@@ -358,6 +358,7 @@ def test_successful_remote_job_persists_result_and_artifacts(tmp_path):
 
     def fake_render(person, garment, category, photo_type, folder):
         (folder / "original-person.png").write_bytes(person)
+        (folder / "garment-reference.png").write_bytes(normalized_image(garment))
         (folder / "tryon-2d.png").write_bytes(garment)
         (folder / "vton-diagnostics.json").write_text("{}")
         return {"remoteRoundTripSeconds": 1.2, "inferenceSeconds": 1.0}
@@ -372,6 +373,7 @@ def test_successful_remote_job_persists_result_and_artifacts(tmp_path):
         assert (tmp_path / record.id / "result.json").exists()
         assert result["artifacts"]["result"] == f"/assets/{record.id}/result.json"
         assert result["previewUrl"] == f"/assets/{record.id}/tryon-2d.png"
+        assert result["garmentUrl"] == f"/assets/{record.id}/garment-reference.png"
     engine.dispose()
 
 

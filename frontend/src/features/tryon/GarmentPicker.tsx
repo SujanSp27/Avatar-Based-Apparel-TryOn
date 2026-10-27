@@ -10,6 +10,10 @@ export type Garment = {
   imageUrl: string;
   description: string;
   tryon_supported?: boolean;
+  qualityReview?: {
+    status: "approved" | "unreviewed" | "unsupported" | "stale";
+    message: string;
+  };
 };
 export default function GarmentPicker({
   disabled,

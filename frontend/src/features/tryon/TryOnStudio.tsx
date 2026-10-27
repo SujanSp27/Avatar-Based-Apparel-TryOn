@@ -216,6 +216,7 @@ export default function TryOnStudio() {
     form.append("garmentImage", garment);
     form.append("garmentCategory", category);
     form.append("garmentPhotoType", photoType);
+    if (selectedGarment) form.append("productId", selectedGarment);
     await submit(form);
   }
   return (
@@ -303,6 +304,7 @@ export default function TryOnStudio() {
               onChange={(e) => {
                 reset();
                 setCategory(e.target.value);
+                setSelectedGarment(undefined);
               }}
             >
               {categories.map(([value, label]) => (
@@ -321,6 +323,7 @@ export default function TryOnStudio() {
               onChange={(e) => {
                 reset();
                 setPhotoType(e.target.value);
+                setSelectedGarment(undefined);
               }}
             >
               <option value="flat-lay">Product / flat lay</option>

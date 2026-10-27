@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "status": "candidates_only_not_approved",
+  "reviewedOn": "2026-10-27",
+  "basis": "All 57 source images decoded and contact sheets visually inspected. Prioritize isolated, front-facing single garments with complete boundaries. Names alone are not evidence of inference quality.",
+  "people": ["studio", "mirror"],
+  "targetSeconds": 30,
+  "candidateIds": [
+    "edit-a59f077d", "edit-1b2a7169", "edit-4758e641", "edit-fe7ca6a3",
+    "edit-4245ab7f", "edit-b070e185", "edit-934c4462", "edit-80653ab3",
+    "edit-febe9c7c", "edit-9568b507", "edit-9b94e20c", "edit-d92f1cf7",
+    "edit-271405dc", "edit-807f09b8", "edit-65550f31", "edit-66f92907",
+    "edit-39a96b4e", "edit-29a50158", "edit-31fd2f8b", "edit-b769e3fb",
+    "edit-ddfd02ed", "edit-3f844e1e", "edit-d5964c78", "edit-6edf8ea5",
+    "edit-6b519a8a", "edit-d039bfd4", "edit-29864eb0", "edit-644a1b3b"
+  ],
+  "sourceRisks": {
+    "all": "Community references are mostly 400 px wide; source resolution and non-studio backgrounds limit fine detail. Real parser and output checks are still required.",
+    "edit-80653ab3": "Printed lettering must remain recognizable; reject invented lettering.",
+    "edit-ddfd02ed": "Pleats and sheer details need full-resolution output review.",
+    "edit-d5964c78": "Hood transfer must not change hair/head or introduce extra layers.",
+    "edit-29864eb0": "Open-front construction may expose original shirt; judge layering explicitly.",
+    "edit-39a96b4e": "Shorts must preserve exposed skin and both leg boundaries."
+  },
+  "deferred": {
+    "editorial-outfits": "Five layered/draped ethnic references lack a supported model mapping.",
+    "research-references": "Six original demo/product references lack established commercial image publication rights; retained in archive, not candidates for a production wardrobe.",
+    "remaining-licensed-references": "Reserve pool: folded/cropped sleeves, thin straps, small product occupancy, busy prints or backgrounds require additional review if the primary pool falls short."
+  }
+}

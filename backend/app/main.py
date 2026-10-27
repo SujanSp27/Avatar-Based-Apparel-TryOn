@@ -333,6 +333,7 @@ def tryon(
     fitPreference: Fit = Form(Fit.regular),
     tryonMode: TryOnMode = Form(TryOnMode.two_d),
     garmentPhotoType: str = Form(default="flat-lay", pattern="^(flat-lay|model)$"),
+    productId: str | None = Form(default=None, pattern="^[a-z0-9][a-z0-9-]{1,79}$"),
     prefer: str = Header(default=""),
     idempotency_key: str | None = Header(default=None),
     db: Session = Depends(get_db),
@@ -342,6 +343,11 @@ def tryon(
     throttle(accounts, request, "tryon", owner, maximum=12)
     if brandId is not None and db.get(Brand, brandId) is None:
         raise PipelineError("brand_missing", "The selected brand does not exist.", 404)
+    if productId:
+        from backend.app.wardrobe import validate_catalog_submission
+        garment_data = upload_bytes(garmentImage)
+        validate_catalog_submission(accounts, productId, garment_data, garmentCategory.value, garmentPhotoType)
+        garmentImage.file.seek(0)
     if prefer == "respond-async":
         # Image generation is independent of available sizing charts.
         person_data, garment_data = upload_bytes(personImage), upload_bytes(garmentImage)

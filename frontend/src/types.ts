@@ -7,18 +7,33 @@ export type VtonAvailability = {
   supportedCategories: string[];
   inferenceSteps: number;
   connectionState?: string;
-  displayState?: "Ready" | "Preparing" | "Recovering" | "Temporarily unavailable";
+  displayState?:
+    | "Ready"
+    | "Preparing"
+    | "Recovering"
+    | "Temporarily unavailable";
   automaticConnection?: boolean;
 };
 export type Result = {
-  status: string; mode: "2d"; renderingMethod: "pretrained-vton";
-  runId: string; previewUrl: string; originalUrl: string;
-  garmentCategory: string; timingSeconds: number;
+  status: string;
+  mode: "2d";
+  renderingMethod: "pretrained-vton";
+  runId: string;
+  previewUrl: string;
+  originalUrl: string;
+  garmentUrl?: string;
+  garmentCategory: string;
+  timingSeconds: number;
   provenance: { backend: string; execution?: string };
-  warnings: string[]; artifacts: Record<string, string>;
+  warnings: string[];
+  artifacts: Record<string, string>;
 };
 export async function apiError(response: Response): Promise<string> {
   const data = await response.json().catch(() => null);
-  return data?.error?.message ?? (typeof data?.detail === "string" ? data.detail :
-    "The request failed. Please check your inputs and try again.");
+  return (
+    data?.error?.message ??
+    (typeof data?.detail === "string"
+      ? data.detail
+      : "The request failed. Please check your inputs and try again.")
+  );
 }

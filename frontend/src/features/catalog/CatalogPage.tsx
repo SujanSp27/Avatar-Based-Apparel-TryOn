@@ -340,6 +340,16 @@ export default function CatalogPage() {
             {selected.attribution && (
               <small>Photography: {selected.attribution}</small>
             )}
+            {selected.qualityReview && (
+              <p className="notice" role="status">
+                <strong>
+                  {selected.qualityReview.status === "approved"
+                    ? "Reviewed garment"
+                    : "Garment quality review"}
+                </strong>{" "}
+                {selected.qualityReview.message}
+              </p>
+            )}
             {selected.tryon_supported === false && (
               <p className="notice">
                 Editorial inspiration only. The current try-on model has not

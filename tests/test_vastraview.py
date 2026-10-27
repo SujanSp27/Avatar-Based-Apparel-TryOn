@@ -136,6 +136,11 @@ def test_private_images_job_metadata_and_history_cannot_cross_accounts(studio):
         assert anonymous.get(path).status_code == 401
         assert other.get(path).status_code == 404
     assert owner.get(f"/assets/{rid}/personInput.bin").status_code == 404
+    (folder / "garment-reference.png").write_bytes((folder / "tryon-2d.png").read_bytes())
+    reference_url = f"/assets/{rid}/garment-reference.png"
+    assert owner.get(reference_url).status_code == 200
+    assert anonymous.get(reference_url).status_code == 401
+    assert other.get(reference_url).status_code == 404
     assert "owner" not in owner.get(f"/api/tryon/jobs/{jid}").json()
     assert other.get("/api/v1/history").json()["items"] == []
     assert len(owner.get("/api/v1/history").json()["items"]) == 1

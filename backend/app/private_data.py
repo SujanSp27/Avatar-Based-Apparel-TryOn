@@ -79,7 +79,7 @@ def owned_run(db, run_id, owner):
 @router.get("/assets/{run_id}/{filename}")
 def image(run_id: UUID, filename: str, owner=Depends(principal)):
     # Never expose raw inputs, masks, checkpoints, arbitrary paths or diagnostic logs.
-    if filename not in {"tryon-2d.png", "original-person.png", "result.json"}:
+    if filename not in {"tryon-2d.png", "original-person.png", "garment-reference.png", "result.json"}:
         raise HTTPException(404, "Asset not found.")
     with SessionLocal() as db:
         row = owned_run(db, run_id, owner)

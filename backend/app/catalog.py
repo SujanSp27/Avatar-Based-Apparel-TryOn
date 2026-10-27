@@ -13,6 +13,8 @@ from backend.app.accounts.router import account_db, current_user
 from backend.app.accounts.security import require_admin
 from backend.app.config import ROOT, settings
 from backend.app.garments import GARMENTS
+from backend.app.wardrobe import approval, policy
+from ml.vton.categories import MODEL_CATEGORIES
 
 router = APIRouter(prefix="/api/v1", tags=["Catalog and favorites"])
 BRANDS = [
@@ -185,21 +187,29 @@ def image_path(row):
     return path
 
 
-def visible_query():
+def visible_query(db=None, prefix=""):
+    data = policy()
+    approved_ids = [r["id"] for r in data["garments"]]
+    if data["enforced"] and db is not None:
+        approved_ids = [r["_id"] for r in db.products.find({"_id": {"$in": approved_ids}})
+                        if approval(r)["status"] == "approved"]
     return {
-        "active": True,
-        **({"commercial_use": True} if settings.environment == "production" else {}),
+        prefix + "active": True,
+        **({"$and": [{prefix + "_id": {"$in": approved_ids}}]} if data["enforced"] else {}),
+        **({prefix + "commercial_use": True} if settings.environment == "production" else {}),
     }
 
 
 def public_product(row, db):
     brand = db.catalog_brands.find_one({"_id": row.get("brand_id")})
+    review = approval(row)
     return {
         **{k: v for k, v in row.items() if k not in {"_id", "filename"}},
         "id": row["_id"],
         "brand_name": brand["name"] if brand else "Independent reference",
         "imageUrl": f"/api/v1/products/{row['_id']}/image",
-        "tryon_supported": bool(row.get("category")),
+        "tryon_supported": row.get("category") in MODEL_CATEGORIES and (not policy()["enforced"] or review["status"] == "approved"),
+        "qualityReview": review,
         "availability": "reference-only",
     }
 
@@ -219,7 +229,7 @@ def products(
     offset: int = Query(0, ge=0, le=10000),
     db=Depends(catalog_db),
 ):
-    query = visible_query()
+    query = visible_query(db)
     for key, value in {
         "category": category,
         "subcategory": subcategory,
@@ -231,9 +241,8 @@ def products(
         if value:
             query[key] = value
     if tryon_supported is not None:
-        query["category"] = {"$ne": None} if tryon_supported else None
-        if category and tryon_supported:
-            query["category"] = category
+        query.setdefault("$and", []).append({"category": {
+            "$in" if tryon_supported else "$nin": list(MODEL_CATEGORIES)}})
     if q.strip():
         pattern = re.escape(q.strip())
         brand_ids = [
@@ -293,7 +302,7 @@ def products(
 
 @router.get("/products/{product_id}")
 def product(product_id: str, db=Depends(catalog_db)):
-    row = db.products.find_one({"_id": product_id, **visible_query()})
+    row = db.products.find_one({"_id": product_id, **visible_query(db)})
     if not row:
         raise HTTPException(404, "Product is unavailable.")
     return public_product(row, db)
@@ -301,7 +310,7 @@ def product(product_id: str, db=Depends(catalog_db)):
 
 @router.get("/products/{product_id}/image")
 def product_image(product_id: str, db=Depends(catalog_db)):
-    row = db.products.find_one({"_id": product_id, **visible_query()})
+    row = db.products.find_one({"_id": product_id, **visible_query(db)})
     if not row:
         raise HTTPException(404, "Product is unavailable.")
     path = image_path(row)
@@ -320,7 +329,7 @@ def categories(db=Depends(catalog_db)):
 @router.get("/brands")
 def brands(db=Depends(catalog_db)):
     counts = {r["_id"]: r["count"] for r in db.products.aggregate([
-        {"$match": visible_query()}, {"$group": {"_id": "$brand_id", "count": {"$sum": 1}}},
+        {"$match": visible_query(db)}, {"$group": {"_id": "$brand_id", "count": {"$sum": 1}}},
     ])}
     charts = {r["_id"]: r["count"] for r in db.brand_size_charts.aggregate([
         {"$group": {"_id": {"brand": "$brand_id", "apparel": "$apparel_id"}}},
@@ -340,7 +349,14 @@ def brands(db=Depends(catalog_db)):
 
 @router.get("/catalog/facets")
 def facets(db=Depends(catalog_db)):
-    return {field: sorted(db.products.distinct(field, visible_query())) for field in ("colors", "occasions")}
+    return {field: sorted(db.products.distinct(field, visible_query(db))) for field in ("colors", "occasions")}
+
+
+@router.get("/catalog/quality")
+def wardrobe_quality():
+    data = policy()
+    return {"enforced": data["enforced"], "approvedCount": len(data["garments"]), "targetCount": 20,
+            "status": data.get("status", "unavailable"), "message": data.get("error", data.get("note"))}
 
 
 @router.put("/favorites/{product_id}", status_code=204)
@@ -376,7 +392,7 @@ def favorites(
             }
         },
         {"$unwind": "$product"},
-        {"$match": {"product." + k: v for k, v in visible_query().items()}},
+        {"$match": visible_query(db, prefix="product.")},
     ]
     total = list(db.favorites.aggregate(stages + [{"$count": "total"}]))
     rows = db.favorites.aggregate(

@@ -4,13 +4,10 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "measurement-quality.spec.ts",
-      "studio.spec.ts",
-      "vastraview.spec.ts",
-      "fashion-platform.spec.ts",
-      "online-tryon.spec.ts",
-      "job-recovery.spec.ts",
+      "wardrobe-quality.spec.ts",
       "results-comparison.spec.ts",
+      "fashion-platform.spec.ts",
+      "vastraview.spec.ts",
       "--max-failures=3"
     ],
     "configFile": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\playwright.config.ts",
@@ -130,12 +127,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5829,
+                  "duration": 5851,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:01:54.068Z",
+                  "startTime": "2026-10-27T03:14:08.144Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -164,12 +161,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2265,
+                  "duration": 2130,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:00.125Z",
+                  "startTime": "2026-10-27T03:14:14.395Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -198,12 +195,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3406,
+                  "duration": 3220,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:02.407Z",
+                  "startTime": "2026-10-27T03:14:16.540Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -214,404 +211,6 @@
           "id": "926a99a5e120085c5ac9-5cb6b33317acb1695acf",
           "file": "fashion-platform.spec.ts",
           "line": 133,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "job-recovery.spec.ts",
-      "file": "job-recovery.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "refresh resumes the same job and reports its actual failure without another POST",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 5686,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:05.858Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-dca59e1af23cdd930d3a",
-          "file": "job-recovery.spec.ts",
-          "line": 10,
-          "column": 1
-        },
-        {
-          "title": "a recovered job cannot present an overlay as a successful neural result",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1398,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:11.569Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-6fe5be84e597266a1bf4",
-          "file": "job-recovery.spec.ts",
-          "line": 86,
-          "column": 1
-        },
-        {
-          "title": "a recovered real FASHN result loads its actual PNG and original comparison",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3188,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:12.988Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-8b1e495188b029b35095",
-          "file": "job-recovery.spec.ts",
-          "line": 111,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "measurement-quality.spec.ts",
-      "file": "measurement-quality.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "retry keeps photo and height, then actual CPU extraction feeds owner-scoped sizing",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 4225,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:16.517Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-82a68935f3db33cb3f45",
-          "file": "measurement-quality.spec.ts",
-          "line": 9,
-          "column": 1
-        },
-        {
-          "title": "partial scan keeps skeleton, exposes uncertainty and requires each flagged correction",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2803,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:20.761Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-fcf8122ade383dcd46aa",
-          "file": "measurement-quality.spec.ts",
-          "line": 88,
-          "column": 1
-        },
-        {
-          "title": "failed re-extraction clears stale measurements while retaining the selected input",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3664,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:23.584Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-ef7775d4e835ecc76189",
-          "file": "measurement-quality.spec.ts",
-          "line": 201,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "online-tryon.spec.ts",
-      "file": "online-tryon.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "recovers automatically and offers retry without a page reload",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 5283,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:27.307Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-f7689ec775df1abbf7e8",
-          "file": "online-tryon.spec.ts",
-          "line": 6,
-          "column": 1
-        },
-        {
-          "title": "losing the API clears readiness and retries automatically",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1712,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:32.611Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-5c394d876e7e87e10bea",
-          "file": "online-tryon.spec.ts",
-          "line": 45,
-          "column": 1
-        },
-        {
-          "title": "photo-only app offers model categories and never exposes avatar controls",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1135,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:34.342Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-ab44de69c17235d31d59",
-          "file": "online-tryon.spec.ts",
-          "line": 84,
-          "column": 1
-        },
-        {
-          "title": "failed recovery exposes retry and recovers without losing uploads",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1853,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:35.506Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-5a014aab0e984204f774",
-          "file": "online-tryon.spec.ts",
-          "line": 108,
-          "column": 1
-        },
-        {
-          "title": "a hanging health request expires instead of leaving stale readiness",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1476,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:02:37.380Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-6b0f5eae4c740626e6a9",
-          "file": "online-tryon.spec.ts",
-          "line": 147,
           "column": 1
         }
       ]
@@ -638,12 +237,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5080,
+                  "duration": 4287,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:39.303Z",
+                  "startTime": "2026-10-27T03:14:19.803Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -672,12 +271,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2601,
+                  "duration": 3014,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:44.413Z",
+                  "startTime": "2026-10-27T03:14:24.104Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -706,12 +305,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2837,
+                  "duration": 3517,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:47.033Z",
+                  "startTime": "2026-10-27T03:14:27.137Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -740,12 +339,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1458,
+                  "duration": 1678,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:49.889Z",
+                  "startTime": "2026-10-27T03:14:30.673Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -774,12 +373,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1951,
+                  "duration": 2935,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:51.363Z",
+                  "startTime": "2026-10-27T03:14:32.371Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -808,12 +407,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1440,
+                  "duration": 1542,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:53.336Z",
+                  "startTime": "2026-10-27T03:14:35.328Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -842,12 +441,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1481,
+                  "duration": 1369,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:54.795Z",
+                  "startTime": "2026-10-27T03:14:36.886Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -876,12 +475,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5073,
+                  "duration": 4746,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:02:56.292Z",
+                  "startTime": "2026-10-27T03:14:38.273Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -910,12 +509,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2427,
+                  "duration": 2229,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:03:01.386Z",
+                  "startTime": "2026-10-27T03:14:43.034Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -944,12 +543,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2278,
+                  "duration": 1950,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:03:03.834Z",
+                  "startTime": "2026-10-27T03:14:45.277Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -978,12 +577,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1937,
+                  "duration": 1695,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:03:06.136Z",
+                  "startTime": "2026-10-27T03:14:47.240Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -994,150 +593,6 @@
           "id": "723e605dbfb315118fa3-01cdbc578297000551c5",
           "file": "results-comparison.spec.ts",
           "line": 517,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "studio.spec.ts",
-      "file": "studio.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "guest measurement screen works from mobile to ultrawide, validates uploads and camera denial",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 4055,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:03:08.383Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-48b79a4ea0ea46c5b8f9",
-          "file": "studio.spec.ts",
-          "line": 37,
-          "column": 1
-        },
-        {
-          "title": "real published-metric sizing API, chart comparison, unsupported guide and mobile results",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 4362,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:03:12.453Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-d859340c0e8f007ac6fe",
-          "file": "studio.spec.ts",
-          "line": 90,
-          "column": 1
-        },
-        {
-          "title": "real account, photo extraction, private history, closet, session rotation and logout",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 12286,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:03:16.835Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-1efdf4e032d1405d7615",
-          "file": "studio.spec.ts",
-          "line": 144,
-          "column": 1
-        },
-        {
-          "title": "auth validation, protected return URL, reset configuration error and not-found route",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3226,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-26T15:03:29.141Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-d017fe40983268232d2d",
-          "file": "studio.spec.ts",
-          "line": 293,
           "column": 1
         }
       ]
@@ -1164,12 +619,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 7858,
+                  "duration": 6093,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:03:32.419Z",
+                  "startTime": "2026-10-27T03:14:49.153Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1198,12 +653,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4592,
+                  "duration": 3808,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-26T15:03:40.294Z",
+                  "startTime": "2026-10-27T03:14:55.258Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1217,13 +672,89 @@
           "column": 1
         }
       ]
+    },
+    {
+      "title": "wardrobe-quality.spec.ts",
+      "file": "wardrobe-quality.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "catalog distinguishes category support from reviewed garment quality",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1269,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-27T03:14:59.097Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "18dd16ca29a2b0c5d31b-94fcdb90c624de660f8c",
+          "file": "wardrobe-quality.spec.ts",
+          "line": 8,
+          "column": 1
+        },
+        {
+          "title": "result inspection uses the saved garment reference and preserves the compact comparison",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2117,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-27T03:15:00.378Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "18dd16ca29a2b0c5d31b-63a8ba38b504893a7bf4",
+          "file": "wardrobe-quality.spec.ts",
+          "line": 19,
+          "column": 1
+        }
+      ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-26T15:01:52.833Z",
-    "duration": 114488.99100000001,
-    "expected": 31,
+    "startTime": "2026-10-27T03:14:06.850Z",
+    "duration": 57220.17,
+    "expected": 18,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

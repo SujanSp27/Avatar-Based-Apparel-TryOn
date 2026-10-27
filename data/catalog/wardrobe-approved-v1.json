@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "enforced": false,
+  "status": "evaluation_in_progress",
+  "targetCount": 20,
+  "garments": [],
+  "note": "No garment is certified by this manifest yet. Keep the existing discovery catalog until twenty verified approvals can be published atomically; do not silently relabel candidates as approved."
+}

@@ -60,6 +60,7 @@ function ComparisonImages({
   const [retry, setRetry] = useState(0);
   const [sharing, setSharing] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [referenceFailed, setReferenceFailed] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
   const toast = useToast();
   const mismatch = !!(
@@ -366,6 +367,16 @@ function ComparisonImages({
             </div>
           )}
         </div>
+        {ready && !busy && (
+          <div className="comparison-caption" aria-label="Result information">
+            <span>
+              Original framing · {resultSize?.width} × {resultSize?.height} px
+            </span>
+            {details && Number.isFinite(details.timingSeconds) && (
+              <span>Generated in {details.timingSeconds.toFixed(1)} s</span>
+            )}
+          </div>
+        )}
         <footer className="comparison-footer">
           <button
             className="button secondary"
@@ -412,6 +423,30 @@ function ComparisonImages({
         onClose={() => setZoom(false)}
         title="Outfit & fit details"
       >
+        {details?.garmentUrl && (
+          <figure className="reference-inspection">
+            {referenceFailed ? (
+              <p role="status">
+                The saved garment reference is unavailable. Your generated
+                result remains below.
+              </p>
+            ) : (
+              <img
+                src={details.garmentUrl}
+                alt="Actual garment reference used for this result"
+                onError={() => setReferenceFailed(true)}
+              />
+            )}
+            <figcaption>
+              <strong>Your garment reference</strong>
+              <p>
+                Compare the collar, sleeves, pattern and hem with the generated
+                outfit. Image generation does not guarantee exact construction
+                or physical fit.
+              </p>
+            </figcaption>
+          </figure>
+        )}
         <div className="outfit-details">
           <div>
             <strong>

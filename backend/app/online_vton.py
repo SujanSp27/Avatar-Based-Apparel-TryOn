@@ -194,6 +194,7 @@ class OnlineTryOn:
         preparation_started = time.perf_counter()
         person_png, garment_png = normalized_image(person), normalized_image(garment)
         (folder / "original-person.png").write_bytes(person_png)
+        (folder / "garment-reference.png").write_bytes(garment_png)
         preparation_seconds = time.perf_counter() - preparation_started
         report_progress("uploading_online")
         start = time.perf_counter()
