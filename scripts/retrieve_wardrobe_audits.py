@@ -10,6 +10,7 @@ from scripts import deploy_online_colab as deployment
 from scripts.colab_control import wait_for
 from scripts.colab_notebook_control import result
 from scripts.evaluate_wardrobe import DEFAULT, PEOPLE, save
+from scripts.worker_audits import retrieve_http
 
 NAMES = ["raw.png", "garment-labels.png", "source-labels.png", "target-labels.png", "edit-mask.png",
          "garment-input.png", "person-input.png", "conditioning.json", "garment-conditioning.png",
@@ -59,7 +60,7 @@ def decode_artifacts(reply, names):
             for name, value in data.items()}
 
 
-def retrieve(folder: Path, ids=None, people=None):
+def retrieve(folder: Path, ids=None, people=None, transport="notebook"):
     pin = json.loads((ROOT / ".runtime/colab-autoconnect.json").read_text())["expectedHostname"]
     for trial_file in sorted(folder.glob("cases/*/*/trial.json")):
         trial = json.loads(trial_file.read_text())
@@ -70,6 +71,10 @@ def retrieve(folder: Path, ids=None, people=None):
         if trial["status"] != "generated":
             continue
         case = trial_file.parent
+        if transport == "http":
+            outcome = retrieve_http(case, trial, ROOT / ".runtime/online-connection.json")
+            print(json.dumps({"productId": trial["productId"], "person": trial["personId"], **outcome}), flush=True)
+            continue
         journal = case / "artifact-retrieval-pending.json"
         pending = json.loads(journal.read_text()) if journal.exists() else None
         needed = [name for name in NAMES if not (case / name).exists()]
@@ -119,7 +124,9 @@ if __name__ == "__main__":
     parser.add_argument("--folder", type=Path, default=DEFAULT)
     parser.add_argument("--ids", nargs="+", help="Retrieve only these existing trial IDs")
     parser.add_argument("--people", nargs="+", choices=list(PEOPLE), help="Retrieve only these test-person cases")
+    parser.add_argument("--transport", choices=["notebook", "http"], default="notebook",
+                        help="HTTP reads the authenticated worker directly without needing a notebook connection")
     args = parser.parse_args()
     if not args.folder.resolve().is_relative_to((ROOT / "experiments").resolve()):
         parser.error("Use the private experiments directory")
-    retrieve(args.folder, args.ids, args.people)
+    retrieve(args.folder, args.ids, args.people, args.transport)

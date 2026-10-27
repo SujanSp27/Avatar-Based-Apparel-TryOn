@@ -25,6 +25,7 @@ from backend.app.garments import GARMENTS
 from backend.app.online_vton import normalized_image
 from ml.errors import PipelineError
 from ml.vton.categories import MODEL_CATEGORIES
+from scripts.worker_audits import retrieve_http
 
 DEFAULT = ROOT / "experiments/wardrobe-curation"
 PEOPLE = {"studio": "data/raw/studio-person.jpg", "mirror": "data/raw/fashn-samples/person5.png"}
@@ -205,6 +206,8 @@ def run(folder, ids, session_path, people, prepared_dir=None):
                     if state["inputs"] != inputs:
                         raise ValueError("Inputs changed; use a separate evaluation directory")
                     if state["status"] in {"generated", "failed"}:
+                        if state["status"] == "generated" and not (case / "artifact-http-retrieval.json").exists():
+                            retrieve_http(case, state, ROOT / ".runtime/online-connection.json")
                         continue
                 else:
                     state = {"jobId": str(uuid4()), "productId": product_id, "personId": person_id,
@@ -267,6 +270,11 @@ def run(folder, ids, session_path, people, prepared_dir=None):
                 save(state_path, state)
                 print(json.dumps({"productId": product_id, "person": person_id, "status": state["status"],
                                   "seconds": state.get("timingSeconds"), "error": state.get("error")}), flush=True)
+                if state["status"] == "generated":
+                    # Run timing is already persisted. Diagnostic transfer is
+                    # separate from generation and never reruns a model.
+                    audit = retrieve_http(case, state, ROOT / ".runtime/online-connection.json")
+                    print(json.dumps({"productId": product_id, "audit": audit}), flush=True)
 
 
 def main():

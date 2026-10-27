@@ -1,7 +1,7 @@
 {
   "version": 1,
   "status": "candidates_only_not_approved",
-  "reviewedOn": "2026-10-27",
+  "reviewedOn": "2026-10-28",
   "basis": "All 57 source images decoded and contact sheets visually inspected. Prioritize isolated, front-facing single garments with complete boundaries. Names alone are not evidence of inference quality.",
   "people": [
     "studio",
@@ -42,7 +42,11 @@
     "edit-2827caf7",
     "edit-122f0c94",
     "edit-1417c271",
-    "edit-7ec3c84f"
+    "edit-7ec3c84f",
+    "edit-b4b507dd",
+    "edit-98ec0a37",
+    "edit-9b76f08a",
+    "edit-c4010e8b"
   ],
   "sourceRisks": {
     "all": "Community references are mostly 400 px wide; source resolution and non-studio backgrounds limit fine detail. Real parser and output checks are still required.",
@@ -50,12 +54,16 @@
     "edit-ddfd02ed": "Pleats and sheer details need full-resolution output review.",
     "edit-d5964c78": "Hood transfer must not change hair/head or introduce extra layers.",
     "edit-29864eb0": "Open-front construction may expose original shirt; judge layering explicitly.",
-    "edit-39a96b4e": "Shorts must preserve exposed skin and both leg boundaries."
+    "edit-39a96b4e": "Shorts must preserve exposed skin and both leg boundaries.",
+    "edit-b4b507dd": "Checked pattern and open-front layering must be preserved; wood background needs actual mask review.",
+    "edit-98ec0a37": "Sleeveless construction and tie neckline must survive; requires a person photo with compatible arm exposure.",
+    "edit-9b76f08a": "Ribbing, lace trim and cropped sleeveless hem must survive; pink background must not become fabric.",
+    "edit-c4010e8b": "Fine pattern and fitted leg construction must remain; bedding background must not become extra clothing."
   },
   "deferred": {
     "editorial-outfits": "Five layered/draped ethnic references lack a supported model mapping.",
     "research-references": "Six original demo/product references lack established commercial image publication rights; retained in archive, not candidates for a production wardrobe.",
     "remaining-licensed-references": "Reserve pool: folded/cropped sleeves, thin straps, small product occupancy, busy prints or backgrounds require additional review if the primary pool falls short."
   },
-  "reserveExpansion": "Six additional complete-outline reserve references visually reviewed on 27 October after the initial 28 fell short. They remain unapproved; background and hanger risks must pass actual parsing and output review."
+  "reserveExpansion": "Ten reserve references reviewed after the initial 28 fell short. Added four complete-outline shirt/top/leggings references on 28 October for real baseline and segmentation checks. They remain unapproved; patterned backgrounds, thin trim and sleeve coverage are risks, not automatic successes."
 }

@@ -189,6 +189,9 @@ def test_recovery_cell_embeds_persistent_profile_and_runtime_pin():
     tree = ast.parse(source)
     call = next(node for node in ast.walk(tree) if isinstance(node, ast.Call)
                 and isinstance(node.func, ast.Name) and node.func.id == 'recover')
+    # A worker-source update must include its new runtime dependency too.
+    payload = ast.literal_eval(call.args[1])
+    assert 'ml/vton/audit_export.py' in payload
     keywords = {kw.arg: ast.literal_eval(kw.value) for kw in call.keywords}
     assert keywords['expected_hostname'] == 'runtime-a'
     assert keywords['worker_profile'] == {

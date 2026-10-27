@@ -17,6 +17,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from ml.errors import PipelineError
+from ml.vton.audit_export import export_audit
 from ml.vton.checked_sampler import CheckedSamplerMixin
 from ml.vton.garment_fidelity import assess_dark_reference
 from ml.vton.garment_reference import prepare_reference
@@ -258,6 +259,10 @@ def main():
     def status_api(supplied_token):
         return json.dumps(status(supplied_token), allow_nan=False)
 
+    def audit_api(supplied_token, run_id, person_hash, garment_hash):
+        return json.dumps(export_audit(root, token, supplied_token, run_id, person_hash, garment_hash),
+                          allow_nan=False)
+
     with gr.Blocks(analytics_enabled=False) as app:
         args = [gr.Textbox(visible=False) for _ in range(5)] + [gr.Number(value=20, visible=False)]
         # Explicit JSON text avoids Gradio's JSONData RootModel being coerced to
@@ -267,6 +272,9 @@ def main():
         gr.Button("Private API").click(generate_api, inputs=args, outputs=output, api_name="generate", concurrency_limit=1)
         gr.Button("Worker status", visible=False).click(status_api, inputs=args[0],
                 outputs=gr.Textbox(visible=False), api_name="status", queue=False)
+        audit_args = [gr.Textbox(visible=False) for _ in range(4)]
+        gr.Button("Private run audit", visible=False).click(audit_api, inputs=audit_args,
+                outputs=gr.Textbox(visible=False), api_name="audit", queue=False)
     _, _, url = app.queue(max_size=2).launch(share=True, server_name="127.0.0.1", prevent_thread_lock=True, show_api=False, quiet=True)
     (root / "connection.json").write_text(json.dumps({"url": url, "gpu": torch.cuda.get_device_name(),
                                                     "model": MODEL, "modelResolution": list(input_shape[::-1]),

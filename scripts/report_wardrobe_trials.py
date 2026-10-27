@@ -21,7 +21,13 @@ def collect(folder: Path, variant: str):
         output = path.with_name("after.png")
         current_output = (output.is_file() and digest(output.read_bytes()) == trial.get("outputSha256"))
         current_review = (current_output and review.get("outputSha256") == trial.get("outputSha256")
-                          and review.get("fullResolutionInspected") is True)
+                          and review.get("fullResolutionInspected") is True
+                          and review.get("decision") in {"visual_pass", "failed"}
+                          and all(review.get(key) for key in ("reviewer", "reviewedAt", "notes")))
+        if current_review and review["decision"] == "visual_pass":
+            current_review = (review.get("majorArtifacts") is False and all(
+                type(review.get("ratings", {}).get(key)) is int and 4 <= review["ratings"][key] <= 5
+                for key in ("reference_fidelity", "anatomy", "boundaries", "preservation")))
         seconds = trial.get("observedEndToEndSeconds")
         timing_pass = type(seconds) in (int, float) and math.isfinite(seconds) and 0 < seconds < 30
         diagnostics = trial.get("diagnostics", {})
@@ -40,8 +46,10 @@ def collect(folder: Path, variant: str):
     return cases
 
 
-def write_report(baseline: Path, experiment: Path, destination: Path):
+def write_report(baseline: Path, experiment: Path, destination: Path, additional=()):
     cases = collect(baseline, "catalog_original") + collect(experiment, "background_only_experiment")
+    for folder in additional:
+        cases.extend(collect(folder, folder.name))
     rows = {row["id"]: row for row in catalog_rows()}
     generated = [case for case in cases if case["status"] == "generated"]
     durations = [case["seconds"] for case in generated if type(case["seconds"]) in (float, int)
@@ -106,8 +114,10 @@ if __name__ == "__main__":
     parser.add_argument("--baseline", type=Path, default=ROOT / "experiments/wardrobe-curation")
     parser.add_argument("--experiment", type=Path, default=ROOT / "experiments/wardrobe-neutral")
     parser.add_argument("--output", type=Path, default=ROOT / "experiments/wardrobe-review")
+    parser.add_argument("--additional", nargs="*", type=Path, default=[],
+                        help="Separate retry/controlled-experiment directories; earlier failures remain in the ledger")
     args = parser.parse_args()
     if not all(path.resolve().is_relative_to((ROOT / "experiments").resolve()) for path in
-               (args.baseline, args.experiment, args.output)):
+               (args.baseline, args.experiment, args.output, *args.additional)):
         parser.error("All trial reports must remain in the private experiments directory")
-    print(json.dumps(write_report(args.baseline, args.experiment, args.output), indent=2))
+    print(json.dumps(write_report(args.baseline, args.experiment, args.output, args.additional), indent=2))
