@@ -111,9 +111,9 @@ def assess_trial(folder: Path, source: dict, person_id: str):
             "workerStages": diagnostic.get("stageSeconds"), "output": str(folder / "after.png")}
 
 
-def report(folder: Path):
+def report(folder: Path, source_manifest: Path | None = None):
     entries = []
-    for row in catalog_rows():
+    for row in catalog_rows(source_manifest):
         source = inspect_source(row)
         trials = {person: assess_trial(folder / "cases" / row["id"] / person, source, person) for person in PEOPLE}
         approved = source.get("validImage") and source.get("commercialUse") and all(r["status"] == "approved" for r in trials.values())
@@ -159,13 +159,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["report", "publish"])
     parser.add_argument("--folder", type=Path, default=DEFAULT)
+    parser.add_argument("--source-manifest", type=Path, help="Report staged candidates using the same acceptance gates; does not publish them")
     parser.add_argument("--allow-shortfall", action="store_true",
                         help="Publish only genuinely approved garments even when fewer than twenty pass; archive all others")
     args = parser.parse_args()
     if not args.folder.resolve().is_relative_to((ROOT / "experiments").resolve()):
         parser.error("Evaluation evidence must stay inside experiments")
     if args.action == "publish":
+        if args.source_manifest:
+            parser.error("Stage reports cannot publish products; install individually reviewed product records first")
         publish(args.folder, ROOT / "data/catalog/wardrobe-approved-v1.json", allow_shortfall=args.allow_shortfall)
     else:
-        result = report(args.folder)
+        result = report(args.folder, args.source_manifest)
         print(f"{result['approvedCount']} / 20 approved; report saved. No publication change.")

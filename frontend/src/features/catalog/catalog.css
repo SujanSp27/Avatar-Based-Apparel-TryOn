@@ -195,7 +195,8 @@
   padding: 16px 0;
   border-bottom: 1px solid #d8dfd2;
 }
-.private-history img {
+.private-history img,
+.private-history .image-unavailable {
   width: 100%;
   height: 260px;
   object-fit: contain;

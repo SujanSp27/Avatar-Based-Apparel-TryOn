@@ -4,6 +4,8 @@
 
 ## Evidence and limits
 
+**Photography follow-up:** [Catalog photography review](catalog-photography-review.md) records the separate display/reference implementation, four new licensed studio candidates and five additional real Colab trials. None earned complete approval. The 57 original IDs below are unchanged; these new trials are reported separately from the original baseline totals.
+
 - Audited 57 original references: 46 supported, commercially usable candidates, five unsupported draped/multipart references and six research references without established commercial image rights.
 - 71 actual standard-profile trials across all 46 supported candidates: 46 original-reference trials, 24 controlled background-only trials and one separate retry. 68 outputs generated and visually inspected; three requests failed. Original-reference trials: 44 generated failures of visual acceptance, one rejected for excessive coverage change and one connection failure.
 - Three single-person visual passes in controlled background-only experiments do not qualify: each failed on the other fixed person. The production catalog still uses the original reference bytes. Experiments were not silently substituted.

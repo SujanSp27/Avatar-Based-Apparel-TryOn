@@ -1,0 +1,466 @@
+{
+  "version": 1,
+  "reviewedAt": "2026-10-28T14:04:28.493702+00:00",
+  "replacementCount": 0,
+  "publicationChanged": false,
+  "garments": [
+    {
+      "id": "edit-29864eb0",
+      "filename": "catalog/edit-29864eb0.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-644a1b3b",
+      "filename": "catalog/edit-644a1b3b.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-98ec0a37",
+      "filename": "catalog/edit-98ec0a37.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-1347965a",
+      "filename": "catalog/edit-1347965a.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-2827caf7",
+      "filename": "catalog/edit-2827caf7.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-9568b507",
+      "filename": "catalog/edit-9568b507.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-ddfd02ed",
+      "filename": "catalog/edit-ddfd02ed.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-0d3cf39f",
+      "filename": "catalog/edit-0d3cf39f.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-55694d05",
+      "filename": "catalog/edit-55694d05.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-3f844e1e",
+      "filename": "catalog/edit-3f844e1e.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-b769e3fb",
+      "filename": "catalog/edit-b769e3fb.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-331737f8",
+      "filename": "catalog/edit-331737f8.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-6edf8ea5",
+      "filename": "catalog/edit-6edf8ea5.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-d5964c78",
+      "filename": "catalog/edit-d5964c78.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-febe9c7c",
+      "filename": "catalog/edit-febe9c7c.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-9e19f45b",
+      "filename": "catalog/edit-9e19f45b.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-8648f194",
+      "filename": "catalog/edit-8648f194.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-6b519a8a",
+      "filename": "catalog/edit-6b519a8a.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-d039bfd4",
+      "filename": "catalog/edit-d039bfd4.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-c7ef3028",
+      "filename": "catalog/edit-c7ef3028.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-122f0c94",
+      "filename": "catalog/edit-122f0c94.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-9b94e20c",
+      "filename": "catalog/edit-9b94e20c.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-d92f1cf7",
+      "filename": "catalog/edit-d92f1cf7.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-271405dc",
+      "filename": "catalog/edit-271405dc.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-c4010e8b",
+      "filename": "catalog/edit-c4010e8b.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-807f09b8",
+      "filename": "catalog/edit-807f09b8.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-65550f31",
+      "filename": "catalog/edit-65550f31.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-a59f077d",
+      "filename": "catalog/edit-a59f077d.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-1b2a7169",
+      "filename": "catalog/edit-1b2a7169.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-934c4462",
+      "filename": "catalog/edit-934c4462.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-4758e641",
+      "filename": "catalog/edit-4758e641.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-b4b507dd",
+      "filename": "catalog/edit-b4b507dd.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-b070e185",
+      "filename": "catalog/edit-b070e185.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-fe7ca6a3",
+      "filename": "catalog/edit-fe7ca6a3.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-4245ab7f",
+      "filename": "catalog/edit-4245ab7f.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-1417c271",
+      "filename": "catalog/edit-1417c271.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-66f92907",
+      "filename": "catalog/edit-66f92907.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-39a96b4e",
+      "filename": "catalog/edit-39a96b4e.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-29a50158",
+      "filename": "catalog/edit-29a50158.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-31fd2f8b",
+      "filename": "catalog/edit-31fd2f8b.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-7ec3c84f",
+      "filename": "catalog/edit-7ec3c84f.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-c103d1a1",
+      "filename": "catalog/edit-c103d1a1.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-80653ab3",
+      "filename": "catalog/edit-80653ab3.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-9b76f08a",
+      "filename": "catalog/edit-9b76f08a.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-86f96e47",
+      "filename": "catalog/edit-86f96e47.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "edit-a7a8fafc",
+      "filename": "catalog/edit-a7a8fafc.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "editorial-13192043",
+      "filename": "catalog/editorial-13192043.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "editorial-28332599",
+      "filename": "catalog/editorial-28332599.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "editorial-22064230",
+      "filename": "catalog/editorial-22064230.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "editorial-22064197",
+      "filename": "catalog/editorial-22064197.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "editorial-22064213",
+      "filename": "catalog/editorial-22064213.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "navy-tee",
+      "filename": "navy-tee.jpg",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "sage-polo",
+      "filename": "sage-polo.jpg",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "navy-blouse",
+      "filename": "fashn-samples/garment3.jpeg",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "coral-dress",
+      "filename": "fashn-samples/garment1.jpeg",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "navy-gown",
+      "filename": "fashn-samples/garment6.webp",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    },
+    {
+      "id": "ivory-skirt",
+      "filename": "fashn-samples/garment5.jpeg",
+      "decision": "needs_matching_licensed_studio_image",
+      "reason": "No verified alternate studio view of this exact garment has been sourced; do not substitute a different branded product under this ID. Existing reference remains archived and the inference review is unchanged.",
+      "referenceChanged": false,
+      "approvalChanged": false
+    }
+  ],
+  "candidateManifest": "data/catalog/studio-candidates-v1.json",
+  "note": "New studio photographs are new candidate identities, not replacements for unrelated archived products."
+}

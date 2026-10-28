@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import io
 import json
+import re
 import secrets
 import time
 from datetime import datetime, timezone
@@ -42,7 +43,26 @@ def save(path: Path, data):
     temp.replace(path)
 
 
-def catalog_rows():
+def catalog_rows(source_manifest: Path | None = None):
+    if source_manifest:
+        # Staged sources can be evaluated without publishing products or changing
+        # an existing ID's identity/reference. This file never grants approval.
+        rows = json.loads(source_manifest.read_text(encoding="utf-8"))
+        required = {"id", "name", "category", "photoType", "filename", "commercial_use"}
+        if (not isinstance(rows, list) or any(not isinstance(row, dict) or not required <= row.keys() for row in rows)
+                or len({r["id"] for r in rows}) != len(rows)):
+            raise ValueError("Invalid staged catalog manifest")
+        for row in rows:
+            if not isinstance(row["id"], str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{1,79}", row["id"]):
+                raise ValueError("Invalid staged garment ID")
+            path = (ROOT / "data/raw" / row["filename"]).resolve()
+            if not path.is_relative_to((ROOT / "data/raw").resolve()):
+                raise ValueError("Source is outside public catalog assets")
+            if row["photoType"] not in {"model", "flat-lay"}:
+                raise ValueError("Unsupported reference photo type")
+            if row.get("image_sha256") and digest(path.read_bytes()) != row["image_sha256"]:
+                raise ValueError("Staged reference changed after image review")
+        return rows
     rows = json.loads((ROOT / "data/catalog/garments-v2.json").read_text())
     for key, name, category, photo, filename, description in GARMENTS:
         rows.append(dict(id=key, name=name, category=category, photoType=photo,
@@ -104,8 +124,8 @@ def sheet(paths, titles, output: Path, columns=5, cell=(220, 310)):
     canvas.save(output)
 
 
-def audit(folder: Path):
-    rows = [inspect_source(row) for row in catalog_rows()]
+def audit(folder: Path, source_manifest: Path | None = None):
+    rows = [inspect_source(row) for row in catalog_rows(source_manifest)]
     save(folder / "baseline.json", {"createdAt": datetime.now(timezone.utc).isoformat(), "garments": rows,
          "limitations": "Border and sharpness numbers are triage only, not garment segmentation or fit scores."})
     for i in range(0, len(rows), 20):
@@ -177,8 +197,13 @@ def validate_output(original: bytes, output: bytes):
                 "visualAcceptance": "pending full-resolution inspection"}
 
 
-def run(folder, ids, session_path, people, prepared_dir=None):
-    rows = {row["id"]: row for row in catalog_rows()}
+def run(folder, ids, session_path, people, prepared_dir=None, source_manifest=None):
+    rows = {row["id"]: row for row in catalog_rows(source_manifest)}
+    if source_manifest:
+        evidence = folder / "source-manifest.json"
+        if evidence.exists() and json.loads(evidence.read_text()) != list(rows.values()):
+            raise ValueError("Staged sources changed; preserve this evaluation and use a separate folder")
+        save(evidence, list(rows.values()))
     with httpx.Client(base_url="http://127.0.0.1:8000", timeout=30, trust_env=False) as client:
         authenticate(client, session_path)
         for person_id in people:
@@ -283,6 +308,7 @@ def main():
     parser.add_argument("--folder", type=Path, default=DEFAULT)
     parser.add_argument("--ids", nargs="+")
     parser.add_argument("--candidates", type=Path, help="Reviewed candidate manifest; IDs in evaluation order")
+    parser.add_argument("--source-manifest", type=Path, help="Staged source records to evaluate without publishing or overwriting catalog IDs")
     parser.add_argument("--prepared-dir", type=Path, help="Explicit background-only experiment; use a separate output folder")
     parser.add_argument("--people", nargs="+", choices=list(PEOPLE), default=list(PEOPLE))
     parser.add_argument("--session", type=Path, default=ROOT / ".runtime/wardrobe-evaluation-session.json")
@@ -292,14 +318,14 @@ def main():
     if args.action == "create-session":
         create_session(args.session)
     elif args.action == "audit":
-        audit(args.folder)
+        audit(args.folder, args.source_manifest)
     else:
         ids = args.ids or (json.loads(args.candidates.read_text())["candidateIds"] if args.candidates else None)
         if not ids:
             parser.error("run requires explicit candidate IDs")
         if args.prepared_dir and (args.folder.resolve() == DEFAULT.resolve() or not args.prepared_dir.resolve().is_relative_to((ROOT / "experiments").resolve())):
             parser.error("Prepared-reference experiments require a separate output folder and private experiment inputs")
-        run(args.folder, ids, args.session, args.people, args.prepared_dir)
+        run(args.folder, ids, args.session, args.people, args.prepared_dir, args.source_manifest)
 
 
 if __name__ == "__main__":

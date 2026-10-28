@@ -8,6 +8,8 @@ export type Garment = {
   category: string;
   photoType: string;
   imageUrl: string;
+  referenceImageUrl?: string;
+  displayImage?: { photoType: string } | null;
   description: string;
   tryon_supported?: boolean;
   qualityReview?: {
@@ -138,8 +140,9 @@ export default function GarmentPicker({
                   <strong>{item.name}</strong>
                   <span>{item.description}</span>
                   <small>
-                    {item.photoType === "model"
-                      ? "Worn garment reference"
+                    {(item.displayImage?.photoType ?? item.photoType) ===
+                    "model"
+                      ? "Model photograph"
                       : "Product photograph"}
                     <ArrowRight size={15} />
                   </small>

@@ -6,6 +6,7 @@ import Modal from "../../components/ui/Modal";
 import { useAuth } from "../auth/AuthProvider";
 import { useToast } from "../../components/ui/Toast";
 import type { Product } from "../catalog/CatalogPage";
+import ProductImage from "../catalog/ProductImage";
 import type { Result } from "../../types";
 type Session = {
   id: string;
@@ -127,7 +128,7 @@ export default function AccountPrivacy() {
         <div className="discovery-grid">
           {favorites.map((p) => (
             <article className="card private-history" key={p.id}>
-              <img src={p.imageUrl} alt={p.name} loading="lazy" />
+              <ProductImage src={p.imageUrl} alt={p.name} />
               <h3>{p.name}</h3>
               <Link to={`/tryon?product=${encodeURIComponent(p.id)}`}>
                 Try this garment

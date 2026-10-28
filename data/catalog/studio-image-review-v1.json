@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "reviewedAt": "2026-10-28T14:14:35.470852+00:00",
+  "photographs": [
+    {
+      "commonsPageId": 44280772,
+      "title": "File:Paul Smith striped shirt.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Paul_Smith_striped_shirt.jpg",
+      "license": "CC BY 2.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-44280772.jpg",
+      "visuallyInspected": true,
+      "decision": "display_only_candidate",
+      "reason": "Folded Paul Smith shirt; sleeves and hem hidden. No matching complete reference found."
+    },
+    {
+      "commonsPageId": 46436817,
+      "title": "File:Polo Ralph Lauren Gun Patch Sweater (13973497074).jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Polo_Ralph_Lauren_Gun_Patch_Sweater_(13973497074).jpg",
+      "license": "CC BY 2.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-46436817.jpg",
+      "visuallyInspected": true,
+      "decision": "failed_inference",
+      "reason": "Professional white-background product view, but folded sleeves transfer as false torso fabric."
+    },
+    {
+      "commonsPageId": 107143870,
+      "title": "File:Fred Perry polo.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Fred_Perry_polo.jpg",
+      "license": "CC BY-SA 4.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-107143870.jpg",
+      "visuallyInspected": true,
+      "decision": "rejected_reference",
+      "reason": "Fred Perry polo folded with hanging tags; full sleeve/hem silhouette absent."
+    },
+    {
+      "commonsPageId": 118271221,
+      "title": "File:Dale of Norway sweater.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Dale_of_Norway_sweater.jpg",
+      "license": "CC BY 2.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-118271221.jpg",
+      "visuallyInspected": true,
+      "decision": "failed_inference",
+      "reason": "Professional product photo; crossed sleeves became short sleeves and invented pockets/hem."
+    },
+    {
+      "commonsPageId": 118273593,
+      "title": "File:Polo Ralph Lauren Stadium shirt, short sleeves.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Polo_Ralph_Lauren_Stadium_shirt,_short_sleeves.jpg",
+      "license": "CC BY 2.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-118273593.jpg",
+      "visuallyInspected": true,
+      "decision": "rejected_reference",
+      "reason": "Ralph Lauren printed shirt is shown obliquely from side; not a complete front view."
+    },
+    {
+      "commonsPageId": 118273594,
+      "title": "File:Polo Ralph Lauren Madras plaid shirt.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Polo_Ralph_Lauren_Madras_plaid_shirt.jpg",
+      "license": "CC BY 2.0",
+      "local_asset": null,
+      "visuallyInspected": false,
+      "decision": "download_blocked",
+      "reason": "600px original image unavailable (HTTP 429); not inspected or approved."
+    },
+    {
+      "commonsPageId": 118273595,
+      "title": "File:Ralph Lauren Stadium shirt, short sleeves 2.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ralph_Lauren_Stadium_shirt,_short_sleeves_2.jpg",
+      "license": "CC BY 2.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-118273595.jpg",
+      "visuallyInspected": true,
+      "decision": "rejected_reference",
+      "reason": "Back view of the same printed Ralph Lauren shirt; not a distinct product or valid front reference."
+    },
+    {
+      "commonsPageId": 118273634,
+      "title": "File:Multi Color Polo Ralph Lauren Shirt.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Multi_Color_Polo_Ralph_Lauren_Shirt.jpg",
+      "license": "CC BY 2.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-118273634.jpg",
+      "visuallyInspected": true,
+      "decision": "failed_inference",
+      "reason": "Clear front mannequin shirt; output loses chest pocket and has defective cuffs."
+    },
+    {
+      "commonsPageId": 4676074,
+      "title": "File:Classical polo shirt.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Classical_polo_shirt.jpg",
+      "license": "CC BY-SA 3.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-4676074.jpg",
+      "visuallyInspected": true,
+      "decision": "rejected_presentation",
+      "reason": "Casual dark carpet background and uneven lighting; not the requested professional presentation."
+    },
+    {
+      "commonsPageId": 170942722,
+      "title": "File:Rare By Circle Classic Logo T-Shirt.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Rare_By_Circle_Classic_Logo_T-Shirt.jpg",
+      "license": "CC BY-SA 4.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-170942722.jpg",
+      "visuallyInspected": true,
+      "decision": "failed_repeatability",
+      "reason": "Clean front product image. Studio visual pass, mirror fails neck/arm boundaries. Both over 30 seconds."
+    },
+    {
+      "commonsPageId": 170942726,
+      "title": "File:Rare By Circle Classic Logo T-Shirt 1.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Rare_By_Circle_Classic_Logo_T-Shirt_1.jpg",
+      "license": "CC BY-SA 4.0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-170942726.jpg",
+      "visuallyInspected": true,
+      "decision": "rejected_reference",
+      "reason": "Back view of the same Rare By Circle shirt; not another product."
+    },
+    {
+      "commonsPageId": 16584121,
+      "title": "File:WP polo shirt FRONT Merchandise shots-24 cropped.jpg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:WP_polo_shirt_FRONT_Merchandise_shots-24_cropped.jpg",
+      "license": "CC0",
+      "local_asset": "experiments/wardrobe-brand-sourcing/web-16584121.jpg",
+      "visuallyInspected": true,
+      "decision": "rejected_source",
+      "reason": "Model photograph has background clutter. Cropped derivative claims CC0 whereas source is CC BY-SA 3.0 with trademark notice; do not rely on derivative license."
+    }
+  ],
+  "publicationChanged": false
+}

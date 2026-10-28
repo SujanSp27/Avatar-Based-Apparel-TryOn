@@ -1,0 +1,40 @@
+[
+  {
+    "id": "studio-rare-classic-logo-tee",
+    "name": "Rare By Circle classic logo T-shirt",
+    "brand_id": "rare-by-circle",
+    "category": "t-shirt",
+    "subcategory": "oversized-tee",
+    "audience": "unisex",
+    "photoType": "flat-lay",
+    "filename": "catalog-studio/rare-classic-logo-tee.jpg",
+    "description": "Black oversized short-sleeve T-shirt with small white chest emblem. Complete front-facing product view; front and back images distinguished by neckline, inner label and emblem scale.",
+    "colors": [
+      "black",
+      "white"
+    ],
+    "sizes": [],
+    "availability": "reference-only",
+    "commercial_use": true,
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "attribution": "Badislavius / Wikimedia Commons. Host-resized rendition; garment pixels otherwise unedited. Adaptations distributed publicly must retain a compatible ShareAlike license.",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Rare_By_Circle_Classic_Logo_T-Shirt.jpg",
+    "brand_source_url": "https://rarebycircle.com/product-category/t-shirts-longsleeves/",
+    "asset_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Rare_By_Circle_Classic_Logo_T-Shirt.jpg/960px-Rare_By_Circle_Classic_Logo_T-Shirt.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "asset_transform": "none",
+    "image_sha256": "d77984779d93f0d76f3a0ff995dd8cd6d0c1e09be0a884cde7a0e830c1a5d03c",
+    "source_image_sha256": "d77984779d93f0d76f3a0ff995dd8cd6d0c1e09be0a884cde7a0e830c1a5d03c",
+    "image_width": 960,
+    "image_height": 960,
+    "checked_on": "2026-10-28",
+    "active": false,
+    "review_status": "pending_inference",
+    "image_review": {
+      "decision": "candidate_only",
+      "reviewer": "Codex visual inspection",
+      "date": "2026-10-28",
+      "notes": "Complete front silhouette on white; no hanger, person or obscuring prop. The similarly named image ending 1 is the back view and is excluded. Verify oversized sleeve and small logo transfer."
+    }
+  }
+]

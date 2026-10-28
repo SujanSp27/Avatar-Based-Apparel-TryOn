@@ -399,7 +399,7 @@
   height: calc(100% - 16px);
   object-fit: contain;
 }
-.garment-grid .catalog-photo > span {
+.garment-grid .catalog-photo > span:not(.image-unavailable) {
   display: flex;
   align-items: center;
   gap: 4px;

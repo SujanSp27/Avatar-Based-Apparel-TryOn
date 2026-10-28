@@ -158,7 +158,10 @@ export default function TryOnStudio() {
         );
         return;
       }
-      const garmentFile = await downloadPhoto(item.imageUrl, item.id);
+      const garmentFile = await downloadPhoto(
+        item.referenceImageUrl ?? item.imageUrl,
+        item.id,
+      );
       setGarment(garmentFile);
       setCategory(item.category);
       setPhotoType(item.photoType);
@@ -181,7 +184,7 @@ export default function TryOnStudio() {
     reset();
     try {
       const [file, originalFile] = await Promise.all([
-        downloadPhoto(item.imageUrl, item.id),
+        downloadPhoto(item.referenceImageUrl ?? item.imageUrl, item.id),
         original
           ? downloadPhoto(original, "original-person.png")
           : Promise.resolve(person),

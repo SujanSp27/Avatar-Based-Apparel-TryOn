@@ -1,5 +1,6 @@
 """Database-backed discovery. Brand names are a directory, never invented inventory."""
 
+import hashlib
 import json
 import re
 from datetime import datetime, timezone
@@ -187,9 +188,10 @@ def catalog_db(db=Depends(account_db)):
     return db
 
 
-def image_path(row):
+def image_path(row, *, display=False):
     root = (ROOT / "data/raw").resolve()
-    path = (root / row["filename"]).resolve()
+    asset = (row.get("display_image") or row) if display else row
+    path = (root / asset["filename"]).resolve()
     if not path.is_relative_to(root) or not path.is_file():
         raise HTTPException(404, "Catalog image is unavailable.")
     return path
@@ -201,21 +203,29 @@ def visible_query(db=None, prefix=""):
     if data["enforced"] and db is not None:
         approved_ids = [r["_id"] for r in db.products.find({"_id": {"$in": approved_ids}})
                         if approval(r)["status"] == "approved"]
-    return {
+    query = {
         prefix + "active": True,
         **({"$and": [{prefix + "_id": {"$in": approved_ids}}]} if data["enforced"] else {}),
         **({prefix + "commercial_use": True} if settings.environment == "production" else {}),
     }
+    if settings.environment == "production":
+        query.setdefault("$and", []).append({"$or": [
+            {prefix + "display_image": None},
+            {prefix + "display_image.commercial_use": True},
+        ]})
+    return query
 
 
 def public_product(row, db):
     brand = db.catalog_brands.find_one({"_id": row.get("brand_id")})
     review = approval(row)
     return {
-        **{k: v for k, v in row.items() if k not in {"_id", "filename"}},
+        **{k: v for k, v in row.items() if k not in {"_id", "filename", "display_image"}},
         "id": row["_id"],
         "brand_name": brand["name"] if brand else "Independent reference",
         "imageUrl": f"/api/v1/products/{row['_id']}/image",
+        "referenceImageUrl": f"/api/v1/products/{row['_id']}/reference-image",
+        "displayImage": {k: v for k, v in (row.get("display_image") or {}).items() if k != "filename"} or None,
         "tryon_supported": row.get("category") in MODEL_CATEGORIES and (not policy()["enforced"] or review["status"] == "approved"),
         "qualityReview": review,
         "availability": "reference-only",
@@ -318,10 +328,22 @@ def product(product_id: str, db=Depends(catalog_db)):
 
 @router.get("/products/{product_id}/image")
 def product_image(product_id: str, db=Depends(catalog_db)):
+    return _product_image(product_id, db, display=True)
+
+
+@router.get("/products/{product_id}/reference-image")
+def product_reference_image(product_id: str, db=Depends(catalog_db)):
+    """Serve the exact bytes bound to the garment's inference quality review."""
+    return _product_image(product_id, db, display=False)
+
+
+def _product_image(product_id, db, *, display):
     row = db.products.find_one({"_id": product_id, **visible_query(db)})
     if not row:
         raise HTTPException(404, "Product is unavailable.")
-    path = image_path(row)
+    path = image_path(row, display=display)
+    if display and row.get("display_image") and hashlib.sha256(path.read_bytes()).hexdigest() != row["display_image"].get("sha256"):
+        raise HTTPException(404, "Display photograph changed after source review.")
     # Windows MIME registry may not know WebP; nosniff requires an explicit type.
     media_type = {".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}.get(path.suffix.lower())
     if not media_type:
@@ -422,6 +444,22 @@ def favorites(
     }
 
 
+class DisplayImage(BaseModel):
+    """A separately sourced photograph of the SAME garment, never conditioning."""
+
+    model_config = ConfigDict(extra="forbid")
+    filename: str = Field(min_length=1, max_length=200)
+    photoType: Literal["model", "flat-lay"]
+    source_url: HttpUrl
+    license: str = Field(min_length=5, max_length=500)
+    license_url: HttpUrl
+    attribution: str = Field(min_length=3, max_length=500)
+    attribution_url: HttpUrl | None = None
+    commercial_use: bool = False
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    identity_note: str = Field(min_length=20, max_length=1000)
+
+
 class ProductPublication(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{1,79}$")
@@ -431,11 +469,15 @@ class ProductPublication(BaseModel):
     audience: Literal["men", "women", "unisex"]
     filename: str = Field(min_length=1, max_length=200)
     photoType: Literal["model", "flat-lay"]
+    display_image: DisplayImage | None = None
     description: str = Field(min_length=3, max_length=1000)
     colors: list[str] = Field(min_length=1, max_length=20)
     sizes: list[str] = Field(default_factory=list, max_length=30)
     source_url: HttpUrl
     license: str = Field(min_length=5, max_length=500)
+    license_url: HttpUrl | None = None
+    attribution: str | None = Field(default=None, min_length=3, max_length=500)
+    attribution_url: HttpUrl | None = None
     commercial_use: bool = False
     active: bool = True
 
@@ -458,12 +500,21 @@ def publish_product(
     row = data.model_dump(mode="json", exclude={"id"})
     from backend.app.online_vton import normalized_image
 
-    path = image_path(row)
-    if path.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
-        raise HTTPException(422, "Catalog images must use JPEG, PNG or WebP filenames.")
-    if path.stat().st_size > settings.max_upload_mb * 1024 * 1024:
-        raise HTTPException(413, "Catalog image exceeds the upload limit.")
-    normalized_image(path.read_bytes())
+    # An omitted display field preserves an existing operator-curated image.
+    # Explicit null restores the reference photograph as the display image.
+    for field in ("display_image", "license_url", "attribution", "attribution_url"):
+        if field not in data.model_fields_set:
+            row.pop(field, None)
+    for display in (False, True) if data.display_image else (False,):
+        path = image_path(row, display=display)
+        if path.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+            raise HTTPException(422, "Catalog images must use JPEG, PNG or WebP filenames.")
+        if path.stat().st_size > settings.max_upload_mb * 1024 * 1024:
+            raise HTTPException(413, "Catalog image exceeds the upload limit.")
+        content = path.read_bytes()
+        normalized_image(content)
+        if display and hashlib.sha256(content).hexdigest() != data.display_image.sha256:
+            raise HTTPException(422, "Display photograph changed after source review.")
     row.update(
         category=category["model_category"], size_note="Consult the product's original size guide."
     )

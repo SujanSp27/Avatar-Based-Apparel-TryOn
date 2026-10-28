@@ -22,6 +22,16 @@ export type Product = Garment & {
   source_url: string;
   commercial_use: boolean;
   attribution?: string;
+  attribution_url?: string;
+  license_url?: string;
+  displayImage?: {
+    source_url: string;
+    license: string;
+    license_url: string;
+    attribution: string;
+    attribution_url?: string;
+    photoType: string;
+  } | null;
 };
 type Page = { items: Product[]; total: number; limit: number; offset: number };
 type Category = {
@@ -368,9 +378,44 @@ export default function CatalogPage() {
                 ? selected.sizes.join(", ")
                 : selected.size_note}
             </p>
-            <small>{selected.license}</small>
-            {selected.attribution && (
-              <small>Photography: {selected.attribution}</small>
+            <small>{selected.displayImage?.license ?? selected.license}</small>
+            {(selected.displayImage?.attribution ?? selected.attribution) && (
+              <small>
+                Photography:{" "}
+                {selected.displayImage?.attribution ?? selected.attribution}
+              </small>
+            )}
+            {(selected.displayImage
+              ? selected.displayImage.license_url
+              : selected.license_url) && (
+              <a
+                className="text-button"
+                href={
+                  selected.displayImage
+                    ? selected.displayImage.license_url
+                    : selected.license_url
+                }
+                target="_blank"
+                rel="noreferrer"
+              >
+                Photograph license
+              </a>
+            )}
+            {(selected.displayImage
+              ? selected.displayImage.attribution_url
+              : selected.attribution_url) && (
+              <a
+                className="text-button"
+                href={
+                  selected.displayImage
+                    ? selected.displayImage.attribution_url
+                    : selected.attribution_url
+                }
+                target="_blank"
+                rel="noreferrer"
+              >
+                Photographer / original seller
+              </a>
             )}
             {selected.qualityReview && (
               <p className="notice" role="status">
@@ -391,12 +436,34 @@ export default function CatalogPage() {
             )}
             <a
               className="text-button"
-              href={selected.source_url}
+              href={selected.displayImage?.source_url ?? selected.source_url}
               target="_blank"
               rel="noreferrer"
             >
               Image source and attribution ↗
             </a>
+            {selected.displayImage && selected.referenceImageUrl && (
+              <details>
+                <summary>View the garment reference used for try-on</summary>
+                <ProductImage
+                  className="product-detail-photo"
+                  src={selected.referenceImageUrl}
+                  alt={`${selected.name} — try-on reference`}
+                />
+                <small>
+                  {selected.license}
+                  {selected.attribution ? ` · ${selected.attribution}` : ""}
+                </small>
+                <a
+                  className="text-button"
+                  href={selected.source_url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Reference source and attribution
+                </a>
+              </details>
+            )}
             <div className="actions">
               <button
                 className="button"

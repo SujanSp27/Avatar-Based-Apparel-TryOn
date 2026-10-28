@@ -14,7 +14,17 @@ test("saved wardrobe trials render and download their real private outputs", asy
     process.env.VASTRAVIEW_LIVE !== "1",
     "Opt-in real private trial check",
   );
-  const session = path.resolve("../.runtime/wardrobe-evaluation-session.json");
+  const session = path.resolve(
+    "..",
+    process.env.WARDROBE_SESSION ?? ".runtime/wardrobe-evaluation-session.json",
+  );
+  const casesRoot = path.resolve(
+    "..",
+    process.env.WARDROBE_CASES ?? "experiments/wardrobe-neutral/cases",
+  );
+  const ids = (process.env.WARDROBE_IDS ?? "edit-a59f077d,edit-4245ab7f").split(
+    ",",
+  );
   await context.addCookies(JSON.parse(readFileSync(session, "utf8")).cookies);
   const errors: string[] = [];
   let submissions = 0;
@@ -23,10 +33,9 @@ test("saved wardrobe trials render and download their real private outputs", asy
     if (r.method() === "POST" && r.url().endsWith("/api/tryon")) submissions++;
   });
   try {
-    for (const id of ["edit-a59f077d", "edit-4245ab7f"]) {
-      const folder = path.resolve(
-        `../experiments/wardrobe-neutral/cases/${id}/studio`,
-      );
+    for (const id of ids) {
+      if (!/^[a-z0-9-]+$/.test(id)) throw new Error("Invalid garment ID");
+      const folder = path.resolve(casesRoot, id, "studio");
       const trial = JSON.parse(
         readFileSync(path.join(folder, "trial.json"), "utf8"),
       );
@@ -57,11 +66,9 @@ test("saved wardrobe trials render and download their real private outputs", asy
         .click();
       await viewer.getByRole("button", { name: "Inspect details" }).click();
       await expect(
-        page
-          .getByRole("dialog")
-          .getByRole("img", {
-            name: "Actual garment reference used for this result",
-          }),
+        page.getByRole("dialog").getByRole("img", {
+          name: "Actual garment reference used for this result",
+        }),
       ).toHaveAttribute("src", saved.result.garmentUrl);
       await page.keyboard.press("Escape");
       const downloadEvent = page.waitForEvent("download");
