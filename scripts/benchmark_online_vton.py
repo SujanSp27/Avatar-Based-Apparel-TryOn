@@ -12,6 +12,7 @@ from backend.app.config import settings
 from backend.app.online_vton import OnlineTryOn
 from ml.errors import PipelineError
 from ml.vton.categories import MODEL_CATEGORIES
+from scripts.worker_audits import retrieve_http
 
 
 def main():
@@ -43,12 +44,17 @@ def main():
             report["failureDiagnostics"] = json.loads(failure_path.read_text())
     report["endToEndSeconds"] = round(time.perf_counter() - start, 3)
     report["targetSeconds"] = args.target_seconds
-    report["timingTargetMet"] = report["status"] == "generated" and report["endToEndSeconds"] <= args.target_seconds
+    report["timingTargetMet"] = report["status"] == "generated" and report["endToEndSeconds"] < args.target_seconds
     report["inputs"] = {"personSha256": hashlib.sha256(args.person.read_bytes()).hexdigest(),
                         "garmentSha256": hashlib.sha256(args.garment.read_bytes()).hexdigest(),
                         "category": args.category, "photoType": args.photo_type, "steps": args.steps,
                         "inputEncoding": args.input_encoding}
     (args.output / "benchmark.json").write_text(json.dumps(report, indent=2))
+    if report["status"] == "generated":
+        # Persist the result and its measured duration before retrieving audits.
+        # A missing audit is not a generation failure or a reason to repeat it.
+        report["auditRetrieval"] = retrieve_http(args.output, report, settings.online_connection_path)
+        (args.output / "benchmark.json").write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
     if report["status"] != "generated":
         raise SystemExit(1)

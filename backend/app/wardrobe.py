@@ -1,6 +1,6 @@
 """Evidence-backed wardrobe publication, independent of broad model categories.
 
-Publication is staged until twenty individually reviewed garments pass. Source
+Publication contains at most twenty individually reviewed garments. Source
 records and assets are never deleted. Changed images/metadata invalidate approval.
 """
 import hashlib
@@ -23,7 +23,8 @@ def _read_policy(path: str, stamp: int):
     entries = policy.get("garments", [])
     if (policy.get("version") != 1 or not isinstance(policy.get("enforced"), bool)
             or not isinstance(entries, list) or len({r["id"] for r in entries}) != len(entries)
-            or (policy["enforced"] and len(entries) != 20)):
+            or len(entries) > 20
+            or (policy["enforced"] and len(entries) < 20 and policy.get("status") != "quality_shortfall")):
         raise ValueError("Invalid wardrobe publication")
     for row in entries:
         if (row.get("status") != "approved" or row.get("category") not in MODEL_CATEGORIES
@@ -31,7 +32,7 @@ def _read_policy(path: str, stamp: int):
                 or not re.fullmatch(r"[a-f0-9]{64}", row.get("imageSha256", ""))
                 or not isinstance(row.get("testedPeople"), list)
                 or len(set(row["testedPeople"])) < 2
-                or not isinstance(row.get("maximumSeconds"), (float, int))
+                or type(row.get("maximumSeconds")) not in (float, int)
                 or not math.isfinite(row["maximumSeconds"]) or not 0 < row["maximumSeconds"] < 30):
             raise ValueError("Incomplete garment approval")
     return policy

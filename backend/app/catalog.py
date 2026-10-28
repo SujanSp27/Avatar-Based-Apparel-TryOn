@@ -326,12 +326,18 @@ def product_image(product_id: str, db=Depends(catalog_db)):
     media_type = {".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}.get(path.suffix.lower())
     if not media_type:
         raise HTTPException(404, "Unsupported catalog image.")
-    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "public, max-age=3600"})
+    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 @router.get("/categories")
 def categories(db=Depends(catalog_db)):
-    return [{"id": r.pop("_id"), **r} for r in db.categories.find().sort("name", 1)]
+    counts = {r["_id"]: r["count"] for r in db.products.aggregate([
+        {"$match": visible_query(db)}, {"$group": {"_id": "$subcategory", "count": {"$sum": 1}}},
+    ])}
+    return [{"id": r["_id"], **{k: v for k, v in r.items() if k != "_id"},
+             "product_count": counts.get(r["_id"], 0)}
+            for r in db.categories.find().sort("name", 1)
+            if not policy()["enforced"] or counts.get(r["_id"], 0)]
 
 
 @router.get("/brands")
@@ -361,9 +367,10 @@ def facets(db=Depends(catalog_db)):
 
 
 @router.get("/catalog/quality")
-def wardrobe_quality():
+def wardrobe_quality(db=Depends(catalog_db)):
     data = policy()
-    return {"enforced": data["enforced"], "approvedCount": len(data["garments"]), "targetCount": 20,
+    current = sum(approval(row)["status"] == "approved" for row in db.products.find(visible_query(db)))
+    return {"enforced": data["enforced"], "approvedCount": current, "targetCount": 20,
             "status": data.get("status", "unavailable"), "message": data.get("error", data.get("note"))}
 
 

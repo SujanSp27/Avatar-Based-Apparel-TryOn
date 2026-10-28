@@ -20,7 +20,8 @@ def collect(folder: Path, variant: str):
         review = json.loads(review_path.read_text()) if review_path.exists() else {}
         output = path.with_name("after.png")
         current_output = (output.is_file() and digest(output.read_bytes()) == trial.get("outputSha256"))
-        current_review = (current_output and review.get("outputSha256") == trial.get("outputSha256")
+        current_review = (trial["status"] == "generated" and current_output
+                          and review.get("outputSha256") == trial.get("outputSha256")
                           and review.get("fullResolutionInspected") is True
                           and review.get("decision") in {"visual_pass", "failed"}
                           and all(review.get(key) for key in ("reviewer", "reviewedAt", "notes")))
@@ -47,9 +48,15 @@ def collect(folder: Path, variant: str):
 
 
 def write_report(baseline: Path, experiment: Path, destination: Path, additional=()):
-    cases = collect(baseline, "catalog_original") + collect(experiment, "background_only_experiment")
-    for folder in additional:
-        cases.extend(collect(folder, folder.name))
+    cases = []
+    seen = set()
+    sources = [(baseline, "catalog_original"), (experiment, "background_only_experiment")]
+    sources.extend((folder, folder.name) for folder in additional)
+    for folder, variant in sources:
+        resolved = folder.resolve()
+        if resolved not in seen:
+            cases.extend(collect(resolved, variant))
+            seen.add(resolved)
     rows = {row["id"]: row for row in catalog_rows()}
     generated = [case for case in cases if case["status"] == "generated"]
     durations = [case["seconds"] for case in generated if type(case["seconds"]) in (float, int)

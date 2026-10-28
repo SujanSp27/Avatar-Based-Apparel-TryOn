@@ -15,6 +15,16 @@ GARMENTS = [
 ]
 
 
+def visible_legacy(row):
+    # The old route must not republish references excluded by wardrobe review.
+    from backend.app.wardrobe import approval, policy
+    if settings.environment == "production":
+        return False
+    return (ROOT / "data/raw" / row[4]).is_file() and (
+        not policy()["enforced"] or approval({"_id": row[0], "category": row[2],
+            "photoType": row[3], "filename": row[4]})["status"] == "approved")
+
+
 @router.get("")
 def list_garments():
     if settings.environment == "production":
@@ -23,7 +33,7 @@ def list_garments():
         {"id": key, "name": name, "category": category, "photoType": photo_type,
          "imageUrl": f"/api/garments/{key}/image", "description": description}
         for key, name, category, photo_type, filename, description in GARMENTS
-        if (ROOT / "data/raw" / filename).is_file()
+        if visible_legacy((key, name, category, photo_type, filename, description))
     ]}
 
 
@@ -32,6 +42,6 @@ def garment_image(garment_id: str):
     if settings.environment == "production":
         raise HTTPException(404, "Research garment references are not published in production.")
     row = next((item for item in GARMENTS if item[0] == garment_id), None)
-    if row is None or not (ROOT / "data/raw" / row[4]).is_file():
+    if row is None or not visible_legacy(row):
         raise HTTPException(404, "This garment is not available. Upload a garment photo instead.")
-    return FileResponse(ROOT / "data/raw" / row[4])
+    return FileResponse(ROOT / "data/raw" / row[4], headers={"Cache-Control": "no-cache, must-revalidate"})

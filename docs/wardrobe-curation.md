@@ -1,4 +1,4 @@
-# Wardrobe curation — 27 October 2026
+# Wardrobe curation — 28 October 2026
 
 This is an ongoing evaluation, not a claim that twenty garments are approved.
 No product records, source assets, favorites, personal photos or results are deleted.
@@ -7,7 +7,7 @@ No product records, source assets, favorites, personal photos or results are del
 
 1. Audit the 57 locally available catalog references, actual decoder, source bytes,
    categories, pinned worker and private API. Preserve a baseline and source sheets.
-2. Test 28 individually selected candidates against a fixed studio photograph and
+2. Test 38 individually selected candidates against a fixed studio photograph and
    the upstream mirror example, keeping seed, precision and model settings fixed.
 3. Review actual inputs, parser masks, conditioning tensors, raw and composite outputs.
    Retest changes in separate directories. Do not replace evidence from a failed run.
@@ -46,20 +46,44 @@ experiment on the black polo still retains hanger-like stripes at the neckline
 and changes the jeans: rejected. Neither experiment is a blanket preprocessing
 change or an approval of every background mask.
 
-The complete first-person baseline now covers all 28 candidates: 27 generated
-images and one connection failure before a remote event was acknowledged.
-Fifteen controlled background-only trials produced additional images, including
-two second-person tests. All 42 generated images were inspected at full resolution.
-Two single studio cases look plausible (green polo and teal shirt), but both fail
-on the mirror person with sleeve/shoulder artifacts and altered hems. Therefore
+The current ledger covers **63 trials across 38 garments**: 38 original-reference
+cases, 24 background-only cases and one separately retained transport retry.
+There are **60 generated images, all inspected at full resolution**, and three
+failed requests. Three studio cases look plausible (green polo, teal shirt and
+burgundy sweater), but all three fail on the mirror person with sleeve/wrist,
+shoulder or hem artifacts. The teal studio case also exceeds the timing limit.
+Therefore
 **zero garments currently pass the complete two-person approval contract**.
 
-Measured end-to-end times span **26.426–36.560 seconds**; 18 of the 42 generated
+Measured end-to-end times span **26.422–36.560 seconds**; 33 of the 60 generated
 cases were strictly below 30 seconds. Faster generation is not a quality pass.
 Shorts/skirt trials can retain jeans or invent split garments even after the
 reference background is removed. Fine prints, lettering, cuffs and buttons are
 often lost. These are observed model/reference limitations, not reasons to lower
 the acceptance threshold or label every supported category reliable.
+
+The latest reserve tests make the input-background limitation particularly clear:
+an orange checked shirt initially becomes a small shirt photograph printed on a
+different top. Its reviewed background-only variant restores checked fabric but
+still introduces an inner layer and broken cuffs. An ivory tie-neck blouse loses
+the tie and neckline construction; printed leggings become plain black trousers
+even with a neutral background. The grey crop-top parser reaches the source image
+border, so that background transformation was rejected before inference.
+
+Saved raw/composite comparisons also isolate boundary errors. Removing the
+shoulder-projection step in an **offline diagnostic only** removes some pointed
+sweater artifacts but exposes old arm fragments; that change was not promoted.
+No model setting, production preservation mask or source garment shape was changed
+to hide these failures. A separate 20-step diagnostic request failed at transport
+before returning an event. After recovery verified a new idle T4, a separately
+saved 20-step run completed in **55.846 seconds** (1.940 preprocessing, 46.693 GPU
+generation, 1.938 postprocessing/saving). It improves the right sleeve but retains
+a left upper-arm edge artifact and changes the round neckline into a V-neck.
+It is rejected. Decoded input hashes, seed, guidance and model profile match the
+28.634-second ten-step baseline; the runtime changed, so this is not a controlled
+warm-cache latency benchmark. All 15 audit files were recovered, tensor/mask
+checks pass, and parsed protected pixels remain identical. These diagnostic runs
+are separate from the 63 standard trial counts. The app still uses ten steps.
 
 ## Acceptance contract
 
@@ -97,8 +121,9 @@ From the repository root, using the existing private Colab worker:
 .venv/Scripts/python.exe -m scripts.evaluate_wardrobe create-session
 .venv/Scripts/python.exe -m scripts.evaluate_wardrobe run --candidates data/catalog/wardrobe-candidates-v1.json
 .venv/Scripts/python.exe -m scripts.retrieve_wardrobe_audits
+.venv/Scripts/python.exe -m scripts.retrieve_wardrobe_audits --transport http
 .venv/Scripts/python.exe -m scripts.curate_wardrobe report
-.venv/Scripts/python.exe -m scripts.report_wardrobe_trials
+.venv/Scripts/python.exe -m scripts.report_wardrobe_trials --additional experiments/wardrobe-neutral-retry
 .venv/Scripts/python.exe -m scripts.curate_wardrobe publish
 ```
 
@@ -113,6 +138,15 @@ worker remains usable; pending calls must be recovered, not replayed blindly.
 Artifact retrieval now journals pending cell replies per trial, resumes those
 same reads, validates returned filenames/base64 and reports actual recovered and
 missing file counts. `--ids` and `--people` restrict retrieval to saved cases.
+The updated private worker also exports saved audit files over its authenticated
+HTTP endpoint. Each read requires the worker token, exact run ID and both decoded
+input hashes. Only a fixed, size-bounded file list from a completed run can be
+retrieved; the client verifies names, sizes and SHA-256 hashes before writing.
+No inference is triggered by a read. Eight real cases have all 15 available audit
+files recovered this way, without waiting for a notebook-browser connection.
+The evaluator records generation timing **before** artifact transfer, downloads
+audits immediately, and can resume a matching partial file without overwriting
+conflicting evidence. The recovery source archive includes the audit module.
 The bridge saves a completed reply before refreshing tool discovery, and allows
 240 seconds for a recovery cell that supervises setup for up to 180 seconds.
 Discovery and browser-connection calls retain short bounded timeouts.
@@ -120,7 +154,7 @@ Discovery timeout no longer terminates a live helper and rotates its socket toke
 it keeps the existing browser connection and retries discovery with backoff.
 
 Experiment inputs/results stay in ignored `experiments/wardrobe-curation/` and
-`experiments/wardrobe-neutral/`. Original catalog metadata remains in
+`experiments/wardrobe-neutral/` and `experiments/wardrobe-neutral-retry/`. Original catalog metadata remains in
 `data/catalog/garments-v2.json`; reviewed candidates and publication policy have
 separate versioned manifests. `publish` refuses a shortfall and writes an archival
 snapshot before selecting the twenty passing items. Source or metadata changes
@@ -130,12 +164,15 @@ Private review outputs:
 
 - `experiments/wardrobe-curation/report.md`: all 57 catalog records, individual
   baseline status, failure reasons and remaining acceptance gates.
-- `experiments/wardrobe-review/summary.json`: all 43 trials, input/output hashes,
+- `experiments/wardrobe-review/summary.json`: all 63 trials, input/output hashes,
   source/model versions, stage timings and current visual decisions.
 - `experiments/wardrobe-review/comparisons.html`: local original/reference/output
   triptychs and concrete review notes, without external scripts or image hosting.
 - `experiments/wardrobe-neutral/inputs/*-review.json`: explicit background-mask
   review. Hanger/tag-contaminated and clipped masks are rejected before retesting.
+- `experiments/wardrobe-step-diagnostic/white-tee-20-recovered/comparison.html`:
+  actual original/reference/10-step/20-step comparison, review, input-hash checks
+  and measured stage timings. No quality approval or speed claim is inferred.
 
 ## Result UI and security
 
@@ -165,19 +202,29 @@ submitting duplicate inference. An additional final regression run includes the
 artifact-resume, failed-job-report and stale-review checks; its result is recorded
 in the implementation status once it completes.
 
-Final local verification on 27 October: **701 Python tests passed**, followed by
-**25 focused tests passed** after the final helper changes. Ruff, Prettier and the
-183-module production frontend build passed. A combined browser run exposed two
-test-session races; after waiting for real refresh rotation and second-tab
-bootstrap, all **11 comparison tests passed**. Catalog/private-result checks also
-passed (including the opt-in live saved-output browser check). No session security
-or inference quality threshold was weakened to obtain these results.
+Latest recorded verification: **722 Python tests passed**, then **63 focused
+tests passed** after final audit/recovery guards, and **90 focused tests passed**
+after adding review-ledger regressions. Ruff and the 183-module production
+frontend build passed. The combined comparison, fashion catalog, wardrobe quality
+and saved-real-output browser run passed **17/17** checks. This includes actual
+private image downloads and layout interactions; it does not certify garment fit.
+The ledger tests reject incomplete/stale reviews, retain failed attempts alongside
+retries and prevent repeated directory arguments from counting a trial twice.
+Four additional benchmark tests verify that audit downloads do not inflate
+generation timing, exactly 30 seconds fails the strict target, saved runs cannot
+be overwritten, and failed requests never trigger duplicate inference. A further
+live browser test passed after restarting the local app, reading the existing
+private results and checking exact downloads without submitting new inference.
 
-The current Colab tab was reattached through the updated helper. It reports a new
-T4 runtime with no previous project directory; safe automatic restoration is in
-progress. All 42 completed images remain local. The last two mirror-case parser
-audits were not retrieved before the old runtime disappeared and cannot be claimed
-as verified. Another inference is not a substitute for those missing old artifacts.
+All 60 completed outputs remain local. Six older generated cases have missing
+parser/conditioning audits after their Colab runtimes expired; those checks remain
+unverified. Another inference cannot replace those missing historical artifacts.
+On 28 October the local app and databases were restarted after an interruption.
+The notebook helper reconnected to the existing notebook, but the previous T4 and
+worker URL had expired. Automatic recovery independently verified the replacement
+T4, restored the worker, reached real model readiness and completed the new
+20-step diagnostic. No user prompt, runtime reset or local GPU was needed in
+this recovery. A healthy local app alone is not evidence of available GPU inference.
 
 Suggested commit once verification is complete:
 `Add evidence-gated wardrobe curation and private garment comparison details`
