@@ -342,28 +342,49 @@ function ComparisonImages({
             </div>
           ) : (
             <div className="comparison-empty">
-              {original && (
-                <img src={original} alt="Your selected person photo" />
+              {original ? (
+                <div className="empty-with-photo">
+                  <div className="empty-photo-preview">
+                    <img src={original} alt="Your selected person photo" />
+                    <span className="empty-photo-badge">Selected Photo</span>
+                  </div>
+                  <div className="empty-prompt-side">
+                    <div className="empty-icon-wrap">
+                      {busy ? (
+                        <LoaderCircle size={32} className="spin" />
+                      ) : (
+                        <Shirt size={36} strokeWidth={1.4} />
+                      )}
+                    </div>
+                    <h3>
+                      {busy ? "Creating your next look" : "Your new look awaits"}
+                    </h3>
+                    <p>
+                      {busy
+                        ? message
+                        : "Upload your photo and choose a garment to preview your outfit."}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty-placeholder-centered">
+                  <div className="empty-icon-wrap">
+                    {busy ? (
+                      <LoaderCircle size={36} className="spin" />
+                    ) : (
+                      <Shirt size={40} strokeWidth={1.3} />
+                    )}
+                  </div>
+                  <h3>
+                    {busy ? "Creating your next look" : "Your new look awaits"}
+                  </h3>
+                  <p>
+                    {busy
+                      ? message
+                      : "Upload your photo and choose a garment to preview your outfit."}
+                  </p>
+                </div>
               )}
-              <div>
-                {busy ? (
-                  <LoaderCircle size={30} className="spin" />
-                ) : (
-                  <Shirt size={34} strokeWidth={1.3} />
-                )}
-                <h3>
-                  {busy
-                    ? "Creating your next look"
-                    : original
-                      ? "Ready for a new look"
-                      : "Your fitting room awaits"}
-                </h3>
-                <p>
-                  {busy
-                    ? message
-                    : "Choose a garment and generate your try-on. Your new outfit will appear here."}
-                </p>
-              </div>
             </div>
           )}
         </div>
