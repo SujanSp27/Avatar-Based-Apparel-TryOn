@@ -142,6 +142,9 @@
   padding: 24px;
   color: var(--muted);
 }
+.catalog-quality-notice p {
+  color: inherit;
+}
 .catalog-summary {
   display: flex;
   flex-wrap: wrap;
@@ -215,6 +218,14 @@
   }
 }
 @media (max-width: 700px) {
+  .catalog-quality-notice {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .catalog-quality-notice p {
+    margin: 0;
+  }
   .editorial-hero {
     grid-template-columns: 1fr;
   }

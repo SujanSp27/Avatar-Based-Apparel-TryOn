@@ -35,16 +35,20 @@ export default function GarmentPicker({
     let active = true;
     setLoading(true);
     setError(false);
-    fetch(
-      `/api/v1/products?limit=12&sort=newest&tryon_supported=true${filter === "all" ? "" : `&category=${encodeURIComponent(filter)}`}`,
-      {
-        signal: controller.signal,
-      },
-    )
+    fetch("/api/v1/products?limit=48&sort=newest&tryon_supported=true", {
+      signal: controller.signal,
+    })
       .then(async (r) => {
         if (!r.ok) throw new Error();
         const data = await r.json();
-        if (active) setItems(data.items);
+        if (active) {
+          setItems(data.items);
+          setFilter((current) =>
+            data.items.some((item: Garment) => item.category === current)
+              ? current
+              : "all",
+          );
+        }
       })
       .catch(() => {
         if (active) setError(true);
@@ -58,7 +62,20 @@ export default function GarmentPicker({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [retry, filter]);
+  }, [retry]);
+  const labels: Record<string, string> = {
+    "t-shirt": "Tops & polos",
+    blouse: "Blouses",
+    dress: "Dresses",
+    skirt: "Skirts",
+    shirt: "Shirts",
+    jeans: "Jeans",
+    trouser: "Trousers",
+    shorts: "Shorts",
+    sweater: "Sweaters & hoodies",
+    jacket: "Jackets",
+    jumpsuit: "Jumpsuits",
+  };
   return (
     <section className="card garment-catalog">
       <div className="section-heading">
@@ -75,16 +92,13 @@ export default function GarmentPicker({
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="all">All garments</option>
-          <option value="t-shirt">Tops & polos</option>
-          <option value="blouse">Blouses</option>
-          <option value="dress">Dresses</option>
-          <option value="skirt">Skirts</option>
-          <option value="shirt">Shirts</option>
-          <option value="jeans">Jeans</option>
-          <option value="trouser">Trousers</option>
-          <option value="shorts">Shorts</option>
-          <option value="sweater">Sweaters & hoodies</option>
-          <option value="jacket">Jackets</option>
+          {[...new Set(items.map((item) => item.category))]
+            .sort()
+            .map((category) => (
+              <option key={category} value={category}>
+                {labels[category] || category}
+              </option>
+            ))}
         </select>
       </div>
       {loading && <p role="status">Loading the collection…</p>}
@@ -101,12 +115,6 @@ export default function GarmentPicker({
       )}
       {!loading && !error && (
         <div className="garment-grid">
-          {!items.length && (
-            <p>
-              No published garments yet. Upload a supported garment photo to
-              continue.
-            </p>
-          )}
           {items
             .filter((item) => filter === "all" || item.category === filter)
             .map((item) => (
@@ -144,8 +152,8 @@ export default function GarmentPicker({
         !error &&
         !items.some((item) => filter === "all" || item.category === filter) && (
           <p>
-            No garments in this collection yet. Upload your own to try this
-            category.
+            No approved garments in this collection yet. You can upload your own
+            supported garment; generated results still require review.
           </p>
         )}
     </section>

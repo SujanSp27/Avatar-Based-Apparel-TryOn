@@ -1,3 +1,4 @@
+import { uploadTestPhotos } from "./upload-fixture";
 import { authenticatedSuite } from "./session-fixture";
 import { test, expect } from "@playwright/test";
 
@@ -57,7 +58,7 @@ test("refresh resumes the same job and reports its actual failure without anothe
     });
   });
   await page.goto("/tryon");
-  await page.getByRole("button", { name: "Try sample photos" }).click();
+  await uploadTestPhotos(page);
   await page
     .getByRole("button", { name: "Generate try-on", exact: true })
     .click();

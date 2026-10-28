@@ -1,6 +1,7 @@
 """Security and catalog integration tests; no external GPU or email deliveries."""
 
 import io
+import json
 from datetime import timedelta
 from threading import BoundedSemaphore
 from uuid import uuid4
@@ -14,7 +15,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from backend.app import main, private_data
+from backend.app import main, private_data, wardrobe
 from backend.app.accounts import lifecycle
 from backend.app.accounts.security import ACCESS_COOKIE, digest, now, signing_key
 from backend.app.anthropometry.repository import MeasurementRepository, get_repository
@@ -29,6 +30,11 @@ PASSWORD = "Vastra!Secure2026"
 
 @pytest.fixture
 def studio(tmp_path, monkeypatch):
+    # Catalog CRUD fixtures exercise the source inventory independently of the
+    # deployed curation manifest. Publication/exclusion tests install real policies.
+    test_policy = tmp_path / "wardrobe.json"
+    test_policy.write_text(json.dumps({"version": 1, "enforced": False, "garments": []}))
+    monkeypatch.setattr(wardrobe, "POLICY_PATH", test_policy)
     repo = MeasurementRepository(mongomock.MongoClient(tz_aware=True), "vastra_test")
     repo.db.command = lambda *a, **kw: {"ok": 1}
     repo.initialize()

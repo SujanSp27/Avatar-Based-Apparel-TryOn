@@ -36,7 +36,11 @@ test("editorial hero and catalog images load across desktop and mobile", async (
     await page.request.get("/api/v1/products?limit=48&offset=48")
   ).json();
   const products = [...catalog.items, ...rest.items];
-  expect(products).toHaveLength(57);
+  const quality = await (
+    await page.request.get("/api/v1/catalog/quality")
+  ).json();
+  expect(products).toHaveLength(quality.approvedCount);
+  expect(products.length).toBeLessThanOrEqual(20);
   for (const item of products) {
     const image = await page.request.get(item.imageUrl);
     expect(image.status()).toBe(200);
@@ -44,27 +48,37 @@ test("editorial hero and catalog images load across desktop and mobile", async (
     expect((await image.body()).length).toBeGreaterThan(1000);
   }
   await page.goto("/catalog");
-  await page.getByLabel("Garment type", { exact: true }).selectOption("saree");
-  await expect(page.locator(".product-card")).toHaveCount(1);
-  await page
-    .getByRole("button", { name: "View Charcoal patterned saree" })
-    .click();
-  await expect(
-    page.getByRole("button", { name: "Try this garment" }),
-  ).toBeDisabled();
-  await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "Clear filters" }).click();
-  await page.getByLabel("Color", { exact: true }).selectOption("blue");
-  await expect
-    .poll(() => page.locator(".product-card").count())
-    .toBeGreaterThan(1);
-  await page.route("**/api/v1/products/*/image", (route) =>
-    route.fulfill({ status: 404 }),
+  await expect(page.locator(".product-card")).toHaveCount(
+    Math.min(12, products.length),
   );
-  await page.getByLabel("Color", { exact: true }).selectOption("burgundy");
-  await expect(
-    page.getByText("Photograph temporarily unavailable").first(),
-  ).toBeVisible();
+  if (!products.length) {
+    await expect(
+      page.getByText(
+        "No garments have passed the complete quality review yet.",
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("Garment type", { exact: true }).locator("option"),
+    ).toHaveCount(1);
+  } else {
+    const color = products[0].colors[0];
+    const filtered = await (
+      await page.request.get(
+        `/api/v1/products?color=${encodeURIComponent(color)}`,
+      )
+    ).json();
+    await page.getByLabel("Color", { exact: true }).selectOption(color);
+    await expect(page.locator(".product-card")).toHaveCount(
+      Math.min(12, filtered.total),
+    );
+    await page.route("**/api/v1/products/*/image", (route) =>
+      route.fulfill({ status: 404 }),
+    );
+    await page.reload();
+    await expect(
+      page.getByText("Photograph temporarily unavailable").first(),
+    ).toBeVisible();
+  }
   expect(errors).toEqual([]);
 });
 
@@ -140,18 +154,18 @@ test("guest return URL survives sign-in and logout blocks new uploads", async ({
     .email;
   await page.request.post("/api/v1/auth/logout");
   try {
-    // Exercise the real login form and return URL, then download the selected garment.
+    // Exercise the real login form and retain the requested URL; archived products remain denied.
     await page.reload();
     await page.getByLabel("Email address", { exact: true }).fill(email);
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
     await expect(page).toHaveURL(/\/tryon\?product=sage-polo/);
     await expect(
-      page.getByAltText("Selected garment conditioning image"),
+      page.getByText("Product is unavailable.", { exact: false }),
     ).toBeVisible();
     await expect(
-      page.getByLabel("Garment category", { exact: true }),
-    ).toHaveValue("t-shirt");
+      page.getByAltText("Selected garment conditioning image"),
+    ).toHaveCount(0);
     await page.getByRole("button", { name: "Sign out", exact: true }).click();
     await page.goto("/tryon");
     await expect(page).toHaveURL(/\/login\?returnTo=/);

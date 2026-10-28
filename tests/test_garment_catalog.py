@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from backend.app import garments
+from backend.app import garments, wardrobe
 
 
 def test_catalog_exposes_only_available_allowlisted_inputs(tmp_path, monkeypatch):
     monkeypatch.setattr(garments, "ROOT", tmp_path)
+    monkeypatch.setattr(wardrobe, "policy", lambda: {"enforced": False, "garments": []})
     app = FastAPI()
     app.include_router(garments.router)
     client = TestClient(app)

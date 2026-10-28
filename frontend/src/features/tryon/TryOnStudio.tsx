@@ -137,19 +137,32 @@ export default function TryOnStudio() {
   }
   async function sample(withPerson = true) {
     setSamplesBusy(true);
+    setError("");
     reset();
     try {
-      const [personFile, garmentFile] = await Promise.all([
+      const [personFile, collection] = await Promise.all([
         withPerson
           ? downloadPhoto("/api/samples/person", "studio-person.jpg")
           : Promise.resolve(person),
-        downloadPhoto("/api/garments/navy-tee/image", "navy-tee.jpg"),
+        api<{ items: Garment[] }>(
+          "/api/v1/products?limit=1&tryon_supported=true",
+        ),
       ]);
       setPerson(personFile);
+      const item = collection.items[0];
+      if (!item) {
+        setGarment(undefined);
+        setSelectedGarment(undefined);
+        setError(
+          "The sample person is ready. No catalog garment has passed review yet; upload your own supported garment to continue.",
+        );
+        return;
+      }
+      const garmentFile = await downloadPhoto(item.imageUrl, item.id);
       setGarment(garmentFile);
-      setCategory("t-shirt");
-      setPhotoType("model");
-      setSelectedGarment("navy-tee");
+      setCategory(item.category);
+      setPhotoType(item.photoType);
+      setSelectedGarment(item.id);
     } catch (e) {
       setError((e as Error).message);
     } finally {

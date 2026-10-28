@@ -3,29 +3,31 @@
 ## Wardrobe curation and result verification
 
 This section supersedes earlier catalog-quality claims. Category support is not
-individual garment approval. See [wardrobe-curation.md](wardrobe-curation.md).
+individual garment approval. See [wardrobe-curation.md](wardrobe-curation.md) and the [per-garment publication report](wardrobe-publication-review.md).
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
 | Audit all source records, category mappings and image bytes | IMPLEMENTED | 57 decoded catalog images; source manifest, visual source sheets and pinned FASHN VTON 1.5 provenance |
-| Reproducible real inference and individual appearance review | PARTIALLY IMPLEMENTED | 63 trials across 38 garments: 60 generated images inspected, three failed requests; 24 background-only cases and one separate retry included |
+| Reproducible real inference and individual appearance review | PARTIALLY IMPLEMENTED | 71 trials across all 46 supported, commercially usable candidates: 68 generated images inspected, three failed requests; 24 background-only cases and one separate retry included |
 | Correct reference-background contamination | PARTIALLY IMPLEMENTED | Actual parser-mask experiments improve three studio cases, but all second-person checks fail; fine garment construction and boundary errors remain; default pipeline not replaced by unverified masks |
-| Exactly 20 approved garments and archive-backed publication | PARTIALLY IMPLEMENTED | Strict two-person, mask/provenance, visual and under-30-second gate implemented; zero complete approvals, so publication is refused and source records remain intact |
-| Honest timing and before/reference/after evidence | IMPLEMENTED | Private trial ledger and local HTML comparisons; 26.422–36.560 s observed end to end, 33 of 60 below 30 s; per-stage timings retained; failed attempts retained, duplicate paths counted once |
+| Exactly 20 approved garments and archive-backed publication | PARTIALLY IMPLEMENTED | Strict two-person, mask/provenance, visual and under-30-second gate implemented; zero complete approvals. Explicit shortfall publication excludes all 57 records from active routes; metadata/evidence/source assets archived and preserved |
+| Honest timing and before/reference/after evidence | IMPLEMENTED | Private trial ledger and local HTML comparisons; 26.422–37.649 s observed end to end, 33 of 68 below 30 s; per-stage timings retained; failed attempts retained, duplicate paths counted once |
 | Catalog integrity and favorites after publication | IMPLEMENTED | Source-hash invalidation, actual submission-byte/category checks, filtering and favorites regression tests; archived references retained |
 | Compact comparison and private reference inspection | IMPLEMENTED | 1100 px / 540 px limits retained; aligned actual images, slider, private garment reference, share and byte-identical saved-result downloads |
 | Resume artifact reads without duplicate inference | IMPLEMENTED | Authenticated, input-hash-bound HTTP export and immediate retrieval verified for eight real runs (15 files each); bounded files, checksums, conflict/partial-write tests; legacy notebook journals retained |
 | Helper recovery without unnecessary runtime reset | PARTIALLY IMPLEMENTED | Existing notebook automatically reconnected, replacement T4 verified and worker restored; fresh 20-step diagnostic completed. Six historical cases still lack some old-runtime audits |
 | Step-count quality diagnostic | IMPLEMENTED | Same decoded inputs/seed/guidance: 20-step white T-shirt takes 55.846 s and retains neckline/edge defects. All 15 audits retrieved, protected pixels unchanged; rejected, default remains ten steps |
-| Local regression verification | IMPLEMENTED | 722-test full Python suite passed, then 63 focused checks after audit guards, 90 after ledger regressions and four benchmark checks; Ruff and TypeScript/Vite build passed; 17 combined browser checks plus one post-restart live saved-result check passed |
+| Local regression verification | IMPLEMENTED | 743-test full Python suite, Ruff and TypeScript/Vite build passed; 34 browser regressions passed. Separate latest saved-result browser check failed at expired evaluation session; 68 local output hashes verified, no authorization bypass |
 | Stable deployment and universal garment fidelity | BLOCKED | Free Colab sessions expire; clothing construction/occlusion failures remain. No claim of twenty approved products or production-ready image quality |
 
-The combined browser run initially had two sign-in failures caused by the test
+An earlier combined browser run had two sign-in failures caused by the test
 fixture capturing a rotating refresh cookie too early. The fixture now awaits the
 real session lock, and the second-tab test waits for bootstrap before closing.
-Server refresh-token reuse rejection remains intact. The saved-real-result browser
-check passed independently, including anonymous image denial and exact download
-hashes; it does not certify garment appearance.
+Server refresh-token reuse rejection remains intact. Earlier saved-real-result
+checks passed anonymous denial and exact download hashes; the latest separate
+check encountered an expired evaluation session and redirected to sign-in. These
+transport checks do not certify garment appearance. All 68 local outputs still
+match their recorded hashes; the final local/Colab health check reports Ready.
 
 ## Torso validation and measurement uncertainty
 

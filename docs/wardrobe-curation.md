@@ -1,17 +1,18 @@
 # Wardrobe curation — 28 October 2026
 
-This is an ongoing evaluation, not a claim that twenty garments are approved.
+The current publication has **zero approved garments**; all 57 source references are excluded from the active wardrobe. See [the final publication review](wardrobe-publication-review.md) for each ID and exclusion reason. This is not a claim that twenty garments are approved.
 No product records, source assets, favorites, personal photos or results are deleted.
 
 ## Audit and stages
 
 1. Audit the 57 locally available catalog references, actual decoder, source bytes,
    categories, pinned worker and private API. Preserve a baseline and source sheets.
-2. Test 38 individually selected candidates against a fixed studio photograph and
-   the upstream mirror example, keeping seed, precision and model settings fixed.
+2. Submit all 46 supported, commercially usable candidates against a fixed studio
+   photograph; use the upstream mirror example for repeatability checks. Keep
+   seed, precision and model settings fixed. Stop repeating critically failed references.
 3. Review actual inputs, parser masks, conditioning tensors, raw and composite outputs.
    Retest changes in separate directories. Do not replace evidence from a failed run.
-4. Publish exactly twenty only if every selected item passes both person cases,
+4. Publish up to twenty only if every selected item passes both person cases,
    objective checks, explicit visual review and measured under-30-second latency.
    Archive complete metadata and exclusion reasons before atomically publishing.
 5. Check catalog/security/browser regressions and the existing compact result UI.
@@ -46,16 +47,16 @@ experiment on the black polo still retains hanger-like stripes at the neckline
 and changes the jeans: rejected. Neither experiment is a blanket preprocessing
 change or an approval of every background mask.
 
-The current ledger covers **63 trials across 38 garments**: 38 original-reference
+The current ledger covers **71 trials across 46 garments**: 46 original-reference
 cases, 24 background-only cases and one separately retained transport retry.
-There are **60 generated images, all inspected at full resolution**, and three
+There are **68 generated images, all inspected at full resolution**, and three
 failed requests. Three studio cases look plausible (green polo, teal shirt and
 burgundy sweater), but all three fail on the mirror person with sleeve/wrist,
 shoulder or hem artifacts. The teal studio case also exceeds the timing limit.
 Therefore
 **zero garments currently pass the complete two-person approval contract**.
 
-Measured end-to-end times span **26.422–36.560 seconds**; 33 of the 60 generated
+Measured end-to-end times span **26.422–37.649 seconds**; 33 of the 68 generated
 cases were strictly below 30 seconds. Faster generation is not a quality pass.
 Shorts/skirt trials can retain jeans or invent split garments even after the
 reference background is removed. Fine prints, lettering, cuffs and buttons are
@@ -83,7 +84,7 @@ It is rejected. Decoded input hashes, seed, guidance and model profile match the
 28.634-second ten-step baseline; the runtime changed, so this is not a controlled
 warm-cache latency benchmark. All 15 audit files were recovered, tensor/mask
 checks pass, and parsed protected pixels remain identical. These diagnostic runs
-are separate from the 63 standard trial counts. The app still uses ten steps.
+are separate from the 71 standard trial counts. The app still uses ten steps.
 
 ## Acceptance contract
 
@@ -156,15 +157,17 @@ it keeps the existing browser connection and retries discovery with backoff.
 Experiment inputs/results stay in ignored `experiments/wardrobe-curation/` and
 `experiments/wardrobe-neutral/` and `experiments/wardrobe-neutral-retry/`. Original catalog metadata remains in
 `data/catalog/garments-v2.json`; reviewed candidates and publication policy have
-separate versioned manifests. `publish` refuses a shortfall and writes an archival
-snapshot before selecting the twenty passing items. Source or metadata changes
+separate versioned manifests. `publish` requires twenty by default. Explicit
+`publish --allow-shortfall` archives all source metadata, evaluations and the old
+publication before publishing only real approvals. This option was used with zero
+approvals, as requested: do not retain failed garments merely to fill twenty slots. Source or metadata changes
 invalidate approval; there is no manual "approve HTTP 200" switch.
 
 Private review outputs:
 
 - `experiments/wardrobe-curation/report.md`: all 57 catalog records, individual
   baseline status, failure reasons and remaining acceptance gates.
-- `experiments/wardrobe-review/summary.json`: all 63 trials, input/output hashes,
+- `experiments/wardrobe-review/summary.json`: all 71 trials, input/output hashes,
   source/model versions, stage timings and current visual decisions.
 - `experiments/wardrobe-review/comparisons.html`: local original/reference/output
   triptychs and concrete review notes, without external scripts or image hosting.
@@ -189,10 +192,12 @@ the actual uploaded bytes, category and photo type against that record.
 
 Reports, images, ratings and exact current counts are in the generated evaluation
 report, not inferred from this document. Twenty approvals have **not** been reached.
-The publication manifest stays staged and existing discovery records remain visible
-with accurate unreviewed status until the acceptance gate is met. No garment source
-or user data was deleted. Publishing refuses the shortfall. Existing favorites and
-source records remain intact; approved-image hashes are rechecked before use.
+The publication manifest is enforced with `status: quality_shortfall` and no
+approved IDs. All 57 source records and files remain intact but are excluded from
+public listings, search, categories, favorites, details/images and product-bound
+try-on requests. The legacy garment API and sample button also respect publication.
+User uploads and private saved results remain separate. Approved-image hashes are
+rechecked before use; stale source bytes cannot silently retain approval.
 
 Frontend production build passed. The earlier verification passed 691 Python tests,
 18 browser regressions and a separate live browser test of two saved real results.
@@ -202,21 +207,20 @@ submitting duplicate inference. An additional final regression run includes the
 artifact-resume, failed-job-report and stale-review checks; its result is recorded
 in the implementation status once it completes.
 
-Latest recorded verification: **722 Python tests passed**, then **63 focused
-tests passed** after final audit/recovery guards, and **90 focused tests passed**
-after adding review-ledger regressions. Ruff and the 183-module production
-frontend build passed. The combined comparison, fashion catalog, wardrobe quality
-and saved-real-output browser run passed **17/17** checks. This includes actual
-private image downloads and layout interactions; it does not certify garment fit.
-The ledger tests reject incomplete/stale reviews, retain failed attempts alongside
-retries and prevent repeated directory arguments from counting a trial twice.
-Four additional benchmark tests verify that audit downloads do not inflate
-generation timing, exactly 30 seconds fails the strict target, saved runs cannot
-be overwritten, and failed requests never trigger duplicate inference. A further
-live browser test passed after restarting the local app, reading the existing
-private results and checking exact downloads without submitting new inference.
+Latest recorded verification: **743 Python tests passed** in the full suite,
+Ruff passed, and the 183-module TypeScript/Vite production build passed.
+**34 browser regressions passed** against the running app. They cover the actual
+shortfall, rejected product routes, favorites, uploads, auth/units/sizing, actual
+CPU extraction, uncertainty, simulated unavailable/timeout recovery, and the compact
+comparison's alignment, slider, inspection, share and downloads. Synthetic catalog
+fixtures in layout tests do not become production approvals.
 
-All 60 completed outputs remain local. Six older generated cases have missing
+An additional opt-in saved-real-result browser check failed: the old evaluation
+account's session was no longer accepted, so it redirected to sign-in. This is not
+reported as a pass; ownership protection was not bypassed and no inference was
+submitted. All 68 retained local output hashes were checked successfully.
+
+All 68 completed outputs remain local. Six older generated cases have missing
 parser/conditioning audits after their Colab runtimes expired; those checks remain
 unverified. Another inference cannot replace those missing historical artifacts.
 On 28 October the local app and databases were restarted after an interruption.
@@ -227,4 +231,4 @@ T4, restored the worker, reached real model readiness and completed the new
 this recovery. A healthy local app alone is not evidence of available GPU inference.
 
 Suggested commit once verification is complete:
-`Add evidence-gated wardrobe curation and private garment comparison details`
+`Enforce evidence-backed wardrobe publication and archive failed garments`

@@ -1,8 +1,9 @@
 {
   "version": 1,
-  "enforced": false,
-  "status": "evaluation_in_progress",
+  "enforced": true,
+  "status": "quality_shortfall",
   "targetCount": 20,
-  "garments": [],
-  "note": "No garment is certified by this manifest yet. Keep the existing discovery catalog until twenty verified approvals can be published atomically; do not silently relabel candidates as approved."
+  "note": "0 of 20 garments passed the complete review. Unapproved references are archived; no garment is guaranteed to fit every person.",
+  "reviewedAt": "2026-10-28T08:53:33.411348+00:00",
+  "garments": []
 }

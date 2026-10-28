@@ -25,6 +25,41 @@ async function fixture(
   after: "ok" | "error" | "mismatch" | "pending" | "resized" = "ok",
   images = evidence,
 ) {
+  // Isolated catalog transport fixtures keep interaction coverage independent
+  // of real wardrobe approvals; these are not quality-certified products.
+  const catalog = [
+    {
+      id: "navy-tee",
+      name: "Navy crew-neck T-shirt",
+      category: "t-shirt",
+      photoType: "model",
+      imageUrl: "/comparison-test/reference-navy.jpg",
+      description: "Test reference",
+    },
+    {
+      id: "coral-dress",
+      name: "Coral ruched dress",
+      category: "dress",
+      photoType: "model",
+      imageUrl: "/comparison-test/reference-dress.jpg",
+      description: "Test reference",
+    },
+  ];
+  await page.route("**/api/v1/products?*", (route) =>
+    route.fulfill({ json: { items: catalog, total: catalog.length } }),
+  );
+  await page.route("**/comparison-test/reference-navy.jpg", (route) =>
+    route.fulfill({
+      path: path.resolve("../data/raw/navy-tee.jpg"),
+      contentType: "image/jpeg",
+    }),
+  );
+  await page.route("**/comparison-test/reference-dress.jpg", (route) =>
+    route.fulfill({
+      path: path.resolve("../data/raw/fashn-samples/garment1.jpeg"),
+      contentType: "image/jpeg",
+    }),
+  );
   await page.route("**/api/tryon/availability", (route) =>
     route.fulfill({ json: { available: true, reason: null } }),
   );
@@ -422,14 +457,14 @@ test("completed comparison is compact and centered; editing keeps the selected r
   // A restored result has no File input in memory. Choosing another garment
   // must restore this result's original person instead of using a demo person.
   await page.getByLabel("Filter garment catalog").selectOption("t-shirt");
-  await page.getByRole("button", { name: /Sage pique polo/ }).click();
+  await page.getByRole("button", { name: /Navy crew-neck T-shirt/ }).click();
   await expect(page.locator("#tryon-inputs")).toBeVisible();
   await expect(
     page.getByText("original-person.png", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByLabel("Garment photo type", { exact: true }),
-  ).toHaveValue("flat-lay");
+  ).toHaveValue("model");
   await expect(
     page.getByRole("button", { name: "Generate try-on", exact: true }),
   ).toBeEnabled();

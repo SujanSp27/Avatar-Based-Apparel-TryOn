@@ -1,4 +1,8 @@
-"""Compile auditable real trials. Publish exactly twenty only after all gates pass."""
+"""Publish up to twenty genuine approvals; archive exclusions before publication.
+
+Twenty approvals are required by default. Explicit --allow-shortfall publishes
+fewer when the evaluation cannot meet that target, without relaxing any gate.
+"""
 from __future__ import annotations
 
 import argparse
@@ -130,17 +134,21 @@ def report(folder: Path):
     return result
 
 
-def publish(folder: Path, output: Path):
+def publish(folder: Path, output: Path, *, allow_shortfall=False):
     data = report(folder)
     approved = [r for r in data["garments"] if r["status"] == "approved"]
-    if len(approved) < 20:
+    if len(approved) < 20 and not allow_shortfall:
         raise ValueError(f"Only {len(approved)} garments passed; twenty required. Current wardrobe preserved.")
     approved.sort(key=lambda r: (max(t["seconds"] for t in r["trials"].values()), r["id"]))
     chosen = approved[:20]
     # Archive complete records/reasons BEFORE atomically changing the active list.
-    save(folder / "catalog-archive.json", {"sourceRecords": catalog_rows(), "evaluation": data,
-                                          "retainedIds": [r["id"] for r in chosen]})
-    save(output, {"version": 1, "enforced": True, "status": "published", "targetCount": 20,
+    archive = folder / ("catalog-archive-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + ".json")
+    save(archive, {"sourceRecords": catalog_rows(), "evaluation": data,
+                  "previousPublication": json.loads(output.read_text()) if output.exists() else None,
+                  "retainedIds": [r["id"] for r in chosen]})
+    save(output, {"version": 1, "enforced": True,
+                  "status": "published" if len(chosen) == 20 else "quality_shortfall", "targetCount": 20,
+                  "note": f"{len(chosen)} of 20 garments passed the complete review. Unapproved references are archived; no garment is guaranteed to fit every person.",
                   "reviewedAt": data["generatedAt"], "garments": [
                       {"id": r["id"], "category": r["category"], "photoType": r["photoType"], "status": "approved",
                        "imageSha256": r["source"]["sha256"], "testedPeople": list(r["trials"]),
@@ -151,11 +159,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["report", "publish"])
     parser.add_argument("--folder", type=Path, default=DEFAULT)
+    parser.add_argument("--allow-shortfall", action="store_true",
+                        help="Publish only genuinely approved garments even when fewer than twenty pass; archive all others")
     args = parser.parse_args()
     if not args.folder.resolve().is_relative_to((ROOT / "experiments").resolve()):
         parser.error("Evaluation evidence must stay inside experiments")
     if args.action == "publish":
-        publish(args.folder, ROOT / "data/catalog/wardrobe-approved-v1.json")
+        publish(args.folder, ROOT / "data/catalog/wardrobe-approved-v1.json", allow_shortfall=args.allow_shortfall)
     else:
         result = report(args.folder)
         print(f"{result['approvedCount']} / 20 approved; report saved. No publication change.")

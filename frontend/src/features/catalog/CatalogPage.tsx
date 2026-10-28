@@ -45,6 +45,12 @@ export default function CatalogPage() {
     { id: string; name: string; product_count: number }[]
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [quality, setQuality] = useState<{
+    enforced: boolean;
+    approvedCount: number;
+    targetCount: number;
+    message?: string;
+  }>();
   const [facets, setFacets] = useState<{
     colors: string[];
     occasions: string[];
@@ -65,11 +71,17 @@ export default function CatalogPage() {
       api<typeof facets>("/api/v1/catalog/facets", {
         signal: controller.signal,
       }),
+      api<NonNullable<typeof quality>>("/api/v1/catalog/quality", {
+        signal: controller.signal,
+      }),
     ])
-      .then(([b, c, f]) => {
-        setBrands(b);
+      .then(([b, c, f, q]) => {
+        setBrands(
+          q.enforced ? b.filter((brand) => brand.product_count > 0) : b,
+        );
         setCategories(c);
         setFacets(f);
+        setQuality(q);
       })
       .catch((e) => {
         if (!controller.signal.aborted) setError(e.message);
@@ -123,6 +135,18 @@ export default function CatalogPage() {
           </p>
         </div>
       </header>
+      {quality?.enforced && quality.approvedCount < quality.targetCount && (
+        <div className="notice catalog-quality-notice" role="status">
+          <strong>
+            {quality.approvedCount} of {quality.targetCount} garments approved
+          </strong>
+          <p>
+            References with unresolved fitting or garment-detail issues are
+            excluded from this collection. Your saved results and measurements
+            are unchanged.
+          </p>
+        </div>
+      )}
       <section className="card catalog-filters" aria-label="Filter apparel">
         <label className="field catalog-search">
           Search apparel
@@ -257,10 +281,18 @@ export default function CatalogPage() {
           <>
             {!page?.items.length ? (
               <div className="card">
-                <EmptyState title="No published garments match these filters.">
-                  Try another selection or{" "}
+                <EmptyState
+                  title={
+                    quality?.enforced && quality.approvedCount === 0
+                      ? "No garments have passed the complete quality review yet."
+                      : "No published garments match these filters."
+                  }
+                >
+                  {quality?.enforced && quality.approvedCount === 0
+                    ? "You can still "
+                    : "Try another selection or "}
                   <Link to="/tryon">upload your own garment</Link>. New brands
-                  appear here when sourced products are available.
+                  and garments appear here when their required reviews pass.
                 </EmptyState>
               </div>
             ) : (

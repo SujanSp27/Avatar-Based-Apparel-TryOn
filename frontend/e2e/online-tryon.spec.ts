@@ -1,3 +1,4 @@
+import { uploadTestPhotos } from "./upload-fixture";
 import { authenticatedSuite } from "./session-fixture";
 import { test, expect } from "@playwright/test";
 
@@ -28,7 +29,7 @@ test("recovers automatically and offers retry without a page reload", async ({
   await expect(
     page.getByRole("button", { name: "Retry connection" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Try sample photos" }).click();
+  await uploadTestPhotos(page);
   await expect(
     page.getByRole("button", { name: "Generate try-on", exact: true }),
   ).toBeDisabled();
@@ -61,7 +62,7 @@ test("losing the API clears readiness and retries automatically", async ({
   await expect(page.getByTestId("model-status")).toContainText(
     "Ready to try on",
   );
-  await page.getByRole("button", { name: "Try sample photos" }).click();
+  await uploadTestPhotos(page);
   await expect(
     page.getByRole("button", { name: "Generate try-on", exact: true }),
   ).toBeEnabled();
@@ -127,7 +128,7 @@ test("failed recovery exposes retry and recovers without losing uploads", async 
     return route.fulfill({ status: 202, json: status() });
   });
   await page.goto("/tryon");
-  await page.getByRole("button", { name: "Try sample photos" }).click();
+  await uploadTestPhotos(page);
   await expect(page.getByTestId("model-status")).toContainText(
     "Temporarily unavailable",
   );

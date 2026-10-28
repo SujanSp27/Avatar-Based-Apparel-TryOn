@@ -2,7 +2,7 @@
   "version": 1,
   "status": "candidates_only_not_approved",
   "reviewedOn": "2026-10-28",
-  "basis": "All 57 source images decoded and contact sheets visually inspected. Prioritize isolated, front-facing single garments with complete boundaries. Names alone are not evidence of inference quality.",
+  "basis": "All 57 source references audited. All 46 supported CC0 references now submitted to actual unchanged production inference; supported category is not approval. Five unsupported multi-piece/ethnic references and six research references without established commercial rights excluded.",
   "people": [
     "studio",
     "mirror"
@@ -46,7 +46,15 @@
     "edit-b4b507dd",
     "edit-98ec0a37",
     "edit-9b76f08a",
-    "edit-c4010e8b"
+    "edit-c4010e8b",
+    "edit-1347965a",
+    "edit-0d3cf39f",
+    "edit-55694d05",
+    "edit-331737f8",
+    "edit-9e19f45b",
+    "edit-c7ef3028",
+    "edit-86f96e47",
+    "edit-a7a8fafc"
   ],
   "sourceRisks": {
     "all": "Community references are mostly 400 px wide; source resolution and non-studio backgrounds limit fine detail. Real parser and output checks are still required.",

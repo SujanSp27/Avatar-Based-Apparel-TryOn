@@ -5,15 +5,19 @@ import path from "node:path";
 
 authenticatedSuite(test);
 
-test("catalog distinguishes category support from reviewed garment quality", async ({
+test("category support cannot republish a rejected garment", async ({
   page,
 }) => {
+  const quality = await (
+    await page.request.get("/api/v1/catalog/quality")
+  ).json();
+  expect(quality.enforced).toBe(true);
   await page.goto("/catalog");
   await page.getByRole("searchbox").fill("Forest-green polo");
-  await page.getByRole("button", { name: /Forest-green polo/ }).click();
-  await expect(page.getByRole("dialog")).toContainText(
-    "Individual garment quality has not yet passed",
-  );
+  await expect(page.locator(".product-card")).toHaveCount(0);
+  expect(
+    (await page.request.get("/api/v1/products/edit-a59f077d")).status(),
+  ).toBe(404);
 });
 
 test("result inspection uses the saved garment reference and preserves the compact comparison", async ({
