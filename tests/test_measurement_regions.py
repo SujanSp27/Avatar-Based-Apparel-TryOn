@@ -110,6 +110,43 @@ def test_hip_uses_visible_outer_edges_not_skeletal_joint_spacing(observation):
     assert partial["measurements"]["shoulder_width"] == 40
 
 
+@pytest.mark.parametrize("joined", [False, True])
+def test_hand_touching_thigh_is_not_counted_as_leg_width(observation, joined):
+    for ids, x in (((15, 17, 19, 21), 280), ((16, 18, 20, 22), 400)):
+        for index, y in zip(ids, (550, 575, 600, 590), strict=True):
+            observation.landmarks[index, :2] = [x / 600, y / 1000]
+        observation.mask[548:625, x - 6:x + 7] = True
+        if joined:
+            observation.mask[560:610, x - 15:x + 7] = True
+    before = observation.mask.copy()
+    result, lines = estimate(observation, 160)
+    assert np.array_equal(before, observation.mask)  # Never erase skin to recover a width.
+    assert result["measurements"]["chest_circumference"] == 98
+    assert result["measurements"]["waist_circumference"] == 92
+    info = result["quality"]["metrics"]["thigh_circumference"]
+    if joined:
+        assert result["measurements"]["thigh_circumference"] is None
+        assert info["reason"] == "hand_overlaps_thigh"
+        assert "hands away" in info["message"]
+        assert all(sample["connected_hand_nearby"] for side in info["sides"] for sample in side["samples"])
+        assert not any(name.startswith("thigh") for name, _ in lines)
+    else:
+        assert result["measurements"]["thigh_circumference"] == 30
+        assert info["status"] == "estimated"
+
+
+def test_forearm_across_one_thigh_retains_other_side_only_with_review(observation):
+    observation.landmarks[13, :2] = [220 / 600, 560 / 1000]
+    observation.landmarks[15, :2] = [260 / 600, 610 / 1000]
+    result, lines = estimate(observation, 160)
+    info = result["quality"]["metrics"]["thigh_circumference"]
+    assert result["measurements"]["thigh_circumference"] == 30
+    assert info["status"] == "review_required"
+    assert "single-side" in info["message"]
+    assert sum(name.startswith("thigh") for name, _ in lines) == 1
+    assert all(sample["arm_overlap"] for sample in info["sides"][0]["samples"])
+
+
 @pytest.mark.parametrize("height,width_factor", [(145, .8), (172, 1), (200, 1.2)])
 def test_body_proportions_share_geometry_without_gender_classifier(observation, height, width_factor):
     original = copy.deepcopy(observation)

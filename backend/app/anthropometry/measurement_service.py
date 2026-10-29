@@ -124,6 +124,36 @@ def intersects_arm(segment, points, visibility) -> bool:
     return False
 
 
+def connected_hand_near_section(observation, points, valid, segment):
+    """Flag a visible hand joined to a measured span, without cutting a body edge.
+
+    Pose's sparse finger landmarks do not describe the fingertips/hand contour.
+    Half the observed wrist-to-finger span is a conservative uncertainty margin,
+    not an inferred hand mask. Require a foreground path as well as proximity so
+    an adjacent hand separated by a real background gap does not reject a leg.
+    """
+    start, end = segment
+    line = end - start
+    squared_length = float(np.dot(line, line))
+    if squared_length <= 0:
+        return False
+    for wrist, fingers in ((15, (17, 19, 21)), (16, (18, 20, 22))):
+        visible = [index for index in fingers if valid[index]]
+        if not valid[wrist] or len(visible) < 2:
+            continue
+        margin = .5 * max(float(np.linalg.norm(points[index] - points[wrist])) for index in visible)
+        for index in visible:
+            point = points[index]
+            projected = start + np.clip(np.dot(point - start, line) / squared_length, 0, 1) * line
+            distance = float(np.linalg.norm(point - projected))
+            if distance > margin:
+                continue
+            path = np.rint(np.linspace(point, projected, max(2, math.ceil(distance) + 1))).astype(int)
+            if observation.mask[path[:, 1], path[:, 0]].all():
+                return True
+    return False
+
+
 def torso_sections(observation: PoseObservation, points: np.ndarray):
     """Use observed central spans only; never cut an arm off at an invented body edge."""
     shoulder, hip = points[[11, 12]].mean(0), points[[23, 24]].mean(0)
@@ -208,7 +238,16 @@ def thigh_sections(observation, points, scale):
                 offset, along_other = np.linalg.solve(matrix, points[other_hip] - center)
                 low, high = sorted(float(np.dot(end - center, direction)) for end in segment)
                 joined = 0 <= along_other <= 1 and low <= offset <= high
-                record["samples"].append({"fraction": fraction, "width_pixels": width, "contains_other_leg": bool(joined)})
+                arm_overlap = intersects_arm(segment, points, np.where(valid, observation.landmarks[:, 3], 0))
+                hand_overlap = connected_hand_near_section(observation, points, valid, segment)
+                record["samples"].append({"fraction": fraction, "width_pixels": width, "contains_other_leg": bool(joined),
+                                          "arm_overlap": arm_overlap, "connected_hand_nearby": hand_overlap})
+                if arm_overlap or hand_overlap:
+                    # Nearby samples share the same uncertain hand contour.
+                    # Moving a few pixels past sparse finger landmarks cannot
+                    # establish a clean leg boundary. Retain the other leg only.
+                    record["reason"] = "hand_overlaps_thigh"
+                    break
                 if joined:
                     continue
                 widths.append(width)
@@ -217,10 +256,14 @@ def thigh_sections(observation, points, scale):
                 break
             except PipelineError as exc:
                 record["samples"].append({"fraction": fraction, "rejected": exc.code})
+    hand_or_arm = any(sample.get("arm_overlap") or sample.get("connected_hand_nearby")
+                      for side in sides for sample in side["samples"])
+    reason = ("leg_geometry_uncertain" if not valid[[23, 24, 25, 26]].all() else
+              "hand_overlaps_thigh" if hand_or_arm else "ambiguous_thigh")
     info = quality(observation, [23, 24, 25, 26], "individual_thigh_silhouette_projection_multiplier",
-                   None if widths else ("leg_geometry_uncertain" if not valid[[23, 24, 25, 26]].all() else "ambiguous_thigh"), sides=sides)
+                   None if widths else reason, sides=sides)
     if len(widths) == 1:
-        info.update(status="review_required", reason="ambiguous_thigh", requires_manual_review=True,
+        info.update(status="review_required", reason=reason, requires_manual_review=True,
                     message="Only one thigh outline is visible. This single-side estimate needs a tape measurement before sizing.")
     diagnostic("thigh_sections", sides=sides, measured_sides=len(widths))
     return (float(np.mean(widths) * scale * KAPPA["thigh"]) if widths else None), info, sections
@@ -314,6 +357,7 @@ def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list
         "torso_landmarks_uncertain": "Shoulders or hips cannot locate this torso region reliably. Retry a clear front view or enter a tape measurement.",
         "hip_outline_unavailable": "The outer hip outline is obscured or incomplete. Enter a hip tape measurement; hip joint spacing is not body width.",
         "ambiguous_thigh": "Both upper-thigh boundaries cannot be distinguished reliably. Other measurements are retained; enter a thigh tape measurement or try a slightly separated stance.",
+        "hand_overlaps_thigh": "A hand or arm touches the upper-thigh outline, so its width cannot be isolated reliably. Move hands away from the legs or enter a thigh tape measurement; other measurements are retained.",
         "leg_geometry_uncertain": "Leg landmarks, overlap or a bent stance prevent this estimate. Enter a tape measurement or stand upright with uncrossed legs.",
         "implausible_geometry": "This region is inconsistent with the entered height. Confirm the height or enter a tape measurement.",
         "arms_overlap_torso": "Arms overlap the visible torso outline; no body boundary was invented. Move arms slightly away or enter this tape measurement.",
