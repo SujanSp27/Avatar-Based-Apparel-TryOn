@@ -40,7 +40,8 @@ def normalize_probabilities(probabilities: np.ndarray, shape: tuple[int, int]) -
     return cv2.resize(prior.astype(np.float32), (shape[1], shape[0]), interpolation=cv2.INTER_LINEAR)
 
 
-def refine_mask(image: np.ndarray, probabilities: np.ndarray, *, max_edge: int = 800) -> np.ndarray:
+def refine_mask(image: np.ndarray, probabilities: np.ndarray, *, max_edge: int = 800,
+                reconsider_foreground: bool = False) -> np.ndarray:
     """Image-guided CPU refinement recovers gaps blurred by the pose mask."""
     import cv2
 
@@ -55,8 +56,12 @@ def refine_mask(image: np.ndarray, probabilities: np.ndarray, *, max_edge: int =
     labels = np.where(prior > 0.5, cv2.GC_PR_FGD, cv2.GC_PR_BGD).astype(np.uint8)
     labels[prior < 0.01] = cv2.GC_BGD
     core = cv2.erode((prior > 0.99).astype(np.uint8), np.ones((9, 9), np.uint8))
-    labels[core > 0] = cv2.GC_FGD
-    if not np.any(labels == cv2.GC_FGD) or not np.any(labels == cv2.GC_BGD):
+    # High pose confidence is not proof of an anatomical edge. In a guarded
+    # retry, let image evidence reclassify even confident arm/torso bridges.
+    # Keep the conservative default for the primary segmentation.
+    if not reconsider_foreground:
+        labels[core > 0] = cv2.GC_FGD
+    if not core.any() or not np.any(labels == cv2.GC_BGD):
         raise PipelineError("segmentation_missing", "A clear person outline and background are required.")
     try:
         # Also serialize the optional native-resolution retry outside detect().
@@ -67,6 +72,7 @@ def refine_mask(image: np.ndarray, probabilities: np.ndarray, *, max_edge: int =
         raise PipelineError("segmentation_failed", "The person outline could not be refined. Use a clear, contrasting background.") from exc
     mask = np.isin(labels, (cv2.GC_FGD, cv2.GC_PR_FGD)).astype(np.uint8)
     diagnostic("segmentation", image_size=[width, height], processing_size=list(dimensions),
+               reconsider_foreground=reconsider_foreground,
                foreground_fraction=round(float(mask.mean()), 4),
                uncertain_prior_fraction=round(float(((prior > .1) & (prior < .9)).mean()), 4))
     return cv2.resize(mask, (width, height), interpolation=cv2.INTER_NEAREST).astype(bool)

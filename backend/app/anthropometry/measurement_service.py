@@ -21,6 +21,12 @@ from backend.app.anthropometry.measurement_evidence import (
 from backend.app.anthropometry.measurement_evidence import (
     usable as usable_landmarks,
 )
+from backend.app.anthropometry.measurement_refinement import (
+    MASK_SUFFIXES,
+    guard_refined_mask,
+    merge_recovered,
+    needs_refinement,
+)
 from backend.app.anthropometry.pose_adapter import (
     MediaPipePose,
     PoseObservation,
@@ -387,15 +393,20 @@ def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list
                      "chest_torso_fraction": fractions["chest"], "waist_torso_fraction": fractions["waist"],
                      "thigh_leg_fraction": THIGH_FRACTION,
                      "inseam_reference": "mean Euclidean distance from hip midpoint to ankles 27/28"},
-        "warnings": [
+        "warnings": measurement_warnings(metric_quality, fractions),
+    }, sections
+
+
+def measurement_warnings(metric_quality, fractions):
+    return [
             "Single-view estimates depend on self-reported height, perspective, clothing and segmentation.",
             "MediaPipe has no crown or crotch landmark. Face-to-ankle scale and hip-midpoint inseam are biased anatomical proxies.",
             "Circumference multipliers are specified heuristics, not calibrated tape measurements. Hip circumference uses the observed outer silhouette; clothing can obscure the body.",
             (f"Chest uses an observed arm-free section at {fractions['chest']:.0%} of shoulder-to-hip distance; it may miss the fullest chest/bust."
              if fractions["chest"] is not None else "Chest circumference is unavailable. " + metric_quality["chest_circumference"]["message"]),
             "Confirm important dimensions with a tape measure before choosing a size.",
-        ] + [name.replace("_", " ") + ": " + metric_quality[name]["message"] for name in review],
-    }, sections
+        ] + [name.replace("_", " ") + ": " + info["message"]
+             for name, info in metric_quality.items() if info["requires_manual_review"]]
 
 
 class MeasurementService:
@@ -420,19 +431,34 @@ class MeasurementService:
         if observation.image.shape != image.shape:
             raise PipelineError("invalid_pose_frame", "The pose and photo use different image dimensions. Retry extraction.")
         result, sections = estimate(observation, height_cm)
-        # Only retry image-guided segmentation when its coarse map bridged arms.
-        # Full-resolution colour evidence can restore a real narrow gap; geometry
-        # never paints a substitute contour through touching clothing or skin.
-        if (observation.probabilities is not None and max(image.shape[:2]) > 800
-                and any(q["reason"] == "arms_overlap_torso" for q in result["quality"]["metrics"].values())):
-            try:
-                refined = replace(observation, mask=refine_mask(image, observation.probabilities, max_edge=1600))
-                next_result, next_sections = estimate(refined, height_cm)
-                if len(next_result["quality"]["requires_manual_review"]) < len(result["quality"]["requires_manual_review"]):
-                    observation, result, sections = refined, next_result, next_sections
-                    diagnostic("torso_refinement", accepted=True, max_edge=1600)
-            except PipelineError as exc:
-                diagnostic("torso_refinement", accepted=False, code=exc.code)
+        refined_masks = {}
+        if observation.probabilities is not None:
+            # Bounded retries, including small images and hip/thigh-only failures.
+            # The first keeps confident foreground; the second can reopen real
+            # gaps even where the pose prior confidently bridged an arm.
+            modes = (["native"] if max(image.shape[:2]) > 800 else []) + ["image_guided"]
+            for mode in modes:
+                if not needs_refinement(result):
+                    break
+                started = perf_counter()
+                attempt = {"method": mode, "recovered": []}
+                try:
+                    options = {"max_edge": 1600}
+                    if mode == "image_guided":
+                        options["reconsider_foreground"] = True
+                    mask = guard_refined_mask(observation, refine_mask(image, observation.probabilities, **options))
+                    next_result, next_sections = estimate(replace(observation, mask=mask), height_cm)
+                    result, sections, recovered = merge_recovered(result, sections, next_result, next_sections, mode)
+                    attempt["recovered"] = recovered
+                    if recovered:
+                        refined_masks[f"_{mode}_mask.png"] = mask
+                except PipelineError as exc:
+                    attempt["code"] = exc.code
+                attempt["duration_seconds"] = round(perf_counter() - started, 3)
+                result["geometry"].setdefault("refinement_attempts", []).append(attempt)
+                diagnostic("measurement_refinement", **attempt)
+            result["warnings"] = measurement_warnings(result["quality"]["metrics"], {
+                key: result["geometry"][key + "_torso_fraction"] for key in ("chest", "waist")})
         filename = f"pose_{uuid4().hex}"
         canvas = Image.fromarray(image)
         draw = ImageDraw.Draw(canvas)
@@ -457,7 +483,7 @@ class MeasurementService:
             provenance={"model": "MediaPipe Pose Landmarker Full", "landmarks": 33,
                         "model_sha256": self.detector.model_sha256, "device": "cpu",
                         "local_gpu_used": False, "input_sha256": hashlib.sha256(data).hexdigest(),
-                        "method": "landmark-silhouette-projection-v4",
+                        "method": "landmark-silhouette-projection-v5",
                         "segmentation": "MediaPipe probabilities with deterministic CPU GrabCut refinement"},
         )
         # Validate all geometry before creating successful artifacts.
@@ -466,6 +492,8 @@ class MeasurementService:
             self.output_root.mkdir(parents=True, exist_ok=True)
             canvas.save(self.output_root / f"{filename}.png")
             Image.fromarray(observation.mask.astype(np.uint8) * 255).save(self.output_root / f"{filename}_mask.png")
+            for suffix, mask in refined_masks.items():
+                Image.fromarray(mask.astype(np.uint8) * 255).save(self.output_root / f"{filename}{suffix}")
             (self.output_root / f"{filename}.json").write_text(json.dumps({
                 **response.model_dump(), "landmarks_normalized": observation.landmarks.tolist(),
                 "landmarks_world_meters": observation.world_landmarks.tolist(),
@@ -478,7 +506,7 @@ class MeasurementService:
 
     def artifact_path(self, measurement_id: str, suffix: str = ".png") -> Path:
         import re
-        if not re.fullmatch(r"pose_[0-9a-f]{32}", measurement_id) or suffix not in (".png", "_mask.png", ".json"):
+        if not re.fullmatch(r"pose_[0-9a-f]{32}", measurement_id) or suffix not in (".png", "_mask.png", ".json", *MASK_SUFFIXES):
             raise PipelineError("measurement_missing", "This measurement artifact was not found.", 404)
         root = self.output_root.resolve()
         path = root / f"{measurement_id}{suffix}"
@@ -488,7 +516,7 @@ class MeasurementService:
 
     def remove_artifacts(self, measurement_id: str):
         try:
-            for suffix in (".png", "_mask.png", ".json"):
+            for suffix in (".png", "_mask.png", ".json", *MASK_SUFFIXES):
                 self.artifact_path(measurement_id, suffix).unlink(missing_ok=True)
         except OSError as exc:
             raise PipelineError("measurement_storage_unavailable", "Measurement artifacts could not be removed; retry when storage is writable.", 503) from exc

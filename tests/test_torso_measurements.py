@@ -157,6 +157,16 @@ def test_refinement_preserves_real_narrow_gap_and_output_dimensions():
 
 
 def test_refinement_retry_only_accepts_observed_usable_boundaries(observation, tmp_path, monkeypatch):
+    import cv2
+
+    # Include the observed arms in both masks. A retry which deletes the arms
+    # outright must not count as recovering an unobscured torso boundary.
+    mask = observation.mask.astype(np.uint8)
+    points = np.rint(observation.landmarks[:, :2] * [600, 1000]).astype(int)
+    for a, b in ((11, 13), (13, 15), (12, 14), (14, 16)):
+        cv2.line(mask, points[a], points[b], 1, 9)
+    observation.landmarks[17:23, 3] = 0  # This fixture has no finger observations.
+    observation.mask = mask.astype(bool)
     original_mask = observation.mask.copy()
     observation.mask[300:500, 150:450] = True
     observation.probabilities = original_mask.astype(np.float32)
@@ -165,13 +175,14 @@ def test_refinement_retry_only_accepts_observed_usable_boundaries(observation, t
         def detect(self, image):
             return replace(observation, image=image)
     calls = []
-    def refined(image, prior, *, max_edge):
+    def refined(image, prior, *, max_edge, reconsider_foreground=False):
         calls.append(max_edge)
         return original_mask
     monkeypatch.setattr("backend.app.anthropometry.measurement_service.refine_mask", refined)
     service = MeasurementService(Detector(), tmp_path)
     response = service.extract(upload()["image"][1], 160)
     assert calls == [1600] and response.measurements.chest_circumference == 98
+    assert response.quality["metrics"]["chest_circumference"]["requires_manual_review"]
 
 
 def test_api_partial_scan_blocks_sizing_until_specific_tape_overrides(api, repository, observation):
