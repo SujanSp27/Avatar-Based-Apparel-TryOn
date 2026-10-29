@@ -46,12 +46,13 @@ test("real private Colab result survives refresh, denies strangers and downloads
   const category = process.env.VASTRAVIEW_LIVE_CATEGORY ?? "t-shirt";
   const photoType = process.env.VASTRAVIEW_LIVE_PHOTO_TYPE ?? "flat-lay";
   const upload = (filename: string) => {
-    const mimeType = {
+    const mimeTypes: Record<string, string> = {
       ".jpg": "image/jpeg",
       ".jpeg": "image/jpeg",
       ".png": "image/png",
       ".webp": "image/webp",
-    }[path.extname(filename).toLowerCase()];
+    };
+    const mimeType = mimeTypes[path.extname(filename).toLowerCase()];
     if (!mimeType)
       throw new Error("Live-test images must be JPEG, PNG or WebP");
     return {
@@ -115,13 +116,21 @@ test("real private Colab result survives refresh, denies strangers and downloads
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   if (!state.jobId) {
-    const availability = await (
-      await page.request.get("/api/tryon/availability")
-    ).json();
-    expect(
-      availability.available,
-      "Real model readiness is required before inference.",
-    ).toBe(true);
+    await expect
+      .poll(
+        async () => {
+          const response = await page.request.get("/api/tryon/availability");
+          expect(response.ok()).toBe(true);
+          return (await response.json()).available;
+        },
+        {
+          timeout: 120000,
+          intervals: [3000],
+          message:
+            "Real model readiness is required before inference; recovery has a bounded wait.",
+        },
+      )
+      .toBe(true);
     const submitted = await page.request.post("/api/tryon", {
       headers: {
         Prefer: "respond-async",

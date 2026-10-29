@@ -18,21 +18,27 @@ from ml.errors import PipelineError
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--label", required=True)
+    parser.add_argument("--extra-person", type=Path, action="append", default=[],
+                        help="Also evaluate an explicitly selected private image inside this workspace; never uploads it.")
     args = parser.parse_args()
     if not args.label.replace("-", "").isalnum():
         parser.error("Use a simple alphanumeric report label")
     root = ROOT / "experiments/measurement-regions" / args.label
     if (root / "report.json").exists():
         parser.error("This report already exists. Use a new label to preserve previous evidence.")
+    extra_people = [(ROOT / path).resolve() for path in args.extra_person]
+    if any(not path.is_relative_to(ROOT) or not path.is_file() for path in extra_people):
+        parser.error("Extra person images must be existing files inside this workspace")
     root.mkdir(parents=True, exist_ok=True)
     detector = MediaPipePose(settings.measurement_model_path)
     service = MeasurementService(detector, root / "private")
     manifest = json.loads((ROOT / "data/regression/measurement-regions-v4.json").read_text(encoding="utf-8"))
     rows = []
     try:
-        for fixture in manifest["fixtures"]:
+        fixtures = manifest["fixtures"] + [{"path": str(path.relative_to(ROOT))} for path in extra_people]
+        for fixture in fixtures:
             path = ROOT / fixture["path"]
-            filename = str(path.relative_to(ROOT / "data/raw"))
+            filename = str(path.relative_to(ROOT))
             if not path.is_file():
                 rows.append({"fixture": filename, "status": "fixture_unavailable"})
                 continue

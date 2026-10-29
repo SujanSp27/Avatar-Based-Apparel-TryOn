@@ -106,6 +106,21 @@ def test_expired_files_are_restored_then_worker_started_with_bounded_retries(tmp
     assert spawn.call_args.args[0][-1].endswith('online_worker.py')
 
 
+def test_loaded_worker_without_share_url_reports_relay_outage_not_ready(tmp_path, monkeypatch):
+    monkeypatch.setattr(worker, 'gpu_available', lambda: True)
+    monkeypatch.setattr(worker, 'running', lambda path: path.name == 'online_worker.py')
+    (tmp_path / 'connection.json').write_text('{"url": null}')
+    # No token is required or returned until a real share connection exists.
+    kill = Mock()
+    monkeypatch.setattr(worker.os, 'kill', kill)
+    assert recover(tmp_path, {})['state'] == 'tunnel_unavailable'
+    kill.assert_not_called()
+    assert len(json.loads((tmp_path / 'tunnel-failures.json').read_text())['attempts']) == 1
+    (tmp_path / 'active-generation.json').write_text('{"runPath":"preserved"}')
+    assert recover(tmp_path, {})['state'] == 'notebook_busy'
+    kill.assert_not_called()
+
+
 @pytest.mark.parametrize('invalid', [
     [], {}, {**PROFILE, 'unknown': True},
     {**PROFILE, 'precision': 'fp32'}, {**PROFILE, 'precision': ['fp16']},

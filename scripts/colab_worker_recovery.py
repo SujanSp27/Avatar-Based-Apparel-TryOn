@@ -209,6 +209,13 @@ def _recover_pinned(root: Path, payload: dict, worker_profile: dict | None = Non
     if running(root / 'scripts/online_worker.py'):
         if (root / 'connection.json').is_file():
             connection = json.loads((root / 'connection.json').read_text())
+            if not connection.get('url'):
+                # Gradio can load the server/model but return no share URL when
+                # its relay refuses the connection. This is not model loading.
+                # Retain the existing idle-only, spaced, bounded retry policy.
+                repair = repair_stale_worker(root)
+                return ({'state': 'tunnel_unavailable'}
+                        if repair['state'] == 'recovering_tunnel' else repair)
             connection['token'] = (root / 'worker-token.txt').read_text().strip()
             if not worker_reachable(connection):
                 return repair_stale_worker(root)

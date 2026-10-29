@@ -47,10 +47,10 @@ The platform eliminates expensive local GPU requirements and third-party SaaS AP
 - **Semantic Preservation & Lossless Patching**: Preserves the user's face, neck, arms, and original background with pixel-identical fidelity; only clothing regions are synthesized.
 - **Quality Gates**: Automatically rejects invalid inferences (e.g., severe limb occlusion or generations that leave >20% unresolved exposed skin).
 
-### 2. High-Precision Anthropometry (Local CPU)
+### 2. Approximate Body Measurements (Local CPU)
 - **MediaPipe Tasks Pose Landmarker Full**: Fast, zero-GPU body landmark extraction on local CPU.
-- **33 Keypoints Analyzed**: Evaluates 3D landmark coordinates and visibility scores (>0.65 threshold).
-- **6 Extracted Metrics**: Height-calibrated extraction of **Shoulder Width**, **Chest Circumference**, **Waist Circumference**, **Hip Circumference**, **Thigh Circumference**, and **Inseam**.
+- **33 Keypoints Analyzed**: Uses image coordinates, visibility (>0.65) and available presence scores for each measurement's dependencies. An uncertain heel or thigh does not automatically invalidate unrelated regions.
+- **6 Measurement Fields**: Reports supported estimates for **Shoulder Width**, **Chest Circumference**, **Waist Circumference**, **Hip Circumference**, **Thigh Circumference**, and **Inseam**. Unreliable dimensions remain explicitly unavailable with an explanation. Single-view circumference multipliers and anatomical proxies are not calibrated tape measurements.
 - **Interactive Landmark Canvas**: Live overlay displaying detected skeleton, bounding silhouettes, and GrabCut segmentation masks on the uploaded user photo.
 
 ### 3. Sourced Brand Sizing Engine
@@ -291,8 +291,8 @@ VastraView offloads heavy diffusion inference to your own private Google Colab n
 1. Navigate to `/measure`.
 2. Upload a full-body standing photo (arms slightly away from torso, upright posture) or capture via webcam.
 3. Input your exact height in cm or ft/in.
-4. The local CPU MediaPipe model identifies all 33 landmarks and computes 6 key anatomical dimensions.
-5. Review the annotated landmark canvas and adjust values manually if desired before saving to your profile.
+4. The CPU MediaPipe model detects pose and checks the evidence for each dimension independently. Bounded foot silhouettes can corroborate uncertain heels; genuinely cropped feet or an unreliable height scale still require a new photo.
+5. Review the annotated canvas and regional warnings. Enter tape measurements for unavailable or flagged dimensions before saving a complete profile or requesting a size that depends on them. See [measurement regression evidence and limits](docs/measurement-regions.md).
 
 ### 3. Intelligent Brand Size Recommendation
 1. Navigate to `/sizing`.

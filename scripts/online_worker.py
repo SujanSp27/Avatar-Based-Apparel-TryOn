@@ -278,8 +278,9 @@ def main():
     _, _, url = app.queue(max_size=2).launch(share=True, server_name="127.0.0.1", prevent_thread_lock=True, show_api=False, quiet=True)
     (root / "connection.json").write_text(json.dumps({"url": url, "gpu": torch.cuda.get_device_name(),
                                                     "model": MODEL, "modelResolution": list(input_shape[::-1]),
-                                                    "precision": str(pipeline.inference_dtype)}))
-    print("ONLINE_VTON_READY", flush=True)
+                                                    "precision": str(pipeline.inference_dtype),
+                                                    "tunnelState": "created" if url else "unavailable"}))
+    print("ONLINE_VTON_READY" if url else "ONLINE_VTON_TUNNEL_UNAVAILABLE", flush=True)
     while True:
         time.sleep(30)
 

@@ -342,6 +342,17 @@ def test_restoring_state_becomes_ready_only_after_live_gpu_check():
     assert manager.snapshot()['unavailableSeconds'] == 0
 
 
+def test_missing_share_tunnel_is_actionable_outage_and_never_fake_readiness():
+    worker = Mock(availability=Mock(return_value={'available': False}))
+    manager = ColabConnection(worker, Mock(tick=Mock(return_value='tunnel_unavailable')))
+    manager.check()
+    snapshot = manager.snapshot()
+    assert snapshot['displayState'] == 'Temporarily unavailable'
+    assert snapshot['available'] is False
+    assert 'share service' in snapshot['reason']
+    assert 'GPU model loaded' in snapshot['reason']
+
+
 @pytest.mark.parametrize(('state', 'seconds'), [
     ('checking_notebook', 1), ('restoring_worker', 3), ('ready', 10), ('recovery_failed', 10),
 ])
