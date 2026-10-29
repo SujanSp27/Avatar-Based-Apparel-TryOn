@@ -161,6 +161,7 @@ export default function MeasurementWorkspace() {
               <LandmarkCanvas
                 file={state.file}
                 landmarks={state.extraction?.landmarks_normalized}
+                presence={state.extraction?.landmark_presence}
                 show={show}
               />
             ) : (
@@ -328,6 +329,8 @@ export default function MeasurementWorkspace() {
       )}
       <MeasurementGrid
         values={state.measurements}
+        quality={state.extraction?.quality}
+        reviewed={state.reviewedMetrics}
         onChange={(values, key) => state.correctMeasurement(key, values[key])}
       />
       {state.extraction && (

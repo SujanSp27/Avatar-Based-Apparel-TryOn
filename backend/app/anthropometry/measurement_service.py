@@ -12,6 +12,15 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from backend.app.anthropometry.diagnostics import diagnostic
+from backend.app.anthropometry.measurement_evidence import (
+    VISIBILITY_THRESHOLD,
+    calibrate,
+    quality,
+    uncertain_arm_is_separate,
+)
+from backend.app.anthropometry.measurement_evidence import (
+    usable as usable_landmarks,
+)
 from backend.app.anthropometry.pose_adapter import (
     MediaPipePose,
     PoseObservation,
@@ -21,7 +30,6 @@ from backend.app.anthropometry.pose_adapter import (
 from backend.app.anthropometry.schemas import ExtractionResponse, PhotoMeasurements
 from ml.errors import PipelineError
 
-VISIBILITY_THRESHOLD = 0.65
 KEY_LANDMARKS = {
     0: "nose", 11: "left shoulder", 12: "right shoulder",
     23: "left hip", 24: "right hip", 25: "left knee", 26: "right knee",
@@ -47,36 +55,15 @@ def validate_pose(observation: PoseObservation) -> np.ndarray:
         raise PipelineError("invalid_mask", "Expected a binary person mask aligned with the processed image.")
     if not observation.mask.any():
         raise PipelineError("segmentation_missing", "No person outline was found. Use a contrasting background and retry.")
-    weak = [name for index, name in KEY_LANDMARKS.items()
-            if landmarks[index, 3] <= VISIBILITY_THRESHOLD]
+    if observation.presence is not None and (
+        observation.presence.shape != (33,) or not np.isfinite(observation.presence).all()
+        or np.any((observation.presence < 0) | (observation.presence > 1))
+    ):
+        raise PipelineError("invalid_pose", "Expected valid landmark presence probabilities.")
+    valid = usable_landmarks(observation)
     diagnostic("pose_validation", key_visibility={name: round(float(landmarks[i, 3]), 4)
-               for i, name in KEY_LANDMARKS.items()}, low_visibility_count=len(weak))
-    if weak:
-        raise PipelineError("low_visibility", "Visibility must exceed 0.65 for: " + ", ".join(weak) + ".")
-    if any(np.any(landmarks[index, :2] <= 0.005) or np.any(landmarks[index, :2] >= 0.995)
-           for index in KEY_LANDMARKS):
-        raise PipelineError("partial_body", "Show your complete head, torso, knees, ankles and heels inside the frame.")
+               for i, name in KEY_LANDMARKS.items()}, unusable_indices=np.flatnonzero(~valid).tolist())
     points = landmarks[:, :2] * [w, h]
-    head, shoulder, hip, knee, ankle = (
-        points[0, 1], points[[11, 12], 1].mean(), points[[23, 24], 1].mean(),
-        points[[25, 26], 1].mean(), points[[27, 28], 1].mean(),
-    )
-    if not head < shoulder < hip < knee < ankle:
-        raise PipelineError("unsupported_pose", "Stand upright, facing the camera with both legs visible.")
-    shoulder_width = float(np.linalg.norm(points[11] - points[12]))
-    if shoulder_width < 10 or abs(points[11, 1] - points[12, 1]) > 0.3 * shoulder_width:
-        raise PipelineError("unsupported_pose", "Keep your shoulders level and face the camera.")
-    if (points[23, 0] - points[24, 0]) * (points[25, 0] - points[26, 0]) <= 0:
-        raise PipelineError("unsupported_pose", "Stand with uncrossed legs, facing the camera.")
-    world = observation.world_landmarks
-    if world.shape == (33, 3) and np.isfinite(world).all():
-        span = world[11] - world[12]
-        if abs(span[2]) > max(abs(span[0]) * 0.65, 0.08):
-            raise PipelineError("unsupported_pose", "Turn your torso towards the camera; side views cannot be measured.")
-    for leg in ((23, 25, 27), (24, 26, 28)):
-        length = sum(np.linalg.norm(points[a] - points[b]) for a, b in zip(leg, leg[1:]))
-        if length <= 0 or (points[leg[-1], 1] - points[leg[0], 1]) / length < 0.9:
-            raise PipelineError("unsupported_pose", "Stand with straight, uncrossed legs.")
     return points
 
 
@@ -143,10 +130,8 @@ def torso_sections(observation: PoseObservation, points: np.ndarray):
     axis = (hip - shoulder) / np.linalg.norm(hip - shoulder)
     direction = np.array([axis[1], -axis[0]])
     shoulder_width = float(np.linalg.norm(points[11] - points[12]))
-    arm_ids = [11, 12, 13, 14, 15, 16]
-    arms_known = bool(np.all(observation.landmarks[arm_ids, 3] > VISIBILITY_THRESHOLD)
-                      and np.all((observation.landmarks[arm_ids, :2] > 0)
-                                 & (observation.landmarks[arm_ids, :2] < 1)))
+    valid = usable_landmarks(observation)
+    arms_known = bool(valid[[11, 12, 13, 14, 15, 16]].all())
     widths, fractions, quality, sections = {}, {}, {}, []
     for name, candidates in (("chest", CHEST_FRACTIONS), ("waist", WAIST_FRACTIONS)):
         samples, usable = [], []
@@ -155,17 +140,16 @@ def torso_sections(observation: PoseObservation, points: np.ndarray):
             try:
                 width, segment = band_width(observation.mask, center, direction, axis)
             except PipelineError as exc:
-                if exc.code == "partial_body":
-                    raise
-                samples.append({"fraction": fraction, "rejected": "torso_segmentation_failed"})
+                samples.append({"fraction": fraction, "rejected": "torso_segmentation_failed", "code": exc.code})
                 continue
             left, right = (float(np.linalg.norm(end - center)) for end in segment)
-            crossing = intersects_arm(segment, points, observation.landmarks[:, 3])
+            crossing = intersects_arm(segment, points, np.where(valid, observation.landmarks[:, 3], 0))
+            arm_evidence = arms_known or uncertain_arm_is_separate(observation, points, center, valid)
             sample = {"fraction": fraction, "width_pixels": width,
                       "left_pixels": round(left, 2), "right_pixels": round(right, 2),
-                      "arm_overlap": crossing}
+                      "arm_overlap": crossing, "arm_evidence": arm_evidence}
             samples.append(sample)
-            if not crossing and arms_known:
+            if not crossing and arm_evidence:
                 usable.append((fraction, width, segment, left, right))
         metric = name + "_circumference"
         if not usable:
@@ -193,52 +177,145 @@ def torso_sections(observation: PoseObservation, points: np.ndarray):
             }
         diagnostic("torso_sections", region=name, mask_size=list(observation.mask.shape[::-1]),
                    arm_landmarks_usable=arms_known, samples=samples, decision=quality[metric])
-    if all(v["reason"] == "torso_segmentation_failed" for v in quality.values()):
-        raise PipelineError("torso_segmentation_failed", "Pose detected, but the central torso outline is missing. Use a clear contrasting background or enter tape measurements.")
     return widths, fractions, quality, sections
+
+
+def thigh_sections(observation, points, scale):
+    valid = usable_landmarks(observation)
+    widths, sections, sides = [], [], []
+    for side, (hip, knee, other_hip, other_knee) in enumerate(((23, 25, 24, 26), (24, 26, 23, 25))):
+        record = {"side": "left" if side == 0 else "right", "status": "unavailable", "samples": []}
+        sides.append(record)
+        # Both axes are needed to rule out a span containing the other leg.
+        if not valid[[hip, knee, other_hip, other_knee]].all():
+            record["reason"] = "leg_geometry_uncertain"
+            continue
+        axis = points[knee] - points[hip]
+        if np.linalg.norm(axis) < 10 or axis[1] <= 0:
+            continue
+        axis /= np.linalg.norm(axis)
+        direction = np.array([axis[1], -axis[0]])
+        other_axis = points[other_knee] - points[other_hip]
+        for fraction in (THIGH_FRACTION, .38, .42):
+            center = points[hip] * (1 - fraction) + points[knee] * fraction
+            try:
+                width, segment = band_width(observation.mask, center, direction, axis)
+                # Intersect with the actual opposite leg axis at this section.
+                # Projecting its unrelated center gave false overlaps in rotated poses.
+                matrix = np.column_stack((direction, -other_axis))
+                if abs(np.linalg.det(matrix)) < 1e-6:
+                    continue
+                offset, along_other = np.linalg.solve(matrix, points[other_hip] - center)
+                low, high = sorted(float(np.dot(end - center, direction)) for end in segment)
+                joined = 0 <= along_other <= 1 and low <= offset <= high
+                record["samples"].append({"fraction": fraction, "width_pixels": width, "contains_other_leg": bool(joined)})
+                if joined:
+                    continue
+                widths.append(width)
+                sections.append((f"thigh_{side + 1}", segment))
+                record.update(status="estimated", fraction=fraction, width_pixels=width)
+                break
+            except PipelineError as exc:
+                record["samples"].append({"fraction": fraction, "rejected": exc.code})
+    info = quality(observation, [23, 24, 25, 26], "individual_thigh_silhouette_projection_multiplier",
+                   None if widths else ("leg_geometry_uncertain" if not valid[[23, 24, 25, 26]].all() else "ambiguous_thigh"), sides=sides)
+    if len(widths) == 1:
+        info.update(status="review_required", reason="ambiguous_thigh", requires_manual_review=True,
+                    message="Only one thigh outline is visible. This single-side estimate needs a tape measurement before sizing.")
+    diagnostic("thigh_sections", sides=sides, measured_sides=len(widths))
+    return (float(np.mean(widths) * scale * KAPPA["thigh"]) if widths else None), info, sections
 
 
 def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list]:
     if not math.isfinite(height_cm) or not 80 <= height_cm <= 250:
         raise PipelineError("invalid_height", "Self-reported height must be between 80 and 250 cm.")
     p = validate_pose(observation)
-    head_indices = [i for i in range(11) if observation.landmarks[i, 3] > VISIBILITY_THRESHOLD
-                    and 0 < observation.landmarks[i, 1] < 1]
-    head_y = float(p[head_indices, 1].min())
-    ankle_y = float(p[[27, 28], 1].max())
+    valid = usable_landmarks(observation)
+    scale, head_y, ankle_y, head_indices, feet = calibrate(observation, p, height_cm)
     height_px = ankle_y - head_y
-    if height_px < 100:
-        raise PipelineError("person_too_small", "Move closer while keeping your entire body in frame.")
-    scale = height_cm / height_px
-    hip_center = p[[23, 24]].mean(axis=0)
-    widths, fractions, metric_quality, sections = torso_sections(observation, p)
-    thigh_widths = []
-    thigh_centers = [p[hip] * (1 - THIGH_FRACTION) + p[knee] * THIGH_FRACTION
-                     for hip, knee in ((23, 25), (24, 26))]
-    for index, (hip, knee) in enumerate(((23, 25), (24, 26))):
-        axis = p[knee] - p[hip]
-        axis /= np.linalg.norm(axis)
-        direction = np.array([axis[1], -axis[0]])
-        width, segment = band_width(observation.mask, thigh_centers[index], direction, axis)
-        other = thigh_centers[1 - index]
-        # A section containing the other thigh is not an individual thigh width.
-        low, high = sorted(float(np.dot(end - thigh_centers[index], direction)) for end in segment)
-        if low <= float(np.dot(other - thigh_centers[index], direction)) <= high:
-            raise PipelineError("ambiguous_thigh", "Separate your legs slightly so each upper-thigh outline is visible.")
-        thigh_widths.append(width)
-        sections.append((f"thigh_{index + 1}", segment))
-    values = {
-        "shoulder_width": float(np.linalg.norm(p[11] - p[12]) * scale),
-        "chest_circumference": widths["chest"] * scale * KAPPA["chest"] if widths["chest"] is not None else None,
-        "waist_circumference": widths["waist"] * scale * KAPPA["waist"] if widths["waist"] is not None else None,
-        "hip_circumference": float(np.linalg.norm(p[23] - p[24]) * scale * KAPPA["hip"]),
-        "thigh_circumference": float(np.mean(thigh_widths) * scale * KAPPA["thigh"]),
-        "inseam_length": float(np.mean([np.linalg.norm(p[i] - hip_center) for i in (27, 28)]) * scale),
-    }
-    if values["shoulder_width"] > 100 or values["inseam_length"] > 200 or max(v for v in values.values() if v is not None) > 400:
-        raise PipelineError("implausible_geometry", "Pose geometry is inconsistent with the reported height.")
+    diagnostic("scale_calibration", image_size=list(observation.image.shape[1::-1]),
+               height_pixels=height_px, scale_factor=scale, foot_evidence=feet)
+    values = dict.fromkeys(("shoulder_width", "chest_circumference", "waist_circumference",
+                           "hip_circumference", "thigh_circumference", "inseam_length"))
+    metric_quality, sections = {}, []
+    shoulder_ok = bool(valid[[11, 12]].all())
+    hips_ok = bool(valid[[23, 24]].all())
+    if shoulder_ok:
+        width = float(np.linalg.norm(p[11] - p[12]))
+        shoulder_ok = width >= 10 and abs(p[11, 1] - p[12, 1]) <= .3 * width
+        world = observation.world_landmarks
+        if world.shape == (33, 3) and np.isfinite(world).all():
+            span = world[11] - world[12]
+            shoulder_ok &= abs(span[2]) <= max(abs(span[0]) * .65, .08)
+    metric_quality["shoulder_width"] = quality(observation, [11, 12], "projected_shoulder_distance",
+        None if shoulder_ok else "shoulder_landmarks_uncertain")
+    if shoulder_ok:
+        values["shoulder_width"] = width * scale
+    torso_ok = shoulder_ok and hips_ok and head_y < p[[11, 12], 1].mean() < p[[23, 24], 1].mean() < ankle_y
+    fractions = {"chest": None, "waist": None}
+    if torso_ok:
+        widths, fractions, torso_quality, torso_lines = torso_sections(observation, p)
+        sections.extend(torso_lines)
+        for name in ("chest", "waist"):
+            key = name + "_circumference"
+            metric_quality[key] = {**quality(observation, [11, 12, 23, 24], "silhouette_projection_multiplier"), **torso_quality[key]}
+            if widths[name] is not None:
+                values[key] = widths[name] * scale * KAPPA[name]
+    else:
+        for name in ("chest", "waist"):
+            metric_quality[name + "_circumference"] = quality(observation, [11, 12, 23, 24],
+                "silhouette_projection_multiplier", "torso_landmarks_uncertain")
+    metric_quality["hip_circumference"] = quality(observation, [23, 24],
+        "hip_silhouette_projection_multiplier", "hip_outline_unavailable")
+    if hips_ok:
+        center = p[[23, 24]].mean(0)
+        axis = np.array([0., 1.])
+        try:
+            hip_width, segment = band_width(observation.mask, center, np.array([1., 0.]), axis)
+            if (intersects_arm(segment, p, np.where(valid, observation.landmarks[:, 3], 0))
+                    or not (valid[[11, 12, 13, 14, 15, 16]].all()
+                            or uncertain_arm_is_separate(observation, p, center, valid))):
+                raise PipelineError("hip_outline_unavailable", "Arms obscure the hip outline.")
+            values["hip_circumference"] = hip_width * scale * KAPPA["hip"]
+            info = quality(observation, [23, 24], "hip_silhouette_projection_multiplier")
+            left, right = (float(np.linalg.norm(end - center)) for end in segment)
+            if hip_width > 2.5 * np.linalg.norm(p[23] - p[24]) or abs(left - right) / hip_width > .35:
+                info.update(status="review_required", reason="wide_clothing_outline", requires_manual_review=True,
+                            message="The hip outline is wide or asymmetric relative to the visible joints. Clothing or body shape may explain it; confirm with a tape measure.")
+            metric_quality["hip_circumference"] = info
+            sections.append(("hip", segment))
+            diagnostic("hip_section", width_pixels=hip_width, left_pixels=left, right_pixels=right, decision=info["status"])
+        except PipelineError as exc:
+            diagnostic("hip_section", decision="unavailable", reason=exc.code)
+    thigh_value, thigh_info, thigh_lines = thigh_sections(observation, p, scale)
+    values["thigh_circumference"] = thigh_value
+    metric_quality["thigh_circumference"] = thigh_info
+    sections.extend(thigh_lines)
+    leg_ids = [23, 24, 25, 26, 27, 28]
+    legs_ok = bool(valid[leg_ids].all())
+    if legs_ok:
+        legs_ok = (p[23, 0] - p[24, 0]) * (p[25, 0] - p[26, 0]) > 0
+        for hip, knee, ankle in ((23, 25, 27), (24, 26, 28)):
+            length = np.linalg.norm(p[knee] - p[hip]) + np.linalg.norm(p[ankle] - p[knee])
+            legs_ok &= p[hip, 1] < p[knee, 1] < p[ankle, 1] and length > 0 and (p[ankle, 1] - p[hip, 1]) / length >= .9
+    metric_quality["inseam_length"] = quality(observation, leg_ids, "hip_midpoint_to_ankles_proxy",
+        None if legs_ok else "leg_geometry_uncertain")
+    if legs_ok:
+        center = p[[23, 24]].mean(0)
+        values["inseam_length"] = float(np.mean([np.linalg.norm(p[i] - center) for i in (27, 28)]) * scale)
+    for key, value in values.items():
+        limit = 100 if key == "shoulder_width" else 200 if key == "inseam_length" else 400
+        if value is not None and not 0 < value <= limit:
+            values[key] = None
+            metric_quality[key].update(status="unavailable", reason="implausible_geometry", requires_manual_review=True)
     review = [name for name, info in metric_quality.items() if info["requires_manual_review"]]
     reasons = {
+        "shoulder_landmarks_uncertain": "Shoulder position or viewing angle is uncertain. Face forward or enter this tape measurement.",
+        "torso_landmarks_uncertain": "Shoulders or hips cannot locate this torso region reliably. Retry a clear front view or enter a tape measurement.",
+        "hip_outline_unavailable": "The outer hip outline is obscured or incomplete. Enter a hip tape measurement; hip joint spacing is not body width.",
+        "ambiguous_thigh": "Both upper-thigh boundaries cannot be distinguished reliably. Other measurements are retained; enter a thigh tape measurement or try a slightly separated stance.",
+        "leg_geometry_uncertain": "Leg landmarks, overlap or a bent stance prevent this estimate. Enter a tape measurement or stand upright with uncrossed legs.",
+        "implausible_geometry": "This region is inconsistent with the entered height. Confirm the height or enter a tape measurement.",
         "arms_overlap_torso": "Arms overlap the visible torso outline; no body boundary was invented. Move arms slightly away or enter this tape measurement.",
         "arm_landmarks_uncertain": "Elbows or wrists are unclear or outside the frame; arm separation cannot be verified. Keep both arms visible or enter this tape measurement.",
         "wide_clothing_outline": "The visible outline is wide relative to the shoulders. Loose/layered clothing or body shape may explain it; confirm with a tape measure.",
@@ -247,7 +324,7 @@ def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list
     }
     for name, info in metric_quality.items():
         if info["requires_manual_review"]:
-            info["message"] = reasons[info["reason"]]
+            info.setdefault("message", reasons[info["reason"]])
     return {
         "scale_factor": scale,
         "measurements": {name: round(value, 2) if value is not None else None for name, value in values.items()},
@@ -260,7 +337,7 @@ def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list
         "geometry": {"height_cm": height_cm, "height_pixels": height_px,
                      "head_y": head_y, "ankle_y": ankle_y,
                      "head_reference": "minimum y of visible MediaPipe face landmarks 0-10",
-                     "head_landmark_indices": head_indices,
+                     "head_landmark_indices": head_indices, "foot_evidence": feet,
                      "image_size": list(observation.image.shape[1::-1]),
                      "projection_multipliers": KAPPA,
                      "chest_torso_fraction": fractions["chest"], "waist_torso_fraction": fractions["waist"],
@@ -269,9 +346,9 @@ def estimate(observation: PoseObservation, height_cm: float) -> tuple[dict, list
         "warnings": [
             "Single-view estimates depend on self-reported height, perspective, clothing and segmentation.",
             "MediaPipe has no crown or crotch landmark. Face-to-ankle scale and hip-midpoint inseam are biased anatomical proxies.",
-            "Circumference multipliers are specified heuristics, not calibrated tape measurements. Hip joint spacing is not outer hip width.",
+            "Circumference multipliers are specified heuristics, not calibrated tape measurements. Hip circumference uses the observed outer silhouette; clothing can obscure the body.",
             (f"Chest uses an observed arm-free section at {fractions['chest']:.0%} of shoulder-to-hip distance; it may miss the fullest chest/bust."
-             if fractions["chest"] is not None else "Chest circumference is unavailable; its body outline could not be separated from the arms."),
+             if fractions["chest"] is not None else "Chest circumference is unavailable. " + metric_quality["chest_circumference"]["message"]),
             "Confirm important dimensions with a tape measure before choosing a size.",
         ] + [name.replace("_", " ") + ": " + metric_quality[name]["message"] for name in review],
     }, sections
@@ -316,12 +393,13 @@ class MeasurementService:
         canvas = Image.fromarray(image)
         draw = ImageDraw.Draw(canvas)
         points = observation.landmarks[:, :2] * [image.shape[1], image.shape[0]]
+        valid = usable_landmarks(observation)
         for a, b in ((11, 12), (11, 23), (12, 24), (23, 24), (11, 13), (13, 15),
                      (12, 14), (14, 16), (23, 25), (25, 27), (24, 26), (26, 28), (27, 29), (28, 30)):
-            if min(observation.landmarks[[a, b], 3]) > VISIBILITY_THRESHOLD:
+            if valid[[a, b]].all():
                 draw.line([tuple(points[a]), tuple(points[b])], fill="#34bd68", width=2)
         for index, point in enumerate(points):
-            if observation.landmarks[index, 3] > VISIBILITY_THRESHOLD:
+            if valid[index]:
                 x, y = point
                 draw.ellipse((x - 3, y - 3, x + 3, y + 3), fill="#ffd34d")
                 draw.text((x + 4, y), str(index), fill="#193c28")
@@ -331,10 +409,11 @@ class MeasurementService:
         response = ExtractionResponse(
             **result, measurement_id=filename, annotated_image_url=f"/static/annotated/{filename}.png",
             landmarks_normalized=observation.landmarks.tolist(),
+            landmark_presence=observation.presence.tolist() if observation.presence is not None else None,
             provenance={"model": "MediaPipe Pose Landmarker Full", "landmarks": 33,
                         "model_sha256": self.detector.model_sha256, "device": "cpu",
                         "local_gpu_used": False, "input_sha256": hashlib.sha256(data).hexdigest(),
-                        "method": "landmark-silhouette-projection-v3",
+                        "method": "landmark-silhouette-projection-v4",
                         "segmentation": "MediaPipe probabilities with deterministic CPU GrabCut refinement"},
         )
         # Validate all geometry before creating successful artifacts.
@@ -346,6 +425,7 @@ class MeasurementService:
             (self.output_root / f"{filename}.json").write_text(json.dumps({
                 **response.model_dump(), "landmarks_normalized": observation.landmarks.tolist(),
                 "landmarks_world_meters": observation.world_landmarks.tolist(),
+                "landmark_presence": observation.presence.tolist() if observation.presence is not None else None,
             }, indent=2, allow_nan=False), encoding="utf-8")
         except OSError as exc:
             self.remove_artifacts(filename)

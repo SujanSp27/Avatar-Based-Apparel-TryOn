@@ -134,31 +134,36 @@ def _revealed_region_transitions(alpha, old, source, target, category):
     return adjusted
 
 
-def _cropped_reference_hem(old, target, reference_labels):
-    """Recognize a short flat-lay bodice and bound its newly exposed midriff.
+def _is_cropped_reference(reference_labels):
+    """Recognize a short flat-lay bodice from already validated reference labels.
 
     Callers supply labels only after validating a complete flat-lay reference.
     Sleeve span alone cannot establish a crop: the central bodice must also be
     short relative to its hem width. This is a conservative geometric heuristic,
     not a body measurement or guarantee about hidden anatomy.
     """
-    empty = np.zeros_like(old)
     if reference_labels is None:
-        return empty
+        return False
     fabric = reference_labels == 3
     if fabric.ndim != 2 or np.count_nonzero(fabric) < 256:
-        return empty
+        return False
     y, x = np.where(fabric)
     height, width = np.ptp(y) + 1, np.ptp(x) + 1
     if height / width > .85:
-        return empty
+        return False
     center = int((x.min() + x.max()) // 2)
     half = max(1, round(width * .05))
     spans = [np.ptp(rows) + 1 for c in range(center - half, center + half + 1)
              if (rows := np.flatnonzero(fabric[:, c])).size]
     hem_width = float(np.median(fabric[y.max() - round(height * .25):y.max()].sum(axis=1)))
     if len(spans) < half or hem_width <= 0 or not .35 <= np.median(spans) / hem_width <= .85:
-        return empty
+        return False
+    return True
+
+
+def _cropped_reference_hem(old, target, reference_labels):
+    if not _is_cropped_reference(reference_labels):
+        return np.zeros_like(old)
     old_rows = np.nonzero(old)[0]
     old_height = int(np.ptp(old_rows)) + 1
     # Only torso skin in the lower 40% qualifies. Neck, arms and legs retain
@@ -212,6 +217,14 @@ def preserve_regions(original, generated, source, target, category, *, reference
     hem_limit = 0
     if category == "tops":
         hem_extension, hem_limit = _top_hem_extension(old, new, source, feather, extension)
+        if _is_cropped_reference(reference_labels) and hem_extension.any():
+            # The generic longer-shirt allowance must not conceal crop-top
+            # length drift by overwriting original shorts or trousers.
+            raise PipelineError(
+                "garment_length_changed",
+                "The generated crop top overlaps the original lower garment. "
+                "Its cropped hem was not preserved; this result was rejected. Retry with similar clothing coverage.",
+            )
         extension |= hem_extension
     support = old | extension
     edge = cv2.dilate(support.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (feather * 2 + 1,) * 2)).astype(bool)
@@ -240,6 +253,6 @@ def preserve_regions(original, generated, source, target, category, *, reference
         "revealedRegionTransitionPixels": int(np.count_nonzero(transitions & ~protected)),
         "referenceCropHemPixels": int(np.count_nonzero(crop_hem)),
         "estimatedPreviouslyHiddenSkinPixels": int(np.count_nonzero(revealed_skin & ~protected)),
-        "compositor": "semantic-category-preservation-v8",
+        "compositor": "semantic-category-preservation-v9",
         "limitations": "Semantic parsing can mislabel seams and skin. Newly exposed skin is generated, not observed anatomy. Visual review is still required.",
     }

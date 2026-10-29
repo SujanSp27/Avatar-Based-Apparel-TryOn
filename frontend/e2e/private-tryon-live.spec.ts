@@ -19,7 +19,11 @@ const evidence = path.join(
   root,
   `experiments/vastraview/private-tryon${suffix}`,
 );
-type State = { idempotencyKey: string; jobId?: string };
+type State = {
+  idempotencyKey: string;
+  jobId?: string;
+  inputFingerprint?: string;
+};
 
 test("real private Colab result survives refresh, denies strangers and downloads correctly", async ({
   page,
@@ -31,9 +35,57 @@ test("real private Colab result survives refresh, denies strangers and downloads
   );
   test.setTimeout(300000);
   mkdirSync(evidence, { recursive: true });
+  const personPath = path.resolve(
+    root,
+    process.env.VASTRAVIEW_LIVE_PERSON ?? "data/raw/studio-person.jpg",
+  );
+  const garmentPath = path.resolve(
+    root,
+    process.env.VASTRAVIEW_LIVE_GARMENT ?? "data/raw/sage-polo.jpg",
+  );
+  const category = process.env.VASTRAVIEW_LIVE_CATEGORY ?? "t-shirt";
+  const photoType = process.env.VASTRAVIEW_LIVE_PHOTO_TYPE ?? "flat-lay";
+  const upload = (filename: string) => {
+    const mimeType = {
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".png": "image/png",
+      ".webp": "image/webp",
+    }[path.extname(filename).toLowerCase()];
+    if (!mimeType)
+      throw new Error("Live-test images must be JPEG, PNG or WebP");
+    return {
+      name: path.basename(filename),
+      mimeType,
+      buffer: readFileSync(filename),
+    };
+  };
+  const person = upload(personPath),
+    garment = upload(garmentPath);
+  const inputFingerprint = createHash("sha256")
+    .update(JSON.stringify({ category, photoType }))
+    .update(createHash("sha256").update(person.buffer).digest())
+    .update(createHash("sha256").update(garment.buffer).digest())
+    .digest("hex");
   const state: State = existsSync(stateFile)
     ? JSON.parse(readFileSync(stateFile, "utf8"))
     : { idempotencyKey: randomUUID() };
+  if (state.inputFingerprint)
+    expect(
+      state.inputFingerprint,
+      "Saved job belongs to different inputs; use another VASTRAVIEW_LIVE_CASE.",
+    ).toBe(inputFingerprint);
+  else if (
+    state.jobId &&
+    (process.env.VASTRAVIEW_LIVE_PERSON ||
+      process.env.VASTRAVIEW_LIVE_GARMENT ||
+      process.env.VASTRAVIEW_LIVE_CATEGORY ||
+      process.env.VASTRAVIEW_LIVE_PHOTO_TYPE)
+  )
+    throw new Error(
+      "Existing job has no input fingerprint; preserve it and use a new case name.",
+    );
+  state.inputFingerprint = inputFingerprint;
   if (existsSync(sessionFile)) {
     await context.addCookies(
       JSON.parse(readFileSync(sessionFile, "utf8")).cookies,
@@ -76,18 +128,10 @@ test("real private Colab result survives refresh, denies strangers and downloads
         "Idempotency-Key": state.idempotencyKey,
       },
       multipart: {
-        personImage: {
-          name: "studio-person.jpg",
-          mimeType: "image/jpeg",
-          buffer: readFileSync(path.join(root, "data/raw/studio-person.jpg")),
-        },
-        garmentImage: {
-          name: "sage-polo.jpg",
-          mimeType: "image/jpeg",
-          buffer: readFileSync(path.join(root, "data/raw/sage-polo.jpg")),
-        },
-        garmentCategory: "t-shirt",
-        garmentPhotoType: "flat-lay",
+        personImage: person,
+        garmentImage: garment,
+        garmentCategory: category,
+        garmentPhotoType: photoType,
         tryonMode: "2d",
       },
     });

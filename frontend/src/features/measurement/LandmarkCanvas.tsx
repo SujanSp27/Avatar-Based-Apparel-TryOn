@@ -39,10 +39,12 @@ const connections = [
 export default function LandmarkCanvas({
   file,
   landmarks,
+  presence,
   show,
 }: {
   file: File;
   landmarks?: number[][];
+  presence?: number[] | null;
   show: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -60,10 +62,18 @@ export default function LandmarkCanvas({
       const ctx = target.getContext("2d")!;
       ctx.drawImage(image, 0, 0);
       if (show && landmarks?.length === 33) {
+        const inFrame = (index: number) =>
+          landmarks[index]
+            .slice(0, 2)
+            .every((v) => Number.isFinite(v) && v > 0 && v < 1);
+        const reliable = (index: number) =>
+          inFrame(index) &&
+          landmarks[index][3] > 0.65 &&
+          (presence?.[index] === undefined || presence[index] > 0.5);
         ctx.strokeStyle = "#b4ff8c";
         ctx.lineWidth = Math.max(2, image.width / 350);
         for (const [a, b] of connections) {
-          if (Math.min(landmarks[a][3], landmarks[b][3]) < 0.65) continue;
+          if (!reliable(a) || !reliable(b)) continue;
           ctx.beginPath();
           ctx.moveTo(
             landmarks[a][0] * image.width,
@@ -75,7 +85,8 @@ export default function LandmarkCanvas({
           );
           ctx.stroke();
         }
-        landmarks.forEach(([x, y, , visibility], index) => {
+        landmarks.forEach(([x, y], index) => {
+          if (!inFrame(index)) return;
           ctx.beginPath();
           ctx.arc(
             x * image.width,
@@ -84,7 +95,7 @@ export default function LandmarkCanvas({
             0,
             2 * Math.PI,
           );
-          ctx.fillStyle = visibility > 0.65 ? "#f5ffc8" : "#cf8543";
+          ctx.fillStyle = reliable(index) ? "#f5ffc8" : "#cf8543";
           ctx.fill();
           ctx.fillStyle = "#123c32";
           ctx.font = `${Math.max(11, image.width / 65)}px sans-serif`;
@@ -106,7 +117,7 @@ export default function LandmarkCanvas({
       image.onerror = null;
       URL.revokeObjectURL(url);
     };
-  }, [file, landmarks, show]);
+  }, [file, landmarks, presence, show]);
   return (
     <>
       {error ? (

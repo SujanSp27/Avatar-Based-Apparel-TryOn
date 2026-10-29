@@ -268,9 +268,14 @@
    Premium Result Comparison Panel (.premium-comparison)
    ========================================================================== */
 .premium-comparison {
-  --comparison-height: 660px;
+  --comparison-height: 540px;
   width: 100%;
-  max-width: 100%;
+  /* The card follows the photograph in either mode, avoiding empty side
+     gutters once the image reaches its height limit. Include frame padding. */
+  max-width: min(
+    1100px,
+    calc(var(--comparison-height) * var(--photo-ratio) * var(--panel-count) + 26px)
+  );
   margin-inline: auto;
   min-width: 0;
 }
@@ -358,7 +363,7 @@
 }
 
 .comparison-surface {
-  padding: 16px 16px 0;
+  padding: 12px 12px 0;
 }
 
 /* Comparison Stage Container */
@@ -366,7 +371,6 @@
   position: relative;
   width: 100%;
   max-width: calc(var(--comparison-height) * var(--photo-ratio));
-  max-height: 720px;
   margin-inline: auto;
   overflow: hidden;
   border-radius: 12px;
@@ -381,7 +385,9 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr);
-  gap: 2px;
+  /* A gap subtracts width from the photos but not the shared aspect ratio,
+     causing letterboxing and a visible stripe. The slider divider overlays. */
+  gap: 0;
   background: #E8EBE2;
 }
 
@@ -669,8 +675,8 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
-  padding: 14px 18px;
+  gap: 8px;
+  padding: 12px;
   background: #FAF8F5;
   border-top: 1px solid #EBECE4;
 }
@@ -678,17 +684,17 @@
 .comparison-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .comparison-footer .button {
   min-height: 42px;
   height: 42px;
   border-radius: 10px;
-  padding: 0 18px;
-  font-size: 13px;
+  padding: 0 12px;
+  font-size: 12px;
   font-weight: 600;
-  gap: 8px;
+  gap: 7px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1038,7 +1044,7 @@
     gap: 24px;
   }
   .premium-comparison {
-    --comparison-height: 540px;
+    --comparison-height: 500px;
   }
   .empty-with-photo {
     grid-template-columns: minmax(0, 1fr);

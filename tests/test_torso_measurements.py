@@ -110,9 +110,17 @@ def test_bad_segmentation_does_not_become_partial_success(observation, kind, cod
         observation.mask[:] = False
     else:
         observation.mask[280:490, 290:310] = False
-    with pytest.raises(PipelineError) as exc:
-        estimate(observation, 160)
-    assert exc.value.code == code
+    if kind == "central-hole":
+        result, _ = estimate(observation, 160)
+        assert result["measurements"]["chest_circumference"] is None
+        assert result["measurements"]["waist_circumference"] is None
+        assert result["quality"]["metrics"]["chest_circumference"]["reason"] == code
+        assert result["measurements"]["shoulder_width"] == 40
+        assert result["measurements"]["thigh_circumference"] == 30
+    else:
+        with pytest.raises(PipelineError) as exc:
+            estimate(observation, 160)
+        assert exc.value.code == code
 
 
 def test_probability_map_resize_does_not_transpose_axes_or_use_logits():
@@ -258,10 +266,10 @@ def test_structured_diagnostics_omit_upload_content_and_failure_cause_is_logged(
     caplog.set_level("INFO", logger="vastraview.measurements")
     client, _ = api
     assert client.post("/api/v1/measurements/extract", data={"height_cm": 160}, files=upload()).status_code == 200
-    observation.landmarks[11, 3] = .5
+    observation.landmarks[27, 3] = .5
     assert client.post("/api/v1/measurements/extract", data={"height_cm": 160}, files=upload()).status_code == 422
     rows = [json.loads(r.message) for r in caplog.records if r.name == "vastraview.measurements"]
     assert {"image_preprocessing", "pose_validation", "torso_sections", "measurement_completed", "measurement_failed"} <= {r["event"] for r in rows}
     failure = next(r for r in rows if r["event"] == "measurement_failed")
-    assert failure["code"] == "low_visibility" and failure["duration_seconds"] >= 0
+    assert failure["code"] == "scale_unavailable" and failure["duration_seconds"] >= 0
     assert all(word not in json.dumps(rows) for word in ["person.png", "base64", "token", "input_sha256"])

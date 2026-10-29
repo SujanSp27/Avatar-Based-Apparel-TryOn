@@ -4,6 +4,7 @@ import {
   metricLabels,
   type Measurements,
   type Metric,
+  type Extraction,
 } from "../../types/studio";
 export const validMeasurements = (values?: Measurements) =>
   !!values &&
@@ -19,9 +20,13 @@ export const validMeasurements = (values?: Measurements) =>
 export default function MeasurementGrid({
   values,
   onChange,
+  quality,
+  reviewed = [],
 }: {
   values?: Measurements;
   onChange: (values: Measurements, changed: Metric) => void;
+  quality?: Extraction["quality"];
+  reviewed?: Metric[];
 }) {
   const { user } = useAuth();
   const [unit, setUnit] = useState<"cm" | "in">(user?.measurement_unit ?? "cm");
@@ -117,15 +122,24 @@ export default function MeasurementGrid({
                 )}
               </form>
             ) : (
-              <div className="metric-value">
-                {values?.[key] ? (values[key] / factor).toFixed(1) : "—"}
-                <small>{unit}</small>
+              <div
+                className={`metric-value ${values && !values[key] ? "metric-unavailable" : ""}`}
+              >
+                {values?.[key]
+                  ? (values[key] / factor).toFixed(1)
+                  : values
+                    ? "Unavailable"
+                    : "—"}
+                {!!values?.[key] && <small>{unit}</small>}
               </div>
             )}
             <span className="metric-caption">
-              {values
-                ? "Review against a tape measure"
-                : "Available after your scan"}
+              {reviewed.includes(key)
+                ? "Manually corrected"
+                : (quality?.metrics?.[key]?.message ??
+                  (values
+                    ? "Photo estimate · accuracy is not calibrated"
+                    : "Available after your scan"))}
             </span>
           </article>
         ))}

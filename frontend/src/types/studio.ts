@@ -24,6 +24,7 @@ export type Extraction = {
   measurements: Record<Metric, number | null>;
   annotated_image_url: string;
   landmarks_normalized: number[][];
+  landmark_presence?: number[] | null;
   warnings: string[];
   quality: {
     estimates_only: boolean;

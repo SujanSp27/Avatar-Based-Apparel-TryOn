@@ -37,13 +37,13 @@ def observation():
         11: (200, 250), 12: (400, 250), 23: (240, 500), 24: (360, 500),
         13: (160, 400), 14: (440, 400), 15: (140, 500), 16: (460, 500),
         25: (240, 700), 26: (360, 700), 27: (240, 900), 28: (360, 900),
-        29: (240, 910), 30: (360, 910),
+        29: (240, 910), 30: (360, 910), 31: (245, 920), 32: (365, 920),
     }.items():
         points[index, :2] = xy
     points[:, :2] /= [600, 1000]
     points[:, 3] = 0.99
     mask = np.zeros((1000, 600), dtype=bool)
-    mask[250:500, 200:400] = True
+    mask[250:520, 200:400] = True
     mask[500:930, 210:270] = True
     mask[500:930, 330:390] = True
     return PoseObservation(np.full((1000, 600, 3), 255, dtype=np.uint8),
@@ -53,11 +53,11 @@ def observation():
 def test_exact_geometry_and_scaling(observation):
     result, _ = estimate(observation, 160)
     # Hpx = 900-100; S=.2. Widths shoulder=200, chest/waist=200,
-    # hip joints=120, each thigh=60, mean inseam=sqrt(400**2+60**2).
+    # hip outline=200, each thigh=60, mean inseam=sqrt(400**2+60**2).
     assert result["scale_factor"] == pytest.approx(0.2)
     assert result["measurements"] == pytest.approx({
         "shoulder_width": 40, "chest_circumference": 98,
-        "waist_circumference": 92, "hip_circumference": 57.6,
+        "waist_circumference": 92, "hip_circumference": 96,
         "thigh_circumference": 30, "inseam_length": 80.89,
     })
     larger, _ = estimate(observation, 200)
@@ -67,12 +67,28 @@ def test_exact_geometry_and_scaling(observation):
 
 
 @pytest.mark.parametrize("landmark", [0, 11, 12, 23, 24, 25, 26, 27, 28, 29, 30])
-def test_visibility_is_strictly_greater_than_threshold(observation, landmark):
+def test_visibility_threshold_applies_to_dependencies_without_erasing_other_regions(observation, landmark):
     observation.landmarks[landmark, 3] = .65
-    with pytest.raises(PipelineError, match="Visibility"):
-        estimate(observation, 172)
+    if landmark in (27, 28):
+        with pytest.raises(PipelineError) as error:
+            estimate(observation, 160)
+        assert error.value.code == "scale_unavailable"
+    else:
+        result, _ = estimate(observation, 160)
+        if landmark in (11, 12):
+            assert result["measurements"]["shoulder_width"] is None
+            assert result["measurements"]["chest_circumference"] is None
+            assert result["measurements"]["thigh_circumference"] == 30
+        elif landmark in (23, 24, 25, 26):
+            assert result["measurements"]["thigh_circumference"] is None
+            assert result["measurements"]["inseam_length"] is None
+            assert result["measurements"]["shoulder_width"] == 40
+        else:
+            assert all(value is not None for value in result["measurements"].values())
+        assert result["quality"]["minimum_key_landmark_visibility"] == .65
     observation.landmarks[landmark, 3] = .6501
-    estimate(observation, 172)
+    recovered, _ = estimate(observation, 160)
+    assert all(value is not None for value in recovered["measurements"].values())
 
 
 def test_scaling_uses_pixel_axes_not_normalized_distances(observation):
@@ -95,16 +111,19 @@ def test_partial_and_crossed_body_fail(observation):
     assert error.value.code == "partial_body"
     observation.landmarks[27, 1] = .9
     observation.landmarks[[25, 26], 0] = observation.landmarks[[26, 25], 0]
-    with pytest.raises(PipelineError) as error:
-        estimate(observation, 172)
-    assert error.value.code == "unsupported_pose"
+    result, _ = estimate(observation, 160)
+    assert result["measurements"]["inseam_length"] is None
+    assert result["measurements"]["chest_circumference"] == 98
 
 
 def test_merged_thighs_do_not_measure_both_legs_as_one(observation):
     observation.mask[500:930, 210:390] = True
-    with pytest.raises(PipelineError) as error:
-        estimate(observation, 172)
-    assert error.value.code == "ambiguous_thigh"
+    result, _ = estimate(observation, 160)
+    assert result["measurements"]["thigh_circumference"] is None
+    assert result["quality"]["metrics"]["thigh_circumference"]["reason"] == "ambiguous_thigh"
+    assert result["measurements"]["shoulder_width"] == 40
+    assert result["measurements"]["chest_circumference"] == 98
+    assert result["measurements"]["waist_circumference"] == 92
 
 
 def test_connected_arm_is_not_included_in_chest_measurement(observation):

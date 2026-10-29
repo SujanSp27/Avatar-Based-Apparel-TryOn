@@ -23,6 +23,7 @@ class PoseObservation:
     world_landmarks: np.ndarray  # 33 xyz in model-estimated metres, not used for scale
     mask: np.ndarray
     probabilities: np.ndarray | None = None
+    presence: np.ndarray | None = None  # Tasks probability; absent in older fixtures/adapters
 
 
 def normalize_probabilities(probabilities: np.ndarray, shape: tuple[int, int]) -> np.ndarray:
@@ -157,6 +158,7 @@ class MediaPipePose:
                 landmarks=np.array([[p.x, p.y, p.z, p.visibility] for p in result.pose_landmarks[0]]),
                 world_landmarks=np.array([[p.x, p.y, p.z] for p in result.pose_world_landmarks[0]]),
                 mask=refine_mask(image, prior), probabilities=prior,
+                presence=np.array([p.presence for p in result.pose_landmarks[0]], dtype=float),
             )
 
     def close(self):

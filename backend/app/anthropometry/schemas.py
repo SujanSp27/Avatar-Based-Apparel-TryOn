@@ -48,10 +48,14 @@ class Measurements(StrictSchema):
 
 
 class PhotoMeasurements(Measurements):
-    # Missing torso boundaries are unknown, never zero or an arm-inclusive width.
+    # Missing regional evidence is unknown, never zero or an invented contour.
     # Manual/saved complete Measurements remain strictly positive and non-null.
     chest_circumference: Centimeters | None = None
     waist_circumference: Centimeters | None = None
+    shoulder_width: Annotated[float, Field(gt=0, le=100)] | None = None
+    hip_circumference: Centimeters | None = None
+    thigh_circumference: Centimeters | None = None
+    inseam_length: Annotated[float, Field(gt=0, le=200)] | None = None
 
 
 class ExtractionResponse(StrictSchema):
@@ -64,6 +68,7 @@ class ExtractionResponse(StrictSchema):
     provenance: dict
     warnings: list[str]
     landmarks_normalized: list[list[float]] = Field(default_factory=list)
+    landmark_presence: list[float] | None = None
 
 
 class StoredMeasurement(ExtractionResponse):

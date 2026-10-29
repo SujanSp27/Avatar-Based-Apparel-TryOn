@@ -830,6 +830,12 @@ select,
   letter-spacing: 0;
   margin-left: 6px;
 }
+.metric-value.metric-unavailable {
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 0;
+  margin-block: 10px;
+}
 .metric-caption {
   font-size: 9px;
   color: #657555;

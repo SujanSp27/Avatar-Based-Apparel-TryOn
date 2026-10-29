@@ -253,6 +253,20 @@ def test_verified_cropped_reference_allows_only_bounded_midriff(person):
     np.testing.assert_array_equal(image[source == 13], original[source == 13])
 
 
+def test_cropped_reference_cannot_use_long_shirt_allowance_to_replace_shorts(person):
+    original, generated, source = person
+    target = source.copy()
+    target[125:135, 45:115] = 3
+    before = generated.copy()
+    # Normal shirts retain the established bounded extension behavior.
+    _, _, report = preserve_regions(original, generated, source, target, "tops")
+    assert report["hemExtensionPixels"] > 0
+    with pytest.raises(PipelineError) as exc:
+        preserve_regions(original, generated, source, target, "tops", reference_labels=cropped_reference())
+    assert exc.value.code == "garment_length_changed"
+    np.testing.assert_array_equal(generated, before)
+
+
 @pytest.mark.parametrize('label,start,end', [(12, 105, 125), (14, 105, 125),
                                           (16, 45, 70), (16, 90, 125)])
 def test_crop_reference_cannot_waive_limb_neck_or_excessive_exposure(person, label, start, end):

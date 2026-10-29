@@ -1,7 +1,7 @@
 import { authenticatedSuite } from "./session-fixture";
 import { test, expect, type Page } from "@playwright/test";
 
-authenticatedSuite(test);
+authenticatedSuite(test, process.env.VASTRAVIEW_COMPARISON_SESSION);
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";

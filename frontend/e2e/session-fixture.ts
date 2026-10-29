@@ -6,6 +6,8 @@ import {
   test as base,
 } from "@playwright/test";
 import { randomUUID } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 
 // Real account/session for transport and layout tests. Inference itself is
 // intercepted by those tests; authentication is never mocked away.
@@ -25,11 +27,37 @@ export async function signInForTest(page: Page) {
 
 // Reuse one real account per file, preserving rotating cookies between isolated
 // browser contexts. Layout tests must not consume the production signup quota.
-export function authenticatedSuite(test: typeof base) {
+export function authenticatedSuite(
+  test: typeof base,
+  existingSession?: string,
+) {
+  // Explicit opt-in for repeated layout checks. Reuse an evaluation account
+  // without bypassing refresh validation or deleting an existing account.
+  // Do not run the evaluator concurrently with tests using its rotating cookies.
+  const sessionPath = existingSession
+    ? path.resolve("..", existingSession)
+    : undefined;
+  if (sessionPath) {
+    const relative = path.relative(path.resolve("../.runtime"), sessionPath);
+    if (
+      relative.startsWith("..") ||
+      path.isAbsolute(relative) ||
+      !relative.endsWith(".json")
+    ) {
+      throw new Error(
+        "Existing test session must be a private .runtime JSON file",
+      );
+    }
+  }
   let cookies: Awaited<ReturnType<BrowserContext["cookies"]>> = [];
   let password = "";
   test.beforeEach(async ({ page, context }) => {
     page.setDefaultTimeout(15000);
+    if (!cookies.length && sessionPath) {
+      cookies = JSON.parse(readFileSync(sessionPath, "utf8")).cookies;
+      if (!Array.isArray(cookies) || !cookies.length)
+        throw new Error("Saved test session is empty");
+    }
     if (cookies.length) await context.addCookies(cookies);
     else password = await signInForTest(page);
   });
@@ -48,6 +76,13 @@ export function authenticatedSuite(test: typeof base) {
       }),
     );
     cookies = await context.cookies();
+    if (sessionPath) {
+      const saved = JSON.parse(readFileSync(sessionPath, "utf8"));
+      writeFileSync(
+        sessionPath,
+        JSON.stringify({ ...saved, cookies }, null, 2),
+      );
+    }
   });
   test.afterAll(async () => {
     if (!password || !cookies.length) return;

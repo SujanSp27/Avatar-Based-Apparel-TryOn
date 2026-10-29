@@ -1,0 +1,55 @@
+{
+  "version": 4,
+  "method": "landmark-silhouette-projection-v4",
+  "purpose": "Local CPU extraction and partial-result regression; not anthropometric accuracy validation or training data",
+  "gender_classifier_used": false,
+  "test_height_cm": 172,
+  "height_is_ground_truth": false,
+  "fixtures": [
+    {
+      "path": "data/raw/studio-person.jpg",
+      "rights_manifest": "data/raw/sample-source.json",
+      "scenario": "Full-body fitted shirt, jeans, shoes, neutral studio background",
+      "expected": "six_estimates",
+      "accuracy_verified": false
+    },
+    {
+      "path": "data/raw/fashn-samples/person5.png",
+      "rights_manifest": "data/raw/fashn-samples/manifest.json",
+      "scenario": "Female public example: raised arms, touching thighs, shorts, sandals; right heel visibility below threshold",
+      "previous_failure": "low_visibility: right heel",
+      "expected": "partial_estimates",
+      "unavailable": ["chest_circumference", "waist_circumference", "thigh_circumference"],
+      "accuracy_verified": false
+    },
+    {
+      "path": "data/raw/fashn-samples/person1.png",
+      "rights_manifest": "data/raw/fashn-samples/manifest.json",
+      "scenario": "Female public example: layered dress, boots, one uncertain ankle",
+      "previous_failure": "low_visibility: left ankle, left heel, right heel",
+      "expected_error": "scale_unavailable",
+      "accuracy_verified": false
+    },
+    {
+      "path": "data/raw/fashion.jpg",
+      "source": "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=900&q=85",
+      "scenario": "Male full-body suit, bent arms, walking stance, outdoor background",
+      "expected": "partial_estimates_with_review",
+      "accuracy_verified": false
+    },
+    {
+      "path": "data/raw/vton-official/person-model-5.png",
+      "rights_manifest": "data/raw/vton-official/manifest.json",
+      "scenario": "Male sleeveless example cropped above knees; valid VTON input, invalid height-calibrated measurement input",
+      "expected_error": "partial_body",
+      "accuracy_verified": false
+    }
+  ],
+  "synthetic_tests": "tests/test_measurement_regions.py",
+  "known_gaps": [
+    "No tape-measure ground truth or calibrated circumference model",
+    "No claim of broad demographic accuracy from five public examples",
+    "Latest request referenced screenshots but did not attach their source image files; exact-case identity is unverified",
+    "Loose or layered clothing can hide anatomical boundaries; manual corrections remain necessary"
+  ]
+}

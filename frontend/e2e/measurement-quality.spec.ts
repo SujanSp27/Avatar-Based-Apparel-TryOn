@@ -54,7 +54,7 @@ test("retry keeps photo and height, then actual CPU extraction feeds owner-scope
   );
   await page.getByRole("button", { name: "Retry", exact: true }).click();
   const scan = await (await extracted).json();
-  expect(scan.provenance.method).toBe("landmark-silhouette-projection-v3");
+  expect(scan.provenance.method).toBe("landmark-silhouette-projection-v4");
   expect(scan.geometry.height_cm).toBe(180);
   expect(scan.quality.requires_manual_review).toEqual([]);
   await expect(
@@ -161,7 +161,7 @@ test("partial scan keeps skeleton, exposes uncertainty and requires each flagged
   const chestCard = page
     .locator(".metric-card")
     .filter({ hasText: "Chest circumference" });
-  await expect(chestCard.locator(".metric-value")).toContainText("—");
+  await expect(chestCard.locator(".metric-value")).toContainText("Unavailable");
   await page
     .getByRole("button", { name: "Edit Chest circumference", exact: true })
     .click();
@@ -247,4 +247,88 @@ test("failed re-extraction clears stale measurements while retaining the selecte
       await page.request.delete(`/api/v1/measurements/${scan.measurement_id}`)
     ).status(),
   ).toBe(204);
+});
+
+test("unavailable thigh stays explicit through inches and manual correction", async ({
+  page,
+}) => {
+  const scan = {
+    measurement_id: "pose_" + "b".repeat(32),
+    scale_factor: 0.2,
+    measurements: {
+      shoulder_width: 40,
+      chest_circumference: 98,
+      waist_circumference: 92,
+      hip_circumference: 96,
+      thigh_circumference: null,
+      inseam_length: 80,
+    },
+    landmarks_normalized: Array.from({ length: 33 }, () => [0.5, 0.5, 0, 0.99]),
+    landmark_presence: Array.from({ length: 33 }, (_, i) =>
+      i === 29 ? 0.1 : 0.99,
+    ),
+    annotated_image_url: "/unused-test-annotation.png",
+    warnings: ["Circumferences are estimates."],
+    geometry: { image_size: [600, 1000], height_cm: 160 },
+    quality: {
+      estimates_only: true,
+      minimum_key_landmark_visibility: 0.99,
+      status: "review_required",
+      requires_manual_review: ["thigh_circumference"],
+      metrics: {
+        thigh_circumference: {
+          status: "unavailable",
+          reason: "ambiguous_thigh",
+          requires_manual_review: true,
+          message:
+            "Both upper-thigh boundaries cannot be distinguished reliably. Enter a tape measurement.",
+        },
+      },
+    },
+  };
+  await page.route("**/api/v1/measurements/extract", (route) =>
+    route.fulfill({ json: scan }),
+  );
+  await page.goto("/measure");
+  await page.getByRole("button", { name: "Try a sample", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Extract measurements", exact: true })
+    .click();
+  const thigh = page
+    .locator(".metric-card")
+    .filter({ hasText: "Thigh circumference" });
+  await expect(thigh.locator(".metric-value")).toHaveText("Unavailable");
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await expect(thigh.locator(".metric-value")).toBeVisible();
+  await expect(thigh).toContainText("upper-thigh boundaries");
+  await expect(
+    page
+      .locator(".metric-card")
+      .filter({ hasText: "Chest circumference" })
+      .locator(".metric-value"),
+  ).toContainText("98.0");
+  await page.getByLabel("Display measurements in").selectOption("in");
+  await expect(thigh.locator(".metric-value")).toHaveText("Unavailable");
+  await expect(
+    page.getByRole("button", { name: "Save measurements", exact: true }),
+  ).toBeDisabled();
+  await page
+    .getByRole("button", { name: "Edit Thigh circumference", exact: true })
+    .click();
+  await page.getByLabel("Thigh circumference in inches").fill("20");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByLabel("Display measurements in").selectOption("cm");
+  await expect(thigh.locator(".metric-value")).toContainText("50.8");
+  await expect(thigh).toContainText("Manually corrected");
+  await expect(
+    page.getByRole("button", { name: "Save measurements", exact: true }),
+  ).toBeEnabled();
+  await expect(
+    page.getByRole("status", { name: "Measurement quality" }),
+  ).toHaveCount(0);
 });
