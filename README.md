@@ -420,31 +420,6 @@ For in-depth architectural guides, refer to the documents in `docs/`:
 
 ---
 
-## ❓ Troubleshooting & FAQ
-
-### Q: Port 8000 or 5173 is already in use
-**A:** Another instance of VastraView or a background process is holding the port. Run:
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/stop.ps1
-```
-Or check running processes on Windows:
-```powershell
-Get-NetTCPConnection -LocalPort 8000,5173,27018,5433 | Select-Object OwningProcess, LocalPort
-```
-
-### Q: Colab worker shows "Disconnected" or "503 Service Unavailable"
-**A:**
-1. Check your Google Colab tab to make sure the session has not timed out or exceeded Colab's idle threshold.
-2. If Colab assigned a new IP or generated a new tunnel, the backend auto-connect daemon will locate it within 15–30 seconds.
-3. You can verify tunnel reachability via `http://127.0.0.1:8000/api/v1/health/ready?capability=tryon`.
-
-### Q: Anthropometry extract fails with "landmark visibility too low"
-**A:** MediaPipe requires clear visibility (>0.65) of all 33 body points. Ensure:
-- The full body is in the frame (from top of head to heels).
-- The subject is facing forward with arms slightly spaced from the torso.
-- The lighting is uniform with sufficient contrast against the background.
-
----
 
 ## 📄 License & Attribution
 
