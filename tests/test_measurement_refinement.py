@@ -13,6 +13,8 @@ from PIL import Image
 from backend.app.anthropometry.measurement_refinement import guard_refined_mask, merge_recovered
 from backend.app.anthropometry.measurement_service import MeasurementService, estimate
 from backend.app.anthropometry.pose_adapter import refine_mask
+from backend.app.anthropometry.router import get_measurement_service
+from backend.app.main import app
 from ml.errors import PipelineError
 
 pytest_plugins = ["test_anthropometry"]
@@ -144,3 +146,61 @@ def test_refinement_cannot_change_calibration(observation):
     candidate["scale_factor"] *= 1.1
     with pytest.raises(PipelineError, match="calibration"):
         merge_recovered(baseline, lines, candidate, lines, "image_guided")
+
+
+def test_recovered_values_still_require_explicit_tape_overrides(api, observation, tmp_path):
+    client, _ = api
+    observation, _ = bridged_observation(observation)
+    previous = app.dependency_overrides[get_measurement_service]
+    app.dependency_overrides[get_measurement_service] = lambda: service_for(observation, tmp_path)
+    try:
+        response = client.post("/api/v1/measurements/extract", data={"height_cm": 160},
+                               files={"image": ("fixture.png", encode(observation.image), "image/png")})
+        assert response.status_code == 200, response.text
+        scan = response.json()
+        assert scan["measurements"]["chest_circumference"] == 98
+        payload = {"brand_id": "brand_b", "apparel_id": "apparel_all", "measurement_id": scan["measurement_id"]}
+        denied = client.post("/api/v1/sizing/recommend", json=payload)
+        assert denied.status_code == 422
+        assert denied.json()["error"]["code"] == "measurement_review_required"
+        payload["measurement_overrides"] = {"chest_circumference": 98, "waist_circumference": 92}
+        assert client.post("/api/v1/sizing/recommend", json=payload).status_code == 200
+        assert client.delete(f"/api/v1/measurements/{scan['measurement_id']}").status_code == 204
+        assert not list(tmp_path.iterdir())
+    finally:
+        app.dependency_overrides[get_measurement_service] = previous
+
+
+def test_failed_refinement_is_bounded_and_keeps_partial_results(observation, tmp_path, monkeypatch):
+    observation, _ = bridged_observation(observation)
+    baseline, _ = estimate(observation, 160)
+    calls = []
+    def failed(*args, **kwargs):
+        calls.append(kwargs)
+        raise PipelineError("segmentation_failed", "No reliable colour separation")
+    monkeypatch.setattr("backend.app.anthropometry.measurement_service.refine_mask", failed)
+    response = service_for(observation, tmp_path).extract(encode(observation.image), 160)
+    assert response.measurements.model_dump() == baseline["measurements"]
+    assert len(calls) == 2
+    assert all(attempt["code"] == "segmentation_failed" for attempt in response.geometry["refinement_attempts"])
+
+
+@pytest.mark.parametrize("region", ["hip", "thigh"])
+def test_lower_region_retry_does_not_depend_on_a_chest_failure(observation, tmp_path, region):
+    observation, clean = bridged_observation(observation)
+    observation.mask = clean.copy()
+    if region == "hip":
+        observation.mask[490:505, 130:470] = True
+    else:
+        observation.mask[555:610, 210:390] = True
+    observation.probabilities = observation.mask.astype(np.float32)
+    baseline, _ = estimate(observation, 160)
+    key = region + "_circumference"
+    assert baseline["measurements"][key] is None
+    assert baseline["measurements"]["chest_circumference"] == 98
+    response = service_for(observation, tmp_path).extract(encode(observation.image), 160)
+    assert getattr(response.measurements, key) == (96 if region == "hip" else 30)
+    assert response.quality["metrics"][key]["requires_manual_review"]
+    for other, value in baseline["measurements"].items():
+        if other != key:
+            assert getattr(response.measurements, other) == value

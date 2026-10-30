@@ -54,7 +54,7 @@ test("retry keeps photo and height, then actual CPU extraction feeds owner-scope
   );
   await page.getByRole("button", { name: "Retry", exact: true }).click();
   const scan = await (await extracted).json();
-  expect(scan.provenance.method).toBe("landmark-silhouette-projection-v4");
+  expect(scan.provenance.method).toBe("landmark-silhouette-projection-v5");
   expect(scan.geometry.height_cm).toBe(180);
   expect(scan.quality.requires_manual_review).toEqual([]);
   await expect(
@@ -331,4 +331,77 @@ test("unavailable thigh stays explicit through inches and manual correction", as
   await expect(
     page.getByRole("status", { name: "Measurement quality" }),
   ).toHaveCount(0);
+});
+
+test("recovered numeric estimate remains review-required until a manual correction", async ({
+  page,
+}) => {
+  // Controlled response-shape regression, not a real photo accuracy assessment.
+  await page.route("**/api/v1/measurements/extract", (route) =>
+    route.fulfill({
+      json: {
+        measurement_id: "pose_" + "c".repeat(32),
+        scale_factor: 0.2,
+        measurements: {
+          shoulder_width: 40,
+          chest_circumference: 98,
+          waist_circumference: 92,
+          hip_circumference: 96,
+          thigh_circumference: 30,
+          inseam_length: 80,
+        },
+        landmarks_normalized: Array.from({ length: 33 }, () => [
+          0.5, 0.5, 0, 0.99,
+        ]),
+        annotated_image_url: "/unused-test-annotation.png",
+        geometry: { image_size: [600, 1000], height_cm: 160 },
+        warnings: ["Circumferences are estimates."],
+        quality: {
+          estimates_only: true,
+          minimum_key_landmark_visibility: 0.99,
+          status: "review_required",
+          requires_manual_review: ["chest_circumference"],
+          metrics: {
+            chest_circumference: {
+              status: "review_required",
+              confidence: null,
+              requires_manual_review: true,
+              reason: "image_refinement_estimate",
+              message:
+                "Image-guided refinement found a visible outline. Confirm this estimate with a tape measurement.",
+            },
+          },
+        },
+      },
+    }),
+  );
+  await page.goto("/measure");
+  await page.getByRole("button", { name: "Try a sample", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Extract measurements", exact: true })
+    .click();
+  const chest = page
+    .locator(".metric-card")
+    .filter({ hasText: "Chest circumference" });
+  await expect(chest.locator(".metric-value")).toContainText("98.0");
+  await expect(chest).toContainText("Image-guided refinement");
+  await expect(
+    page.getByRole("button", { name: "Save measurements", exact: true }),
+  ).toBeDisabled();
+  await page.getByLabel("Display measurements in").selectOption("in");
+  await expect(chest.locator(".metric-value")).toContainText("38.6");
+  await expect(
+    page.getByRole("button", { name: "Save measurements", exact: true }),
+  ).toBeDisabled();
+  await page
+    .getByRole("button", { name: "Edit Chest circumference", exact: true })
+    .click();
+  await page.getByLabel("Chest circumference in inches").fill("38");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByLabel("Display measurements in").selectOption("cm");
+  await expect(chest.locator(".metric-value")).toContainText("96.5");
+  await expect(chest).toContainText("Manually corrected");
+  await expect(
+    page.getByRole("button", { name: "Save measurements", exact: true }),
+  ).toBeEnabled();
 });
