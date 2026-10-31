@@ -42,7 +42,7 @@ BRANDS = [
     "Biba",
     "W",
     "Aurelia",
-    "Raymond", "Manyavar", "Libas", "Max Fashion India", "Zudio",
+    "Raymond", "Manyavar", "Libas", "Max Fashion India", "Zudio", "Westside",
 ]
 TAXONOMY = [
     ("t-shirt", "T-shirts", "tops", "t-shirt"),
@@ -208,6 +208,20 @@ def catalog_db(db=Depends(account_db)):
     if not db.catalog_versions.find_one({"_id": 6}):
         db.products.delete_many({"brand_id": None})
         db.catalog_versions.update_one({"_id": 6}, {"$set": {"installed": True}}, upsert=True)
+    if not db.catalog_versions.find_one({"_id": 7}):
+        manifest = ROOT / "data/catalog/garments-v2.json"
+        for entry in json.loads(manifest.read_text(encoding="utf-8")):
+            if entry["id"].startswith("levis-") or entry["id"].startswith("westside-"):
+                row = {k: v for k, v in entry.items() if k != "id"}
+                row.update(created_at=datetime.now(timezone.utc), seed_version=7, active=True)
+                db.products.update_one({"_id": entry["id"]}, {"$set": row}, upsert=True)
+        db.catalog_brands.update_one(
+            {"_id": "levi-s"}, {"$set": {"name": "Levi's", "partnership": True}}, upsert=True
+        )
+        db.catalog_brands.update_one(
+            {"_id": "westside"}, {"$set": {"name": "Westside", "partnership": True}}, upsert=True
+        )
+        db.catalog_versions.update_one({"_id": 7}, {"$set": {"installed": True}}, upsert=True)
     return db
 
 

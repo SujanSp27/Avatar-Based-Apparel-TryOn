@@ -23,7 +23,7 @@ def _read_policy(path: str, stamp: int):
     entries = policy.get("garments", [])
     if (policy.get("version") != 1 or not isinstance(policy.get("enforced"), bool)
             or not isinstance(entries, list) or len({r["id"] for r in entries}) != len(entries)
-            or len(entries) > 20
+            or len(entries) > 100
             or (policy["enforced"] and len(entries) < 20 and policy.get("status") != "quality_shortfall")):
         raise ValueError("Invalid wardrobe publication")
     for row in entries:

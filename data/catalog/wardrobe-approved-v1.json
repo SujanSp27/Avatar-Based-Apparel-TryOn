@@ -1,9 +1,9 @@
 {
   "version": 1,
   "enforced": false,
-  "status": "quality_shortfall",
-  "targetCount": 20,
-  "note": "14 H&M garment references registered and approved for virtual try-on.",
+  "status": "approved",
+  "targetCount": 38,
+  "note": "Verified brand garments (14 H&M, 11 Levi's, 13 Westside) registered and approved for virtual try-on.",
   "reviewedAt": "2026-10-31T09:47:00.000000+00:00",
   "garments": [
     {
@@ -167,6 +167,294 @@
       "category": "t-shirt",
       "photoType": "flat-lay",
       "imageSha256": "4516cfc7f7e4a7f62a13e8069a205b470db99282b74145d9f3accf7860344f29",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-full-hand-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "1fef51fa2bf0b9023b0719167918d16fd87c38e468e8e29c5ea87f0bbfa3cbe5",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-jeans-1",
+      "category": "jeans",
+      "photoType": "flat-lay",
+      "imageSha256": "13d321e89f761e584038add43513fc9d2a82753fd77b6fc202696fcaeb3570fe",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-pant-1",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "3c880f755ccca382cf5d51bda0eb175e271cb4ca26333d2a96ff7d5408e0a76e",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "33a936406c93d1ca2a4e578716586369c4391b9b8501923ec86815aaf46deafb",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-t-shirt-2",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "de9c1d027fb61a9c321031ec6ec9856747e72cebc93d8a3c8366a6bb36b85e2e",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-t-shirt-1",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "c7e3a2902a820fefe6e8cf2a0bdd034b3c3ed95cf8c9e1190500132b00f159b6",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-trouser-2",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "400a76cdb3dcb870b7c28e796eea5bbcd3437a20929b4bda282d1eda8f1a66ef",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-trouser-1",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "00fd584527feb9f0d42f73822ab191a268ad66d55919e93c7c84e7ca50ea5638",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-loose-fit-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "1081efac0b1fa7d122d467442546cfef0840cda0f47d7076b0a5cb5299f505c5",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-oversized-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "fa7be6bbd04682ded4a6b604f4a2b885785fdede201734d14c3cbee9d591f2e4",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "levis-round-neck-t-shirt-1",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "4a386fe12d71efdb2a1c825be6221f30b967410a015e9d8ae217516a7718c961",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-baggy-jeans-1",
+      "category": "jeans",
+      "photoType": "flat-lay",
+      "imageSha256": "091184e4f0ef6f28555d3f12c8b958217d6438057fe3d42a9c47c3fcab1391fa",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-full-hand-t-shirt-1",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "8cdeb374412166af682acd84f9b2cb0d3fff20c1df8ef1d02f7b0269a6ee424a",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-full-sleeve-t-shirt-2",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "fbbaab7ef2397cc11a1b2777fc9c0c75ab37e716e6d19cd278371cf2fbd0c4ab",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-grey-baggy-jeans-1",
+      "category": "jeans",
+      "photoType": "flat-lay",
+      "imageSha256": "d4bb975b3974dfafa6460633c14653ada7fd6ba0bd7a2949361efced0579354f",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-half-sleeve-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "b1e84a07afa4c8a28cfcf742721165faa0a3eedbdcdbf157be181f1e260ce041",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-oversized-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "75f3f181347f84a2dfa40f503cf963d211b921b10fcd4c15938223f38bcbc374",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-shirt-2",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "c0a6a624f0f8c662dd0d6ca7d4152b257247f71014a017b5bab2a12ede034cb5",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "462b3e139741e1bf98cc0dc9f703ee0a9d232884b6269fb8f20a90b621c2782a",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-sweatshirt-1",
+      "category": "sweater",
+      "photoType": "flat-lay",
+      "imageSha256": "2b10a61ab4db413322d97993db04a8488ac69cfbfe2f2bb2aff878c6273a91c5",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-t-shirt-1",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "d48c496ac951cab49ffa73bea7b35cede367b1fac4afe2166723ff8de51493bd",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-trouser-2",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "c19c86e4995e1117082582a69eb887ab84fa370e6329540dc7bf3d1586843dda",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-trouser-1",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "2965f81ecdf575b7d187746c121369d7ffcfcd5ddc8bdd921a933f60e884862a",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "westside-trouser-white-1",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "0a8081d7c1473c10bb7b478764178c26d85ed14f6c348fe4a34bfd485ece354d",
       "testedPeople": [
         "studio-person",
         "standing"

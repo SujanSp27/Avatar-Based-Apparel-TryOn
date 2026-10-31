@@ -47,7 +47,7 @@ type Category = {
 };
 export default function CatalogPage() {
   const [query, setQuery] = useState("");
-  const [brand, setBrand] = useState("h-m");
+  const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
   const [audience, setAudience] = useState("");
   const [color, setColor] = useState("");
@@ -91,8 +91,17 @@ export default function CatalogPage() {
     ])
       .then(([b, c, f, q]) => {
         const hmBrand = { id: "h-m", name: "H&M", product_count: 14 };
-        const bFiltered = b.filter((brand) => brand.id !== "h-m" && brand.name.toLowerCase() !== "h&m");
-        setBrands([hmBrand, ...bFiltered]);
+        const levisBrand = { id: "levi-s", name: "Levi's", product_count: 11 };
+        const westsideBrand = { id: "westside", name: "Westside", product_count: 13 };
+        const customIds = new Set(["h-m", "levi-s", "westside"]);
+        const bFiltered = b.filter(
+          (item) =>
+            !customIds.has(item.id) &&
+            item.name.toLowerCase() !== "h&m" &&
+            item.name.toLowerCase() !== "levi's" &&
+            item.name.toLowerCase() !== "westside",
+        );
+        setBrands([hmBrand, levisBrand, westsideBrand, ...bFiltered]);
         setCategories(
           c.length
             ? c
@@ -102,29 +111,35 @@ export default function CatalogPage() {
                 { id: "t-shirt", name: "T-Shirts (Full Sleeve & Round Neck)", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
                 { id: "shirt", name: "Shirts (Half Sleeve & Oversized)", group: "tops", model_category: "shirt", support_note: "Single garment preview." },
                 { id: "polo", name: "Polo T-Shirts", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
+                { id: "sweater", name: "Sweaters & Sweatshirts", group: "layers", model_category: "sweater", support_note: "Single garment preview." },
               ],
         );
         setFacets(
           f.colors?.length
             ? f
             : {
-                colors: ["beige", "black", "brown", "burgundy", "cream", "pink", "white"],
+                colors: ["beige", "black", "blue", "brown", "burgundy", "cream", "grey", "pink", "white"],
                 occasions: ["business", "casual", "formal", "vacation"],
               },
         );
         setQuality(q);
       })
       .catch(() => {
-        setBrands([{ id: "h-m", name: "H&M", product_count: 14 }]);
+        setBrands([
+          { id: "h-m", name: "H&M", product_count: 14 },
+          { id: "levi-s", name: "Levi's", product_count: 11 },
+          { id: "westside", name: "Westside", product_count: 13 },
+        ]);
         setCategories([
           { id: "jeans", name: "Jeans", group: "bottoms", model_category: "jeans", support_note: "Single garment preview." },
           { id: "trouser", name: "Trousers & Formal Trousers", group: "bottoms", model_category: "trouser", support_note: "Single garment preview." },
           { id: "t-shirt", name: "T-Shirts (Full Sleeve & Round Neck)", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
           { id: "shirt", name: "Shirts (Half Sleeve & Oversized)", group: "tops", model_category: "shirt", support_note: "Single garment preview." },
           { id: "polo", name: "Polo T-Shirts", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
+          { id: "sweater", name: "Sweaters & Sweatshirts", group: "layers", model_category: "sweater", support_note: "Single garment preview." },
         ]);
         setFacets({
-          colors: ["beige", "black", "brown", "burgundy", "cream", "pink", "white"],
+          colors: ["beige", "black", "blue", "brown", "burgundy", "cream", "grey", "pink", "white"],
           occasions: ["business", "casual", "formal", "vacation"],
         });
       });
@@ -204,10 +219,24 @@ export default function CatalogPage() {
     <>
       <header className="page-heading">
         <div>
-          <span className="eyebrow">DISCOVER NOW · H&amp;M COLLECTION</span>
+          <span className="eyebrow">
+            {brand === "h-m"
+              ? "DISCOVER NOW · H&M COLLECTION"
+              : brand === "levi-s"
+              ? "DISCOVER NOW · LEVI'S COLLECTION"
+              : brand === "westside"
+              ? "DISCOVER NOW · WESTSIDE COLLECTION"
+              : "DISCOVER NOW · BRAND COLLECTIONS"}
+          </span>
           <h1>Discover Now</h1>
           <p>
-            Explore our curated collection of 14 H&amp;M garment references, compare your size, and preview them with personalized virtual try-on.
+            {brand === "h-m"
+              ? "Explore our curated collection of 14 verified H&M garments, compare your size, and preview them with personalized virtual try-on."
+              : brand === "levi-s"
+              ? "Explore our verified collection of 11 Levi's denim, shirts, and trousers, compare your size, and preview them with personalized virtual try-on."
+              : brand === "westside"
+              ? "Explore our verified collection of 13 Westside apparel pieces, compare your size, and preview them with personalized virtual try-on."
+              : "Explore verified garment collections from H&M, Levi's, and Westside, compare your size, and preview them with personalized virtual try-on."}
           </p>
         </div>
       </header>

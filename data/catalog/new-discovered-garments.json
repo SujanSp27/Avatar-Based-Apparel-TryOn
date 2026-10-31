@@ -1,0 +1,807 @@
+[
+  {
+    "id": "levis-full-hand-shirt-1",
+    "name": "Levi's Full Sleeve Shirt",
+    "brand_name": "Levi's",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "burgundy",
+      "brown"
+    ],
+    "occasions": [
+      "casual",
+      "business"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-full-hand-shirt_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-full-hand-shirt_levis.jpeg",
+    "description": "Classic full sleeve collared shirt by Levi's tailored from soft cotton with buttoned cuffs.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-full-hand-shirt_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-jeans-1",
+    "name": "Levi's Classic Denim Jeans",
+    "brand_name": "Levi's",
+    "category": "jeans",
+    "audience": "men",
+    "colors": [
+      "blue",
+      "navy"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-jeans_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-jeans_levis.jpeg",
+    "description": "Iconic straight-fit denim jeans by Levi's in a classic dark indigo wash with five-pocket styling.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-jeans_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-pant-1",
+    "name": "Levi's Casual Pant",
+    "brand_name": "Levi's",
+    "category": "trouser",
+    "audience": "men",
+    "colors": [
+      "black"
+    ],
+    "occasions": [
+      "casual",
+      "formal",
+      "business"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-pant_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-pant_levis.jpeg",
+    "description": "Versatile black flat-front trousers by Levi's offering modern comfort and a straight leg silhouette.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-pant_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-shirt-1",
+    "name": "Levi's Casual Shirt",
+    "brand_name": "Levi's",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "cream",
+      "white"
+    ],
+    "occasions": [
+      "casual",
+      "business"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-shirt_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-shirt_levis.jpeg",
+    "description": "Timeless button-down shirt by Levi's in an off-white cotton blend with chest pocket detailing.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-shirt_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-t-shirt-2",
+    "name": "Levi's Crewneck T-Shirt 2",
+    "brand_name": "Levi's",
+    "category": "t-shirt",
+    "audience": "men",
+    "colors": [
+      "burgundy",
+      "red"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-t-shirt-2_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-t-shirt-2_levis.jpeg",
+    "description": "Casual crew-neck T-shirt by Levi's in deep maroon cotton featuring a relaxed everyday fit.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-t-shirt-2_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-t-shirt-1",
+    "name": "Levi's Classic T-Shirt",
+    "brand_name": "Levi's",
+    "category": "t-shirt",
+    "audience": "men",
+    "colors": [
+      "beige",
+      "tan"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-t-shirt_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-t-shirt_levis.jpeg",
+    "description": "Essential regular-fit short sleeve T-shirt by Levi's crafted from pure breathable jersey.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-t-shirt_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-trouser-2",
+    "name": "Levi's Chino Trousers 2",
+    "brand_name": "Levi's",
+    "category": "trouser",
+    "audience": "men",
+    "colors": [
+      "beige",
+      "khaki"
+    ],
+    "occasions": [
+      "formal",
+      "casual",
+      "business"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-trouser-2_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-trouser-2_levis.jpeg",
+    "description": "Contemporary slim-tapered chino trousers by Levi's in classic khaki with slanted front pockets.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-trouser-2_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-trouser-1",
+    "name": "Levi's Casual Trousers",
+    "brand_name": "Levi's",
+    "category": "trouser",
+    "audience": "men",
+    "colors": [
+      "cream",
+      "beige"
+    ],
+    "occasions": [
+      "formal",
+      "casual",
+      "business"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-trouser_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-trouser_levis.jpeg",
+    "description": "Clean-cut light beige straight trousers by Levi's designed for refined smart-casual styling.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-trouser_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-loose-fit-shirt-1",
+    "name": "Levi's Loose Fit Shirt",
+    "brand_name": "Levi's",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "brown",
+      "rust"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-loose-fit-shirt_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-loose-fit-shirt_levis.jpeg",
+    "description": "Relaxed-silhouette button-front casual shirt by Levi's in warm earthy tones.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-loose-fit-shirt_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-oversized-shirt-1",
+    "name": "Levi's Oversized Shirt",
+    "brand_name": "Levi's",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "beige",
+      "tan"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-oversized-shirt_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-oversized-shirt_levis.jpeg",
+    "description": "Contemporary oversized casual shirt by Levi's with dropped shoulders and point collar.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-oversized-shirt_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "levis-round-neck-t-shirt-1",
+    "name": "Levi's Round Neck T-Shirt",
+    "brand_name": "Levi's",
+    "category": "t-shirt",
+    "audience": "men",
+    "colors": [
+      "grey",
+      "taupe"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Levi's sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/levi's-round-neck-t-shirt_levis.jpeg",
+    "referenceImageUrl": "/assets/garments/levi's-round-neck-t-shirt_levis.jpeg",
+    "description": "Soft ribbed crewneck T-shirt by Levi's in neutral grey melange.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/levi's-round-neck-t-shirt_levis.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Levi's garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-baggy-jeans-1",
+    "name": "Westside Baggy Jeans",
+    "brand_name": "Westside",
+    "category": "jeans",
+    "audience": "men",
+    "colors": [
+      "black",
+      "dark-grey"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/baggy-jeans_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/baggy-jeans_westside.jpeg",
+    "description": "Wide-leg relaxed baggy denim jeans by Westside with a washed black finish and casual streetwear drape.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/baggy-jeans_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-full-hand-t-shirt-1",
+    "name": "Westside Full Hand T-Shirt",
+    "brand_name": "Westside",
+    "category": "t-shirt",
+    "audience": "men",
+    "colors": [
+      "burgundy",
+      "red"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/full-hand-t-shirt_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/full-hand-t-shirt_westside.jpeg",
+    "description": "Comfortable full-sleeve crewneck T-shirt by Westside in deep crimson cotton.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/full-hand-t-shirt_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-full-sleeve-t-shirt-2",
+    "name": "Westside Full Sleeve T-Shirt",
+    "brand_name": "Westside",
+    "category": "t-shirt",
+    "audience": "men",
+    "colors": [
+      "grey",
+      "light-grey"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/full-sleeve-t-shirt_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/full-sleeve-t-shirt_westside.jpeg",
+    "description": "Lightweight cotton long-sleeve T-shirt by Westside in soft heather grey.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/full-sleeve-t-shirt_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-grey-baggy-jeans-1",
+    "name": "Westside Grey Baggy Jeans",
+    "brand_name": "Westside",
+    "category": "jeans",
+    "audience": "men",
+    "colors": [
+      "grey"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/grey-baggy-jeans_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/grey-baggy-jeans_westside.jpeg",
+    "description": "Urban baggy fit jeans by Westside in faded charcoal grey with relaxed wide legs.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/grey-baggy-jeans_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-half-sleeve-shirt-1",
+    "name": "Westside Half Sleeve Shirt",
+    "brand_name": "Westside",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "black",
+      "navy"
+    ],
+    "occasions": [
+      "casual",
+      "vacation"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/half-sleeve-shirt_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/half-sleeve-shirt_westside.jpeg",
+    "description": "Breezy short-sleeve resort collar shirt by Westside in dark midnight cotton.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/half-sleeve-shirt_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-oversized-shirt-1",
+    "name": "Westside Oversized Shirt",
+    "brand_name": "Westside",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "brown",
+      "rust"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/oversized-shirt_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/oversized-shirt_westside.jpeg",
+    "description": "Modern oversized casual shirt by Westside featuring relaxed shoulders and button-up front.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/oversized-shirt_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-shirt-2",
+    "name": "Westside Casual Shirt 2",
+    "brand_name": "Westside",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "green",
+      "teal"
+    ],
+    "occasions": [
+      "casual",
+      "business"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/shirt-2_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/shirt-2_westside.jpeg",
+    "description": "Structured dark teal collared casual shirt by Westside crafted from premium woven cotton.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/shirt-2_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-shirt-1",
+    "name": "Westside Casual Shirt",
+    "brand_name": "Westside",
+    "category": "shirt",
+    "audience": "men",
+    "colors": [
+      "pink",
+      "cream"
+    ],
+    "occasions": [
+      "casual",
+      "business"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/shirt_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/shirt_westside.jpeg",
+    "description": "Crisp lightweight shirt by Westside in subtle dusty mauve with full button placket.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/shirt_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-sweatshirt-1",
+    "name": "Westside Relaxed Sweatshirt",
+    "brand_name": "Westside",
+    "category": "sweater",
+    "audience": "men",
+    "colors": [
+      "brown",
+      "rust"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/sweatshirt_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/sweatshirt_westside.jpeg",
+    "description": "Cozy fleece-lined crewneck sweatshirt by Westside in warm rust with ribbed cuffs.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/sweatshirt_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-t-shirt-1",
+    "name": "Westside Classic T-Shirt",
+    "brand_name": "Westside",
+    "category": "t-shirt",
+    "audience": "men",
+    "colors": [
+      "burgundy",
+      "plum"
+    ],
+    "occasions": [
+      "casual"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/t-shirt_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/t-shirt_westside.jpeg",
+    "description": "Essential everyday cotton T-shirt by Westside in muted burgundy.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/t-shirt_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-trouser-2",
+    "name": "Westside Tailored Trousers 2",
+    "brand_name": "Westside",
+    "category": "trouser",
+    "audience": "men",
+    "colors": [
+      "beige",
+      "cream"
+    ],
+    "occasions": [
+      "formal",
+      "business",
+      "casual"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/trouser-2_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/trouser-2_westside.jpeg",
+    "description": "Pleated formal-casual trousers by Westside in light stone beige with tailored waistband.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/trouser-2_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-trouser-1",
+    "name": "Westside Casual Trousers",
+    "brand_name": "Westside",
+    "category": "trouser",
+    "audience": "men",
+    "colors": [
+      "brown",
+      "tan"
+    ],
+    "occasions": [
+      "casual",
+      "formal",
+      "business"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/trouser_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/trouser_westside.jpeg",
+    "description": "Versatile tan chinos by Westside cut with a straight leg and clean silhouette.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/trouser_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  },
+  {
+    "id": "westside-trouser-white-1",
+    "name": "Westside White Trousers",
+    "brand_name": "Westside",
+    "category": "trouser",
+    "audience": "men",
+    "colors": [
+      "white"
+    ],
+    "occasions": [
+      "casual",
+      "vacation"
+    ],
+    "sizes": [
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "size_note": "Standard Westside sizing.",
+    "photoType": "flat-lay",
+    "imageUrl": "/assets/garments/trouser-white_westside.jpeg",
+    "referenceImageUrl": "/assets/garments/trouser-white_westside.jpeg",
+    "description": "Crisp white straight-leg trousers by Westside designed for clean summer styling.",
+    "license": "Commercial Reference",
+    "source_url": "/assets/garments/trouser-white_westside.jpeg",
+    "commercial_use": true,
+    "tryon_supported": true,
+    "qualityReview": {
+      "status": "approved",
+      "message": "Verified Westside garment reference for virtual try-on."
+    }
+  }
+]
