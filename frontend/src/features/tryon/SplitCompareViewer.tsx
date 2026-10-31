@@ -7,11 +7,17 @@ import {
 } from "react";
 import { Link } from "react-router-dom";
 import {
+  Columns2,
   Download,
   Expand,
   LoaderCircle,
+  Maximize2,
+  Minimize2,
+  RotateCcw,
   RotateCw,
+  Share2,
   Shirt,
+  SlidersHorizontal,
   ZoomIn,
 } from "../../icons";
 import type { Result } from "../../types";
@@ -61,7 +67,9 @@ function ComparisonImages({
   const [sharing, setSharing] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [referenceFailed, setReferenceFailed] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
   const toast = useToast();
   const mismatch = !!(
     sourceSize &&
@@ -82,6 +90,15 @@ function ComparisonImages({
     !mismatch
   );
   const paired = !!(original && result);
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+  }, []);
+
   useEffect(() => {
     if (!paired || ready || failed || mismatch) return;
     const timer = setTimeout(() => setFailed(true), 15000);
@@ -104,6 +121,28 @@ function ComparisonImages({
         Math.min(100, ((event.clientX - rect.left) / rect.width) * 100),
       ),
     );
+  }
+  async function toggleFullscreen() {
+    if (!containerRef.current) return;
+    try {
+      if (!document.fullscreenElement) {
+        if (containerRef.current.requestFullscreen) {
+          await containerRef.current.requestFullscreen();
+        } else {
+          setFullscreen(true);
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+        setFullscreen(false);
+      }
+    } catch {
+      setFullscreen((prev) => !prev);
+    }
+  }
+  function resetPosition() {
+    setPosition(50);
   }
   async function share() {
     if (!ready || busy) return;
@@ -165,7 +204,8 @@ function ComparisonImages({
   const ratio = sourceSize ? sourceSize.width / sourceSize.height : 2 / 3;
   return (
     <section
-      className="premium-comparison"
+      ref={containerRef}
+      className={`premium-comparison${fullscreen ? " is-fullscreen" : ""}`}
       style={
         {
           "--photo-ratio": ratio,
@@ -187,19 +227,51 @@ function ComparisonImages({
           role="group"
           aria-label="Comparison view"
         >
+          <div className="segmented-control" role="group" aria-label="Comparison modes">
+            <button
+              type="button"
+              className="segment-btn"
+              disabled={!ready || busy}
+              onClick={() => onMode("split")}
+              aria-pressed={mode === "split"}
+            >
+              <SlidersHorizontal size={14} aria-hidden="true" />
+              Slider
+            </button>
+            <button
+              type="button"
+              className="segment-btn"
+              disabled={!ready || busy}
+              onClick={() => onMode("side")}
+              aria-pressed={mode === "side"}
+            >
+              <Columns2 size={14} aria-hidden="true" />
+              Side by side
+            </button>
+          </div>
+          {mode === "split" && (
+            <button
+              type="button"
+              className="control-secondary control-reset"
+              disabled={!ready || busy || position === 50}
+              onClick={resetPosition}
+              title="Reset slider to center (50%)"
+              aria-label="Reset slider position"
+            >
+              <RotateCcw size={13} aria-hidden="true" />
+              Reset
+            </button>
+          )}
           <button
+            type="button"
+            className="control-secondary control-fullscreen"
             disabled={!ready || busy}
-            onClick={() => onMode("split")}
-            aria-pressed={mode === "split"}
+            onClick={toggleFullscreen}
+            title={fullscreen ? "Exit fullscreen" : "View fullscreen"}
+            aria-label={fullscreen ? "Exit fullscreen view" : "Enter fullscreen view"}
           >
-            Slider
-          </button>
-          <button
-            disabled={!ready || busy}
-            onClick={() => onMode("side")}
-            aria-pressed={mode === "side"}
-          >
-            Side by side
+            {fullscreen ? <Minimize2 size={14} aria-hidden="true" /> : <Maximize2 size={14} aria-hidden="true" />}
+            {fullscreen ? "Exit" : "Fullscreen"}
           </button>
         </div>
       </header>
@@ -231,6 +303,12 @@ function ComparisonImages({
                   }
                   onError={() => setFailed(true)}
                 />
+                {ready && !busy && mode === "side" && (
+                  <span className="compare-label before">
+                    <span className="label-badge">BEFORE</span>
+                    <span className="label-sub">Original Outfit</span>
+                  </span>
+                )}
               </div>
               <div
                 className="compare-result"
@@ -252,11 +330,23 @@ function ComparisonImages({
                   }
                   onError={() => setFailed(true)}
                 />
+                {ready && !busy && mode === "side" && (
+                  <span className="compare-label after">
+                    <span className="label-badge">AFTER</span>
+                    <span className="label-sub">Virtual Try-On</span>
+                  </span>
+                )}
               </div>
-              {ready && !busy && (
+              {ready && !busy && mode === "split" && (
                 <>
-                  <span className="compare-label before">Before</span>
-                  <span className="compare-label after">After</span>
+                  <span className="compare-label before">
+                    <span className="label-badge">BEFORE</span>
+                    <span className="label-sub">Original Outfit</span>
+                  </span>
+                  <span className="compare-label after">
+                    <span className="label-badge">AFTER</span>
+                    <span className="label-sub">Virtual Try-On</span>
+                  </span>
                 </>
               )}
               {ready && !busy && mode === "split" && (
@@ -266,8 +356,10 @@ function ComparisonImages({
                     style={{ left: `${position}%` }}
                     aria-hidden="true"
                   >
-                    <span>
-                      &lsaquo; <i /> &rsaquo;
+                    <span className="slider-handle">
+                      <span className="arrow-left" aria-hidden="true">&lsaquo;</span>
+                      <i className="grip-divider" aria-hidden="true" />
+                      <span className="arrow-right" aria-hidden="true">&rsaquo;</span>
                     </span>
                   </div>
                   <input
@@ -288,6 +380,13 @@ function ComparisonImages({
                       if (e.currentTarget.hasPointerCapture(e.pointerId)) {
                         e.preventDefault();
                         drag(e);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Home") {
+                        setPosition(0);
+                      } else if (e.key === "End") {
+                        setPosition(100);
                       }
                     }}
                     aria-label="Before and after comparison slider"
@@ -413,6 +512,7 @@ function ComparisonImages({
               disabled={!ready || busy || sharing}
               onClick={() => void share()}
             >
+              <Share2 size={16} />
               {sharing ? "Sharing…" : "Share"}
             </button>
             {ready && !busy ? (

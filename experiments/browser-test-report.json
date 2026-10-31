@@ -3,7 +3,8 @@
     "argv": [
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\node_modules\\@playwright\\test\\cli.js",
-      "test"
+      "test",
+      "results-comparison.spec.ts"
     ],
     "configFile": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\playwright.config.ts",
     "rootDir": "C:/Users/Sujan/OneDrive/Desktop/Avatar_Virtual_try_on/frontend/e2e",
@@ -101,1016 +102,6 @@
   },
   "suites": [
     {
-      "title": "catalog-image-mapping.spec.ts",
-      "file": "catalog-image-mapping.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "selected product sends reference bytes, category and ID; display stays on cards",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2772,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:54:45.994Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "8b7342e56fc0729b0072-adbca1a34e94fe90aff5",
-          "file": "catalog-image-mapping.spec.ts",
-          "line": 59,
-          "column": 1
-        },
-        {
-          "title": "missing inference reference never falls back to the display photograph",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1432,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:54:50.164Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "8b7342e56fc0729b0072-499a3983fa79b2811121",
-          "file": "catalog-image-mapping.spec.ts",
-          "line": 102,
-          "column": 1
-        },
-        {
-          "title": "catalog cards and details show display image and distinct attribution on mobile",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1686,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:54:51.609Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "8b7342e56fc0729b0072-706a272ebc77ee36bda8",
-          "file": "catalog-image-mapping.spec.ts",
-          "line": 119,
-          "column": 1
-        },
-        {
-          "title": "favorites use the display image and recover after an image outage",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3345,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:54:53.310Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "8b7342e56fc0729b0072-c68fe13208bc7ee4d603",
-          "file": "catalog-image-mapping.spec.ts",
-          "line": 166,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "curated-catalog.spec.ts",
-      "file": "curated-catalog.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "published wardrobe excludes rejected routes and shows an honest shortfall",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 5019,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:54:57.382Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "43c1b946988b1e0049a7-feebd089d9473b249eb0",
-          "file": "curated-catalog.spec.ts",
-          "line": 7,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "fashion-platform.spec.ts",
-      "file": "fashion-platform.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "editorial hero and catalog images load across desktop and mobile",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3171,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:02.873Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "926a99a5e120085c5ac9-980e96836e9bc914f183",
-          "file": "fashion-platform.spec.ts",
-          "line": 5,
-          "column": 1
-        },
-        {
-          "title": "chart country, source, subset measurements and unit switching stay correct",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2298,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:06.059Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "926a99a5e120085c5ac9-1aa5a40a7be87f308c0b",
-          "file": "fashion-platform.spec.ts",
-          "line": 85,
-          "column": 1
-        },
-        {
-          "title": "guest return URL survives sign-in and logout blocks new uploads",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2853,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:08.373Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "926a99a5e120085c5ac9-5cb6b33317acb1695acf",
-          "file": "fashion-platform.spec.ts",
-          "line": 147,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "job-recovery.spec.ts",
-      "file": "job-recovery.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "refresh resumes the same job and reports its actual failure without another POST",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 5374,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:11.264Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-dca59e1af23cdd930d3a",
-          "file": "job-recovery.spec.ts",
-          "line": 11,
-          "column": 1
-        },
-        {
-          "title": "a recovered job cannot present an overlay as a successful neural result",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1398,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:16.655Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-6fe5be84e597266a1bf4",
-          "file": "job-recovery.spec.ts",
-          "line": 87,
-          "column": 1
-        },
-        {
-          "title": "a recovered real FASHN result loads its actual PNG and original comparison",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2547,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:18.071Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "682f82d051ae41147e04-8b1e495188b029b35095",
-          "file": "job-recovery.spec.ts",
-          "line": 112,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "live-connection.spec.ts",
-      "file": "live-connection.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "existing private Colab connects without user-facing connection controls",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Requires the user's existing Colab runtime",
-                  "location": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-connection.spec.ts",
-                    "line": 7,
-                    "column": 8
-                  }
-                }
-              ],
-              "expectedStatus": "skipped",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 119,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:20.857Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Requires the user's existing Colab runtime",
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-connection.spec.ts",
-                        "line": 7,
-                        "column": 8
-                      }
-                    }
-                  ],
-                  "attachments": []
-                }
-              ],
-              "status": "skipped"
-            }
-          ],
-          "id": "419a5df44beaed8228af-e36199d4f7ef19171346",
-          "file": "live-connection.spec.ts",
-          "line": 3,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "live-neural-result.spec.ts",
-      "file": "live-neural-result.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "the live neural job survives refresh and displays its actual generated image",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Set VTON_LIVE_JOB_ID to a submitted real inference job.",
-                  "location": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-neural-result.spec.ts",
-                    "line": 12,
-                    "column": 8
-                  }
-                }
-              ],
-              "expectedStatus": "skipped",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 144,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:21.010Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Set VTON_LIVE_JOB_ID to a submitted real inference job.",
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-neural-result.spec.ts",
-                        "line": 12,
-                        "column": 8
-                      }
-                    }
-                  ],
-                  "attachments": []
-                }
-              ],
-              "status": "skipped"
-            }
-          ],
-          "id": "4e0c4ac4b4e90e3fa601-e85f6d996b8d25a185d9",
-          "file": "live-neural-result.spec.ts",
-          "line": 5,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "live-upload.spec.ts",
-      "file": "live-upload.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "a fresh upload displays its actual Colab result",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Explicit private Colab inference opt-in required.",
-                  "location": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-upload.spec.ts",
-                    "line": 12,
-                    "column": 8
-                  }
-                }
-              ],
-              "expectedStatus": "skipped",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 128,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:21.182Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Explicit private Colab inference opt-in required.",
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\live-upload.spec.ts",
-                        "line": 12,
-                        "column": 8
-                      }
-                    }
-                  ],
-                  "attachments": []
-                }
-              ],
-              "status": "skipped"
-            }
-          ],
-          "id": "5108fd1b5ab6db455cf2-7c12055da6802fc92ee3",
-          "file": "live-upload.spec.ts",
-          "line": 8,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "measurement-quality.spec.ts",
-      "file": "measurement-quality.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "retry keeps photo and height, then actual CPU extraction feeds owner-scoped sizing",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3005,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:21.355Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-82a68935f3db33cb3f45",
-          "file": "measurement-quality.spec.ts",
-          "line": 9,
-          "column": 1
-        },
-        {
-          "title": "partial scan keeps skeleton, exposes uncertainty and requires each flagged correction",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2768,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:24.371Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-fcf8122ade383dcd46aa",
-          "file": "measurement-quality.spec.ts",
-          "line": 88,
-          "column": 1
-        },
-        {
-          "title": "failed re-extraction clears stale measurements while retaining the selected input",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3153,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:27.149Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-ef7775d4e835ecc76189",
-          "file": "measurement-quality.spec.ts",
-          "line": 201,
-          "column": 1
-        },
-        {
-          "title": "unavailable thigh stays explicit through inches and manual correction",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2069,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:30.316Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-faeb0a0f1b04bf2c431b",
-          "file": "measurement-quality.spec.ts",
-          "line": 252,
-          "column": 1
-        },
-        {
-          "title": "recovered numeric estimate remains review-required until a manual correction",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2013,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:32.400Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "979d83d7751e37979a71-2c983fd5d6b69161b981",
-          "file": "measurement-quality.spec.ts",
-          "line": 336,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "online-tryon.spec.ts",
-      "file": "online-tryon.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "recovers automatically and offers retry without a page reload",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 5256,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:34.438Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-f7689ec775df1abbf7e8",
-          "file": "online-tryon.spec.ts",
-          "line": 7,
-          "column": 1
-        },
-        {
-          "title": "losing the API clears readiness and retries automatically",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1608,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:39.708Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-5c394d876e7e87e10bea",
-          "file": "online-tryon.spec.ts",
-          "line": 46,
-          "column": 1
-        },
-        {
-          "title": "photo-only app offers model categories and never exposes avatar controls",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1335,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:41.331Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-ab44de69c17235d31d59",
-          "file": "online-tryon.spec.ts",
-          "line": 85,
-          "column": 1
-        },
-        {
-          "title": "failed recovery exposes retry and recovers without losing uploads",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1726,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:42.684Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-5a014aab0e984204f774",
-          "file": "online-tryon.spec.ts",
-          "line": 109,
-          "column": 1
-        },
-        {
-          "title": "a hanging health request expires instead of leaving stale readiness",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1528,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:44.427Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "0645dc1c5c136cd89699-6b0f5eae4c740626e6a9",
-          "file": "online-tryon.spec.ts",
-          "line": 148,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "private-tryon-live.spec.ts",
-      "file": "private-tryon-live.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "real private Colab result survives refresh, denies strangers and downloads correctly",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Explicit opt-in required for one private Colab inference.",
-                  "location": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\private-tryon-live.spec.ts",
-                    "line": 32,
-                    "column": 8
-                  }
-                }
-              ],
-              "expectedStatus": "skipped",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 122,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:55:46.321Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Explicit opt-in required for one private Colab inference.",
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\private-tryon-live.spec.ts",
-                        "line": 32,
-                        "column": 8
-                      }
-                    }
-                  ],
-                  "attachments": []
-                }
-              ],
-              "status": "skipped"
-            }
-          ],
-          "id": "35b8bdc05461512b0b74-afc859130ab30f21f1d8",
-          "file": "private-tryon-live.spec.ts",
-          "line": 28,
-          "column": 1
-        }
-      ]
-    },
-    {
       "title": "results-comparison.spec.ts",
       "file": "results-comparison.spec.ts",
       "column": 0,
@@ -1132,12 +123,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4491,
+                  "duration": 4269,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:55:46.478Z",
+                  "startTime": "2026-10-31T06:32:13.266Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1166,12 +157,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3378,
+                  "duration": 2644,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:55:50.985Z",
+                  "startTime": "2026-10-31T06:32:19.173Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1200,12 +191,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2794,
+                  "duration": 3355,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:55:54.383Z",
+                  "startTime": "2026-10-31T06:32:21.833Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1234,12 +225,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1622,
+                  "duration": 1432,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:55:57.199Z",
+                  "startTime": "2026-10-31T06:32:25.207Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1268,12 +259,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2225,
+                  "duration": 2150,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:55:58.838Z",
+                  "startTime": "2026-10-31T06:32:26.656Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1302,12 +293,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1706,
+                  "duration": 1502,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:56:01.080Z",
+                  "startTime": "2026-10-31T06:32:28.827Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1336,12 +327,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1522,
+                  "duration": 1474,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:56:02.808Z",
+                  "startTime": "2026-10-31T06:32:30.348Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1370,12 +361,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5431,
+                  "duration": 4854,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:56:04.348Z",
+                  "startTime": "2026-10-31T06:32:31.841Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1404,12 +395,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2950,
+                  "duration": 2236,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:56:09.797Z",
+                  "startTime": "2026-10-31T06:32:36.716Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1438,12 +429,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2613,
+                  "duration": 2028,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:56:12.773Z",
+                  "startTime": "2026-10-31T06:32:38.969Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1472,12 +463,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2329,
+                  "duration": 1825,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-30T00:56:15.416Z",
+                  "startTime": "2026-10-31T06:32:41.017Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1491,372 +482,14 @@
           "column": 1
         }
       ]
-    },
-    {
-      "title": "studio.spec.ts",
-      "file": "studio.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "guest measurement screen works from mobile to ultrawide, validates uploads and camera denial",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 4281,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:18.264Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-48b79a4ea0ea46c5b8f9",
-          "file": "studio.spec.ts",
-          "line": 37,
-          "column": 1
-        },
-        {
-          "title": "real published-metric sizing API, chart comparison, unsupported guide and mobile results",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 4259,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:22.561Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-d859340c0e8f007ac6fe",
-          "file": "studio.spec.ts",
-          "line": 90,
-          "column": 1
-        },
-        {
-          "title": "real account, photo extraction, private history, closet, session rotation and logout",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 13581,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:26.836Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-1efdf4e032d1405d7615",
-          "file": "studio.spec.ts",
-          "line": 144,
-          "column": 1
-        },
-        {
-          "title": "auth validation, protected return URL, reset configuration error and not-found route",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3052,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:40.435Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "64bdea7002f9c9cea9f4-d017fe40983268232d2d",
-          "file": "studio.spec.ts",
-          "line": 293,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "vastraview.spec.ts",
-      "file": "vastraview.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "VastraView branding, real catalog filters, product selection and mobile accessibility",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3392,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:43.583Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "e431c1ef2860847830e5-f59af62dd78c32330a40",
-          "file": "vastraview.spec.ts",
-          "line": 4,
-          "column": 1
-        },
-        {
-          "title": "real account favorites, unit preference, private settings and deletion",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3337,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:46.992Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "e431c1ef2860847830e5-3de1ecc0bdd20d0fbe2e",
-          "file": "vastraview.spec.ts",
-          "line": 71,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "wardrobe-live.spec.ts",
-      "file": "wardrobe-live.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "saved wardrobe trials render and download their real private outputs",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [
-                {
-                  "type": "skip",
-                  "description": "Opt-in real private trial check",
-                  "location": {
-                    "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\wardrobe-live.spec.ts",
-                    "line": 13,
-                    "column": 8
-                  }
-                }
-              ],
-              "expectedStatus": "skipped",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "skipped",
-                  "duration": 193,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:50.371Z",
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "Opt-in real private trial check",
-                      "location": {
-                        "file": "C:\\Users\\Sujan\\OneDrive\\Desktop\\Avatar_Virtual_try_on\\frontend\\e2e\\wardrobe-live.spec.ts",
-                        "line": 13,
-                        "column": 8
-                      }
-                    }
-                  ],
-                  "attachments": []
-                }
-              ],
-              "status": "skipped"
-            }
-          ],
-          "id": "95e6d3ed44f1303224a9-c090f05d9096d318b1e2",
-          "file": "wardrobe-live.spec.ts",
-          "line": 9,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "wardrobe-quality.spec.ts",
-      "file": "wardrobe-quality.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "category support cannot republish a rejected garment",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1226,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:50.604Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "18dd16ca29a2b0c5d31b-a0f43fe052ea04afb568",
-          "file": "wardrobe-quality.spec.ts",
-          "line": 8,
-          "column": 1
-        },
-        {
-          "title": "result inspection uses the saved garment reference and preserves the compact comparison",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 240000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "",
-              "projectName": "",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2633,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-30T00:56:51.851Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "18dd16ca29a2b0c5d31b-63a8ba38b504893a7bf4",
-          "file": "wardrobe-quality.spec.ts",
-          "line": 23,
-          "column": 1
-        }
-      ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-30T00:54:44.247Z",
-    "duration": 135256.593,
-    "expected": 40,
-    "skipped": 5,
+    "startTime": "2026-10-31T06:32:12.324Z",
+    "duration": 32458.949,
+    "expected": 11,
+    "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   }

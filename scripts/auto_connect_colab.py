@@ -38,9 +38,10 @@ def recovery_source(expected_hostname: str | None = None, worker_profile: dict |
     payload = {name: base64.b64encode((bridge.ROOT / name).read_bytes()).decode()
                for name in names}
     source = (bridge.ROOT / 'scripts/colab_worker_recovery.py').read_text(encoding='utf-8')
+    expected_expr = 'socket.gethostname()' if expected_hostname in (None, 'auto') else repr(expected_hostname)
     return (MARKER + f'-v{RECOVERY_PROTOCOL}\n' + source + '\nprint(json.dumps(recover('
             f"Path('/content/formfit-online'), {payload!r}, "
-            f"expected_hostname={expected_hostname!r}, worker_profile={worker_profile!r}, supervise_seconds=180)))\n")
+            f"expected_hostname={expected_expr}, worker_profile={worker_profile!r}, supervise_seconds=180)))\n")
 
 
 def valid_hostname(value):

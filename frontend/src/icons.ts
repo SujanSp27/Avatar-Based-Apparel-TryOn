@@ -16,6 +16,12 @@ export { default as UserRound } from "lucide-react/dist/esm/icons/user-round.js"
 export { default as X } from "lucide-react/dist/esm/icons/x.js";
 export { default as Expand } from "lucide-react/dist/esm/icons/expand.js";
 export { default as RotateCw } from "lucide-react/dist/esm/icons/rotate-cw.js";
+export { default as RotateCcw } from "lucide-react/dist/esm/icons/rotate-ccw.js";
+export { default as Maximize2 } from "lucide-react/dist/esm/icons/maximize-2.js";
+export { default as Minimize2 } from "lucide-react/dist/esm/icons/minimize-2.js";
+export { default as Columns2 } from "lucide-react/dist/esm/icons/columns-2.js";
+export { default as SlidersHorizontal } from "lucide-react/dist/esm/icons/sliders-horizontal.js";
+export { default as Share2 } from "lucide-react/dist/esm/icons/share-2.js";
 export { default as Download } from "lucide-react/dist/esm/icons/download.js";
 export { default as Move } from "lucide-react/dist/esm/icons/move.js";
 export { default as ZoomIn } from "lucide-react/dist/esm/icons/zoom-in.js";
