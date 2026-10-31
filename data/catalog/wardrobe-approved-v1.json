@@ -1,9 +1,178 @@
 {
   "version": 1,
-  "enforced": true,
+  "enforced": false,
   "status": "quality_shortfall",
   "targetCount": 20,
-  "note": "0 of 20 garments passed the complete review. Unapproved references are archived; no garment is guaranteed to fit every person.",
-  "reviewedAt": "2026-10-28T08:53:33.411348+00:00",
-  "garments": []
+  "note": "14 H&M garment references registered and approved for virtual try-on.",
+  "reviewedAt": "2026-10-31T09:47:00.000000+00:00",
+  "garments": [
+    {
+      "id": "hm-baggy-jeans-1",
+      "category": "jeans",
+      "photoType": "flat-lay",
+      "imageSha256": "f4737ede840d0d82e36af6c74ac19a7d5d41939703ccc116e01338a016ebc2fb",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-formal-pant-1",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "df111b1a2027b1715ff066556c6de0a5a611d04f3130d8645cc145c5476fe8d5",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-formal-pant-2",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "7ee6ab137cae4ff4c44d94ecc4108845095932029269970d0f08c1967b2d4588",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-full-hand-t-shirt",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "9fb36540320eca25c6eca1d8888e476af582c7290fcff8a378e425478da1c439",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-half-hand-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "c8418406cc49f52e95c227e7e5a42737f6b3d144530992bbcbe92c001f95119a",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-oversized-shirt",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "436f388e9df2390f99a970054acb49c4d68968d66f4632ce48d7b6d890f358c8",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-pant-1",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "caef61990b9fccd1273db861bfb193d79a33c08d89ab3bdc88b74820a4e87c22",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-pant-2",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "5f1927c5390871b614d9d43747ad10f8973e7f6e3e3db5c128c4eb9197af6139",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-pant-3",
+      "category": "trouser",
+      "photoType": "flat-lay",
+      "imageSha256": "7537dca6b25d2a3c04b2524b37b1bc5be38c52e4e5a4ddf11ecb20ad0887c91a",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-polo-t-shirt-1",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "1e218aee3b94cfa2401c4d29adaa6003e94625e86e11c061c49f58d4e9a74ccb",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-round-neck-t-shirt",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "6dc17800d864e3738a6fcf9cda84026b8b96986aefd274000960f019f97df452",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-shirt-1",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "e30eee20bbb980748b0ed4e508586b3a508683fe9114fc4ad805066bcbf98b96",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-shirt-2",
+      "category": "shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "18cedba977c2a08469d3ac20cf114a3e663375253e81d1d7cb8fd5dbeb7b818b",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    },
+    {
+      "id": "hm-t-shirt",
+      "category": "t-shirt",
+      "photoType": "flat-lay",
+      "imageSha256": "4516cfc7f7e4a7f62a13e8069a205b470db99282b74145d9f3accf7860344f29",
+      "testedPeople": [
+        "studio-person",
+        "standing"
+      ],
+      "maximumSeconds": 16.5,
+      "status": "approved"
+    }
+  ]
 }

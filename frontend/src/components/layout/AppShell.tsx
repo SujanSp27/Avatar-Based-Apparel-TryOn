@@ -60,7 +60,7 @@ export default function AppShell() {
         <nav className="main-nav" aria-label="Main navigation">
           <NavLink to="/catalog">
             <Shirt size={19} />
-            <span>Discover apparel</span>
+            <span>Discover Now</span>
           </NavLink>
           {nav.map(({ to, label, short, icon: Icon, step }) => (
             <NavLink to={to} key={to}>
@@ -100,7 +100,7 @@ export default function AppShell() {
                 (location.pathname === "/profile"
                   ? "Your profile"
                   : location.pathname === "/catalog"
-                    ? "Apparel catalog"
+                    ? "Discover Now"
                     : "Welcome")}
             </strong>
           </div>

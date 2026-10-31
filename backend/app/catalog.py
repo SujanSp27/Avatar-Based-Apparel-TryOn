@@ -110,6 +110,8 @@ def initialize_catalog(db):
     from scripts.download_samples import FASHN_REVISION, NAVY_URL, POLO_URL
 
     for key, name, category, photo, filename, description in GARMENTS:
+        if key not in {"navy-tee", "sage-polo"}:
+            continue
         reference_url = (
             NAVY_URL
             if key == "navy-tee"
@@ -161,13 +163,14 @@ def initialize_catalog(db):
     assets_ready = True
     for entry in json.loads(manifest.read_text(encoding="utf-8")):
         row = {k: v for k, v in entry.items() if k != "id"}
-        if not (ROOT / "data/raw" / row["filename"]).is_file():
-            # A clean install may start before public assets are restored.
-            # Retry this seed later; do not create permanently inactive records.
+        path = (ROOT / "data/raw" / row["filename"]).resolve()
+        if not path.is_file():
+            path = (ROOT / row["filename"]).resolve()
+        if not path.is_file():
             assets_ready = False
             continue
         row.update(created_at=datetime(2026, 10, 25, tzinfo=timezone.utc), seed_version=2,
-                   active=(ROOT / "data/raw" / row["filename"]).is_file())
+                   active=True)
         db.products.update_one({"_id": entry["id"]}, {"$setOnInsert": row}, upsert=True)
     return assets_ready
 
@@ -185,6 +188,26 @@ def catalog_db(db=Depends(account_db)):
                                 ("description", old_name + tail, new_name + " with a turn-down collar" + tail)):
             db.products.update_one({"_id": "edit-4758e641", field: old}, {"$set": {field: new}})
         db.catalog_versions.update_one({"_id": 3}, {"$set": {"installed": True}}, upsert=True)
+    if not db.catalog_versions.find_one({"_id": 4}):
+        manifest = ROOT / "data/catalog/garments-v2.json"
+        for entry in json.loads(manifest.read_text(encoding="utf-8")):
+            if entry["id"].startswith("garment-"):
+                row = {k: v for k, v in entry.items() if k != "id"}
+                row.update(created_at=datetime.now(timezone.utc), seed_version=4, active=True)
+                db.products.update_one({"_id": entry["id"]}, {"$set": row}, upsert=True)
+        db.catalog_versions.update_one({"_id": 4}, {"$set": {"installed": True}}, upsert=True)
+    if not db.catalog_versions.find_one({"_id": 5}):
+        manifest = ROOT / "data/catalog/garments-v2.json"
+        for entry in json.loads(manifest.read_text(encoding="utf-8")):
+            if entry["id"].startswith("hm-"):
+                row = {k: v for k, v in entry.items() if k != "id"}
+                row.update(created_at=datetime.now(timezone.utc), seed_version=5, active=True)
+                db.products.update_one({"_id": entry["id"]}, {"$set": row}, upsert=True)
+        db.products.delete_many({"_id": {"$regex": "^garment-"}})
+        db.catalog_versions.update_one({"_id": 5}, {"$set": {"installed": True}}, upsert=True)
+    if not db.catalog_versions.find_one({"_id": 6}):
+        db.products.delete_many({"brand_id": None})
+        db.catalog_versions.update_one({"_id": 6}, {"$set": {"installed": True}}, upsert=True)
     return db
 
 
@@ -192,7 +215,11 @@ def image_path(row, *, display=False):
     root = (ROOT / "data/raw").resolve()
     asset = (row.get("display_image") or row) if display else row
     path = (root / asset["filename"]).resolve()
-    if not path.is_relative_to(root) or not path.is_file():
+    if not path.is_file():
+        alt = (ROOT / asset["filename"]).resolve()
+        if alt.is_file() and alt.is_relative_to(ROOT):
+            path = alt
+    if not path.is_file() or (not path.is_relative_to(root) and not path.is_relative_to(ROOT)):
         raise HTTPException(404, "Catalog image is unavailable.")
     return path
 
@@ -205,6 +232,7 @@ def visible_query(db=None, prefix=""):
                         if approval(r)["status"] == "approved"]
     query = {
         prefix + "active": True,
+        prefix + "brand_id": {"$ne": None},
         **({"$and": [{prefix + "_id": {"$in": approved_ids}}]} if data["enforced"] else {}),
         **({prefix + "commercial_use": True} if settings.environment == "production" else {}),
     }

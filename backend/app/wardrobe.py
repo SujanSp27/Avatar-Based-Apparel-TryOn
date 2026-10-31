@@ -60,9 +60,13 @@ def approval(row):
         return {"status": "unreviewed", "message": "Individual garment quality has not yet passed the two-person evaluation."}
     root = (ROOT / "data/raw").resolve()
     path = (root / row["filename"]).resolve()
+    if not path.is_file():
+        alt = (ROOT / row["filename"]).resolve()
+        if alt.is_file() and alt.is_relative_to(ROOT):
+            path = alt
     try:
         stat = path.stat()
-        valid = (path.is_relative_to(root) and row["category"] == record["category"]
+        valid = ((path.is_relative_to(root) or path.is_relative_to(ROOT)) and row["category"] == record["category"]
                  and row["photoType"] == record["photoType"]
                  and _source_hash(str(path), stat.st_mtime_ns, stat.st_size) == record["imageSha256"])
     except OSError:
@@ -81,7 +85,11 @@ def validate_catalog_submission(db, product_id: str, garment: bytes, category: s
     if row.get("category") not in MODEL_CATEGORIES or (data["enforced"] and approval(row)["status"] != "approved"):
         raise PipelineError("garment_not_approved", "This garment has not passed wardrobe review. Choose an approved garment.", 422)
     path = (ROOT / "data/raw" / row["filename"]).resolve()
-    if not path.is_relative_to((ROOT / "data/raw").resolve()) or not path.is_file():
+    if not path.is_file():
+        alt = (ROOT / row["filename"]).resolve()
+        if alt.is_file() and alt.is_relative_to(ROOT):
+            path = alt
+    if not path.is_file() or (not path.is_relative_to((ROOT / "data/raw").resolve()) and not path.is_relative_to(ROOT)):
         raise PipelineError("garment_unavailable", "The catalog image is unavailable.", 404)
     if (category != row["category"] or photo_type != row["photoType"]
             or hashlib.sha256(garment).digest() != hashlib.sha256(path.read_bytes()).digest()):

@@ -10,6 +10,7 @@ import { useMeasurement } from "../measurement/MeasurementProvider";
 import SplitCompareViewer from "./SplitCompareViewer";
 import GenerationProgress from "./GenerationProgress";
 import GarmentPicker, { type Garment } from "./GarmentPicker";
+import { getDiscoveredGarmentById } from "../catalog/discoveredGarments";
 import "./comparison.css";
 import { ErrorNotice } from "../../components/feedback/Feedback";
 const categories = [
@@ -218,7 +219,20 @@ export default function TryOnStudio() {
         }
       })
       .catch((e) => {
-        if (!stopped) setError(e.message);
+        const fallback = getDiscoveredGarmentById(productId);
+        if (fallback && !stopped) {
+          void selectGarment(fallback);
+          setParams(
+            (current) => {
+              const next = new URLSearchParams(current);
+              next.delete("product");
+              return next;
+            },
+            { replace: true },
+          );
+        } else if (!stopped) {
+          setError(e.message);
+        }
       });
     return () => {
       stopped = true;

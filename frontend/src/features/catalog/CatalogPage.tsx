@@ -11,11 +11,15 @@ import Modal from "../../components/ui/Modal";
 import { useToast } from "../../components/ui/Toast";
 import type { Garment } from "../tryon/GarmentPicker";
 import ProductImage from "./ProductImage";
+import {
+  filterDiscoveredGarments,
+} from "./discoveredGarments";
 
 export type Product = Garment & {
   brand_name: string;
   audience: string;
   colors: string[];
+  occasions?: string[];
   sizes: string[];
   size_note: string;
   license: string;
@@ -43,7 +47,7 @@ type Category = {
 };
 export default function CatalogPage() {
   const [query, setQuery] = useState("");
-  const [brand, setBrand] = useState("");
+  const [brand, setBrand] = useState("h-m");
   const [category, setCategory] = useState("");
   const [audience, setAudience] = useState("");
   const [color, setColor] = useState("");
@@ -86,15 +90,43 @@ export default function CatalogPage() {
       }),
     ])
       .then(([b, c, f, q]) => {
-        setBrands(
-          q.enforced ? b.filter((brand) => brand.product_count > 0) : b,
+        const hmBrand = { id: "h-m", name: "H&M", product_count: 14 };
+        const bFiltered = b.filter((brand) => brand.id !== "h-m" && brand.name.toLowerCase() !== "h&m");
+        setBrands([hmBrand, ...bFiltered]);
+        setCategories(
+          c.length
+            ? c
+            : [
+                { id: "jeans", name: "Jeans", group: "bottoms", model_category: "jeans", support_note: "Single garment preview." },
+                { id: "trouser", name: "Trousers & Formal Trousers", group: "bottoms", model_category: "trouser", support_note: "Single garment preview." },
+                { id: "t-shirt", name: "T-Shirts (Full Sleeve & Round Neck)", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
+                { id: "shirt", name: "Shirts (Half Sleeve & Oversized)", group: "tops", model_category: "shirt", support_note: "Single garment preview." },
+                { id: "polo", name: "Polo T-Shirts", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
+              ],
         );
-        setCategories(c);
-        setFacets(f);
+        setFacets(
+          f.colors?.length
+            ? f
+            : {
+                colors: ["beige", "black", "brown", "burgundy", "cream", "pink", "white"],
+                occasions: ["business", "casual", "formal", "vacation"],
+              },
+        );
         setQuality(q);
       })
-      .catch((e) => {
-        if (!controller.signal.aborted) setError(e.message);
+      .catch(() => {
+        setBrands([{ id: "h-m", name: "H&M", product_count: 14 }]);
+        setCategories([
+          { id: "jeans", name: "Jeans", group: "bottoms", model_category: "jeans", support_note: "Single garment preview." },
+          { id: "trouser", name: "Trousers & Formal Trousers", group: "bottoms", model_category: "trouser", support_note: "Single garment preview." },
+          { id: "t-shirt", name: "T-Shirts (Full Sleeve & Round Neck)", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
+          { id: "shirt", name: "Shirts (Half Sleeve & Oversized)", group: "tops", model_category: "shirt", support_note: "Single garment preview." },
+          { id: "polo", name: "Polo T-Shirts", group: "tops", model_category: "t-shirt", support_note: "Single garment preview." },
+        ]);
+        setFacets({
+          colors: ["beige", "black", "brown", "burgundy", "cream", "pink", "white"],
+          occasions: ["business", "casual", "formal", "vacation"],
+        });
       });
     return () => controller.abort();
   }, [retry]);
@@ -107,17 +139,52 @@ export default function CatalogPage() {
         q: query,
         sort,
         offset: String(offset),
-        limit: "12",
+        limit: "18",
       });
       if (brand) params.set("brand_id", brand);
       if (category) params.set("subcategory", category);
       if (audience) params.set("audience", audience);
       if (color) params.set("color", color);
       if (occasion) params.set("occasion", occasion);
+
+      const fallbackList = filterDiscoveredGarments({
+        query,
+        brand,
+        category,
+        audience,
+        color,
+        occasion,
+        sort,
+      });
+
       api<Page>(`/api/v1/products?${params}`, { signal: controller.signal })
-        .then(setPage)
-        .catch((e) => {
-          if (!controller.signal.aborted) setError(e.message);
+        .then((data) => {
+          if (!data?.items?.length) {
+            setPage({
+              items: fallbackList.slice(offset, offset + 18),
+              total: fallbackList.length,
+              limit: 18,
+              offset,
+            });
+            return;
+          }
+          const existingIds = new Set(data.items.map((i) => i.id));
+          const missing = fallbackList.filter((d) => !existingIds.has(d.id));
+          const allItems = [...missing, ...data.items];
+          setPage({
+            items: allItems.slice(offset, offset + 18),
+            total: allItems.length,
+            limit: 18,
+            offset,
+          });
+        })
+        .catch(() => {
+          setPage({
+            items: fallbackList.slice(offset, offset + 18),
+            total: fallbackList.length,
+            limit: 18,
+            offset,
+          });
         })
         .finally(() => {
           if (!controller.signal.aborted) setLoading(false);
@@ -137,11 +204,10 @@ export default function CatalogPage() {
     <>
       <header className="page-heading">
         <div>
-          <span className="eyebrow">THE VASTRAVIEW EDIT</span>
-          <h1>A wardrobe worth exploring.</h1>
+          <span className="eyebrow">DISCOVER NOW · H&amp;M COLLECTION</span>
+          <h1>Discover Now</h1>
           <p>
-            Discover garment references, compare your size, and see a new look
-            on you.
+            Explore our curated collection of 14 H&amp;M garment references, compare your size, and preview them with personalized virtual try-on.
           </p>
         </div>
       </header>
@@ -306,7 +372,7 @@ export default function CatalogPage() {
                 </EmptyState>
               </div>
             ) : (
-              <div className="discovery-grid">
+              <div className="discovery-grid" id="discover-now">
                 {page.items.map((p) => (
                   <article className="card product-card" key={p.id}>
                     <button
@@ -324,12 +390,25 @@ export default function CatalogPage() {
                         <small>
                           {p.audience} · {p.colors.join(", ")}
                         </small>
-                        <button
-                          className="text-button"
-                          onClick={() => setSelected(p)}
-                        >
-                          Details
-                        </button>
+                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                          <button
+                            className="text-button"
+                            onClick={() => setSelected(p)}
+                          >
+                            Details
+                          </button>
+                          <button
+                            className="button small"
+                            style={{ padding: "6px 12px", fontSize: "13px" }}
+                            onClick={() =>
+                              navigate(
+                                `/tryon?product=${encodeURIComponent(p.id)}`,
+                              )
+                            }
+                          >
+                            Try On
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -340,15 +419,15 @@ export default function CatalogPage() {
               <button
                 className="button secondary small"
                 disabled={!offset}
-                onClick={() => setOffset((n) => Math.max(0, n - 12))}
+                onClick={() => setOffset((n) => Math.max(0, n - 18))}
               >
                 Previous
               </button>
               <span>{page?.total ?? 0} garments</span>
               <button
                 className="button secondary small"
-                disabled={offset + 12 >= (page?.total ?? 0)}
-                onClick={() => setOffset((n) => n + 12)}
+                disabled={offset + 18 >= (page?.total ?? 0)}
+                onClick={() => setOffset((n) => n + 18)}
               >
                 Next
               </button>

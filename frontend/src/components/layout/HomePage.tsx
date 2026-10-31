@@ -20,7 +20,7 @@ export default function HomePage() {
           </p>
           <div className="actions">
             <Link className="button" to="/catalog">
-              Explore Collection
+              Discover Now
             </Link>
             <Link className="button secondary" to="/tryon">
               Try Your Own Outfit

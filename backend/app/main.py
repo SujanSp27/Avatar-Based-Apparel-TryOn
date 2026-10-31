@@ -95,6 +95,23 @@ app.include_router(garment_router)
 app.include_router(account_router)
 app.include_router(lifecycle_router)
 app.include_router(catalog_router)
+
+
+@app.get("/assets/garments/{filename}")
+def static_garment_asset(filename: str):
+    root = (ROOT / "assets/garments").resolve()
+    path = (root / filename).resolve()
+    if not (path.is_file() and path.is_relative_to(root)):
+        alt_root = (ROOT / "data/raw/assets/garments").resolve()
+        alt_path = (alt_root / filename).resolve()
+        if alt_path.is_file() and alt_path.is_relative_to(alt_root):
+            path = alt_path
+        else:
+            raise HTTPException(404, "Garment image not found")
+    media_type = "image/jpeg" if path.suffix.lower() in {".jpg", ".jpeg"} else "application/octet-stream"
+    return FileResponse(path, media_type=media_type)
+
+
 app.include_router(private_router)
 
 

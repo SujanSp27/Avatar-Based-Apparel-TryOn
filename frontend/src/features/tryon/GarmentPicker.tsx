@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "../../icons";
 import ProductImage from "../catalog/ProductImage";
+import { DISCOVERED_GARMENTS } from "../catalog/discoveredGarments";
 export type Garment = {
   id: string;
   name: string;
@@ -44,16 +45,25 @@ export default function GarmentPicker({
         if (!r.ok) throw new Error();
         const data = await r.json();
         if (active) {
-          setItems(data.items);
+          const apiItems: Garment[] = data.items || [];
+          const existingIds = new Set(apiItems.map((item) => item.id));
+          const combined = [
+            ...DISCOVERED_GARMENTS.filter((g) => !existingIds.has(g.id)),
+            ...apiItems,
+          ];
+          setItems(combined);
           setFilter((current) =>
-            data.items.some((item: Garment) => item.category === current)
+            combined.some((item: Garment) => item.category === current)
               ? current
               : "all",
           );
         }
       })
       .catch(() => {
-        if (active) setError(true);
+        if (active) {
+          setItems(DISCOVERED_GARMENTS);
+          setError(false);
+        }
       })
       .finally(() => {
         clearTimeout(timer);

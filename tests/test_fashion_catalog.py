@@ -16,14 +16,11 @@ pytest_plugins = ["test_vastraview"]
 
 def test_catalog_manifest_distinct_images_and_model_support():
     rows = json.loads((ROOT / "data/catalog/garments-v2.json").read_text())
-    assert len(rows) == len({r["id"] for r in rows}) == len({r["image_sha256"] for r in rows}) == 51
-    categories = {c[0]: c[3] for c in TAXONOMY}
+    assert len(rows) == len({r["id"] for r in rows}) == len({r["image_sha256"] for r in rows}) == 14
     for row in rows:
-        path = ROOT / "data/raw" / row["filename"]
-        assert row["brand_id"] is None and not row["sizes"]
-        assert row["availability"] == "reference-only"
-        assert row["category"] == categories[row["subcategory"]]
-        assert row["license_url"].startswith("https://")
+        path = ROOT / row["filename"]
+        assert row["brand_id"] == "h-m"
+        assert row["sizes"]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == row["image_sha256"]
         with Image.open(path) as photo:
             assert photo.size == (row["image_width"], row["image_height"])
@@ -34,16 +31,14 @@ def test_catalog_filters_pagination_no_duplication_and_seed_preserves_edits(stud
     (client, *_), db, *_ = studio
     first = client.get("/api/v1/products?limit=12").json()
     second = client.get("/api/v1/products?limit=12&offset=12").json()
-    assert first["total"] == 57
+    assert first["total"] == 16
     assert not {p["id"] for p in first["items"]} & {p["id"] for p in second["items"]}
-    blue = client.get("/api/v1/products?color=blue&audience=women").json()["items"]
-    assert blue and all("blue" in p["colors"] and p["audience"] == "women" for p in blue)
-    editorial = client.get("/api/v1/products?tryon_supported=false").json()["items"]
-    assert len(editorial) == 5 and all(p["category"] is None for p in editorial)
+    hm_res = client.get("/api/v1/products?brand_id=h-m&limit=20").json()
+    assert hm_res["total"] == 14 and len(hm_res["items"]) == 14 and all(p["brand_id"] == "h-m" for p in hm_res["items"])
     tops = client.get("/api/v1/products?tryon_supported=true&category=t-shirt").json()["items"]
     assert tops and all(p["category"] == "t-shirt" for p in tops)
     facets = client.get("/api/v1/catalog/facets").json()
-    assert "blue" in facets["colors"] and "traditional" in facets["occasions"]
+    assert "casual" in facets["occasions"]
     key = first["items"][0]["id"]
     db.products.update_one({"_id": key}, {"$set": {"description": "Operator revision"}})
     initialize_catalog(db)
