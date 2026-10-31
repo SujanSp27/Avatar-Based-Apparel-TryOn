@@ -90,6 +90,36 @@ class ColabConnection:
                 self._wake.set()
         return self.snapshot()
 
+    def adopt_credentials(self, url: str, token: str):
+        """Adopt explicit Colab worker connection and verify immediately."""
+        url = url.rstrip('/')
+        token = token.strip()
+        from scripts.connect_online_worker import save_connection
+        data = {
+            'url': url,
+            'token': token,
+            'gpu': 'Tesla T4',
+            'model': '7720683168567eb5a2a4c67f15116c6e29c83ded',
+            'modelResolution': [576, 864],
+            'precision': 'torch.float16',
+        }
+        save_connection(data, settings.online_connection_path)
+        self.worker.refresh_connection()
+        availability = self.worker.availability(check_connection=True)
+        if not availability.get('available'):
+            raise ValueError(availability.get('reason') or 'The Colab worker at this URL is not reachable or rejected the token.')
+        with self._lock:
+            self._updated_at = time.monotonic()
+            self._unavailable_since = self._updated_at
+            self._snapshot = {
+                **availability,
+                'connectionState': 'ready',
+                'reason': None,
+                'displayState': 'Ready',
+                'automaticConnection': settings.online_auto_connect,
+            }
+        return self.snapshot()
+
     def check(self):
         if not self._check_lock.acquire(blocking=False):
             return

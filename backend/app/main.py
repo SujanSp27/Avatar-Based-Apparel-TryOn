@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from threading import BoundedSemaphore
 from uuid import UUID, uuid4
 
+from pydantic import BaseModel
+
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -267,6 +269,45 @@ def tryon_availability():
 @app.post("/api/tryon/retry", status_code=202, dependencies=[Depends(authenticated_owner)])
 def retry_tryon_connection():
     return connection.retry()
+
+
+class ColabConnectPayload(BaseModel):
+    connection: str
+
+
+@app.post("/api/tryon/connect", status_code=200)
+def connect_tryon(payload: ColabConnectPayload):
+    import json, re
+    raw = payload.connection.strip()
+    url, token = None, None
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, dict):
+            if "connection" in parsed and isinstance(parsed["connection"], dict):
+                parsed = parsed["connection"]
+            url = parsed.get("url")
+            token = parsed.get("token")
+    except Exception:
+        pass
+    if not url:
+        url_match = re.search(r"https://[a-zA-Z0-9-]+\.gradio\.live", raw)
+        if url_match:
+            url = url_match.group(0)
+    if not token:
+        remaining = raw.replace(url, "") if url else raw
+        token_match = re.search(r"[A-Za-z0-9_-]{32,80}", remaining)
+        if token_match:
+            token = token_match.group(0)
+    if not url or not token:
+        raise HTTPException(
+            400,
+            "Could not find a valid Gradio URL and private token. Please paste the full connection JSON or URL and token."
+        )
+    try:
+        snapshot = connection.adopt_credentials(url, token)
+        return {"success": True, "snapshot": snapshot}
+    except Exception as exc:
+        raise HTTPException(400, str(exc))
 
 
 @app.post("/api/brands", status_code=201, dependencies=[Depends(admin)])

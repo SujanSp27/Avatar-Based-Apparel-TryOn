@@ -42,6 +42,10 @@ export default function TryOnStudio() {
   const [offline, setOffline] = useState(false);
   const [checkVersion, setCheckVersion] = useState(0);
   const [retryBusy, setRetryBusy] = useState(false);
+  const [showConnectModal, setShowConnectModal] = useState(false);
+  const [connectInput, setConnectInput] = useState("");
+  const [connectError, setConnectError] = useState("");
+  const [connectBusy, setConnectBusy] = useState(false);
   const [preview, setPreview] = useState<string>();
   const [garmentPreview, setGarmentPreview] = useState<string>();
   const [samplesBusy, setSamplesBusy] = useState(false);
@@ -134,6 +138,33 @@ export default function TryOnStudio() {
     } finally {
       setRetryBusy(false);
       setCheckVersion((value) => value + 1);
+    }
+  }
+
+  async function handleManualConnect(e: React.FormEvent) {
+    e.preventDefault();
+    if (!connectInput.trim()) return;
+    setConnectBusy(true);
+    setConnectError("");
+    try {
+      const response = await fetch("/api/tryon/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ connection: connectInput.trim() }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to connect to Colab worker.");
+      }
+      setAvailability(data.snapshot);
+      setShowConnectModal(false);
+      setConnectInput("");
+      setError("");
+      setOffline(false);
+    } catch (err) {
+      setConnectError(err instanceof Error ? err.message : "Failed to connect.");
+    } finally {
+      setConnectBusy(false);
     }
   }
   async function sample(withPerson = true) {
@@ -388,13 +419,70 @@ export default function TryOnStudio() {
             </div>
           </div>
           {!availability?.available && (
-            <button
-              className="button secondary"
-              disabled={retryBusy}
-              onClick={() => void retryConnection()}
-            >
-              {retryBusy ? "Checking…" : "Retry connection"}
-            </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  className="button secondary"
+                  style={{ flex: 1 }}
+                  disabled={retryBusy}
+                  onClick={() => void retryConnection()}
+                >
+                  {retryBusy ? "Checking…" : "Retry"}
+                </button>
+                <button
+                  className="button secondary"
+                  style={{ flex: 1 }}
+                  onClick={() => setShowConnectModal((prev) => !prev)}
+                >
+                  {showConnectModal ? "Cancel" : "Connect Colab"}
+                </button>
+              </div>
+
+              {showConnectModal && (
+                <form
+                  onSubmit={handleManualConnect}
+                  style={{
+                    padding: "12px",
+                    borderRadius: "8px",
+                    background: "rgba(255, 255, 255, 0.9)",
+                    border: "1px solid #cbd5e1",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                  }}
+                >
+                  <label style={{ fontSize: "12px", fontWeight: 600, color: "#1e3a2b" }}>
+                    Paste Colab Output / Gradio Link:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Paste Colab output line or https://...gradio.live ..."
+                    value={connectInput}
+                    onChange={(e) => setConnectInput(e.target.value)}
+                    style={{
+                      padding: "8px 10px",
+                      borderRadius: "6px",
+                      border: "1px solid #cbd5e1",
+                      fontSize: "12px",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  {connectError && (
+                    <div style={{ color: "#dc2626", fontSize: "11px" }}>{connectError}</div>
+                  )}
+                  <button
+                    type="submit"
+                    className="button"
+                    style={{ alignSelf: "flex-end", padding: "6px 14px", fontSize: "12px" }}
+                    disabled={connectBusy || !connectInput.trim()}
+                  >
+                    {connectBusy ? "Connecting…" : "Connect GPU"}
+                  </button>
+                </form>
+              )}
+            </div>
           )}
           <button
             className="button"
